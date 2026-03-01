@@ -5,6 +5,28 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.3] - 2026-03-01
+
+### Changed — Emoji Cleanup & Faction Flag Fix
+- **Removed ~65 decorative emojis** — tabs, buttons, headers, notifications, and log messages cleaned up across game.js and index.html
+- **Faction flags fixed for PC** — replaced flag emojis (invisible on Windows desktop) with text abbreviations: ITA, RUS, CHN, MEX
+- **Help guide icons cleared** — removed emoji icons from 15+ help topics
+- **Functional emojis kept** — lock indicators, toggle checkmarks, map legend, store categories, achievements, weather, districts, leaderboards, weekly challenges
+
+## [1.11.2] - 2026-03-01
+
+### Added — Change Portrait from Settings
+- **Change Portrait button** in Settings > Personalization section
+- Portrait picker reuses gender-organized Male/Female sections from character creation
+- Changing portrait also updates ethnicity and gender fields and auto-saves
+
+## [1.11.1] - 2026-03-01
+
+### Changed — Profile Picture Organization
+- **Portrait grid organized by gender** — Male and Female sections with clear headers
+- Both portrait selection screens (new game + settings) use gender-sorted layout
+- Portrait grid CSS updated for responsive columns (6-col desktop, 3-col tablet, 2-col phone)
+
 ## [1.11.0] - 2026-03-XX
 
 ### Changed — Omerta-Style Economy Rebalance

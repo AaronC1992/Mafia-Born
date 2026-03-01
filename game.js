@@ -14536,8 +14536,36 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.11.0";
+const CURRENT_VERSION = "1.11.3";
 const VERSION_UPDATES = {
+  "1.11.3": {
+    title: "Emoji Cleanup & Faction Flag Fix",
+    date: "March 2026",
+    changes: [
+      "Removed ~65 decorative emoji prefixes from tabs, buttons, headers, notifications, and log messages",
+      "Faction flag emojis replaced with text abbreviations (ITA, RUS, CHN, MEX) — flags now visible on Windows PC",
+      "Cleared emoji icons from 15+ help guide topics",
+      "Kept functional emojis: lock indicators, toggle checkmarks, map legend, and structural data fields",
+    ]
+  },
+  "1.11.2": {
+    title: "Change Portrait from Settings",
+    date: "March 2026",
+    changes: [
+      "New 'Change Portrait' button in Settings > Personalization",
+      "Portrait picker reuses gender-organized Male/Female sections",
+      "Changing portrait also updates ethnicity and gender fields and auto-saves",
+    ]
+  },
+  "1.11.1": {
+    title: "Profile Picture Organization",
+    date: "March 2026",
+    changes: [
+      "Character creation portrait grid now organized into Male and Female sections",
+      "Both portrait selection screens (new game + settings) use gender-sorted layout",
+      "Portrait grid CSS updated for responsive columns",
+    ]
+  },
   "1.11.0": {
     title: "Omerta-Style Economy Rebalance",
     date: "March 2026",
