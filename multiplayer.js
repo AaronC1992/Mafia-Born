@@ -125,63 +125,8 @@ let onlineWorldState = {
 // Territory income tracking
 let territoryIncomeNextCollection = Date.now() + (7 * 24 * 60 * 60 * 1000); // Next weekly collection
 
-// ==================== NOTIFICATION SOUND SYSTEM ====================
-// Web Audio API-based sound effects for PvP events — no external files needed.
-let _audioCtx = null;
-function getAudioCtx() {
-    if (!_audioCtx) {
-        try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { /* silent */ }
-    }
-    return _audioCtx;
-}
-
-/**
- * Play a short synthesized notification sound.
- * Types: 'combat', 'victory', 'defeat', 'alert', 'cash', 'heist'
- */
-function playNotificationSound(type) {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    try {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        const now = ctx.currentTime;
-
-        switch (type) {
-            case 'combat':      // Short aggressive stab
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(220, now); osc.frequency.exponentialRampToValueAtTime(110, now + 0.15);
-                gain.gain.setValueAtTime(0.25, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-                osc.start(now); osc.stop(now + 0.2); break;
-            case 'victory':     // Rising triumphant tone
-                osc.type = 'square'; osc.frequency.setValueAtTime(440, now); osc.frequency.exponentialRampToValueAtTime(880, now + 0.3);
-                gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-                osc.start(now); osc.stop(now + 0.4); break;
-            case 'defeat':      // Descending low tone
-                osc.type = 'sine'; osc.frequency.setValueAtTime(330, now); osc.frequency.exponentialRampToValueAtTime(80, now + 0.4);
-                gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-                osc.start(now); osc.stop(now + 0.5); break;
-            case 'alert':       // Double beep
-                osc.type = 'square'; osc.frequency.setValueAtTime(800, now);
-                gain.gain.setValueAtTime(0.15, now); gain.gain.setValueAtTime(0, now + 0.08);
-                gain.gain.setValueAtTime(0.15, now + 0.12); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-                osc.start(now); osc.stop(now + 0.25); break;
-            case 'cash':        // Ka-ching
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(1200, now); osc.frequency.exponentialRampToValueAtTime(2400, now + 0.1);
-                gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-                osc.start(now); osc.stop(now + 0.2); break;
-            case 'heist':       // Tension build
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(600, now + 0.5);
-                gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-                osc.start(now); osc.stop(now + 0.6); break;
-            default:            // Generic blip
-                osc.type = 'sine'; osc.frequency.setValueAtTime(600, now);
-                gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-                osc.start(now); osc.stop(now + 0.15);
-        }
-    } catch (e) { /* AudioContext not supported or user hasn't interacted yet */ }
-}
+// Sound system removed — playNotificationSound kept as no-op stub so call sites don't error
+function playNotificationSound() {}
 
 /**
  * Show a toast notification at the top of the screen.
