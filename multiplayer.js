@@ -1994,7 +1994,6 @@ function showPvpResultModal(message, isWinner) {
 
         modal.innerHTML = `
             <div class="popup-card popup-success" style="max-width:480px;">
-                <div style="font-size:3em;margin-bottom:10px;">${[char]::ConvertFromUtf32(0x1F3C6)}</div>
                 <h2 class="popup-title popup-title-success" style="margin:0;">VICTORY!</h2>
                 <p class="popup-subtitle">You defeated <strong style="color:#e74c3c;">${escapeHTML(opponent)}</strong></p>
                 <div class="popup-section" style="border-color:rgba(46,204,113,0.3);">
@@ -2008,7 +2007,7 @@ function showPvpResultModal(message, isWinner) {
                             <div class="popup-stat-label">Health</div>
                         </div>` : ''}
                         <div>
-                            <div style="color:#f1c40f;font-size:1.5em;font-weight:bold;">${[char]::ConvertFromUtf32(0x1F451)}</div>
+                            <div style="color:#f1c40f;font-size:1.5em;font-weight:bold;">Winner</div>
                             <div class="popup-stat-label">Bragging Rights</div>
                         </div>
                     </div>
@@ -2020,14 +2019,13 @@ function showPvpResultModal(message, isWinner) {
             </div>
         `;
 
-        logAction(`${[char]::ConvertFromUtf32(0x1F451)} Victory! Defeated ${opponent} and gained ${repChange} Don Rep!${myDmg ? ` (HP -${myDmg})` : ''}`);
+        logAction(`Victory! Defeated ${opponent} and gained ${repChange} Don Rep!${myDmg ? ` (HP -${myDmg})` : ''}`);
     } else {
         const repLoss = Math.min(player.reputation || 0, 3);
         player.reputation = Math.max(0, (player.reputation || 0) - repLoss);
 
         modal.innerHTML = `
             <div class="popup-card popup-danger" style="max-width:480px;">
-                <div style="font-size:3em;margin-bottom:10px;">${[char]::ConvertFromUtf32(0x1F480)}</div>
                 <h2 class="popup-title popup-title-danger" style="margin:0;">DEFEATED</h2>
                 <p class="popup-subtitle"><strong style="color:#2ecc71;">${escapeHTML(opponent)}</strong> came out on top</p>
                 <div class="popup-section" style="border-color:rgba(231,76,60,0.3);">
@@ -2041,7 +2039,7 @@ function showPvpResultModal(message, isWinner) {
                             <div class="popup-stat-label">Health</div>
                         </div>` : ''}
                         <div>
-                            <div style="color:#e74c3c;font-size:1.5em;font-weight:bold;">${[char]::ConvertFromUtf32(0x1F624)}</div>
+                            <div style="color:#e74c3c;font-size:1.5em;font-weight:bold;">Loss</div>
                             <div class="popup-stat-label">Bruised Ego</div>
                         </div>
                     </div>
@@ -2053,7 +2051,7 @@ function showPvpResultModal(message, isWinner) {
             </div>
         `;
 
-        logAction(`${[char]::ConvertFromUtf32(0x1F480)} Defeated by ${opponent}. Lost ${repLoss} Don Rep.${myDmg ? ` (HP -${myDmg})` : ''}`);
+        logAction(`Defeated by ${opponent}. Lost ${repLoss} Don Rep.${myDmg ? ` (HP -${myDmg})` : ''}`);
     }
 
     document.body.appendChild(modal);

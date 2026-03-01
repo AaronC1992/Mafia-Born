@@ -177,7 +177,7 @@ window.applyCloudSave = function (cloudEntry) {
     if (!cloudEntry || !cloudEntry.data) return;
     const saveData = cloudEntry.data;
     if (!validateSaveData(saveData)) {
-        alert('Cloud save data is corrupted or incompatible!');
+        showBriefNotification('Cloud save data is corrupted or incompatible!', 'danger');
         return;
     }
     applySaveData(saveData);
@@ -894,7 +894,7 @@ function startSignatureJob(familyKey) {
   
   // Gate: require 20+ faction reputation
   if (reputation < 20) {
-    alert(`You need 20 reputation with ${family.name} to attempt their signature job.`);
+    showBriefNotification(`You need 20 reputation with ${family.name} to attempt their signature job.`, 'danger');
     return;
   }
   
@@ -904,14 +904,14 @@ function startSignatureJob(familyKey) {
   const cooldownMs = (sigJob.cooldown || 24) * 60 * 60 * 1000;
   if ((Date.now() - lastRun) < cooldownMs) {
     const remaining = Math.ceil((cooldownMs - (Date.now() - lastRun)) / 60000);
-    alert(`This signature job is on cooldown. Try again in ${remaining >= 60 ? Math.floor(remaining/60) + 'h ' + (remaining%60) + 'm' : remaining + 'm'}.`);
+    showBriefNotification(`This signature job is on cooldown. Try again in ${remaining >= 60 ? Math.floor(remaining/60) + 'h ' + (remaining%60) + 'm' : remaining + 'm'}.`, 'warning');
     return;
   }
   
   // Energy cost (flat 20)
   const energyCost = 20;
   if (player.energy < energyCost) {
-    alert(`You need ${energyCost} energy for this signature job.`);
+    showBriefNotification(`You need ${energyCost} energy for this signature job.`, 'danger');
     return;
   }
   
@@ -943,7 +943,7 @@ function startSignatureJob(familyKey) {
     
     logAction(`⭐ Signature Job "${sigJob.name}" completed for ${family.name}! +$${earnings.toLocaleString()} (dirty), +${sigJob.xpReward} XP, +5 family rep.`);
     flashSuccessScreen();
-    alert(`Signature job complete! Earned $${earnings.toLocaleString()} and gained standing with ${family.name}.`);
+    showBriefNotification(`Signature job complete! Earned $${earnings.toLocaleString()} and gained standing with ${family.name}.`, 'success');
     degradeEquipment('signature_job');
     
     updateMissionProgress('reputation_changed');
@@ -2160,9 +2160,11 @@ window.dismissMember = async function(memberId) {
     member.assignedTo = null;
   }
   
-  member.status = "dismissed";
-  player.gang.members--;
+  // Actually remove from the array (setting status alone leaves ghost data)
+  player.gang.gangMembers = player.gang.gangMembers.filter(m => m.id !== memberId);
+  player.gang.members = player.gang.gangMembers.length;
   
+  if (typeof recalculateGangPower === 'function') recalculateGangPower();
   GameLogging.logEvent(`${member.name} has been dismissed from your gang.`);
   showGangManagementScreen();
   updateUI();
@@ -3231,7 +3233,7 @@ async function upgradeBusiness(businessIndex) {
     };
     if (perkMessages[business.type]) {
       logAction(perkMessages[business.type]);
-      alert(perkMessages[business.type]);
+      showBriefNotification(perkMessages[business.type], 'success');
     }
   }
   
@@ -3572,7 +3574,7 @@ async function repayLoan(loanIndex) {
     // Offer partial repayment
     const partialAmount = Math.min(player.money, loan.amountOwed);
     if (partialAmount <= 0) {
-      alert("You don't have any money to put towards this loan!");
+      showBriefNotification("You don't have any money to put towards this loan!", 'danger');
       return;
     }
     const partialConfirm = await ui.confirm(`You don't have enough to pay the full $${loan.amountOwed.toLocaleString()}.\n\nPay $${partialAmount.toLocaleString()} (all your cash) to reduce the debt?\n\nRemaining after payment: $${(loan.amountOwed - partialAmount).toLocaleString()}`);
@@ -3593,7 +3595,7 @@ async function repayLoan(loanIndex) {
   player.activeLoans.splice(loanIndex, 1);
   player.reputation += 2;
   
-  alert(`Loan repaid! You paid $${loan.amountOwed.toLocaleString()} to clear your debt. Your reputation with the underworld improves.`);
+  showBriefNotification(`Loan repaid! You paid $${loan.amountOwed.toLocaleString()} to clear your debt. Your reputation with the underworld improves.`, 'success');
   logAction(` You slide the money back to Tony with interest. He nods approvingly - you're good for your word. Reputation intact, debt cleared (-$${loan.amountOwed.toLocaleString()}).`);
   
   updateUI();
@@ -3603,7 +3605,7 @@ async function repayLoan(loanIndex) {
 // Money Laundering Functions
 function showMoneyLaundering() {
   if (player.inJail) {
-    alert("You can't launder money while you're in jail!");
+    showBriefNotification("You can't launder money while you're in jail!", 'danger');
     return;
   }
   
@@ -4002,7 +4004,7 @@ function showToast(message, type = 'info') {
 // Enhanced Gang Screen with Specialist Management
 function showGang() {
   if (player.inJail) {
-    alert("You can't manage your gang while you're in jail!");
+    showBriefNotification("You can't manage your gang while you're in jail!", 'danger');
     return;
   }
   
@@ -4413,7 +4415,7 @@ function startGangOperation(operationId) {
   const selectedMemberName = memberSelect.value;
   
   if (!selectedMemberName) {
-    alert('Please select a gang member for this operation.');
+    showBriefNotification('Please select a gang member for this operation.', 'success');
     return;
   }
   
@@ -4422,7 +4424,7 @@ function startGangOperation(operationId) {
   
   // Check member loyalty
   if (member.loyalty < 20) {
-    alert(`${member.name} is too disloyal to be trusted with this operation!`);
+    showBriefNotification(`${member.name} is too disloyal to be trusted with this operation!`, 'danger');
     return;
   }
   
@@ -4443,7 +4445,7 @@ function startGangOperation(operationId) {
     completeGangOperation(operationData);
   }, operationData.duration);
   
-  alert(`${member.name} has started the ${operation.name} operation. It will complete in ${operation.duration} hours.`);
+  showBriefNotification(`${member.name} has started the ${operation.name} operation. It will complete in ${operation.duration} hours.`, 'success');
   logAction(`${member.name} heads out on a ${operation.name} mission. The crew is earning their keep while you handle bigger things.`);
   
   updateUI();
@@ -4507,7 +4509,7 @@ function completeGangOperation(operationData) {
   player.gang.activeOperations = player.gang.activeOperations.filter(op => op !== operationData);
   
   const moneyTag = (operation.rewards && operation.rewards.cleanMoney) ? '' : ' (dirty)';
-  alert(`${member.name} successfully completed the ${operation.name}! Earned $${moneyEarned.toLocaleString()}${moneyTag}.`);
+  showBriefNotification(`${member.name} successfully completed the ${operation.name}! Earned $${moneyEarned.toLocaleString()}${moneyTag}.`, 'success');
   logAction(`${member.name} returns from the ${operation.name} with pockets full and loyalty stronger. Your crew delivers results (+$${moneyEarned.toLocaleString()}${moneyTag}).`);
   if (typeof showBriefNotification === 'function') {
     showBriefNotification(`${member.name} completed ${operation.name}: +$${moneyEarned.toLocaleString()}${moneyTag}`, 2000);
@@ -4527,7 +4529,7 @@ function handleOperationBetrayal(member, operation) {
   player.gang.gangMembers = player.gang.gangMembers.filter(m => m.name !== member.name);
   player.gang.members = Math.max(0, player.gang.members - 1);
   
-  alert(`${member.name} betrayed the operation! They disappeared with $${moneyLoss.toLocaleString()} and tipped off the authorities.`);
+  showBriefNotification(`${member.name} betrayed the operation! They disappeared with $${moneyLoss.toLocaleString()} and tipped off the authorities.`, 'danger');
   logAction(`Betrayal! ${member.name} turns their back on the family, vanishing with your money and leaving a trail for the cops to follow. Trust is a luxury you can't afford (-$${moneyLoss.toLocaleString()}, +5 wanted level).`);
   
   updateUI();
@@ -4541,7 +4543,7 @@ function handleOperationArrest(member, operation) {
   member.loyalty = Math.max(0, member.loyalty - 15);
   player.wantedLevel += 3;
   
-  alert(`${member.name} was arrested during the ${operation.name}! They'll be in custody for a while.`);
+  showBriefNotification(`${member.name} was arrested during the ${operation.name}! They'll be in custody for a while.`, 'danger');
   logAction(`The operation goes sideways! ${member.name} gets pinched by the law and hauled away in handcuffs. The heat is rising and loyalty takes a hit.`);
   
   updateUI();
@@ -4674,7 +4676,7 @@ function completeTraining(trainingData) {
   // Remove from training queue
   player.gang.trainingQueue = player.gang.trainingQueue.filter(t => t !== trainingData);
   
-  alert(`${member.name} has completed their training program! Their skills have improved.`);
+  showBriefNotification(`${member.name} has completed their training program! Their skills have improved.`, 'success');
   logAction(`${member.name} graduates from training with new skills and renewed dedication. Your investment in education pays off in capability and loyalty.`);
   
   updateUI();
@@ -4689,7 +4691,7 @@ function enrollInTraining(programId) {
   const selectedMemberName = memberSelect.value;
   
   if (!selectedMemberName) {
-    alert('Please select a gang member for this training program.');
+    showBriefNotification('Please select a gang member for this training program.', 'success');
     return;
   }
   
@@ -4697,7 +4699,7 @@ function enrollInTraining(programId) {
   if (!member) return;
   
   if (player.money < program.cost) {
-    alert(`Insufficient funds! Need $${program.cost} for this training program.`);
+    showBriefNotification(`Insufficient funds! Need $${program.cost} for this training program.`, 'danger');
     return;
   }
   
@@ -4718,7 +4720,7 @@ function enrollInTraining(programId) {
     completeTraining(trainingData);
   }, trainingData.duration);
   
-  alert(`${member.name} has enrolled in ${program.name}. Training will complete in ${program.duration} hours.`);
+  showBriefNotification(`${member.name} has enrolled in ${program.name}. Training will complete in ${program.duration} hours.`, 'success');
   logAction(`${member.name} begins intensive training in ${program.name}. Skilled soldiers make for a stronger organization (-$${program.cost}).`);
   
   updateUI();
@@ -4885,7 +4887,7 @@ function triggerBetrayalEvent(event) {
   });
   
   // Show alert
-  alert(`BETRAYAL! ${event.name}: ${event.description}`);
+  showBriefNotification(`BETRAYAL! ${event.name}: ${event.description}`, 'danger');
   logAction(`BETRAYAL! ${event.description} Your organization suffers from internal treachery. Trust is a luxury in this business.`);
   
   updateUI();
@@ -6143,7 +6145,7 @@ function generateRelocateHTML() {
   const onCooldown = now < cooldownEnd;
   const cooldownRemaining = onCooldown ? Math.ceil((cooldownEnd - now) / 60000) : 0;
   const tState = (typeof onlineWorldState !== 'undefined' && onlineWorldState.territories) || {};
-  const gangSize = (player.gang && (player.gang.members || (player.gang.gangMembers && player.gang.gangMembers.length))) || 0;
+  const gangSize = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.length : 0;
   const isOnline = typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected;
   const myName = (typeof onlineWorldState !== 'undefined' && onlineWorldState.username) || '';
 
@@ -6378,7 +6380,7 @@ function collectProtection(racketId) {
   const weeksElapsed = Math.floor(timeSinceLastCollection / (7 * 24 * 60 * 60 * 1000));
   
   if (weeksElapsed < 1) {
-    alert("You already collected from this business recently. Give them time to make money first.");
+    showBriefNotification("You already collected from this business recently. Give them time to make money first.", 'warning');
     return;
   }
   
@@ -6389,7 +6391,7 @@ function collectProtection(racketId) {
   // Maintain fear level
   racket.fearLevel = Math.min(10, racket.fearLevel + 0.5);
   
-  alert(`Collected $${totalPayment.toLocaleString()} from ${business.name} (${weeksElapsed} week${weeksElapsed > 1 ? 's' : ''})`);
+  showBriefNotification(`Collected $${totalPayment.toLocaleString()} from ${business.name} (${weeksElapsed} week${weeksElapsed > 1 ? 's' : ''})`, 'success');
   logAction(`${business.name} pays their tribute without question. Fear keeps the money flowing like clockwork.`);
   
   updateUI();
@@ -6408,19 +6410,19 @@ function pressureBusiness(racketId) {
     racket.weeklyPayment = Math.min(business.maxExtortion, racket.weeklyPayment + increase);
     racket.fearLevel = Math.min(10, racket.fearLevel + 1);
     
-    alert(`${business.name} agrees to pay more! Weekly payment increased by $${increase.toLocaleString()}.`);
+    showBriefNotification(`${business.name} agrees to pay more! Weekly payment increased by $${increase.toLocaleString()}.`, 'success');
     logAction(`Applied pressure to ${business.name}. A reminder of consequences speaks louder than words.`);
   } else {
     // Pressure backfires
     if (Math.random() < 0.4) {
       // Business calls police
       player.wantedLevel += Math.floor(Math.random() * 20) + 10;
-      alert(`Your pressure tactics backfired! ${business.name} called the police.`);
+      showBriefNotification(`Your pressure tactics backfired! ${business.name} called the police.`, 'danger');
       logAction(`${business.name} cracked under pressure and called the cops. Sometimes intimidation cuts both ways.`);
     } else {
       // Business closes down
       player.protectionRackets = player.protectionRackets.filter(r => r.id !== racketId);
-      alert(`You pushed too hard! ${business.name} closed down and left the area.`);
+      showBriefNotification(`You pushed too hard! ${business.name} closed down and left the area.`, 'danger');
       logAction(`${business.name} shuttered their doors permanently. You killed the golden goose.`);
     }
   }
@@ -7488,7 +7490,7 @@ function buyEnergyDrink() {
     }
     const MAX_ENERGY_DRINKS_PER_DAY = 5;
     if ((player.dailyCounters.energyDrinksUsed || 0) >= MAX_ENERGY_DRINKS_PER_DAY) {
-      alert(`You've reached today's limit for Energy Drinks (${MAX_ENERGY_DRINKS_PER_DAY}). Try coffee or rest up.`);
+      showBriefNotification(`You've reached today's limit for Energy Drinks (${MAX_ENERGY_DRINKS_PER_DAY}). Try coffee or rest up.`, 'warning');
       return;
     }
 
@@ -7500,7 +7502,7 @@ function buyEnergyDrink() {
     const energyGained = player.energy - energyBefore;
     player.dailyCounters.energyDrinksUsed = (player.dailyCounters.energyDrinksUsed || 0) + 1;
     
-    alert(`Bought Energy Drink! Restored ${energyGained} energy but ${getRandomNarration('healthLoss')}\n\nNew Energy: ${player.energy}/${player.maxEnergy}`);
+    showBriefNotification(`Bought Energy Drink! Restored ${energyGained} energy but ${getRandomNarration('healthLoss')}\n\nNew Energy: ${player.energy}/${player.maxEnergy}`, 'success');
     logAction(`${getRandomNarration('healthLoss')} The chemical rush comes with a price, but the energy boost might be worth it.`);
     logAction("¤ You chug down the energy drink. The caffeine hits your bloodstream like liquid lightning, but your body pays the price (+30 energy, -1 health).");
     
@@ -7509,7 +7511,7 @@ function buyEnergyDrink() {
     }
     updateUI(); // This will now refresh the jobs screen if it's visible
   } else {
-    alert("You don't have enough money!");
+    showBriefNotification("You don't have enough money!", 'danger');
   }
 }
 
@@ -7522,18 +7524,18 @@ function buyCoffee() {
     
     const energyGained = player.energy - energyBefore;
     
-    alert(`Bought Strong Coffee! Restored ${energyGained} energy.\n\nNew Energy: ${player.energy}/${player.maxEnergy}`);
+    showBriefNotification(`Bought Strong Coffee! Restored ${energyGained} energy.\n\nNew Energy: ${player.energy}/${player.maxEnergy}`, 'success');
     logAction("Hot coffee burns your throat as you down it in one gulp. The warmth spreads through your chest, pushing back the exhaustion (+15 energy).");
     updateUI(); // This will now refresh the jobs screen if it's visible
   } else {
-    alert("You don't have enough money!");
+    showBriefNotification("You don't have enough money!", 'danger');
   }
 }
 
 function buySteroids() {
   const steroid = storeItems.find(item => item.name === "Steroids");
   if (!steroid) {
-    alert("Steroids are not available right now.");
+    showBriefNotification("Steroids are not available right now.", 'danger');
     return;
   }
 
@@ -7546,8 +7548,7 @@ function buySteroids() {
     player.suspicionLevel = Math.min(100, player.suspicionLevel + 5);
 
     const energyGained = player.energy - energyBefore;
-    alert(`Bought Steroids! Restored ${energyGained} energy but it's risky.
-\nNew Energy: ${player.energy}/${player.maxEnergy}`);
+    showBriefNotification(`Bought Steroids! +${energyGained} energy (risky). Energy: ${player.energy}/${player.maxEnergy}`, 'warning');
     logAction(`Steroids used for a quick boost. ${getRandomNarration('healthLoss')}`);
 
     if (player.health <= 0) {
@@ -7555,7 +7556,7 @@ function buySteroids() {
     }
     updateUI();
   } else {
-    alert("You don't have enough money!");
+    showBriefNotification("You don't have enough money!", 'danger');
   }
 }
 
@@ -7658,7 +7659,7 @@ function hideAllScreens() {
 // Function to show jobs
 function showJobs() {
   if (player.inJail) {
-    alert("You can't work while you're in jail!");
+    showBriefNotification("You can't work while you're in jail!", 'danger');
     return;
   }
 
@@ -7928,7 +7929,7 @@ function hasUtilityItem(name) {
 // Function to start a job
 async function startJob(index) {
   if (player.inJail) {
-    alert("You can't work while you're in jail!");
+    showBriefNotification("You can't work while you're in jail!", 'danger');
     return;
   }
 
@@ -7952,19 +7953,19 @@ async function startJob(index) {
 
   // Check if the player has enough energy
   if (player.energy < actualEnergyCost) {
-    alert(`You don't have enough energy to do this job! You need ${actualEnergyCost} energy but only have ${player.energy}. Wait for energy to regenerate or buy an energy drink.`);
+    showBriefNotification(`You don't have enough energy to do this job! You need ${actualEnergyCost} energy but only have ${player.energy}. Wait for energy to regenerate or buy an energy drink.`, 'danger');
     return;
   }
 
   // Check if the player has required items
   if (!hasRequiredItems(job.requiredItems)) {
-    alert(`You need the following items to perform this job: ${job.requiredItems.join(", ")}`);
+    showBriefNotification(`You need the following items to perform this job: ${job.requiredItems.join(", ")}`, 'danger');
     return;
   }
 
   // Check reputation requirement
   if (player.reputation < job.reputation) {
-    alert(`You need ${job.reputation} reputation to perform this job. You currently have ${Math.floor(player.reputation)}.`);
+    showBriefNotification(`You need ${job.reputation} reputation to perform this job. You currently have ${Math.floor(player.reputation)}.`, 'danger');
     return;
   }
 
@@ -8134,7 +8135,7 @@ async function startJob(index) {
       return;
     }
     
-    alert(`${getRandomNarration('jobFailure')} You lost ${actualEnergyCost} energy.`);
+    showBriefNotification(`${getRandomNarration('jobFailure')} You lost ${actualEnergyCost} energy.`, 'danger');
     logAction(getRandomNarration('jobFailure'));
     // Still gain some experience for trying
     gainExperience(2);
@@ -8332,7 +8333,7 @@ async function startJob(index) {
     let healthLoss = Math.floor(Math.random() * maxHealthLoss) + 1;
     player.health -= healthLoss;
     flashHurtScreen();
-    alert(`${getRandomNarration('healthLoss')} You have ${player.health} health left.`, true);
+    showBriefNotification(`${getRandomNarration('healthLoss')} You have ${player.health} health left.`, true, 'success');
     logAction(`${getRandomNarration('healthLoss')} (-${healthLoss} health).`);
   }
 
@@ -8364,7 +8365,7 @@ async function startJob(index) {
   if (!carCatastrophe) { // Only show success message if car didn't explode/break down
     const moneyType = job.paysDirty ? ' (dirty money — must be laundered!)' : '';
     flashSuccessScreen();
-    alert(`You completed the job as a ${job.name} (${job.risk} risk) and earned $${earnings.toLocaleString()}${moneyType}!`);
+    showBriefNotification(`You completed the job as a ${job.name} (${job.risk} risk) and earned $${earnings.toLocaleString()}${moneyType}!`, 'success');
     logAction(`${getRandomNarration('jobSuccess')} (+$${earnings.toLocaleString()}${moneyType}).`);
   }
 
@@ -8395,7 +8396,7 @@ function handleCarTheft(job, actualEnergyCost) {
   // Check if player actually finds a car to steal (15% base chance — very hard)
   let findCarChance = 15 + (player.skills.luck * 2); // Luck skill helps find cars
   if (Math.random() * 100 > findCarChance) {
-    alert(`${getRandomNarration('carTheftFailure')} Lost ${actualEnergyCost} energy.`);
+    showBriefNotification(`${getRandomNarration('carTheftFailure')} Lost ${actualEnergyCost} energy.`, 'danger');
     logAction(`${getRandomNarration('carTheftFailure')} The streets can be unforgiving to those seeking easy rides.`);
     player.wantedLevel += 1; // Small wanted level increase for suspicious activity
     gainExperience(2);
@@ -8492,7 +8493,7 @@ function handleCarTheft(job, actualEnergyCost) {
 function handleLaunderMoneyJob(job, approachLabel) {
   // Check if player actually has dirty money to launder
   if (!player.dirtyMoney || player.dirtyMoney <= 0) {
-    alert("You don't have any dirty money to launder! Earn dirty money from Bank Jobs or Counterfeiting first.");
+    showBriefNotification("You don't have any dirty money to launder! Earn dirty money from Bank Jobs or Counterfeiting first.", 'danger');
     return;
   }
 
@@ -8640,7 +8641,7 @@ function handleLaunderMoneyJob(job, approachLabel) {
 
   const ratePercent = Math.round(conversionRate * 100);
   flashSuccessScreen();
-  alert(`Laundering successful! Cleaned $${cleanAmount.toLocaleString()} from $${amountToLaunder.toLocaleString()} dirty money (${ratePercent}% rate, $${fee.toLocaleString()} in fees).`);
+  showBriefNotification(`Laundering successful! Cleaned $${cleanAmount.toLocaleString()} from $${amountToLaunder.toLocaleString()} dirty money (${ratePercent}% rate, $${fee.toLocaleString()} in fees).`, 'success');
   logAction(`The dirty bills flow through shell companies and emerge squeaky clean. $${amountToLaunder.toLocaleString()} dirty ←’ $${cleanAmount.toLocaleString()} clean (${ratePercent}% rate). The laundering fee of $${fee.toLocaleString()} vanishes into the ether.`);
 
   // Refresh jobs UI if visible
@@ -8953,13 +8954,13 @@ function useCar(index, purpose) {
     let car = player.stolenCars[index];
     
     if (car.damagePercentage >= 90) {
-      alert("This car is too damaged to use safely!");
+      showBriefNotification("This car is too damaged to use safely!", 'success');
       return;
     }
     
     if (purpose === 'job') {
       player.selectedCar = index;
-      alert(`Selected ${car.name} (${car.damagePercentage}% damaged) for your next job. It will provide bonuses but may take damage.`);
+      showBriefNotification(`Selected ${car.name} (${car.damagePercentage}% damaged) for your next job. It will provide bonuses but may take damage.`, 'success');
       logAction(`You pat the hood of your ${car.name} with a grin. This beauty will be your ride for the next job. Time to put it to work.`);
       showStolenCars(); // Refresh the display
     }
@@ -8985,16 +8986,16 @@ function damageCar(carIndex, damageAmount) {
     
     if (catastrophe < 0.4) { // 40% chance - explosion
       player.health -= 30;
-      alert(`Your car exploded! ${getRandomNarration('healthLoss')} The vehicle is destroyed!`, true);
+      showBriefNotification(`Your car exploded! ${getRandomNarration('healthLoss')} The vehicle is destroyed!`, true, 'success');
       logAction(`${getRandomNarration('healthLoss')} Sometimes taking risks with damaged equipment backfires spectacularly.`);
       logAction(`BOOM! The car erupts in flames! You dive clear as metal and glass rain down around you. The explosion echoes through the streets (-30 health).`);
       flashHurtScreen();
     } else if (catastrophe < 0.7) { // 30% chance - breakdown and caught
       sendToJail(5);
-      alert("Your car broke down and you were caught by police!");
+      showBriefNotification("Your car broke down and you were caught by police!", 'success');
       logAction("The engine dies with a pathetic wheeze. Steam rises from the hood as cop cars surround you. Should've maintained your ride better!");
     } else { // 30% chance - just destroyed
-      alert("Your car finally gave out and is completely destroyed.");
+      showBriefNotification("Your car finally gave out and is completely destroyed.", 'success');
       logAction("The car finally gives up the ghost. Metal grinds against metal as it dies. You walk away from the smoking wreck - time to find new wheels.");
     }
     
@@ -9028,20 +9029,6 @@ function flashSuccessScreen() {
   setTimeout(() => {
     flash.style.display = "none";
   }, 500);
-}
-
-// Override the alert function to support red alerts
-function alert(message, isRed = false) {
-  const alertBox = document.createElement("div");
-  alertBox.className = "alert-box";
-  if (isRed) {
-    alertBox.classList.add("red-alert");
-  }
-  alertBox.innerText = message;
-  document.body.appendChild(alertBox);
-  setTimeout(() => {
-    document.body.removeChild(alertBox);
-  }, 3000);
 }
 
 // Function to send player to jail
@@ -9121,7 +9108,7 @@ function bribeGuard() {
 // Jail breakout attempt
 function attemptBreakout() {
   if (player.breakoutAttempts <= 0) {
-    alert("You have no breakout attempts left!");
+    showBriefNotification("You have no breakout attempts left!", 'danger');
     return;
   }
 
@@ -9150,7 +9137,7 @@ function attemptBreakout() {
     updateStatistic('timesEscaped', 1);
     
     updateUI();
-    alert(`${getRandomNarration('jailBreakouts')}`);
+    showBriefNotification(`${getRandomNarration('jailBreakouts')}`, 'success');
     logAction(getRandomNarration('jailBreakouts'));
     
     // Check for jail break achievement
@@ -9162,7 +9149,7 @@ function attemptBreakout() {
   } else {
     player.jailTime += 10; // Add 10 seconds to jail time on failed breakout attempt
     updateUI();
-    alert(`${getRandomNarration('jailBreakoutFailure')} Additional time has been added to your sentence.`);
+    showBriefNotification(`${getRandomNarration('jailBreakoutFailure')} Additional time has been added to your sentence.`, 'danger');
     logAction("The guard's flashlight catches you red-handed! Alarms blare as they drag you back to your cell. Some lessons are learned the hard way.");
     
     showJailScreen(); // Update the breakout button text
@@ -9172,7 +9159,7 @@ function attemptBreakout() {
 // Function to show skill system
 function showSkills() {
   if (player.inJail) {
-    alert("You can't access skills while you're in jail!");
+    showBriefNotification("You can't access skills while you're in jail!", 'danger');
     return;
   }
 
@@ -9823,13 +9810,13 @@ function startMentoring(mentorId) {
   
   const cost = 100 + (mentor.sessionsCompleted * 25);
   if (player.money < cost) {
-    alert("You don't have enough money for this training session!");
+    showBriefNotification("You don't have enough money for this training session!", 'danger');
     return;
   }
   
   const isAvailable = !mentor.lastSession || (Date.now() - mentor.lastSession) > 24 * 60 * 60 * 1000;
   if (!isAvailable) {
-    alert("This mentor needs time to prepare the next lesson. Come back in 24 hours.");
+    showBriefNotification("This mentor needs time to prepare the next lesson. Come back in 24 hours.", 'success');
     return;
   }
   
@@ -10033,7 +10020,7 @@ function upgradeSkill(skillName) {
       window.upgradingSkill = false;
     }, 1000);
   } else {
-    alert(`You need ${cost} skill point${cost > 1 ? 's' : ''} to upgrade this skill!`);
+    showBriefNotification(`You need ${cost} skill point${cost > 1 ? 's' : ''} to upgrade this skill!`, 'danger');
   }
 }
 
@@ -10043,7 +10030,7 @@ function upgradeSkill(skillName) {
 // Gang management functions
 function collectTribute() {
   if (!player.gang.gangMembers || player.gang.gangMembers.length === 0) {
-    alert("You need gang members to collect tribute!");
+    showBriefNotification("You need gang members to collect tribute!", 'danger');
     return;
   }
   
@@ -10056,7 +10043,7 @@ function collectTribute() {
     const timeRemaining = tributeCooldown - timeSinceLastTribute;
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
-    alert(`You must wait ${minutes}:${seconds.toString().padStart(2, '0')} before collecting tribute again.`);
+    showBriefNotification(`You must wait ${minutes}:${seconds.toString().padStart(2, '0')} before collecting tribute again.`, 'warning');
     return;
   }
   
@@ -10178,7 +10165,7 @@ function gangWar() {
   const actualGangSize = player.gang.gangMembers ? player.gang.gangMembers.length : player.gang.members;
   
   if (actualGangSize < 10) {
-    alert("You need at least 10 gang members to start a gang war!");
+    showBriefNotification("You need at least 10 gang members to start a gang war!", 'danger');
     return;
   }
   
@@ -10485,7 +10472,7 @@ function updatePrisonerList() {
 function breakoutPrisoner(prisonerIndex) {
   // Prevent breaking out others while player is in jail
   if (player.inJail) {
-    alert("You can't help other prisoners while you're locked up yourself!");
+    showBriefNotification("You can't help other prisoners while you're locked up yourself!", 'danger');
     return;
   }
   
@@ -10502,7 +10489,7 @@ function breakoutPrisoner(prisonerIndex) {
     // Check for level up
     checkLevelUp();
     
-    alert(`${getRandomNarration('prisonerBreakoutSuccess')} You helped ${prisoner.name} escape! Gained ${expReward} XP.`);
+    showBriefNotification(`${getRandomNarration('prisonerBreakoutSuccess')} You helped ${prisoner.name} escape! Gained ${expReward} XP.`, 'success');
     logAction(` You slip ${prisoner.name} the keys and watch them disappear into the night. Honor among thieves - your reputation on the streets grows (+${expReward} XP).`);
     
     // Remove prisoner from list
@@ -10514,7 +10501,7 @@ function breakoutPrisoner(prisonerIndex) {
     // Failed breakout - chance of getting caught
     const caughtChance = 40 - (player.skills.stealth * 3);
     if (Math.random() * 100 < caughtChance) {
-      alert(`${getRandomNarration('prisonerBreakoutFailure')} You've been caught and sent to jail!`);
+      showBriefNotification(`${getRandomNarration('prisonerBreakoutFailure')} You've been caught and sent to jail!`, 'danger');
       logAction(`Busted! The guards catch you red-handed helping ${prisoner.name}. They're dragging you to a cell of your own.`);
       
       // Send player to jail properly
@@ -10530,7 +10517,7 @@ function breakoutPrisoner(prisonerIndex) {
       
       return; // Exit early since player is now in jail
     } else {
-      alert(`${getRandomNarration('prisonerBreakoutFailure')} But you weren't caught.`);
+      showBriefNotification(`${getRandomNarration('prisonerBreakoutFailure')} But you weren't caught.`, 'danger');
       logAction(`” The plan falls apart. ${prisoner.name} stays locked up, but at least you kept your head down. Sometimes discretion is the better part of valor.`);
     }
     updateUI();
@@ -10957,7 +10944,7 @@ function checkSuspicionConsequences() {
         
         const lossMsg = dirtyLoss > 0 ? ` They seize $${dirtyLoss.toLocaleString()} in suspicious cash.` : '';
         logAction(`POLICE RAID! Officers descend on your ${raidedBusiness.name} with a search warrant.${lossMsg} Business income reset while they investigate.`);
-        alert(`POLICE RAID!\n\nYour ${raidedBusiness.name} was raided by law enforcement!\n${dirtyLoss > 0 ? `$${dirtyLoss.toLocaleString()} in dirty money seized.\n` : ''}Business income timer has been reset.\n\nYour suspicion level is too high — lay low!`);
+        showBriefNotification(`POLICE RAID!\n\nYour ${raidedBusiness.name} was raided by law enforcement!\n${dirtyLoss > 0 ? `$${dirtyLoss.toLocaleString()} in dirty money seized.\n` : ''}Business income timer has been reset.\n\nYour suspicion level is too high — lay low!`, 'success');
       } else {
         // No businesses to raid — just seize some dirty money
         const dirtyLoss = Math.floor((player.dirtyMoney || 0) * (0.10 + Math.random() * 0.15)); // 10-25%
@@ -10988,7 +10975,7 @@ function checkSuspicionConsequences() {
         player.businesses.splice(targetIndex, 1);
         
         logAction(`ASSET SEIZURE! The government seizes your ${businessName} under RICO statutes! You recover $${refund.toLocaleString()} through your lawyer.`);
-        alert(`ASSET SEIZURE!\n\nThe federal government has seized your ${businessName}!\n\nYour lawyer negotiates a partial recovery of $${refund.toLocaleString()}.\n\nSuspicion at ${suspicion}% — the feds are closing in!`);
+        showBriefNotification(`ASSET SEIZURE!\n\nThe federal government has seized your ${businessName}!\n\nYour lawyer negotiates a partial recovery of $${refund.toLocaleString()}.\n\nSuspicion at ${suspicion}% — the feds are closing in!`, 'success');
         
       } else if (severity < 0.7) {
         // Major dirty money seizure (25-40%)
@@ -10998,14 +10985,14 @@ function checkSuspicionConsequences() {
           player.dirtyMoney = Math.max(0, (player.dirtyMoney || 0) - seized);
           player.wantedLevel += 8;
           logAction(`Federal agents freeze your accounts and seize $${seized.toLocaleString()} in dirty money! Your lawyer is working overtime.`);
-          alert(`ACCOUNT FREEZE!\n\n$${seized.toLocaleString()} in dirty money has been seized by federal agents!\n\nWanted level increased significantly.`);
+          showBriefNotification(`ACCOUNT FREEZE!\n\n$${seized.toLocaleString()} in dirty money has been seized by federal agents!\n\nWanted level increased significantly.`, 'success');
         }
       } else {
         // Forced arrest — go directly to jail
         player.wantedLevel += 10;
         const suspicionJailTime = 15 + Math.floor(suspicion / 5); // 15-35 seconds
         logAction(`FBI ARREST! A tactical team ambushes you — there's no escape. You're taken into federal custody.`);
-        alert(`FBI ARREST!\n\nA federal tactical team takes you down!\nYou're being held on suspicion of racketeering.\n\nJail time: ${suspicionJailTime} seconds`);
+        showBriefNotification(`FBI ARREST!\n\nA federal tactical team takes you down!\nYou're being held on suspicion of racketeering.\n\nJail time: ${suspicionJailTime} seconds`, 'success');
         sendToJail(10);
       }
       
@@ -11022,7 +11009,7 @@ function checkSuspicionConsequences() {
     player.wantedLevel += 20;
     
     logAction(`FULL FEDERAL CRACKDOWN! The FBI, DEA, and local police coordinate a massive operation against your empire. All $${allDirty.toLocaleString()} in dirty money is seized as evidence!`);
-    alert(`FULL FEDERAL CRACKDOWN! \n\nYour suspicion hit 100% — the feds bring the hammer down!\n\nAll dirty money ($${allDirty.toLocaleString()}) SEIZED!\nWanted level massively increased!\n\nYou're going away for a long time...`);
+    showBriefNotification(`FULL FEDERAL CRACKDOWN! \n\nYour suspicion hit 100% — the feds bring the hammer down!\n\nAll dirty money ($${allDirty.toLocaleString()}) SEIZED!\nWanted level massively increased!\n\nYou're going away for a long time...`, 'success');
     
     // Reduce suspicion significantly after the crackdown
     player.suspicionLevel = 30; // Reset to moderate, they'll still be watching
@@ -11323,7 +11310,7 @@ function executeFBIRaid() {
   
   const businessMsg = lostBusinessName !== 'none' ? `\n${lostBusinessName} SEIZED by the feds!` : '';
   logAction(`FBI RAID! Tactical teams swarm your operations! $${dirtySeized.toLocaleString()} dirty money confiscated, $${cleanSeized.toLocaleString()} in assets frozen.${businessMsg}`);
-  alert(`FBI RAID! \n\nThe feds bring the full weight of the law!\n\nDirty money seized: $${dirtySeized.toLocaleString()}\nAssets frozen: $${cleanSeized.toLocaleString()}${businessMsg}\n\nYou're going to federal prison...`);
+  showBriefNotification(`FBI RAID! \n\nThe feds bring the full weight of the law!\n\nDirty money seized: $${dirtySeized.toLocaleString()}\nAssets frozen: $${cleanSeized.toLocaleString()}${businessMsg}\n\nYou're going to federal prison...`, 'danger');
   
   sendToJail(25);
   updateUI();
@@ -11596,7 +11583,7 @@ function showEventAlert(event) {
     return `${effect}: ${sign}${(value * 100).toFixed(0)}%`;
   }).join('\n');
   
-  alert(`${event.icon} ${event.name}\n\n${event.description}\n\nEffects:\n${effects}\n\nDuration: ${Math.ceil(event.effects.duration / (24 * 60 * 60 * 1000))} days`);
+  showBriefNotification(`${event.icon} ${event.name}\n\n${event.description}\n\nEffects:\n${effects}\n\nDuration: ${Math.ceil(event.effects.duration / (24 * 60 * 60 * 1000))} days`, 'success');
 }
 
 function showNewsAlert(event) {
@@ -11606,7 +11593,7 @@ function showNewsAlert(event) {
     return `${effect}: ${sign}${(value * 100).toFixed(0)}%`;
   }).join('\n');
   
-  alert(`${event.icon} BREAKING NEWS: ${event.name}\n\n${event.description}\n\nEffects:\n${effects}\n\nDuration: ${Math.ceil(event.effects.duration / (24 * 60 * 60 * 1000))} days`);
+  showBriefNotification(`${event.icon} BREAKING NEWS: ${event.name}\n\n${event.description}\n\nEffects:\n${effects}\n\nDuration: ${Math.ceil(event.effects.duration / (24 * 60 * 60 * 1000))} days`, 'success');
 }
 
 function showCrackdownAlert(event) {
@@ -11616,7 +11603,7 @@ function showCrackdownAlert(event) {
     return `${effect}: ${sign}${(value * 100).toFixed(0)}%`;
   }).join('\n');
   
-  alert(`POLICE CRACKDOWN: ${event.name}\n\n${event.description}\n\nEffects:\n${effects}\n\nDuration: ${Math.ceil(event.effects.duration / (24 * 60 * 60 * 1000))} days`);
+  showBriefNotification(`POLICE CRACKDOWN: ${event.name}\n\n${event.description}\n\nEffects:\n${effects}\n\nDuration: ${Math.ceil(event.effects.duration / (24 * 60 * 60 * 1000))} days`, 'success');
 }
 
 // Check if an event is currently active
@@ -12373,7 +12360,7 @@ function buildCharacterShowcaseHTML() {
 function goBackToMainMenu() {
   // Prevent leaving jail when incarcerated
   if (player.inJail) {
-    alert("You can't leave while you're in jail! You must serve your time or attempt a breakout.");
+    showBriefNotification("You can't leave while you're in jail! You must serve your time or attempt a breakout.", 'danger');
     return;
   }
   
@@ -12407,7 +12394,7 @@ function goBackToMainMenu() {
 // Function to show the jailbreak screen
 function showJailbreak() {
   if (player.inJail) {
-    alert("You can't run jailbreak operations while you're locked up yourself!");
+    showBriefNotification("You can't run jailbreak operations while you're locked up yourself!", 'danger');
     return;
   }
 
@@ -12518,7 +12505,7 @@ function attemptJailbreak(prisonerIndex) {
   
   // Check energy
   if (player.energy < prisoner.energyCost) {
-    alert("You don't have enough energy for this jailbreak attempt!");
+    showBriefNotification("You don't have enough energy for this jailbreak attempt!", 'danger');
     return;
   }
   
@@ -12539,7 +12526,7 @@ function attemptJailbreak(prisonerIndex) {
     checkLevelUp();
     
     logAction(`Mission accomplished! You freed ${prisoner.name} from ${prisoner.securityLevel} security. Your reputation on the streets grows (+${prisoner.expReward} XP, +$${prisoner.cashReward}).`);
-    alert(`${getRandomNarration('prisonerBreakoutSuccess')} You helped ${prisoner.name} escape from ${prisoner.securityLevel} security. Gained ${prisoner.expReward} XP and $${prisoner.cashReward}!`);
+    showBriefNotification(`${getRandomNarration('prisonerBreakoutSuccess')} You helped ${prisoner.name} escape from ${prisoner.securityLevel} security. Gained ${prisoner.expReward} XP and $${prisoner.cashReward}!`, 'success');
     
     // Remove prisoner from list
     jailbreakPrisoners.splice(prisonerIndex, 1);
@@ -12551,13 +12538,13 @@ function attemptJailbreak(prisonerIndex) {
     if (Math.random() * 100 < arrestChance) {
       // Got caught - go to jail
       logAction(`Busted during the ${prisoner.name} jailbreak! Guards swarm you as alarms blare. The operation was blown from the start.`);
-      alert(`${getRandomNarration('prisonerBreakoutFailure')} You're being arrested.`);
+      showBriefNotification(`${getRandomNarration('prisonerBreakoutFailure')} You're being arrested.`, 'danger');
       sendToJail(prisoner.difficulty + 2);
       return;
     } else {
       // Failed but escaped
       logAction(`The plan falls apart! You slip away in the chaos as ${prisoner.name} stays locked up. Sometimes you live to fight another day.`);
-      alert(`${getRandomNarration('prisonerBreakoutFailure')} But you managed to escape without being caught.`);
+      showBriefNotification(`${getRandomNarration('prisonerBreakoutFailure')} But you managed to escape without being caught.`, 'danger');
     }
   }
   
@@ -12568,7 +12555,7 @@ function attemptJailbreak(prisonerIndex) {
 // Function to refresh the prisoner list
 function refreshPrisoners() {
   if (player.energy < 5) {
-    alert("You need at least 5 energy to scout for new prisoners!");
+    showBriefNotification("You need at least 5 energy to scout for new prisoners!", 'danger');
     return;
   }
   
@@ -12578,13 +12565,13 @@ function refreshPrisoners() {
   updateUI();
   
   logAction("You spend time casing the local detention facilities. Fresh intelligence reveals new opportunities for liberation.");
-  alert("You've gathered intel on new prisoners. The list has been updated!");
+  showBriefNotification("You've gathered intel on new prisoners. The list has been updated!", 'danger');
 }
 
 // Function to show recruitment screen
 function showRecruitment() {
   if (player.inJail) {
-    alert("You can't recruit gang members while you're in jail!");
+    showBriefNotification("You can't recruit gang members while you're in jail!", 'danger');
     return;
   }
   
@@ -12691,14 +12678,14 @@ function showRecruitment() {
 function recruitMember(index) {
   const recruit = availableRecruits[index];
   if (!recruit) {
-    alert("Recruit not found!");
+    showBriefNotification("Recruit not found!", 'danger');
     return;
   }
 
   // Check gang capacity
   const maxCapacity = calculateMaxGangMembers();
   if (player.gang.gangMembers.length >= maxCapacity) {
-    alert(`You've reached your gang capacity limit of ${maxCapacity} members! Purchase more real estate to house additional gang members.`);
+    showBriefNotification(`You've reached your gang capacity limit of ${maxCapacity} members! Purchase more real estate to house additional gang members.`, 'warning');
     return;
   }
 
@@ -12762,7 +12749,7 @@ function recruitMember(index) {
     updateUI();
     showRecruitment(); // Refresh the screen
   } else {
-    alert(`You need $${recruit.cost.toLocaleString()} to recruit ${recruit.name}, but you only have $${player.money.toLocaleString()}.`);
+    showBriefNotification(`You need $${recruit.cost.toLocaleString()} to recruit ${recruit.name}, but you only have $${player.money.toLocaleString()}.`, 'danger');
   }
 }
 
@@ -12801,7 +12788,7 @@ const storeCategories = [
 
 function showStore() {
   if (player.inJail) {
-    alert("You can't shop while you're in jail!");
+    showBriefNotification("You can't shop while you're in jail!", 'danger');
     return;
   }
 
@@ -13053,7 +13040,7 @@ async function buyItem(index) {
   if (item.requiredVehicle) {
     const hasRequiredVehicle = player.garage && player.garage.some(car => car.name === item.requiredVehicle);
     if (!hasRequiredVehicle) {
-      alert(`You need a ${item.requiredVehicle} to transport this item! Purchase one from the store first.`);
+      showBriefNotification(`You need a ${item.requiredVehicle} to transport this item! Purchase one from the store first.`, 'danger');
       return;
     }
   }
@@ -13081,7 +13068,7 @@ async function buyItem(index) {
     if (equipTypes.includes(item.type)) {
       const alreadyOwned = player.inventory.some(i => i.name === item.name);
       if (alreadyOwned) {
-        alert(`You already own a ${item.name}! You can only carry one of each item.`);
+        showBriefNotification(`You already own a ${item.name}! You can only carry one of each item.`, 'danger');
         return;
       }
     }
@@ -13108,7 +13095,7 @@ async function buyItem(index) {
       if (player.energy >= player.maxEnergy) {
         player.energyRegenTimer = 0;
       }
-      alert(`You consumed ${item.name} and restored ${item.energyRestore} energy! The rush comes with a cost (-1 health).`);
+      showBriefNotification(`You consumed ${item.name} and restored ${item.energyRestore} energy! The rush comes with a cost (-1 health).`, 'success');
       logAction(`You down the ${item.name} in one gulp. The caffeine and chemicals surge through your veins - energy restored but your body pays the price (+${item.energyRestore} energy, -1 health).`);
     } else if (item.type === "utility") {
       // Utility items go to inventory and provide passive bonuses
@@ -13116,7 +13103,7 @@ async function buyItem(index) {
       player.inventory.push(itemCopy);
       // Utility power recalculated (not equipped-based, always active)
       recalculatePower();
-      alert(`You bought a ${item.name} for $${finalPrice.toLocaleString()}.`);
+      showBriefNotification(`You bought a ${item.name} for $${finalPrice.toLocaleString()}.`, 'success');
       logAction(`You acquired a ${item.name} — a useful tool for any serious criminal enterprise.`);
     } else {
       // Deep-copy item so each instance tracks its own durability
@@ -13131,7 +13118,7 @@ async function buyItem(index) {
     }
     
     if (item.type !== "energy" && item.type !== "vehicle" && item.type !== "utility") {
-      alert(`You bought a ${item.name} for $${finalPrice.toLocaleString()}.`);
+      showBriefNotification(`You bought a ${item.name} for $${finalPrice.toLocaleString()}.`, 'success');
       logAction(`’ Deal sealed with a firm handshake. The ${item.name} is yours now - power on the streets costs $${finalPrice.toLocaleString()}, but respect is priceless.`);
     }
     
@@ -13139,7 +13126,7 @@ async function buyItem(index) {
     updateMissionAvailability(); // Check if any missions can now be unlocked
     refreshStoreAfterPurchase(); // Targeted refresh — preserves scroll position
   } else {
-    alert("You don't have enough money to buy this item.");
+    showBriefNotification("You don't have enough money to buy this item.", 'danger');
   }
 }
 
@@ -13507,7 +13494,7 @@ function closeLevelUpOverlay() {
   checkMentorDiscovery();
   
   // Show alert with level up info
-  alert(`Level Up! You are now level ${player.level}. You gained 3 skill points!`);
+  showBriefNotification(`Level Up! You are now level ${player.level}. You gained 3 skill points!`, 'success');
 }
 
 // Function to unlock achievements
@@ -13881,12 +13868,12 @@ function createCharacter() {
   const name = nameInput ? nameInput.value.trim() : '';
   
   if (!name) {
-    alert('Enter your name first.');
+    showBriefNotification('Enter your name first.', 'success');
     return;
   }
   
   if (!selectedPortraitFile) {
-    alert('Select a portrait.');
+    showBriefNotification('Select a portrait.', 'success');
     return;
   }
   
@@ -14301,7 +14288,7 @@ function showTerritoryRelocation() {
 
   // Territory state from server (owner, residents, etc.)
   const tState = (typeof onlineWorldState !== 'undefined' && onlineWorldState.territories) || {};
-  const gangSize = (player.gang && (player.gang.members || (player.gang.gangMembers && player.gang.gangMembers.length))) || 0;
+  const gangSize = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.length : 0;
 
   const cards = DISTRICTS.map((d, idx) => {
     const isCurrent = d.id === player.currentTerritory;
@@ -14419,15 +14406,15 @@ function showTerritoryRelocation() {
   document.getElementById('territory-control-screen').style.display = 'block';
 }
 
-function confirmRelocation(districtId) {
+async function confirmRelocation(districtId) {
   const d = getDistrict(districtId);
   if (!d) return;
 
-  const confirmed = confirm(`Move to ${d.shortName} for $${d.moveCost.toLocaleString()}?\nYou won't be able to move again for 1 hour.`);
+  const confirmed = await ui.confirm(`Move to ${d.shortName} for $${d.moveCost.toLocaleString()}?<br>You won't be able to move again for 1 hour.`);
   if (!confirmed) return;
 
   if (player.money < d.moveCost) {
-    alert('Not enough money to relocate.');
+    showBriefNotification('Not enough money to relocate.', 'danger');
     return;
   }
 
@@ -14446,19 +14433,19 @@ function confirmRelocation(districtId) {
   }
 
   logAction(`${player.name} relocated from ${getDistrict(oldTerritory)?.shortName || 'unknown'} to ${d.shortName} (${d.icon}) for $${d.moveCost.toLocaleString()}.`);
-  alert(`Moved to ${d.shortName}! `);
+  showBriefNotification(`Moved to ${d.shortName}! `, 'success');
   updateUI();
   showTerritoryRelocation(); // Refresh the screen
 }
 
 // ── Phase 2: Territory Claim & War ──────────────────────────────────────────
 
-function claimTerritory(districtId) {
+async function claimTerritory(districtId) {
   const d = getDistrict(districtId);
   if (!d) return;
 
   if (districtId !== player.currentTerritory) {
-    alert('You can only claim ownership of the district you live in.');
+    showBriefNotification('You can only claim ownership of the district you live in.', 'danger');
     return;
   }
 
@@ -14466,15 +14453,15 @@ function claimTerritory(districtId) {
   const cost = CLAIM_COSTS[idx] || 25000;
 
   if (player.level < MIN_CLAIM_LEVEL) {
-    alert(`You must be level ${MIN_CLAIM_LEVEL} or higher to claim a territory.`);
+    showBriefNotification(`You must be level ${MIN_CLAIM_LEVEL} or higher to claim a territory.`, 'danger');
     return;
   }
   if (player.money < cost) {
-    alert(`Not enough money. Claiming ${d.shortName} costs $${cost.toLocaleString()}.`);
+    showBriefNotification(`Not enough money. Claiming ${d.shortName} costs $${cost.toLocaleString()}.`, 'danger');
     return;
   }
 
-  const confirmed = confirm(`Claim ownership of ${d.shortName} for $${cost.toLocaleString()}?\n\nAs owner you will collect 10% tax from all residents' job income.`);
+  const confirmed = await ui.confirm(`Claim ownership of ${d.shortName} for $${cost.toLocaleString()}?<br><br>As owner you will collect 10% tax from all residents' job income.`);
   if (!confirmed) return;
 
   if (typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected && onlineWorldState.socket) {
@@ -14483,26 +14470,26 @@ function claimTerritory(districtId) {
       district: districtId
     }));
   } else {
-    alert('Must be connected to multiplayer to claim territories.');
+    showBriefNotification('Must be connected to multiplayer to claim territories.', 'danger');
   }
 }
 
-function wageWar(districtId) {
+async function wageWar(districtId) {
   const d = getDistrict(districtId);
   if (!d) return;
 
   if (districtId !== player.currentTerritory) {
-    alert('You can only wage war in the district you live in.');
+    showBriefNotification('You can only wage war in the district you live in.', 'danger');
     return;
   }
 
-  const gangSize = (player.gang && (player.gang.members || (player.gang.gangMembers && player.gang.gangMembers.length))) || 0;
+  const gangSize = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.length : 0;
   if (gangSize < MIN_WAR_GANG_SIZE) {
-    alert(`You need at least ${MIN_WAR_GANG_SIZE} gang members to wage territory war. You have ${gangSize}.`);
+    showBriefNotification(`You need at least ${MIN_WAR_GANG_SIZE} gang members to wage territory war. You have ${gangSize}.`, 'danger');
     return;
   }
   if ((player.energy || 0) < WAR_ENERGY_COST) {
-    alert(`Not enough energy. War costs ${WAR_ENERGY_COST} energy. You have ${player.energy || 0}.`);
+    showBriefNotification(`Not enough energy. War costs ${WAR_ENERGY_COST} energy. You have ${player.energy || 0}.`, 'danger');
     return;
   }
 
@@ -14510,7 +14497,7 @@ function wageWar(districtId) {
   const terrData = tState[districtId] || {};
   const ownerName = terrData.owner || 'Unknown';
 
-  const confirmed = confirm(`Wage war against ${ownerName} for control of ${d.shortName}?\n\nThis will cost ${WAR_ENERGY_COST} energy and risks gang casualties.\nYou need ${MIN_WAR_GANG_SIZE}+ gang members (you have ${gangSize}).`);
+  const confirmed = await ui.confirm(`Wage war against ${ownerName} for control of ${d.shortName}?<br><br>This will cost ${WAR_ENERGY_COST} energy and risks gang casualties.<br>You need ${MIN_WAR_GANG_SIZE}+ gang members (you have ${gangSize}).`);
   if (!confirmed) return;
 
   if (typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected && onlineWorldState.socket) {
@@ -14522,7 +14509,7 @@ function wageWar(districtId) {
       gangLoyalty: player.gang ? (player.gang.loyalty || 0) : 0
     }));
   } else {
-    alert('Must be connected to multiplayer to wage territory war.');
+    showBriefNotification('Must be connected to multiplayer to wage territory war.', 'danger');
   }
 }
 
@@ -15073,7 +15060,7 @@ function closeVersionUpdate() {
 // Real Estate Functions
 function showRealEstate() {
   if (player.inJail) {
-    alert("You can't view real estate while you're in jail!");
+    showBriefNotification("You can't view real estate while you're in jail!", 'danger');
     return;
   }
   
@@ -15177,13 +15164,13 @@ function buyProperty(index) {
   
   // Check if already owned
   if (player.realEstate.ownedProperties.some(owned => owned.name === property.name)) {
-    alert("You already own this property!");
+    showBriefNotification("You already own this property!", 'success');
     return;
   }
   
   // Check if can afford
   if (player.money < property.price) {
-    alert("You don't have enough money!");
+    showBriefNotification("You don't have enough money!", 'danger');
     return;
   }
   
@@ -15196,7 +15183,7 @@ function buyProperty(index) {
   updateUI();
   updateRealEstateDisplay();
   
-  alert(`Congratulations! You now own ${property.name}. Your gang capacity has increased by ${property.gangCapacity} members!`);
+  showBriefNotification(`Congratulations! You now own ${property.name}. Your gang capacity has increased by ${property.gangCapacity} members!`, 'success');
   logAction(`Real estate empire grows! You've acquired ${property.name} for $${property.price.toLocaleString()}. Your criminal organization now has more room to expand.`);
   
   // Track mission progress for property ownership
@@ -15214,7 +15201,7 @@ function forceReleaseFromJail() {
   updateUI();
   
   logAction("Emergency release from jail executed!");
-  alert("You have been released from jail (emergency override).");
+  showBriefNotification("You have been released from jail (emergency override).", 'success');
   goBackToMainMenu();
 }
 
@@ -15295,7 +15282,7 @@ function updateJailTimer() {
 
       updateUI();
 
-      alert("You served your sentence and are now free.");
+      showBriefNotification("You served your sentence and are now free.", 'success');
       goBackToMainMenu();
     }
   }, 1000);
@@ -15335,7 +15322,7 @@ function resetWantedLevelCourtHouse() {
       }
     );
   } else {
-    alert("You don't have enough money to reset your wanted level.");
+    showBriefNotification("You don't have enough money to reset your wanted level.", 'danger');
   }
 }
 
@@ -15890,33 +15877,33 @@ function healAtHospital(healType) {
   if (healType === 'full') {
     const cost = missingHealth * 10;
     if (player.money < cost) {
-      alert("You don't have enough money to heal to full health.");
+      showBriefNotification("You don't have enough money to heal to full health.", 'danger');
       return;
     }
     player.money -= cost;
     player.health = 100;
-    alert("You have been healed to full health.");
+    showBriefNotification("You have been healed to full health.", 'success');
     logAction("Clean white sheets and the smell of antiseptic. The doc patches you up with no questions asked — some debts are paid in silence (Full health restored).");
   } else if (healType === 'partial') {
     const healAmount = Math.min(missingHealth, 25);
     const cost = healAmount * 8;
     if (player.money < cost) {
-      alert("You don't have enough money for this treatment.");
+      showBriefNotification("You don't have enough money for this treatment.", 'danger');
       return;
     }
     player.money -= cost;
     player.health = Math.min(100, player.health + healAmount);
-    alert(`Quick patch-up done. Restored ${healAmount} health.`);
+    showBriefNotification(`Quick patch-up done. Restored ${healAmount} health.`, 'success');
     logAction(`A quick patch job — bandages, painkillers and a shot of whiskey. Good enough to get back on the streets (+${healAmount} HP).`);
   } else if (healType === 'rest') {
     if (player.energy < 20) {
-      alert("You're too exhausted to rest effectively.");
+      showBriefNotification("You're too exhausted to rest effectively.", 'success');
       return;
     }
     const healAmount = Math.min(15, missingHealth);
     player.energy -= 20;
     player.health = Math.min(100, player.health + healAmount);
-    alert(`You rested and recovered ${healAmount} health.`);
+    showBriefNotification(`You rested and recovered ${healAmount} health.`, 'success');
     logAction(`️ You find a quiet corner and lay low for a while. Sleep does its work slowly but surely (+${healAmount} HP, -20 energy).`);
   }
   
@@ -16339,7 +16326,7 @@ function gangRecruitment() {
 // Function to hire a random recruit from the action log
 async function hireRandomRecruit(buttonId) {
   if (!activeRecruitment) {
-    alert("This recruitment opportunity has expired.");
+    showBriefNotification("This recruitment opportunity has expired.", 'danger');
     return;
   }
   
@@ -16347,14 +16334,14 @@ async function hireRandomRecruit(buttonId) {
   
   // Check if player can afford
   if (player.money < recruit.cost) {
-    alert(`You need $${recruit.cost.toLocaleString()} to hire ${recruit.name}.`);
+    showBriefNotification(`You need $${recruit.cost.toLocaleString()} to hire ${recruit.name}.`, 'danger');
     return;
   }
   
   // Check gang capacity
   const maxMembers = calculateMaxGangMembers();
   if (player.gang.gangMembers.length >= maxMembers) {
-    alert(`Your gang is at capacity (${maxMembers} members). You need more properties to expand.`);
+    showBriefNotification(`Your gang is at capacity (${maxMembers} members). You need more properties to expand.`, 'danger');
     return;
   }
   
@@ -16740,7 +16727,7 @@ function loadGame() {
   const availableSaves = slots.filter(slot => !slot.empty);
   
   if (availableSaves.length === 0) {
-    alert("No saved games found! Start a new game to begin your criminal empire.");
+    showBriefNotification("No saved games found! Start a new game to begin your criminal empire.", 'warning');
     return;
   }
   
@@ -16823,7 +16810,7 @@ function loadGameFromIntro() {
   const availableSaves = slots.filter(slot => !slot.empty);
   
   if (availableSaves.length === 0) {
-    alert("No saved games found! Start a new game to begin your criminal empire.");
+    showBriefNotification("No saved games found! Start a new game to begin your criminal empire.", 'warning');
     return;
   }
   
@@ -16930,7 +16917,7 @@ function loadGameFromIntroSlot(slotNumber) {
     showBriefNotification(`✅ Loaded: ${playerName}'s saved game`, 2000);
   } else {
     // Load failed - show error to user
-    alert("Failed to load save data! The save may be corrupted or incompatible with the current version.");
+    showBriefNotification("Failed to load save data! The save may be corrupted or incompatible with the current version.", 'danger');
   }
 }
 
@@ -17126,7 +17113,7 @@ function showDeleteSaveSelection() {
   const availableSaves = slots.filter(slot => !slot.empty);
   
   if (availableSaves.length === 0) {
-    alert("No saved games found to delete!");
+    showBriefNotification("No saved games found to delete!", 'warning');
     return;
   }
   
@@ -17228,7 +17215,7 @@ function showDeleteSelectionInterface(saves) {
 async function confirmDeleteSave(slotNumber) {
   const slot = getSaveEntry(slotNumber);
   if (!slot || slot.empty) {
-    alert("Save slot not found!");
+    showBriefNotification("Save slot not found!", 'danger');
     return;
   }
   
@@ -17249,7 +17236,7 @@ async function confirmDeleteSave(slotNumber) {
       overlay.remove();
     }
     
-    alert(`${slotName} has been permanently deleted! Returning to title screen.`);
+    showBriefNotification(`${slotName} has been permanently deleted! Returning to title screen.`, 'success');
     returnToIntroScreen();
   }
 }
@@ -17763,7 +17750,7 @@ function showDayDetails(day, month, year) {
   
   details += "\nClick on other days to see their events.";
   
-  alert(details);
+  showBriefNotification(details, 'success');
 }
 
 // Statistics System
@@ -18334,7 +18321,7 @@ function saveGameToSlot(slotNumber, customName = null, isAutoSave = false) {
     if (!player || !player.name || player.name.trim() === "") {
       console.error("Save failed: Player name is missing or empty");
       if (!isAutoSave) {
-        alert("Save failed! Player name is missing. Please create a character first.");
+        showBriefNotification("Save failed! Player name is missing. Please create a character first.", 'danger');
       }
       return false;
     }
@@ -18379,7 +18366,7 @@ function saveGameToSlot(slotNumber, customName = null, isAutoSave = false) {
     console.error("Save failed:", error);
     console.error("Player object:", player);
     if (!isAutoSave) {
-      alert(`Save failed! Error: ${error.message}`);
+      showBriefNotification(`Save failed! Error: ${error.message}`, 'danger');
     }
     return false;
   }
@@ -18389,7 +18376,7 @@ function loadGameFromSlot(slotNumber) {
   try {
     const saveEntryStr = localStorage.getItem(`gameSlot_${slotNumber}`);
     if (!saveEntryStr) {
-      alert("No save data found in this slot!");
+      showBriefNotification("No save data found in this slot!", 'danger');
       return false;
     }
     
@@ -18398,7 +18385,7 @@ function loadGameFromSlot(slotNumber) {
     
     // Validate save data
     if (!validateSaveData(saveData)) {
-      alert("Save data is corrupted or incompatible!");
+      showBriefNotification("Save data is corrupted or incompatible!", 'danger');
       return false;
     }
     
@@ -18423,7 +18410,7 @@ function loadGameFromSlot(slotNumber) {
     return true;
   } catch (error) {
     console.error("Load failed:", error);
-    alert("Failed to load save data!");
+    showBriefNotification("Failed to load save data!", 'danger');
     return false;
   }
 }
@@ -19007,7 +18994,7 @@ function getItemImage(itemName) {
 
 async function saveToSlot(slotNumber) {
   if (!player.name || player.name.trim() === "") {
-    alert("You must create a character before saving! Click 'Start Game' to create your character first.");
+    showBriefNotification("You must create a character before saving! Click 'Start Game' to create your character first.", 'danger');
     return;
   }
   
@@ -19020,7 +19007,7 @@ async function saveToSlot(slotNumber) {
       .substring(0, 60);
     const result = saveGameToSlot(slotNumber, sanitized || `${player.name} - ${getCurrentDateString()}`);
     if (result) {
-      alert("Game saved successfully!");
+      showBriefNotification("Game saved successfully!", 'success');
     }
   }
 }
@@ -19571,7 +19558,7 @@ function importCharacterShowcase() {
         
       } catch (error) {
         console.error('Import showcase error:', error);
-        alert('Failed to import character showcase. Please check the file format.');
+        showBriefNotification('Failed to import character showcase. Please check the file format.', 'danger');
       }
     };
     reader.readAsText(file);
