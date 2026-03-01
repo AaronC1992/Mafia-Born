@@ -309,19 +309,8 @@ export function trackMiniGamePlay(gameType) {
 // ═══════════════════════════════════════════════════════════════════════
 
 export function showMiniGames() {
-  if (player.inJail) {
-    _alert("You can't access mini games while you're in jail!");
-    return;
-  }
-
-  _hideAllScreens();
-  document.getElementById("mini-games-screen").style.display = "block";
-
-  // Hide all individual game areas
-  document.getElementById("minigame-tiktaktoe").style.display = "none";
-  document.getElementById("other-minigames").style.display = "none";
-
-  _logAction("You step into the Criminal's Arcade. Time to test your skills in games that don't involve actual crimes!");
+  // Mini Games are now a tab inside the Gambling screen
+  window.showCasino('minigames');
 }
 
 export function backToMiniGamesList() {
@@ -333,10 +322,8 @@ export function backToMiniGamesList() {
   document.getElementById("other-minigames").style.display = "none";
 
   setTimeout(() => {
-    document.getElementById("mini-games-screen").scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
+    const target = document.getElementById("panel-minigames") || document.getElementById("casino-screen");
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
 
   currentMiniGame = null;

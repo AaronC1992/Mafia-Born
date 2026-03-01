@@ -603,7 +603,7 @@ export const MobileSystem = {
         jobs:       { label: 'Jobs',      action: 'showJobs()' },
         doctor:     { label: 'Doctor',    action: 'showHospital()' },
         skills:     { label: 'Skills',    action: 'showSkills()' },
-        casino:     { label: 'Casino',    action: 'showCasino()' },
+        casino:     { label: 'Games',     action: 'showCasino()' },
         settings:   { label: 'Settings',  action: 'showOptions()' },
         worldchat:  { label: 'Chat',      action: 'showWorldChat()' },
         family:     { label: 'Family',    action: 'showGang()' },

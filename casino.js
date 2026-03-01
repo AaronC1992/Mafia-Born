@@ -52,9 +52,15 @@ function casinoWin(winnings) {
   updateCasinoWallet();
 }
 
+// ── Tab config ───────────────────────────────────────────────────────
+const CASINO_TAB_CONFIG = {
+  gambling:  { panel: 'panel-gambling',  btn: 'casino-tab-gambling',  activeColor: '#d4af37' },
+  minigames: { panel: 'panel-minigames', btn: 'casino-tab-minigames', activeColor: '#c0a062' }
+};
+
 // ── Show Casino ──────────────────────────────────────────────────────
 
-export function showCasino() {
+export function showCasino(initialTab) {
   if (player.inJail) {
     _alert("You can't visit the casino while you're in jail!");
     return;
@@ -64,11 +70,48 @@ export function showCasino() {
   document.getElementById("casino-screen").style.display = "block";
   updateCasinoWallet();
 
-  // Reset game area and show game select
-  const gameArea = document.getElementById('casino-game-area');
-  if (gameArea) gameArea.innerHTML = '';
-  const gameSelect = document.getElementById('casino-game-select');
-  if (gameSelect) gameSelect.style.display = 'block';
+  showCasinoTab(initialTab || 'gambling');
+}
+
+export function showCasinoTab(tab) {
+  const cfg = CASINO_TAB_CONFIG[tab];
+  if (!cfg) return;
+
+  // Hide all panels, deactivate all tab buttons
+  for (const [key, c] of Object.entries(CASINO_TAB_CONFIG)) {
+    const panel = document.getElementById(c.panel);
+    if (panel) panel.style.display = 'none';
+    const btn = document.getElementById(c.btn);
+    if (btn) {
+      btn.style.background = 'rgba(192,160,98,0.3)';
+      btn.style.color = '#c0a062';
+      btn.style.border = '1px solid #c0a062';
+    }
+  }
+
+  // Show selected panel, activate tab button
+  const panel = document.getElementById(cfg.panel);
+  if (panel) panel.style.display = 'block';
+  const btn = document.getElementById(cfg.btn);
+  if (btn) {
+    btn.style.background = cfg.activeColor;
+    btn.style.color = '#1a1a2e';
+    btn.style.border = 'none';
+  }
+
+  if (tab === 'gambling') {
+    // Reset game area and show game select
+    const gameArea = document.getElementById('casino-game-area');
+    if (gameArea) gameArea.innerHTML = '';
+    const gameSelect = document.getElementById('casino-game-select');
+    if (gameSelect) gameSelect.style.display = 'block';
+  } else if (tab === 'minigames') {
+    // Hide individual game areas, show card grid
+    const ttt = document.getElementById('minigame-tiktaktoe');
+    if (ttt) ttt.style.display = 'none';
+    const other = document.getElementById('other-minigames');
+    if (other) other.style.display = 'none';
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════

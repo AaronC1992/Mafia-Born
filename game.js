@@ -1,4 +1,4 @@
-﻿// onboarding removed — tutorial system fully stripped
+// onboarding removed — tutorial system fully stripped
 import { applyDailyPassives, getDrugIncomeMultiplier, getViolenceHeatMultiplier, getWeaponPriceMultiplier } from './passiveManager.js';
 import { showEmpireOverview } from './empireOverview.js';
 import { player, gainExperience, checkLevelUp, regenerateEnergy, startEnergyRegenTimer, startEnergyRegeneration, SKILL_TREE_DEFS, getTreePointsSpent, canUnlockNode, isNodeAccessible, achievements, CHARACTER_BACKGROUNDS, CHARACTER_PERKS } from './player.js';
@@ -16,7 +16,7 @@ import { initUIEvents } from './ui-events.js';
 import { initAuth, showAuthModal, autoCloudSave, getAuthState, updateAuthStatusUI, checkPlayerName, checkAdmin, adminModify } from './auth.js';
 import {
   initCasino, getCasinoWins,
-  showCasino, startBlackjack, bjDeal, bjHit, bjStand, bjDouble,
+  showCasino, showCasinoTab, startBlackjack, bjDeal, bjHit, bjStand, bjDouble,
   startSlots, slotSpin,
   startRoulette, rouletteAddBet, rouletteClear, rouletteSpin,
   startDiceGame, diceRoll,
@@ -1050,7 +1050,7 @@ const SPECIALIZATION_TO_EXPANDED = {
 const EXPANDED_SYSTEMS_CONFIG = {
     gangRolesEnabled: true,
     territoryWarsEnabled: true,
-    interactiveEventsEnabled: true, // Re-enabled with story expansion content
+    interactiveEventsEnabled: false, // Disabled — popup events removed
     rivalKingpinsEnabled: true,
     // Balance settings
     rivalGrowthInterval: 120000, // 2 minutes between rival actions
@@ -3250,12 +3250,8 @@ const territoryEvents = [
 // ==================== ENHANCED ECONOMY FUNCTIONS ====================
 
 // Business Management Functions
-async function showBusinesses() {
-  if (player.inJail) {
-    showBriefNotification("Can't manage businesses while in jail!", 'danger');
-    return;
-  }
-  
+// buildBusinessesHTML returns the Fronts tab content as an HTML string
+function buildBusinessesHTML() {
   let businessHTML = `
     <h2>Business Empire</h2>
     <p>Manage your legitimate business fronts and expand your economic influence.</p>
@@ -3417,14 +3413,27 @@ async function showBusinesses() {
       }).join('')}
     </div>
     
-    <div class="page-nav" style="justify-content: center;">
-      <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
-    </div>
   `;
   
-  document.getElementById("business-content").innerHTML = businessHTML;
-  hideAllScreens();
-  document.getElementById("business-screen").style.display = "block";
+  return businessHTML;
+}
+
+// Refresh just the fronts panel content (used by business actions)
+function refreshFrontsPanel() {
+  const panel = document.getElementById('panel-fronts');
+  if (panel && panel.style.display !== 'none') {
+    panel.innerHTML = buildBusinessesHTML();
+  }
+}
+window.refreshFrontsPanel = refreshFrontsPanel;
+
+// showBusinesses now redirects to Properties screen → Fronts tab
+async function showBusinesses() {
+  if (player.inJail) {
+    showBriefNotification("Can't manage businesses while in jail!", 'danger');
+    return;
+  }
+  showRealEstate('fronts');
 }
 
 async function purchaseBusiness(businessTypeId) {
@@ -3476,7 +3485,7 @@ async function purchaseBusiness(businessTypeId) {
   logAction(`You sign the papers and shake hands on a new business venture. ${businessType.name} is now under your control in ${district.shortName}${bonusLabel} - legitimate money incoming!`);
   
   updateUI();
-  showBusinesses();
+  refreshFrontsPanel();
 }
 
 async function upgradeBusiness(businessIndex) {
@@ -3550,7 +3559,7 @@ async function upgradeBusiness(businessIndex) {
   }
   
   updateUI();
-  showBusinesses();
+  refreshFrontsPanel();
 }
 
 async function collectBusinessIncome(businessIndex) {
@@ -3619,7 +3628,7 @@ async function collectBusinessIncome(businessIndex) {
   logAction(`${business.name} delivers another profitable period (+$${netIncome.toLocaleString()}${dirtyLabel}${bonusLabel}${taxLabel}).`);
   
   updateUI();
-  showBusinesses();
+  refreshFrontsPanel();
 }
 
 // Collect income from ALL businesses at once
@@ -3697,7 +3706,7 @@ async function collectAllBusinessIncome() {
   logAction(`\ud83d\udcb0 Collected all business income in one sweep. ${totalClean > 0 ? `$${totalClean.toLocaleString()} clean` : ''}${totalClean > 0 && totalDirty > 0 ? ', ' : ''}${totalDirty > 0 ? `$${totalDirty.toLocaleString()} dirty` : ''}${totalTax > 0 ? ` (Tax: -$${totalTax.toLocaleString()})` : ''}.`);
   
   updateUI();
-  showBusinesses();
+  refreshFrontsPanel();
 }
 
 async function sellBusiness(businessIndex) {
@@ -3719,7 +3728,7 @@ async function sellBusiness(businessIndex) {
   logAction(`You sign the final papers and hand over the keys. ${business.name} is no longer yours, but the cash cushions the loss (+$${salePrice.toLocaleString()}).`);
   
   updateUI();
-  showBusinesses();
+  refreshFrontsPanel();
 }
 
 // [Loan Shark system removed in Phase 31]
@@ -7578,7 +7587,7 @@ function hideAllScreens() {
   document.getElementById("jailbreak-screen").style.display = "none";
   document.getElementById("recruitment-screen").style.display = "none";
   document.getElementById("casino-screen").style.display = "none";
-  document.getElementById("mini-games-screen").style.display = "none";
+  // mini-games-screen merged into casino-screen as a tab
   document.getElementById("missions-screen").style.display = "none";
   document.getElementById("business-screen").style.display = "none";
   const loanSharkScreen = document.getElementById("loan-shark-screen");
@@ -10894,17 +10903,11 @@ function startEventTimers() {
     cleanupExpiredEvents();
   }, 5 * 60 * 1000);
   
-  // Suspicion consequences check every 60 seconds
-  suspicionTimer = setInterval(() => {
-    if (!gameplayActive) return;
-    checkSuspicionConsequences();
-  }, 60 * 1000);
+  // Suspicion consequences — REMOVED (popup events disabled)
+  // suspicionTimer = setInterval(() => { checkSuspicionConsequences(); }, 60 * 1000);
   
-  // FBI investigation escalation check every 90 seconds
-  fbiTimer = setInterval(() => {
-    if (!gameplayActive) return;
-    checkFBIInvestigation();
-  }, 90 * 1000);
+  // FBI investigation escalation — REMOVED (popup events disabled)
+  // fbiTimer = setInterval(() => { checkFBIInvestigation(); }, 90 * 1000);
 }
 
 // Function to show current events and weather status
@@ -11014,9 +11017,9 @@ const menuUnlockConfig = [
   // === EARLY GAME (Level 2-3) ===
   { id: 'relocate',   fn: 'showTerritoryRelocation()', label: 'Relocate',     tip: 'Move to a different district',     level: 2 },
   { id: 'skills',      fn: 'showSkills()',            label: 'Expertise',      tip: 'Spend skill points & upgrade',     level: 2 },
-  { id: 'playerstats', fn: 'showPlayerStats()',       label: 'Player Stats',   tip: 'View your current stats & bonuses', level: 2 },
+  { id: 'playerstats', fn: 'showPlayerStats()',       label: 'Stats',           tip: 'Stats, empire rating & overview',   level: 2 },
   { id: 'cars',        fn: 'showStolenCars()',        label: 'Motor Pool',     tip: 'Manage your stolen vehicles',      level: 2 },
-  { id: 'realestate',  fn: 'showRealEstate()',        label: 'Properties',     tip: 'Buy hideouts & safe houses',       level: 3 },
+  { id: 'realestate',  fn: 'showRealEstate()',        label: 'Properties',     tip: 'Real estate & business fronts',    level: 3 },
   { id: 'missions',    fn: 'showMissions()',          label: 'Operations',     tip: 'Story missions & special ops',     level: 0 },
 
   // === MID GAME (Level 5-8) ===
@@ -11024,20 +11027,19 @@ const menuUnlockConfig = [
   { id: 'gang',        fn: 'showGang()',              label: 'The Family',     tip: 'Recruit & manage your crew',       level: 5 },
   { id: 'courthouse',  fn: 'showCourtHouse()',        label: 'Legal Aid',      tip: 'Pay to reduce your wanted level',  level: 5 },
   { id: 'events',      fn: 'showEventsStatus()',      label: 'Events',         tip: 'Current weather & world events',   level: 5 },
-  { id: 'minigames',   fn: 'showMiniGames()',         label: 'Pastimes',       tip: 'Arcade games & entertainment',     level: 6 },
-  { id: 'casino',      fn: 'showCasino()',            label: 'Gambling',       tip: 'Slots, roulette & card games',     level: 0 },
+  // Mini Games merged into Gambling screen as a tab
+  { id: 'casino',      fn: 'showCasino()',            label: 'Gambling',       tip: 'Slots, roulette, cards & mini games', level: 0 },
   { id: 'fence',       fn: 'showFence()',             label: 'The Fence',      tip: 'Sell stolen goods at premium rates',level: 7 },
   // Crew Details merged into The Family — access via 'Manage Crew' button
   { id: 'jailbreak',   fn: 'showJailbreak()',         label: 'Breakout',       tip: 'Break allies out of prison',       level: 0 },
 
   // === LATE GAME (Level 10-15) ===
-  { id: 'businesses',  fn: 'showBusinesses()',        label: 'Fronts',         tip: 'Buy & manage businesses',          level: 10 },
+  // Fronts (Businesses) moved into Properties screen as a tab
   // Turf Wars & Turf Map are now inside Operations
   { id: 'laundering',  fn: 'showMoneyLaundering()',   label: 'The Wash',       tip: 'Launder dirty money into clean cash', level: 12 },
 
   // === ENDGAME (Level 15+) ===
-  { id: 'empire',      fn: 'showEmpireRating()',      label: 'Empire Rating',  tip: 'Track your criminal empire score', level: 15 },
-  { id: 'empOverview', fn: 'showEmpireOverview()',     label: 'Empire Overview', tip: 'Full empire status dashboard',    level: 10 },
+  // Empire Rating & Empire Overview moved into Stats screen as tabs
 
   // === WORLD CHAT (Always Available) ===
   { id: 'worldchat',   fn: 'showWorldChat()',            label: 'World Chat',     tip: 'Chat with other players online',  level: 0 },
@@ -11325,9 +11327,11 @@ function showPlayerStats() {
   content.innerHTML = `
     <!-- Tab Navigation -->
     <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-      <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#1a1a2e;padding:10px 22px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Player Stats</button>
-      <button id="tab-career" onclick="showPlayerStatsTab('career')" style="background:rgba(52,152,219,0.3);color:#3498db;padding:10px 22px;border:1px solid #3498db;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Career Statistics</button>
-      <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#9b59b6;padding:10px 22px;border:1px solid #9b59b6;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Character Showcase</button>
+      <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#1a1a2e;padding:8px 16px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Player Stats</button>
+      <button id="tab-career" onclick="showPlayerStatsTab('career')" style="background:rgba(52,152,219,0.3);color:#3498db;padding:8px 16px;border:1px solid #3498db;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Career Statistics</button>
+      <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#9b59b6;padding:8px 16px;border:1px solid #9b59b6;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Character Showcase</button>
+      <button id="tab-empire" onclick="showPlayerStatsTab('empire')" style="background:rgba(231,76,60,0.3);color:#e74c3c;padding:8px 16px;border:1px solid #e74c3c;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">⭐ Empire Rating</button>
+      <button id="tab-overview" onclick="showPlayerStatsTab('overview')" style="background:rgba(230,126,34,0.3);color:#e67e22;padding:8px 16px;border:1px solid #e67e22;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">🏛️ Empire Overview</button>
     </div>
     
     <!-- Stats Tab (default) -->
@@ -11347,31 +11351,49 @@ function showPlayerStats() {
     
     <!-- Character Showcase Tab (hidden initially) -->
     <div id="panel-showcase" style="display:none;"></div>
+
+    <!-- Empire Rating Tab (hidden initially) -->
+    <div id="panel-empire" style="display:none;"></div>
+
+    <!-- Empire Overview Tab (hidden initially) -->
+    <div id="panel-overview" style="display:none;"></div>
   `;
 }
 window.showPlayerStats = showPlayerStats;
 
-// Tab switching for Player Stats screen
+// Tab config for Player Stats screen
+const STATS_TAB_CONFIG = {
+  stats:    { inactive: 'rgba(212,175,55,0.3)', color: '#d4af37', active: '#d4af37', activeText: '#1a1a2e' },
+  career:   { inactive: 'rgba(52,152,219,0.3)', color: '#3498db', active: '#3498db', activeText: '#fff' },
+  showcase: { inactive: 'rgba(155,89,182,0.3)', color: '#9b59b6', active: '#9b59b6', activeText: '#fff' },
+  empire:   { inactive: 'rgba(231,76,60,0.3)',   color: '#e74c3c', active: '#e74c3c', activeText: '#fff' },
+  overview: { inactive: 'rgba(230,126,34,0.3)',  color: '#e67e22', active: '#e67e22', activeText: '#fff' },
+};
+const STATS_TAB_IDS = Object.keys(STATS_TAB_CONFIG);
+
+// Tab switching for Stats screen
 function showPlayerStatsTab(tab) {
   // Hide all panels
-  ['stats', 'career', 'showcase'].forEach(t => {
+  STATS_TAB_IDS.forEach(t => {
     const panel = document.getElementById('panel-' + t);
     const btn = document.getElementById('tab-' + t);
+    const cfg = STATS_TAB_CONFIG[t];
     if (panel) panel.style.display = 'none';
     if (btn) {
-      btn.style.background = t === 'stats' ? 'rgba(212,175,55,0.3)' : t === 'career' ? 'rgba(52,152,219,0.3)' : 'rgba(155,89,182,0.3)';
-      btn.style.color = t === 'stats' ? '#d4af37' : t === 'career' ? '#3498db' : '#9b59b6';
-      btn.style.border = t === 'stats' ? '1px solid #d4af37' : t === 'career' ? '1px solid #3498db' : '1px solid #9b59b6';
+      btn.style.background = cfg.inactive;
+      btn.style.color = cfg.color;
+      btn.style.border = '1px solid ' + cfg.color;
     }
   });
   
   // Show selected panel
   const activePanel = document.getElementById('panel-' + tab);
   const activeBtn = document.getElementById('tab-' + tab);
+  const activeCfg = STATS_TAB_CONFIG[tab];
   if (activePanel) activePanel.style.display = 'block';
-  if (activeBtn) {
-    activeBtn.style.background = tab === 'stats' ? '#d4af37' : tab === 'career' ? '#3498db' : '#9b59b6';
-    activeBtn.style.color = tab === 'stats' ? '#1a1a2e' : '#fff';
+  if (activeBtn && activeCfg) {
+    activeBtn.style.background = activeCfg.active;
+    activeBtn.style.color = activeCfg.activeText;
     activeBtn.style.border = 'none';
   }
   
@@ -11390,6 +11412,22 @@ function showPlayerStatsTab(tab) {
     if (panel && !panel.dataset.loaded) {
       panel.innerHTML = buildCharacterShowcaseHTML();
       panel.dataset.loaded = 'true';
+    }
+  }
+  
+  // Lazy-load empire rating content (always refresh for up-to-date scores)
+  if (tab === 'empire') {
+    const panel = document.getElementById('panel-empire');
+    if (panel) {
+      panel.innerHTML = buildEmpireRatingHTML();
+    }
+  }
+  
+  // Lazy-load empire overview content (always refresh for up-to-date data)
+  if (tab === 'overview') {
+    const panel = document.getElementById('panel-overview');
+    if (panel) {
+      panel.innerHTML = buildEmpireOverviewHTML();
     }
   }
 }
@@ -14018,8 +14056,20 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.8.1";
+const CURRENT_VERSION = "1.8.2";
 const VERSION_UPDATES = {
+  "1.8.2": {
+    title: "UI Consolidation & Popup Events Removed",
+    date: "March 2026",
+    changes: [
+      "Stats screen — Empire Rating & Empire Overview merged in as tabs (5 tabs total)",
+      "Properties screen — Business Fronts merged in as Fronts tab (2 tabs total)",
+      "Gambling screen — Mini Games (Pastimes) merged in as Mini Games tab (2 tabs total)",
+      "Removed popup random events — no more interactive event modals interrupting gameplay",
+      "Removed FBI investigation popup chain and suspicion consequence timers",
+      "Reduced nav menu clutter — 3 fewer buttons (Empire Rating, Fronts, Pastimes removed)",
+    ]
+  },
   "1.8.1": {
     title: "Political System & Bug Fixes",
     date: "March 2026",
@@ -14529,21 +14579,67 @@ function closeVersionUpdate() {
   }
 }
 
-// Real Estate Functions
-function showRealEstate() {
+// Real Estate Functions — Properties screen with tabs (Properties + Fronts)
+function showRealEstate(initialTab) {
   if (player.inJail) {
-    showBriefNotification("You can't view real estate while you're in jail!", 'danger');
+    showBriefNotification("You can't view properties while you're in jail!", 'danger');
     return;
   }
   
   hideAllScreens();
-  // Show real estate screen
+  const content = document.getElementById("real-estate-content");
+  content.innerHTML = `
+    <!-- Tab Navigation -->
+    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
+      <button id="prop-tab-properties" onclick="showPropertiesTab('properties')" style="background:#3498db;color:#fff;padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Properties</button>
+      <button id="prop-tab-fronts" onclick="showPropertiesTab('fronts')" style="background:rgba(243,156,18,0.3);color:#f39c12;padding:8px 20px;border:1px solid #f39c12;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Fronts</button>
+    </div>
+    <!-- Properties Tab (default) -->
+    <div id="panel-properties"></div>
+    <!-- Fronts Tab (hidden initially) -->
+    <div id="panel-fronts" style="display:none;"></div>
+  `;
   document.getElementById("real-estate-screen").style.display = "block";
+  // Populate default tab content
   updateRealEstateDisplay();
+  if (initialTab === 'fronts') {
+    showPropertiesTab('fronts');
+  }
 }
 
+// Tab switching for Properties screen
+const PROP_TAB_CONFIG = {
+  properties: { inactive: 'rgba(52,152,219,0.3)', color: '#3498db', active: '#3498db', activeText: '#fff' },
+  fronts:     { inactive: 'rgba(243,156,18,0.3)', color: '#f39c12', active: '#f39c12', activeText: '#fff' },
+};
+function showPropertiesTab(tab) {
+  ['properties', 'fronts'].forEach(t => {
+    const panel = document.getElementById('panel-' + t);
+    const btn = document.getElementById('prop-tab-' + t);
+    if (!panel || !btn) return;
+    const cfg = PROP_TAB_CONFIG[t];
+    if (t === tab) {
+      panel.style.display = 'block';
+      btn.style.background = cfg.active;
+      btn.style.color = cfg.activeText;
+      btn.style.border = 'none';
+    } else {
+      panel.style.display = 'none';
+      btn.style.background = cfg.inactive;
+      btn.style.color = cfg.color;
+      btn.style.border = '1px solid ' + cfg.color;
+    }
+  });
+  // Lazy-load fronts content on first switch
+  if (tab === 'fronts') {
+    const panel = document.getElementById('panel-fronts');
+    if (panel) panel.innerHTML = buildBusinessesHTML();
+  }
+}
+window.showPropertiesTab = showPropertiesTab;
+
 function updateRealEstateDisplay() {
-  const content = document.getElementById("real-estate-content");
+  const content = document.getElementById("panel-properties") || document.getElementById("real-estate-content");
   
   // Calculate current gang capacity
   const currentCapacity = calculateMaxGangMembers();
@@ -15978,10 +16074,8 @@ function toggleBookieHire() {
     logAction('You hire a trusted bookie to keep the cash flowing. Income and tribute will be auto-collected.');
     if (typeof showBriefNotification === 'function') showBriefNotification('Bookie hired', 1200);
   }
-  // Refresh businesses screen if open
-  if (document.getElementById('business-screen')?.style.display === 'block') {
-    showBusinesses();
-  }
+  // Refresh fronts panel if open (now a tab in Properties screen)
+  refreshFrontsPanel();
 }
 
 // Auto-collect business income and gang tribute if available
@@ -16925,8 +17019,8 @@ function activateGameplaySystems() {
   // Initialize expanded systems (gang roles, territory wars, etc.)
   initializeExpandedSystems(player);
 
-  // Interactive events & street stories (re-enabled with story expansion)
-  setInterval(() => { if (gameplayActive) checkAndTriggerInteractiveEvent(); }, 60000);
+  // Interactive events & street stories — REMOVED (popup events disabled)
+  // setInterval(() => { if (gameplayActive) checkAndTriggerInteractiveEvent(); }, 60000);
 
   // World atmosphere narrations (every few minutes, ambient storytelling)
   setInterval(() => { if (gameplayActive) maybeShowWorldNarration(); }, 120000);
@@ -16986,13 +17080,13 @@ function initializeHotkeys() {
       'g': () => showGang(),
       'c': () => showStolenCars(),
       'k': () => showSkills(),
-      'b': () => showBusinesses(),
+      'b': () => { showRealEstate('fronts'); },
       't': () => showTerritoryControl(),
       'l': () => showCalendar(),
       'm': () => showMap(),
       'z': () => showStatistics(),
-      'r': () => showEmpireRating(),
-      'o': () => showEmpireOverview(), // New hotkey for Empire Overview
+      'r': () => { showPlayerStats(); setTimeout(() => showPlayerStatsTab('empire'), 50); },
+      'o': () => { showPlayerStats(); setTimeout(() => showPlayerStatsTab('overview'), 50); },
       'f5': () => showSaveSystem(),
       'f7': () => showCompetition(),
       'e': () => buyEnergyDrink(),
@@ -17630,31 +17724,28 @@ function getEmpireRatingGrade(score) {
   return { grade: "D", color: "#7f8c8d", description: "Street Criminal" };
 }
 
-// Show Criminal Empire Rating screen
-function showEmpireRating() {
-  hideAllScreens();
-  document.getElementById('statistics-screen').style.display = 'block';
-  
+// Build Empire Rating HTML (used as tab content in Stats screen)
+function buildEmpireRatingHTML() {
   const rating = calculateEmpireRating();
   const grade = getEmpireRatingGrade(rating.totalScore);
   
-  const content = `
+  return `
     <div style="max-width: 1000px; margin: 0 auto;">
-      <h2 style="text-align: center; color: ${grade.color}; font-size: 2.5em; margin-bottom: 10px;">
-        Empire Rating ⭐
+      <h2 style="text-align: center; color: ${grade.color}; font-size: 2.2em; margin-bottom: 10px;">
+        Empire Rating ⭐
       </h2>
       
-      <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; border: 3px solid ${grade.color};">
-        <h1 style="color: ${grade.color}; font-size: 4em; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+      <div style="text-align: center; margin-bottom: 24px; padding: 18px; background: rgba(0,0,0,0.3); border-radius: 15px; border: 3px solid ${grade.color};">
+        <h1 style="color: ${grade.color}; font-size: 3.5em; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
           ${grade.grade}
         </h1>
         <h3 style="color: #ecf0f1; margin: 5px 0;">${grade.description}</h3>
-        <p style="color: #bdc3c7; font-size: 1.3em; margin: 10px 0;">
+        <p style="color: #bdc3c7; font-size: 1.2em; margin: 10px 0;">
           Total Empire Score: <span style="color: ${grade.color}; font-weight: bold;">${rating.totalScore.toLocaleString()}</span>
         </p>
       </div>
       
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
         <div class="rating-category">
           <h3 style="color: #2ecc71;">Money Power</h3>
           <div class="progress-bar">
@@ -17696,7 +17787,7 @@ function showEmpireRating() {
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #1abc9c;">  Skill Power</h3>
+          <h3 style="color: #1abc9c;">Skill Power</h3>
           <div class="progress-bar">
             <div style="width: ${(rating.skillPower/1500)*100}%; background: #1abc9c;"></div>
           </div>
@@ -17704,19 +17795,127 @@ function showEmpireRating() {
         </div>
       </div>
       
-      <div style="text-align: center; margin-top: 30px;">
-        <button onclick="showAchievements()" style="background: linear-gradient(45deg, #f39c12, #e67e22); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
+      <div style="text-align: center; margin-top: 20px;">
+        <button onclick="showAchievements()" style="background: linear-gradient(45deg, #f39c12, #e67e22); color: white; padding: 12px 26px; border: none; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer;">
           Achievements
         </button>
-        <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
       </div>
     </div>
   `;
-  
-  document.getElementById('statistics-content').innerHTML = content;
+}
+
+// Show Criminal Empire Rating (redirects to Stats screen, Empire Rating tab)
+function showEmpireRating() {
+  showPlayerStats();
+  setTimeout(() => showPlayerStatsTab('empire'), 50);
+}
+
+// Build Empire Overview HTML (used as tab content in Stats screen)
+function buildEmpireOverviewHTML() {
+  const totalRep = Object.values(player.missions.factionReputation || {}).reduce((a, b) => a + b, 0);
+  const totalTerritory = (player.turf?.owned || []).length;
+
+  // Calculate daily income estimate
+  let dailyIncome = 0;
+  dailyIncome += (player.turf?.income || 0);
+  if (player.businesses && player.businesses.length > 0) {
+    player.businesses.forEach(biz => {
+      const bt = businessTypes.find(t => t.id === biz.type);
+      if (bt) dailyIncome += Math.floor(bt.baseIncome * Math.pow(bt.incomeMultiplier, (biz.level || 1) - 1));
+    });
+  }
+  if (player.realEstate && player.realEstate.ownedProperties) {
+    player.realEstate.ownedProperties.forEach(prop => { dailyIncome += prop.income || 0; });
+  }
+  if (player.missions?.factionReputation?.torrino >= 10) {
+    dailyIncome += Math.floor(player.money * 0.05);
+  }
+
+  // Faction cards
+  const factionKeys = ['torrino', 'kozlov', 'chen', 'morales'];
+  let factionCardsHTML = '';
+  factionKeys.forEach(key => {
+    const fam = crimeFamilies[key];
+    if (!fam) return;
+    const rep = (player.missions.factionReputation || {})[key] || 0;
+    const color = fam.color;
+    factionCardsHTML += `
+      <div style="background: #2c2c2c; padding: 10px; border-left: 4px solid ${color}; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <strong style="color: ${color};">${fam.name}</strong>
+          <div style="font-size: 0.8em; color: #ccc;">${fam.boss}</div>
+        </div>
+        <div style="font-weight: bold; ${rep >= 0 ? 'color: #4caf50' : 'color: #f44336'}">
+          ${rep > 0 ? '+' : ''}${rep}
+        </div>
+      </div>`;
+  });
+
+  // Active passives
+  let passivesHTML = '<ul style="list-style: none; padding: 0; margin: 0;">';
+  let hasPassives = false;
+  factionKeys.forEach(key => {
+    if ((player.missions.factionReputation || {})[key] >= 10) {
+      const fam = crimeFamilies[key];
+      if (!fam) return;
+      passivesHTML += `
+        <li style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+          <strong style="color: #d4af37;">${fam.passive.name}</strong> (${fam.name})<br>
+          <span style="color: #aaa; font-size: 0.9em;">${fam.passive.description}</span>
+        </li>`;
+      hasPassives = true;
+    }
+  });
+  if (!hasPassives) {
+    passivesHTML += '<li style="color: #666; font-style: italic;">No active faction passives. Gain reputation to unlock bonuses.</li>';
+  }
+  passivesHTML += '</ul>';
+
+  return `
+    <div style="max-width: 800px; margin: 0 auto;">
+      <h2 style="color: #d4af37; text-align: center; margin-bottom: 20px;">🏛️ Empire Overview: ${player.name || "The Don"}</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div style="background: #2c2c2c; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(212,175,55,0.2);">
+          <div style="font-size: 2em;">💰</div>
+          <div style="color: #aaa; font-size: 0.9em;">Liquid Assets</div>
+          <div style="font-size: 1.4em; color: #4caf50;">$${(player.money || 0).toLocaleString()}</div>
+        </div>
+        <div style="background: #2c2c2c; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(212,175,55,0.2);">
+          <div style="font-size: 2em;">🗺️</div>
+          <div style="color: #aaa; font-size: 0.9em;">Turf Controlled</div>
+          <div style="font-size: 1.4em; color: #2196f3;">${totalTerritory} Zones</div>
+        </div>
+        <div style="background: #2c2c2c; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(212,175,55,0.2);">
+          <div style="font-size: 2em;">📈</div>
+          <div style="color: #aaa; font-size: 0.9em;">Est. Daily Income</div>
+          <div style="font-size: 1.4em; color: #ffeb3b;">$${dailyIncome.toLocaleString()}</div>
+        </div>
+        <div style="background: #2c2c2c; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(212,175,55,0.2);">
+          <div style="font-size: 2em;">🤝</div>
+          <div style="color: #aaa; font-size: 0.9em;">Total Influence</div>
+          <div style="font-size: 1.4em; color: #9c27b0;">${totalRep} Rep</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(44,62,80,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
+        <h3 style="color:#d4af37;margin:0 0 12px;border-bottom:1px solid #444;padding-bottom:8px;">Faction Relations</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          ${factionCardsHTML}
+        </div>
+      </div>
+
+      <div style="background:rgba(44,62,80,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
+        <h3 style="color:#d4af37;margin:0 0 12px;border-bottom:1px solid #444;padding-bottom:8px;">Active Passives</h3>
+        ${passivesHTML}
+      </div>
+    </div>
+  `;
 }
 
 // ==================== END LONG-TERM GOALS SYSTEM ====================
+
+
 
 // ==================== SAVE SYSTEM ====================
 
@@ -20113,6 +20312,7 @@ window.showWeeklyChallenges = showWeeklyChallenges;
 window.submitToLeaderboards = submitToLeaderboards;
 window.showHospital = showHospital;
 window.showCasino = showCasino;
+window.showCasinoTab = showCasinoTab;
 window.healAtHospital = healAtHospital;
 window.renderHospitalContent = renderHospitalContent;
 

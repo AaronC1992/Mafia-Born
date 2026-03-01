@@ -5,6 +5,20 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.2] - 2026-03-01
+
+### Changed
+- **Stats screen consolidation** — Empire Rating & Empire Overview merged into Player Stats as tabs (5 tabs: Player Stats, Career Statistics, Character Showcase, Empire Rating, Empire Overview)
+- **Properties screen consolidation** — Business Fronts merged into Properties as a Fronts tab (2 tabs: Properties, Fronts)
+- **Gambling screen consolidation** — Mini Games (Pastimes) merged into Gambling as a Mini Games tab (2 tabs: Gambling, Mini Games)
+- Reduced nav menu clutter — 3 fewer sidebar buttons (Empire Rating, Fronts/Businesses, Pastimes removed)
+- Mobile nav casino label renamed from "Casino" to "Games"
+
+### Removed
+- **Popup random events** — interactive event modals (STREET_STORIES + INTERACTIVE_EVENTS) no longer fire on timer
+- **FBI investigation popup chain** — suspicion timer and FBI escalation timer disabled
+- Old `mini-games-screen` HTML (content moved into `casino-screen`)
+
 ## [1.8.1] - 2026-03-01
 
 ### Added

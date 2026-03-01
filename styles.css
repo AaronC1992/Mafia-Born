@@ -3554,7 +3554,8 @@ p, ul {
 
 /* Mini-games grid: fit on small phones */
 @media (max-width: 480px) {
-    #mini-games-screen div[style*="minmax(300px"] {
+    #panel-minigames div[style*="minmax(300px"],
+    #minigames-card-grid {
         grid-template-columns: 1fr !important;
     }
 }

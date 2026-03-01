@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -281,10 +281,9 @@
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
                     <span class="separator">›</span>
-                    <span class="current">Properties</span>
+                    <span class="current">Properties & Fronts</span>
                 </div>
             </div>
-            <div class="section-header">Real Estate Portfolio</div>
             <div id="real-estate-content"></div>
             <div class="page-nav">
                 <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
@@ -443,24 +442,115 @@
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
                     <span class="separator">›</span>
-                    <span class="current">Casino</span>
+                    <span class="current">Gambling &amp; Mini Games</span>
                 </div>
             </div>
-            <div class="section-header">Test Your Luck</div>
-            <div id="casino-balance" style="text-align: center; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid #d4af37;">
-                <span style="color: #f1c40f; font-size: 1.2em; font-weight: bold;">Wallet: $<span id="casino-wallet">0</span></span>
+
+            <!-- Tab Navigation -->
+            <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
+                <button id="casino-tab-gambling" onclick="showCasinoTab('gambling')" style="background:#d4af37;color:#1a1a2e;padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">🎰 Gambling</button>
+                <button id="casino-tab-minigames" onclick="showCasinoTab('minigames')" style="background:rgba(192,160,98,0.3);color:#c0a062;padding:8px 20px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">🎮 Mini Games</button>
             </div>
-            <div class="content-card" id="casino-game-select">
-                <p style="text-align:center; color:#bdc3c7;">Choose your game:</p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 10px;">
-                    <button id="btn-blackjack" onclick="startBlackjack()" style="padding: 15px; border-radius: 10px; border: 2px solid #27ae60; background: rgba(39,174,96,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">🃏 Blackjack</button>
-                    <button id="btn-slots" onclick="startSlots()" style="padding: 15px; border-radius: 10px; border: 2px solid #e67e22; background: rgba(230,126,34,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Slots</button>
-                    <button id="btn-roulette" onclick="startRoulette()" style="padding: 15px; border-radius: 10px; border: 2px solid #e74c3c; background: rgba(231,76,60,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Roulette</button>
-                    <button id="btn-dice" onclick="startDiceGame()" style="padding: 15px; border-radius: 10px; border: 2px solid #3498db; background: rgba(52,152,219,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Dice</button>
-                    <button id="btn-horses" onclick="startHorseRacing()" style="padding: 15px; border-radius: 10px; border: 2px solid #c0a062; background: rgba(192,160,98,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Horse Racing</button>
+
+            <!-- Gambling Tab (default) -->
+            <div id="panel-gambling">
+                <div id="casino-balance" style="text-align: center; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid #d4af37;">
+                    <span style="color: #f1c40f; font-size: 1.2em; font-weight: bold;">Wallet: $<span id="casino-wallet">0</span></span>
+                </div>
+                <div class="content-card" id="casino-game-select">
+                    <p style="text-align:center; color:#bdc3c7;">Choose your game:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 10px;">
+                        <button id="btn-blackjack" onclick="startBlackjack()" style="padding: 15px; border-radius: 10px; border: 2px solid #27ae60; background: rgba(39,174,96,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">🃏 Blackjack</button>
+                        <button id="btn-slots" onclick="startSlots()" style="padding: 15px; border-radius: 10px; border: 2px solid #e67e22; background: rgba(230,126,34,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Slots</button>
+                        <button id="btn-roulette" onclick="startRoulette()" style="padding: 15px; border-radius: 10px; border: 2px solid #e74c3c; background: rgba(231,76,60,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Roulette</button>
+                        <button id="btn-dice" onclick="startDiceGame()" style="padding: 15px; border-radius: 10px; border: 2px solid #3498db; background: rgba(52,152,219,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Dice</button>
+                        <button id="btn-horses" onclick="startHorseRacing()" style="padding: 15px; border-radius: 10px; border: 2px solid #c0a062; background: rgba(192,160,98,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Horse Racing</button>
+                    </div>
+                </div>
+                <div id="casino-game-area" style="margin-top: 15px;"></div>
+            </div>
+
+            <!-- Mini Games Tab (hidden initially) -->
+            <div id="panel-minigames" style="display:none;">
+                <p style="text-align: center; margin-bottom: 30px;">Kill some time. <strong style="color: #c0a062;">Win $100 for each victory!</strong></p>
+                
+                <!-- Game Selection Grid -->
+                <div id="minigames-card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
+                    <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
+                        <h3 style="color: #c0a062; margin-bottom: 15px;">TikTakToe</h3>
+                        <p style="margin-bottom: 20px;">Classic strategy. <strong style="color: #c0a062;">Win: +$100</strong></p>
+                        <button onclick="startMiniGameTikTakToe()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">Play</button>
+                    </div>
+                    <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
+                        <h3 style="color: #c0a062; margin-bottom: 15px;">Number Hunter</h3>
+                        <p style="margin-bottom: 20px;">Guess the number. <strong style="color: #c0a062;">Win: +$100</strong></p>
+                        <button onclick="startNumberGuessing()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">Play</button>
+                    </div>
+                    <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
+                        <h3 style="color: #c0a062; margin-bottom: 15px;">Rock Paper Scissors</h3>
+                        <p style="margin-bottom: 20px;">Best of 5. <strong style="color: #c0a062;">Win match: +$100</strong></p>
+                        <button onclick="startRockPaperScissors()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">Play</button>
+                    </div>
+                    <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
+                        <h3 style="color: #c0a062; margin-bottom: 15px;">Memory Match</h3>
+                        <p style="margin-bottom: 20px;">Match the cards. <strong style="color: #c0a062;">Under 60s: +$100 | New Best: +$500</strong></p>
+                        <button onclick="startMemoryMatch()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">Play</button>
+                    </div>
+                    <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
+                        <h3 style="color: #c0a062; margin-bottom: 15px;">Snake</h3>
+                        <p style="margin-bottom: 20px;">Don't hit the walls. <strong style="color: #c0a062;">Earn $50 per food!</strong></p>
+                        <button onclick="startSnakeGame()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">Play</button>
+                    </div>
+                    <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
+                        <h3 style="color: #c0a062; margin-bottom: 15px;">Quick Draw</h3>
+                        <p style="margin-bottom: 20px;">Test your reflexes. <strong style="color: #c0a062;">Under 300ms: +$100 | New Best: +$500</strong></p>
+                        <button onclick="startQuickDraw()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">Play</button>
+                    </div>
+                </div>
+                
+                <!-- TikTakToe Game Area -->
+                <div id="minigame-tiktaktoe" style="display: none; margin-top: 40px; padding: 30px; background: #1a1a1a; border-radius: 4px; border: 2px solid #d4af37;">
+                    <h3 style="color: #d4af37; text-align: center; margin-bottom: 20px;">TikTakToe Challenge</h3>
+                    <div id="mg-tiktaktoe-game" style="display: none;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <p id="mg-current-player" style="font-size: 1.2em; font-weight: bold;">Your turn (X)</p>
+                            <p id="mg-game-status" style="color: #d4af37;">Make your move!</p>
+                        </div>
+                        <div id="mg-tiktaktoe-board" style="display: grid; grid-template-columns: repeat(3, 80px); grid-gap: 5px; justify-content: center; margin: 20px auto;">
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(0)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(1)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(2)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(3)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(4)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(5)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(6)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(7)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                            <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(8)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button onclick="mgQuitTikTakToe()" style="background: #8b0000; color: white; padding: 10px 20px; border: 1px solid #ff0000; border-radius: 2px; cursor: pointer;">New Game</button>
+                        </div>
+                    </div>
+                    <div id="mg-tiktaktoe-start" style="text-align: center;">
+                        <p>Ready to challenge the AI?</p>
+                        <div style="margin: 15px 0;">
+                            <button onclick="mgStartTikTakToe()" style="background: #333; color: #d4af37; padding: 15px 25px; margin: 5px; border: 1px solid #d4af37; border-radius: 2px; cursor: pointer; font-size: 16px;">Start Game</button>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="backToMiniGamesList()" style="background: #333; color: #aaa; padding: 12px 25px; border: 1px solid #555; border-radius: 2px; cursor: pointer;">← Back to Games</button>
+                    </div>
+                </div>
+                
+                <!-- Other Mini Game Areas -->
+                <div id="other-minigames" style="display: none; margin-top: 40px; padding: 30px; background: #1a1a1a; border-radius: 4px;">
+                    <div id="minigame-content"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="backToMiniGamesList()" style="background: #333; color: #aaa; padding: 12px 25px; border: 1px solid #555; border-radius: 2px; cursor: pointer;">← Back to Games</button>
+                    </div>
                 </div>
             </div>
-            <div id="casino-game-area" style="margin-top: 15px;"></div>
+
             <div class="page-nav">
                 <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
             </div>
@@ -689,137 +779,7 @@
             </div>
         </div>
 
-        <!-- Mini Games Screen -->
-        <div id="mini-games-screen" class="game-screen" style="display:none;">
-            <div class="page-header">
-                <h1><span class="icon"></span> Pastimes</h1>
-                <div class="breadcrumb">
-                    <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
-                    <span class="current">Mini-Games</span>
-                </div>
-            </div>
-            <div class="section-header">Earn While You Play</div>
-            <p style="text-align: center; margin-bottom: 30px;">Kill some time. <strong style="color: #c0a062;">Win $100 for each victory!</strong></p>
-            
-            <!-- Game Selection Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
-                <!-- TikTakToe -->
-                <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
-                    <h3 style="color: #c0a062; margin-bottom: 15px;">TikTakToe</h3>
-                    <p style="margin-bottom: 20px;">Classic strategy. <strong style="color: #c0a062;">Win: +$100</strong></p>
-                    <button onclick="startMiniGameTikTakToe()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">
-                        Play
-                    </button>
-                </div>
-                
-                <!-- Number Guessing Game -->
-                <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
-                    <h3 style="color: #c0a062; margin-bottom: 15px;">Number Hunter</h3>
-                    <p style="margin-bottom: 20px;">Guess the number. <strong style="color: #c0a062;">Win: +$100</strong></p>
-                    <button onclick="startNumberGuessing()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">
-                        Play
-                    </button>
-                </div>
-                
-                <!-- Rock Paper Scissors -->
-                <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
-                    <h3 style="color: #c0a062; margin-bottom: 15px;">Rock Paper Scissors</h3>
-                    <p style="margin-bottom: 20px;">Best of 5. <strong style="color: #c0a062;">Win match: +$100</strong></p>
-                    <button onclick="startRockPaperScissors()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">
-                        Play
-                    </button>
-                </div>
-                
-                <!-- Memory Match -->
-                <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
-                    <h3 style="color: #c0a062; margin-bottom: 15px;">Memory Match</h3>
-                    <p style="margin-bottom: 20px;">Match the cards. <strong style="color: #c0a062;">Under 60s: +$100 | New Best: +$500</strong></p>
-                    <button onclick="startMemoryMatch()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">
-                        Play
-                    </button>
-                </div>
-                
-                <!-- Snake Game -->
-                <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
-                    <h3 style="color: #c0a062; margin-bottom: 15px;">Snake</h3>
-                    <p style="margin-bottom: 20px;">Don't hit the walls. <strong style="color: #c0a062;">Earn $50 per food!</strong></p>
-                    <button onclick="startSnakeGame()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">
-                        Play
-                    </button>
-                </div>
-                
-                <!-- Reaction Time -->
-                <div class="mini-game-card" style="background: #1a1a1a; border-radius: 4px; padding: 25px; border: 1px solid #c0a062; text-align: center;">
-                    <h3 style="color: #c0a062; margin-bottom: 15px;">Quick Draw</h3>
-                    <p style="margin-bottom: 20px;">Test your reflexes. <strong style="color: #c0a062;">Under 300ms: +$100 | New Best: +$500</strong></p>
-                    <button onclick="startQuickDraw()" style="background: #1a1a1a; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 2px; cursor: pointer; font-size: 16px;">
-                        Play
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Individual Game Areas (Hidden by Default) -->
-            
-            <!-- TikTakToe Game Area -->
-            <div id="minigame-tiktaktoe" style="display: none; margin-top: 40px; padding: 30px; background: #1a1a1a; border-radius: 4px; border: 2px solid #d4af37;">
-                <h3 style="color: #d4af37; text-align: center; margin-bottom: 20px;">TikTakToe Challenge</h3>
-                
-                <div id="mg-tiktaktoe-game" style="display: none;">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <p id="mg-current-player" style="font-size: 1.2em; font-weight: bold;">Your turn (X)</p>
-                        <p id="mg-game-status" style="color: #d4af37;">Make your move!</p>
-                    </div>
-                    
-                    <div id="mg-tiktaktoe-board" style="display: grid; grid-template-columns: repeat(3, 80px); grid-gap: 5px; justify-content: center; margin: 20px auto;">
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(0)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(1)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(2)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(3)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(4)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(5)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(6)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(7)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                        <button class="mg-tiktaktoe-cell" onclick="mgMakeMove(8)" style="width: 80px; height: 80px; font-size: 24px; font-weight: bold; background: #333; color: #d4af37; border: 2px solid #555; border-radius: 2px; cursor: pointer;"></button>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button onclick="mgQuitTikTakToe()" style="background: #8b0000; color: white; padding: 10px 20px; border: 1px solid #ff0000; border-radius: 2px; cursor: pointer;">
-                            New Game
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="mg-tiktaktoe-start" style="text-align: center;">
-                    <p>Ready to challenge the AI?</p>
-                    <div style="margin: 15px 0;">
-                        <button onclick="mgStartTikTakToe()" style="background: #333; color: #d4af37; padding: 15px 25px; margin: 5px; border: 1px solid #d4af37; border-radius: 2px; cursor: pointer; font-size: 16px;">
-                            Start Game
-                        </button>
-                    </div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="backToMiniGamesList()" style="background: #333; color: #aaa; padding: 12px 25px; border: 1px solid #555; border-radius: 2px; cursor: pointer;">
-                        ← Back to Games
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Other Game Areas Will Be Added Here -->
-            <div id="other-minigames" style="display: none; margin-top: 40px; padding: 30px; background: #1a1a1a; border-radius: 4px;">
-                <div id="minigame-content"></div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="backToMiniGamesList()" style="background: #333; color: #aaa; padding: 12px 25px; border: 1px solid #555; border-radius: 2px; cursor: pointer;">
-                        ← Back to Games
-                    </button>
-                </div>
-            </div>
-            
-            <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
-            </div>
-        </div>
+        <!-- Mini Games screen merged into Gambling screen as a tab -->
 
         <!-- Missions Screen -->
         <div id="missions-screen" class="game-screen" style="display:none;">
@@ -945,7 +905,7 @@
         <!-- Player Stats Screen -->
         <div id="player-stats-screen" class="game-screen" style="display:none;">
             <div class="page-header">
-                <span class="breadcrumb">SafeHouse &gt; Player Stats</span>
+                <span class="breadcrumb">SafeHouse &gt; Stats</span>
             </div>
             <div id="player-stats-content">
                 <!-- Content will be generated by JavaScript -->
