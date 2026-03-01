@@ -2668,7 +2668,6 @@ function showOnlineWorld(activeTab) {
                     const isNPC = (window.NPC_OWNER_NAMES || new Set()).has(tData.owner);
                     const borderColor = isOwned ? '#27ae60' : isHome ? '#c0a062' : tData.owner ? (isNPC ? '#8b4513' : '#e67e22') : '#555';
                     const residentCount = (tData.residents || []).length;
-                    const claimCost = (window.CLAIM_COSTS || [])[idx] || 0;
                     
                     return `
                         <div style="background: rgba(20, 20, 20, 0.8); padding: 15px; border-radius: 10px; border: 2px solid ${borderColor};">
@@ -2689,8 +2688,7 @@ function showOnlineWorld(activeTab) {
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; min-width: 120px;">
                                     ${!isHome ? `<button onclick="showTerritoryRelocation()" style="background: #f39c12; color: #000; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">Relocate</button>` : ''}
-                                    ${!isOwned && !tData.owner ? `<button onclick="claimTerritory('${d.id}')" style="background: linear-gradient(180deg, #27ae60, #1e8449); color: #fff; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;" ${(player.level || 1) < (window.MIN_CLAIM_LEVEL || 10) ? 'disabled title="Level ' + (window.MIN_CLAIM_LEVEL || 10) + ' required"' : ''}>Claim ($${claimCost.toLocaleString()})</button>` : ''}
-                                    ${!isOwned && tData.owner ? `<button onclick="challengeForTerritory('${d.id}')" style="background: linear-gradient(180deg, #8b0000, #5a0000); color: #fff; padding: 8px 12px; border: 1px solid #ff0000; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">Challenge</button>` : ''}
+                                    ${!isOwned ? `<button onclick="wageWar('${d.id}')" style="background: linear-gradient(180deg, #8b0000, #5a0000); color: #fff; padding: 8px 12px; border: 1px solid #ff0000; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">Wage War</button>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -3219,8 +3217,8 @@ function exploreDistrict(districtName) {
                 <button onclick="doDistrictJob('${escapeHTML(districtName)}')" style="background: #333; color: #c0a062; padding: 10px; border: 1px solid #c0a062; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">
                      Find Work
                 </button>
-                <button onclick="claimTerritory('${escapeHTML(districtName)}')" style="background: #333; color: #8b0000; padding: 10px; border: 1px solid #8b0000; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">
-                     Claim Territory
+                <button onclick="wageWar('${escapeHTML(districtName)}')" style="background: #333; color: #8b0000; padding: 10px; border: 1px solid #8b0000; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">
+                     Wage War
                 </button>
                 <button onclick="findPlayersInDistrict('${escapeHTML(districtName)}')" style="background: #333; color: #f39c12; padding: 10px; border: 1px solid #f39c12; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">
                      Find Crew
@@ -3567,35 +3565,6 @@ function doDistrictJob(districtName) {
 
     if (typeof updateUI === 'function') updateUI();
     if (typeof checkLevelUp === 'function') checkLevelUp();
-}
-
-async function claimTerritory(districtName) {
-    if (!onlineWorldState.isConnected) {
-        window.ui.toast("You need to be connected to the online world!", 'error');
-        return;
-    }
-    
-    const district = onlineWorldState.cityDistricts[districtName];
-    const cost = 50000 + (district.crimeLevel * 1000);
-    
-    if (player.money < cost) {
-        window.ui.toast(`Not enough money! Need $${cost.toLocaleString()} to claim ${districtName}.`, 'error');
-        return;
-    }
-    
-    if (await window.ui.confirm(`Claim ${districtName} district for $${cost.toLocaleString()}? This will be visible to all players.`)) {
-        // SERVER-AUTHORITATIVE INTENT: Do NOT mutate local money/territory.
-        // Send territory_claim intent; server will validate cost, apply changes, then broadcast territory_taken.
-        if (onlineWorldState.socket && onlineWorldState.socket.readyState === WebSocket.OPEN) {
-            onlineWorldState.socket.send(JSON.stringify({
-                type: 'territory_claim',
-                district: districtName
-            }));
-            logAction(` Territory claim intent sent for ${districtName} ($${cost.toLocaleString()}). Awaiting authoritative confirmation...`);
-        } else {
-            window.ui.toast('Connection lost before sending claim intent.', 'error');
-        }
-    }
 }
 
 function findPlayersInDistrict(districtName) {

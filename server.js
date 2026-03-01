@@ -1273,7 +1273,6 @@ function handleTerritoryWar(clientId, message) {
 
     const terr = gameState.territories[districtId];
     if (!terr) return fail('Territory data missing.');
-    if (!terr.owner) return fail('This district has no owner. Claim it instead.');
     if (terr.owner === attacker.name) return fail('You already own this district.');
 
     // Jail check
@@ -1369,7 +1368,7 @@ function handleTerritoryWar(clientId, message) {
         attacker.reputation = (attacker.reputation || 0) + repGain;
         attackerState.reputation = attacker.reputation;
 
-        console.log(`⚔️ TERRITORY WAR: ${attacker.name} conquered ${districtId} from ${oldOwner} (ATK ${attackScore} > DEF ${defenseScore})`);
+        console.log(`TERRITORY WAR: ${attacker.name} conquered ${districtId}${oldOwner ? ` from ${oldOwner}` : ''} (ATK ${attackScore} > DEF ${defenseScore})`);
 
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
@@ -1412,7 +1411,7 @@ function handleTerritoryWar(clientId, message) {
             method: 'war'
         });
 
-        addGlobalChatMessage('System', `⚔️ ${attacker.name} conquered ${districtId.replace(/_/g, ' ')} from ${oldOwner} in a gang war!`, '#8b0000');
+        addGlobalChatMessage('System', `${attacker.name} conquered ${districtId.replace(/_/g, ' ')}${oldOwner ? ` from ${oldOwner}` : ''} in a gang war!`, '#8b0000');
     } else {
         // Defense holds — territory gets stronger
         terr.defenseRating = Math.min(300, (terr.defenseRating || 100) + 10);

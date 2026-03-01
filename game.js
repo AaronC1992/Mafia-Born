@@ -6181,8 +6181,6 @@ function generateRelocateHTML() {
     const resCount = terrData.residents ? terrData.residents.length : 0;
     const defRating = terrData.defenseRating || 100;
     const taxTotal = terrData.taxCollected || 0;
-    const claimCost = CLAIM_COSTS[idx] || 25000;
-
     let badge = '';
     if (isCurrent) badge = '<span style="color:#2ecc71; font-weight:bold;">Current</span>';
     else if (onCooldown) badge = `<span style="color:#e67e22;">${cooldownRemaining} min</span>`;
@@ -6210,22 +6208,6 @@ function generateRelocateHTML() {
       ownerLine = '<span style="color:#888;">Unclaimed</span><br>';
     }
 
-    // MP action buttons
-    let actionBtns = '';
-    if (isOnline && isCurrent) {
-      if (!ownerName) {
-        const canClaim = player.level >= MIN_CLAIM_LEVEL && player.money >= claimCost;
-        actionBtns = `<button onclick="event.stopPropagation(); claimTerritory('${d.id}')" 
-          style="background:${canClaim ? '#8b6914' : '#333'}; color:${canClaim ? '#fff' : '#666'}; border:1px solid ${canClaim ? '#ffd700' : '#444'}; padding:6px 14px; border-radius:6px; cursor:${canClaim ? 'pointer' : 'default'}; font-size:0.85em; margin-top:6px;"
-          ${canClaim ? '' : 'disabled'}>Claim ($${claimCost.toLocaleString()})</button>`;
-      } else if (ownerName !== myName && !allianceMembers.includes(ownerName)) {
-        const canWar = gangSize >= MIN_WAR_GANG_SIZE && player.energy >= WAR_ENERGY_COST;
-        actionBtns = `<button onclick="event.stopPropagation(); wageWar('${d.id}')" 
-          style="background:${canWar ? '#8b0000' : '#333'}; color:${canWar ? '#fff' : '#666'}; border:1px solid ${canWar ? '#ff0000' : '#444'}; padding:6px 14px; border-radius:6px; cursor:${canWar ? 'pointer' : 'default'}; font-size:0.85em; margin-top:6px;"
-          ${canWar ? '' : 'disabled'}>Wage War</button>`;
-      }
-    }
-
     html += `
       <div ${onclick}
            style="background:rgba(44,62,80,0.85); border:2px solid ${borderColor}; border-radius:12px;
@@ -6245,7 +6227,7 @@ function generateRelocateHTML() {
           <span>Risk: ${d.riskLevel} | Police: ${d.policePresence}%</span>
         </div>
         <div style="margin-top:8px; text-align:center;">
-          ${badge}${actionBtns}
+          ${badge}
         </div>
       </div>`;
   });
@@ -14210,8 +14192,74 @@ function renderTerritoriesScreen() {
     }).join('');
   } else {
     mpCards = isOnline
-      ? '<p style="color:#888;text-align:center;padding:20px;width:100%;">You don\'t own any online districts yet. Claim districts via Relocate - move to an unclaimed district and claim ownership.</p>'
+      ? '<p style="color:#888;text-align:center;padding:20px;width:100%;">You don\'t own any online districts yet. Wage war to conquer them!</p>'
       : '<p style="color:#888;text-align:center;padding:20px;width:100%;">Connect to multiplayer to view district ownership.</p>';
+  }
+
+  // ── Conquer Districts (not owned by player) ──
+  const gangSize = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.length : 0;
+  const allianceMembers = (typeof _currentAllianceData !== 'undefined' && _currentAllianceData && _currentAllianceData.myAlliance) ? (_currentAllianceData.myAlliance.members || []) : [];
+
+  const conquerDistricts = DISTRICTS.filter(d => {
+    const terr = tState[d.id];
+    const owner = terr ? terr.owner : null;
+    if (owner === myName) return false; // already ours
+    if (owner && allianceMembers.includes(owner)) return false; // allied
+    return true;
+  });
+
+  let conquerCards = '';
+  if (!isOnline) {
+    conquerCards = '<p style="color:#888;text-align:center;padding:20px;width:100%;">Connect to multiplayer to wage war for districts.</p>';
+  } else if (conquerDistricts.length > 0) {
+    conquerCards = conquerDistricts.map(d => {
+      const terr = tState[d.id] || {};
+      const ownerName = terr.owner || null;
+      const resCount = terr.residents ? terr.residents.length : 0;
+      const defRating = terr.defenseRating || 100;
+      const isCurrent = d.id === player.currentTerritory;
+      const canWar = isCurrent && gangSize >= MIN_WAR_GANG_SIZE && player.energy >= WAR_ENERGY_COST;
+      const isNPC = ownerName && NPC_OWNER_NAMES && NPC_OWNER_NAMES.has ? NPC_OWNER_NAMES.has(ownerName) : false;
+
+      let warBtnTitle = '';
+      if (!isCurrent) warBtnTitle = 'You must live in this district to wage war';
+      else if (gangSize < MIN_WAR_GANG_SIZE) warBtnTitle = `Need ${MIN_WAR_GANG_SIZE}+ gang members (you have ${gangSize})`;
+      else if (player.energy < WAR_ENERGY_COST) warBtnTitle = `Need ${WAR_ENERGY_COST} energy (you have ${player.energy || 0})`;
+      else warBtnTitle = 'Wage war to conquer this territory!';
+
+      // Owner badge
+      let ownerBadge = '';
+      if (isNPC) {
+        ownerBadge = `<span style="color:#8b4513; font-weight:bold;">RIVAL BOSS</span><br><span style="color:#cd853f; font-size:0.85em;">${ownerName}</span>`;
+      } else if (ownerName) {
+        ownerBadge = `<span style="color:#e74c3c;">Owner: ${ownerName}</span>`;
+      } else {
+        ownerBadge = '<span style="color:#888;">Unclaimed</span>';
+      }
+
+      return `
+        <div style="background: rgba(44,62,80,0.85); border: 2px solid ${isCurrent ? '#e74c3c' : '#555'}; border-radius: 12px;
+                    padding: 16px; min-width: 220px; max-width: 280px; text-align: left; opacity: ${isCurrent ? '1' : '0.6'};">
+          <div style="font-size: 1.8em; margin-bottom: 4px;">${d.icon}</div>
+          <h3 style="color: #e74c3c; margin: 0 0 4px;">${d.shortName}</h3>
+          <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
+          <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
+            ${ownerBadge}<br>
+            <span>Residents: ${resCount}</span><br>
+            <span>Defense: ${defRating}</span><br>
+            <span>Risk: ${d.riskLevel} | Police: ${d.policePresence}%</span>
+          </div>
+          <div style="margin-top: 10px; text-align: center;">
+            ${isCurrent ? `<span style="color:#2ecc71; font-size:0.8em; display:block; margin-bottom:6px;">You live here</span>` : `<span style="color:#888; font-size:0.8em; display:block; margin-bottom:6px;">Relocate here first</span>`}
+            <button onclick="wageWar('${d.id}')"
+              style="background: ${canWar ? '#8b0000' : '#333'}; color: ${canWar ? '#fff' : '#666'}; border: 1px solid ${canWar ? '#ff0000' : '#444'}; padding: 8px 16px; border-radius: 6px; cursor: ${canWar ? 'pointer' : 'default'}; font-family: 'Georgia', serif; font-size: 0.9em; width: 100%;"
+              ${canWar ? '' : 'disabled'} title="${warBtnTitle}">Wage War</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    conquerCards = '<p style="color:#2ecc71;text-align:center;padding:20px;width:100%;">You own all districts! Total domination.</p>';
   }
 
   // ── Summary stats ──
@@ -14270,6 +14318,14 @@ function renderTerritoriesScreen() {
           ${mpCards}
         </div>
       </div>
+
+      <!-- Conquer Districts Section -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #e74c3c; margin: 0 0 12px; font-family: Georgia, serif;">Conquer Districts <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Wage War)</span></h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
+          ${conquerCards}
+        </div>
+      </div>
     </div>
   `;
 }
@@ -14310,7 +14366,6 @@ function showTerritoryRelocation() {
     const resCount = terrData.residents ? terrData.residents.length : 0;
     const defRating = terrData.defenseRating || 100;
     const taxTotal = terrData.taxCollected || 0;
-    const claimCost = CLAIM_COSTS[idx] || 25000;
     const isOnline = typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected;
     const myName = (typeof onlineWorldState !== 'undefined' && onlineWorldState.username) || '';
 
@@ -14336,30 +14391,6 @@ function showTerritoryRelocation() {
       ownerLine = '<span style="color: #888;">Unclaimed</span><br>';
     }
 
-    // Action buttons (claim / wage war)
-    let actionBtns = '';
-    if (isOnline && isCurrent) {
-      if (!ownerName) {
-        // Can claim if player lives here, high enough level, can afford
-        const canClaim = player.level >= MIN_CLAIM_LEVEL && player.money >= claimCost;
-        const claimTitle = !canClaim
-          ? (player.level < MIN_CLAIM_LEVEL ? `Requires level ${MIN_CLAIM_LEVEL}` : 'Not enough money')
-          : `Claim for $${claimCost.toLocaleString()}`;
-        actionBtns = `<button onclick="event.stopPropagation(); claimTerritory('${d.id}')" 
-          style="background: ${canClaim ? '#8b6914' : '#333'}; color: ${canClaim ? '#fff' : '#666'}; border: 1px solid ${canClaim ? '#ffd700' : '#444'}; padding: 6px 14px; border-radius: 6px; cursor: ${canClaim ? 'pointer' : 'default'}; font-family: 'Georgia', serif; font-size: 0.85em; margin-top: 8px;"
-          ${canClaim ? '' : 'disabled'} title="${claimTitle}">Claim ($${claimCost.toLocaleString()})</button>`;
-      } else if (ownerName !== myName && !allianceMembers2.includes(ownerName)) {
-        // Can wage war if enough gang members and energy
-        const canWar = gangSize >= MIN_WAR_GANG_SIZE && player.energy >= WAR_ENERGY_COST;
-        const warTitle = !canWar
-          ? (gangSize < MIN_WAR_GANG_SIZE ? `Need ${MIN_WAR_GANG_SIZE}+ gang members` : 'Not enough energy')
-          : 'Wage war to conquer this territory';
-        actionBtns = `<button onclick="event.stopPropagation(); wageWar('${d.id}')" 
-          style="background: ${canWar ? '#8b0000' : '#333'}; color: ${canWar ? '#fff' : '#666'}; border: 1px solid ${canWar ? '#ff0000' : '#444'}; padding: 6px 14px; border-radius: 6px; cursor: ${canWar ? 'pointer' : 'default'}; font-family: 'Georgia', serif; font-size: 0.85em; margin-top: 8px;"
-          ${canWar ? '' : 'disabled'} title="${warTitle}">Wage War</button>`;
-      }
-    }
-
     return `
       <div ${onclick}
            style="background: rgba(44,62,80,0.85); border: 2px solid ${borderColor}; border-radius: 12px;
@@ -14378,7 +14409,7 @@ function showTerritoryRelocation() {
           <span>Businesses: ${d.maxBusinesses}</span><br>
           <span>Risk: ${d.riskLevel} | Police: ${d.policePresence}%</span>
         </div>
-        <div style="margin-top: 8px; text-align: center;">${badge}${actionBtns}</div>
+        <div style="margin-top: 8px; text-align: center;">${badge}</div>
       </div>
     `;
   }).join('');
@@ -14438,48 +14469,14 @@ async function confirmRelocation(districtId) {
   showTerritoryRelocation(); // Refresh the screen
 }
 
-// ── Phase 2: Territory Claim & War ──────────────────────────────────────────
-
-async function claimTerritory(districtId) {
-  const d = getDistrict(districtId);
-  if (!d) return;
-
-  if (districtId !== player.currentTerritory) {
-    showBriefNotification('You can only claim ownership of the district you live in.', 'danger');
-    return;
-  }
-
-  const idx = DISTRICTS.findIndex(dd => dd.id === districtId);
-  const cost = CLAIM_COSTS[idx] || 25000;
-
-  if (player.level < MIN_CLAIM_LEVEL) {
-    showBriefNotification(`You must be level ${MIN_CLAIM_LEVEL} or higher to claim a territory.`, 'danger');
-    return;
-  }
-  if (player.money < cost) {
-    showBriefNotification(`Not enough money. Claiming ${d.shortName} costs $${cost.toLocaleString()}.`, 'danger');
-    return;
-  }
-
-  const confirmed = await ui.confirm(`Claim ownership of ${d.shortName} for $${cost.toLocaleString()}?<br><br>As owner you will collect 10% tax from all residents' job income.`);
-  if (!confirmed) return;
-
-  if (typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected && onlineWorldState.socket) {
-    onlineWorldState.socket.send(JSON.stringify({
-      type: 'territory_claim_ownership',
-      district: districtId
-    }));
-  } else {
-    showBriefNotification('Must be connected to multiplayer to claim territories.', 'danger');
-  }
-}
+// ── Phase 2: Territory War (Conquest) ───────────────────────────────────────
 
 async function wageWar(districtId) {
   const d = getDistrict(districtId);
   if (!d) return;
 
   if (districtId !== player.currentTerritory) {
-    showBriefNotification('You can only wage war in the district you live in.', 'danger');
+    showBriefNotification('You must live in this district to wage war. Relocate there first.', 'danger');
     return;
   }
 
@@ -14495,9 +14492,10 @@ async function wageWar(districtId) {
 
   const tState = (typeof onlineWorldState !== 'undefined' && onlineWorldState.territories) || {};
   const terrData = tState[districtId] || {};
-  const ownerName = terrData.owner || 'Unknown';
+  const ownerName = terrData.owner || 'Uncontrolled';
+  const defRating = terrData.defenseRating || 100;
 
-  const confirmed = await ui.confirm(`Wage war against ${ownerName} for control of ${d.shortName}?<br><br>This will cost ${WAR_ENERGY_COST} energy and risks gang casualties.<br>You need ${MIN_WAR_GANG_SIZE}+ gang members (you have ${gangSize}).`);
+  const confirmed = await ui.confirm(`Wage war for control of ${d.shortName}?<br><br>Current controller: <strong>${ownerName}</strong> (Defense: ${defRating})<br>Cost: ${WAR_ENERGY_COST} energy | Risks gang casualties<br>Your crew: ${gangSize} members`);
   if (!confirmed) return;
 
   if (typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected && onlineWorldState.socket) {
@@ -20629,7 +20627,6 @@ window.showTerritoryRelocation = showTerritoryRelocation;
 window.confirmRelocation = confirmRelocation;
 
 // Territory System (Phase 2) — Ownership & Conquest
-window.claimTerritory = claimTerritory;
 window.wageWar = wageWar;
 
 // Other Locations
