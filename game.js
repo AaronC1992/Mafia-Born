@@ -6444,7 +6444,7 @@ function generateTurfOverviewHTML() {
   }
 
   // ── 5. Turf Missions (reuse existing generator) ──
-  html += generateTurfMissionsHTML();
+  html += generateTurfOverviewHTML();
 
   html += '</div>';
   return html;
@@ -14223,15 +14223,16 @@ function resetPlayerForNewGame() {
         chen: 0,
         morales: 0
       },
-      unlockedTurfMissions: ["suburbs_expansion"],
+      unlockedTurfMissions: ["old_quarter_expansion"],
       unlockedBossBattles: [],
       signatureJobCooldowns: {},
       missionStats: {
         jobsCompleted: 0,
         moneyEarned: 0,
         gangMembersRecruited: 0,
-        territoriesControlled: 0,
+        turfControlled: 0,
         bossesDefeated: 0,
+        donsDefeated: 0,
         factionMissionsCompleted: 0
       }
     },
@@ -14257,6 +14258,33 @@ function resetPlayerForNewGame() {
       choices: {},
       isDon: false,
       bossesDefeated: []
+    },
+    // ── Properties that were previously missing from reset ──
+    activeLaundering: [],
+    currentTerritory: null,
+    lastTerritoryMove: 0,
+    chosenFamily: null,
+    familyRank: 'associate',
+    turf: {
+      owned: [],
+      bossesDefeated: [],
+      donsDefeated: [],
+      income: 0,
+      heat: {},
+      power: 100,
+      reputation: 0,
+      events: [],
+      fortifications: {},
+      lastTributeCollection: 0
+    },
+    empireRating: {
+      totalScore: 0,
+      moneyPower: 0,
+      gangPower: 0,
+      turfPower: 0,
+      businessPower: 0,
+      reputationPower: 0,
+      skillPower: 0
     }
   });
 }
@@ -14919,7 +14947,6 @@ function showIntroNarrative() {
 function finishIntro() {
   document.getElementById("intro-narrative").style.display = "none";
   
-  // Start the game directly (onboarding objectives will guide the player)
   startGameAfterIntro();
 }
 
@@ -17281,7 +17308,7 @@ async function forceHardReload() {
     'auth.js', 'app.js', 'economy.js', 'casino.js', 'empireOverview.js',
     'eventBus.js', 'factions.js', 'generators.js', 'jobs.js', 'logging.js',
     'miniGames.js', 'missions.js', 'mobile-responsive.js', 'narration.js',
-    'onboarding.js', 'passiveManager.js', 'player.js', 'territories.js',
+    'passiveManager.js', 'player.js', 'territories.js',
     'ui-events.js', 'ui-modal.js', 'worldPersistence.js'
   ];
   try {
@@ -20654,6 +20681,7 @@ window.showMoneyLaundering = showMoneyLaundering;
 window.checkLaunderingEligibility = checkLaunderingEligibility;
 window.startLaundering = startLaundering;
 window.collectLaundering = collectLaundering;
+window.showToast = showToast;
 window.showStore = showStore;
 window.switchStoreTab = switchStoreTab;
 window.renderStoreTab = renderStoreTab;

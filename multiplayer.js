@@ -1577,7 +1577,7 @@ async function handleServerMessage(message) {
                 if (window.ui) {
                     window.ui.alert(`${message.message}`, 'Jailbreak Successful');
                 } else {
-                    alert(message.message);
+                    showSystemMessage(`🎉 ${message.message}`, '#2ecc71');
                 }
             } else {
                 logAction(`💀 ${message.message}`);
@@ -1601,7 +1601,7 @@ async function handleServerMessage(message) {
                     if (window.ui) {
                         window.ui.alert(`${message.message}`, 'Jailbreak Failed');
                     } else {
-                        alert(message.message);
+                        showSystemMessage(`💠 ${message.message}`, '#e74c3c');
                     }
                 }
             }
@@ -1683,7 +1683,9 @@ async function handleServerMessage(message) {
                     try { EventBus.emit('jailStatusChanged', { inJail: false, jailTime: 0 }); } catch(e) {}
                 }
                 if (typeof updateUI === 'function') updateUI();
-                alert('You served your sentence and are now free.');
+                if (typeof showToast === 'function') {
+                    showToast('You served your sentence and are now free.', 'success');
+                }
                 if (typeof goBackToMainMenu === 'function') goBackToMainMenu();
             }
             break;
