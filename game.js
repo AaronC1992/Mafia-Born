@@ -14404,7 +14404,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.10.0";
+const CURRENT_VERSION = "1.10.1";
 const VERSION_UPDATES = {
   "1.10.0": {
     title: "Tutorial System, Help Guide & Objective Cleanup",
