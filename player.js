@@ -160,15 +160,13 @@ export const player = {
   activeLaundering: [], // Array of pending laundering ops {id, methodId, methodName, amount, cleanAmount, startedAt, completesAt}
   businessLastCollected: {}, // Object to track last collection time for each front
   
-  // Legacy Territory Control — kept for backward compat, see turf system above
+  // Territory Control — also mirrored by turf system above
   territories: [],
   protectionRackets: [], // Active protection rackets
-  territoryIncome: 0, // Weekly tribute (legacy, use turf.income)
+  territoryIncome: 0, // Weekly tribute
   corruptedOfficials: [], // Bribed officials with expiration
-  territoryEvents: [], // Legacy, use turf.events
-  territoryHeat: {}, // Legacy, use turf.heat
-  territoryPower: 100, // Legacy, use turf.power
-  territoryReputation: 0, // Legacy, use turf.reputation
+  territoryPower: 100, // Overall territory power
+  territoryReputation: 0, // Territory reputation score
   
   // Long-term Goals System
   empireRating: {

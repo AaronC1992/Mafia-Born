@@ -15,7 +15,7 @@ import { MobileSystem, updateMobileActionLog } from './mobile-responsive.js';
 import { initUIEvents } from './ui-events.js';
 import { initAuth, showAuthModal, autoCloudSave, getAuthState, updateAuthStatusUI, checkPlayerName, checkAdmin, adminModify } from './auth.js';
 import {
-  initCasino, getCasinoWins, resetCasinoWins,
+  initCasino, getCasinoWins,
   showCasino, startBlackjack, bjDeal, bjHit, bjStand, bjDouble,
   startSlots, slotSpin,
   startRoulette, rouletteAddBet, rouletteClear, rouletteSpin,
@@ -948,8 +948,6 @@ function advanceStoryChapter() {
 }
 window.advanceStoryChapter = advanceStoryChapter;
 
-// Legacy stub kept — still called by showMissions()
-function generateTurfMissionsHTML() { return generateTurfOverviewHTML(); }
 
 // Mission execution functions
 async function startFactionMission(familyKey, missionId) {
@@ -6933,22 +6931,9 @@ async function dropProtection(racketId) {
 }
 
 // Legacy territory stubs — redirect to new Turf system
-async function initiateTurfWar(districtId) {
-  // Old turf war function — redirect to the Turf Map where players can attack zones
-  showTurfMap();
-}
-
 function manageTerritoryDetails(territoryId) {
   // Legacy stub — redirect to new turf manage screen
   manageTurfDetails(territoryId);
-}
-
-function reduceHeatTerritory(territoryId) {
-  reduceHeatTurf(territoryId);
-}
-
-function collectTerritoryTribute(territoryId) {
-  collectTurfTribute(territoryId);
 }
 
 async function fortifyTerritory(territoryId) {
@@ -8087,13 +8072,12 @@ function hideAllScreens() {
   window.scrollTo(0, 0);
 
   // Reset scroll position of all game screen containers (they have overflow-y: auto on mobile)
-  document.querySelectorAll('.game-screen, #menu, #gameplay').forEach(s => { s.scrollTop = 0; });
+  document.querySelectorAll('.game-screen, #menu').forEach(s => { s.scrollTop = 0; });
   
   // Remove .screen-active from all game screens so their fixed page-headers hide properly
   document.querySelectorAll('.game-screen.screen-active').forEach(s => s.classList.remove('screen-active'));
   
   document.getElementById("menu").style.display = "none";
-  document.getElementById("gameplay").style.display = "none";
   document.getElementById("jobs-screen").style.display = "none";
   document.getElementById("store-screen").style.display = "none";
   document.getElementById("real-estate-screen").style.display = "none";
@@ -14246,8 +14230,6 @@ function resetPlayerForNewGame() {
     protectionRackets: [],
     territoryIncome: 0,
     corruptedOfficials: [],
-    territoryEvents: [],
-    territoryHeat: {},
     territoryPower: 100,
     territoryReputation: 0,
     quickActionPrefs: [],
@@ -20659,7 +20641,6 @@ window.showMissions = showMissions;
 window.switchOpsTab = switchOpsTab;
 window.toggleFamilyGroup = toggleFamilyGroup;
 window.toggleLockedMissions = toggleLockedMissions;
-window.generateTurfMissionsHTML = generateTurfMissionsHTML;
 window.startFactionMission = startFactionMission;
 window.startSignatureJob = startSignatureJob;
 window.startTurfMission = startTurfMission;
@@ -20728,15 +20709,13 @@ window.approachBusiness = approachBusiness;
 window.collectProtection = collectProtection;
 window.pressureBusiness = pressureBusiness;
 window.manageTerritoryDetails = manageTerritoryDetails;
-window.reduceHeatTerritory = reduceHeatTerritory;
-window.collectTerritoryTribute = collectTerritoryTribute;
+
 window.processTerritoryOperations = processTerritoryOperations;
 window.generateTerritoryEvent = generateTerritoryEvent;
 window.collectTribute = collectTribute;
 window.expandTerritory = expandTerritory;
 window.gangWar = gangWar;
 window.corruptOfficial = corruptOfficial;
-window.initiateTurfWar = initiateTurfWar;
 window.dropProtection = dropProtection;
 window.fortifyTerritory = fortifyTerritory;
 window.acquireTerritory = function(zoneId) { attackTurfZone(zoneId); };

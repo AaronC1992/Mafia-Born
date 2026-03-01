@@ -740,22 +740,6 @@ button:disabled {
     scrollbar-color: #d4af37 #1a1a1a;
 }
 
-#pharmacy-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #0a0a0a;
-    color: #e0e0e0;
-    /* Match top padding so content is not hidden under header */
-    padding: calc(var(--stats-bar-h) + 96px) 260px 20px 290px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    z-index: 5;
-    scrollbar-width: thin;
-    scrollbar-color: #d4af37 #1a1a1a;
-}
 
 #death-screen {
     position: fixed;
@@ -1134,9 +1118,6 @@ p, ul {
     margin-top: 8px;
 }
 
-#game-info {
-    margin-bottom: 10px;
-}
 
 #store-screen ul, #jobs-screen ul {
     list-style-type: none;
@@ -1505,28 +1486,6 @@ p, ul {
         font-size: 2.5em;
     }
     
-    #tutorial-content {
-        padding: 20px;
-        max-width: 280px;
-        width: 85%;
-        min-width: 250px;
-        max-height: calc(100vh - 160px);
-        margin-top: 100px;
-        margin-right: 10px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    
-    #tutorial-text {
-        font-size: 1em;
-    }
-    
-    #tutorial-buttons button {
-        font-size: 14px;
-        padding: 10px 16px;
-        margin: 5px;
-    }
-
     #death-screen h2 {
         font-size: 2.5em;
     }
@@ -1987,7 +1946,6 @@ p, ul {
 .mobile-device #jailbreak-screen,
 .mobile-device #recruitment-screen,
 .mobile-device #stolen-cars-screen,
-.mobile-device #pharmacy-screen,
 .mobile-device #player-stats-screen {
     padding: calc(var(--stats-bar-h, 44px) + 86px) 15px 80px 15px !important; /* Top padding dynamically clears stats bar + page header, bottom for quick actions */
     overflow-y: auto !important;
@@ -2031,7 +1989,7 @@ p, ul {
 .tablet-device #jailbreak-screen,
 .tablet-device #recruitment-screen,
 .tablet-device #stolen-cars-screen,
-.tablet-device #pharmacy-screen {
+.tablet-device #stolen-cars-screen {
     padding: calc(var(--stats-bar-h) + 96px) 180px 20px 200px !important; /* Adjust padding for side panels — must clear page-header */
 }
 
@@ -2505,28 +2463,6 @@ p, ul {
         font-size: 2.5em;
     }
     
-    #tutorial-content {
-        padding: 20px;
-        max-width: 280px;
-        width: 85%;
-        min-width: 250px;
-        max-height: calc(100vh - 160px);
-        margin-top: 100px;
-        margin-right: 10px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    
-    #tutorial-text {
-        font-size: 1em;
-    }
-    
-    #tutorial-buttons button {
-        font-size: 14px;
-        padding: 10px 16px;
-        margin: 5px;
-    }
-
     #death-screen h2 {
         font-size: 2.5em;
     }
