@@ -4,7 +4,7 @@ import { showEmpireOverview } from './empireOverview.js';
 import { player, gainExperience, checkLevelUp, regenerateEnergy, startEnergyRegenTimer, startEnergyRegeneration, skillTreeDefinitions, availablePerks, achievements } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
 import { crimeFamilies, factionEffects, potentialMentors } from './factions.js';
-import { familyStories, missionProgress, factionMissions } from './missions.js?v=1.7.2';
+import { familyStories, missionProgress, factionMissions } from './missions.js?v=1.7.3';
 import { narrationVariations, getRandomNarration } from './narration.js';
 import { storeItems, realEstateProperties, businessTypes, loanOptions, launderingMethods } from './economy.js';
 import { prisonerNames, recruitNames, availableRecruits, jailPrisoners, jailbreakPrisoners, setJailPrisoners, setJailbreakPrisoners, generateJailPrisoners, generateJailbreakPrisoners, generateAvailableRecruits } from './generators.js';
@@ -7593,6 +7593,8 @@ function hideAllScreens() {
   const fenceScreen = document.getElementById("fence-screen");
   if (fenceScreen) fenceScreen.style.display = "none";
   document.getElementById("territory-control-screen").style.display = "none";
+  const territoriesScreen = document.getElementById("territories-screen");
+  if (territoriesScreen) territoriesScreen.style.display = "none";
   document.getElementById("events-screen").style.display = "none";
   document.getElementById("map-screen").style.display = "none";
   document.getElementById("calendar-screen").style.display = "none";
@@ -11870,6 +11872,7 @@ const menuUnlockConfig = [
   { id: 'missions',    fn: 'showMissions()',          label: 'Operations',     tip: 'Story missions & special ops',     level: 0 },
 
   // === MID GAME (Level 5-8) ===
+  { id: 'territories', fn: 'showTerritories()',        label: 'Territories',    tip: 'Manage your owned territories',    level: 5 },
   { id: 'gang',        fn: 'showGang()',              label: 'The Family',     tip: 'Recruit & manage your crew',       level: 5 },
   { id: 'courthouse',  fn: 'showCourtHouse()',        label: 'Legal Aid',      tip: 'Pay to reduce your wanted level',  level: 5 },
   { id: 'events',      fn: 'showEventsStatus()',      label: 'Events',         tip: 'Current weather & world events',   level: 5 },
@@ -14160,6 +14163,189 @@ function selectSpawnTerritory(districtId) {
 }
 
 // ──────────────────────────────────────────────────────────────
+// TERRITORY MANAGEMENT SCREEN (SafeHouse button)
+// Shows all SP turf zones and MP districts the player owns.
+// ──────────────────────────────────────────────────────────────
+
+function showTerritories() {
+  hideAllScreens();
+  document.getElementById('territories-screen').style.display = 'block';
+
+  // Request fresh territory data from server
+  if (typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected && onlineWorldState.socket) {
+    onlineWorldState.socket.send(JSON.stringify({ type: 'territory_info' }));
+  }
+
+  renderTerritoriesScreen();
+}
+window.showTerritories = showTerritories;
+
+function renderTerritoriesScreen() {
+  const container = document.getElementById('territories-content');
+  if (!container) return;
+
+  const tState = (typeof onlineWorldState !== 'undefined' && onlineWorldState.territories) || {};
+  const myName = (typeof onlineWorldState !== 'undefined' && onlineWorldState.username) || player.name || '';
+  const isOnline = typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected;
+
+  // ── SP Turf Zones ──
+  initTurfZones();
+  const ownedTurf = player.turf.owned || [];
+
+  let spCards = '';
+  if (ownedTurf.length > 0) {
+    spCards = ownedTurf.map(zoneId => {
+      const zone = getTurfZone(zoneId);
+      if (!zone) return '';
+      const fort = player.turf.fortifications && player.turf.fortifications[zoneId] ? player.turf.fortifications[zoneId] : (zone.fortificationLevel || 0);
+      const defenders = (zone.defendingMembers || []).length;
+      const familyBuff = getChosenFamilyBuff();
+      const incomeMultiplier = familyBuff ? familyBuff.incomeMultiplier : 1;
+      const income = Math.floor(zone.baseIncome * incomeMultiplier);
+
+      return `
+        <div style="background: rgba(44,62,80,0.85); border: 2px solid #e74c3c; border-radius: 12px;
+                    padding: 16px; min-width: 220px; max-width: 280px; text-align: left;">
+          <div style="font-size: 1.8em; margin-bottom: 4px;">${zone.icon}</div>
+          <h3 style="color: #e74c3c; margin: 0 0 4px;">${zone.name}</h3>
+          <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${zone.description}</p>
+          <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
+            <span>💰 Income: $${income.toLocaleString()}/cycle</span><br>
+            <span>🏗️ Fortification: Lv ${fort}</span><br>
+            <span>🛡️ Defense Req: ${zone.defenseRequired}</span><br>
+            <span>👥 Defenders: ${defenders}</span><br>
+            <span>⚠️ Risk: ${zone.riskLevel}</span>
+          </div>
+          <div style="margin-top: 10px; text-align: center;">
+            <span style="color: #2ecc71; font-weight: bold; font-size: 0.85em;">✅ Controlled</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    spCards = '<p style="color:#888;text-align:center;padding:20px;width:100%;">You don\'t own any turf zones yet. Conquer zones through Operations > Turf Wars.</p>';
+  }
+
+  // ── MP Districts ──
+  const ownedDistricts = DISTRICTS.filter(d => {
+    const terr = tState[d.id];
+    return terr && terr.owner === myName;
+  });
+
+  let mpCards = '';
+  if (ownedDistricts.length > 0) {
+    mpCards = ownedDistricts.map(d => {
+      const terr = tState[d.id];
+      const resCount = terr.residents ? terr.residents.length : 0;
+      const defRating = terr.defenseRating || 100;
+      const taxTotal = terr.taxCollected || 0;
+      const residents = terr.residents || [];
+
+      // Build residents list (show up to 10)
+      let residentsHTML = '';
+      if (residents.length > 0) {
+        const shown = residents.slice(0, 10);
+        residentsHTML = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">';
+        residentsHTML += '<span style="color: #d4af37; font-size: 0.8em; font-weight: bold;">Residents:</span><br>';
+        residentsHTML += shown.map(r => `<span style="color: #bdc3c7; font-size: 0.8em;">🤵 ${typeof r === 'string' ? r : (r.name || 'Unknown')}</span>`).join('<br>');
+        if (residents.length > 10) {
+          residentsHTML += `<br><span style="color: #888; font-size: 0.75em;">...and ${residents.length - 10} more</span>`;
+        }
+        residentsHTML += '</div>';
+      } else {
+        residentsHTML = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);"><span style="color: #888; font-size: 0.8em;">No residents yet</span></div>';
+      }
+
+      return `
+        <div style="background: rgba(44,62,80,0.85); border: 2px solid #d4af37; border-radius: 12px;
+                    padding: 16px; min-width: 240px; max-width: 300px; text-align: left;">
+          <div style="font-size: 1.8em; margin-bottom: 4px;">${d.icon}</div>
+          <h3 style="color: #d4af37; margin: 0 0 4px;">${d.shortName}</h3>
+          <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
+          <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
+            <span>👑 Owner: <strong style="color: #ffd700;">YOU</strong></span><br>
+            <span>👥 Residents: ${resCount}</span><br>
+            <span>🛡️ Defense Rating: ${defRating}</span><br>
+            <span>💰 Tax Collected: $${taxTotal.toLocaleString()}</span><br>
+            <span>💰 Base Income: $${d.baseIncome.toLocaleString()}/cycle</span><br>
+            <span>🏢 Max Businesses: ${d.maxBusinesses}</span><br>
+            <span>⚠️ Risk: ${d.riskLevel} | 🚔 Police: ${d.policePresence}%</span>
+          </div>
+          ${residentsHTML}
+          <div style="margin-top: 10px; text-align: center;">
+            <span style="color: #d4af37; font-weight: bold; font-size: 0.85em;">👑 Your Territory</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    mpCards = isOnline
+      ? '<p style="color:#888;text-align:center;padding:20px;width:100%;">You don\'t own any online districts yet. Claim districts via Relocate - move to an unclaimed district and claim ownership.</p>'
+      : '<p style="color:#888;text-align:center;padding:20px;width:100%;">Connect to multiplayer to view district ownership.</p>';
+  }
+
+  // ── Summary stats ──
+  const totalTurf = ownedTurf.length;
+  const totalDistricts = ownedDistricts.length;
+  const totalTerritories = totalTurf + totalDistricts;
+  const totalTaxIncome = ownedDistricts.reduce((sum, d) => sum + ((tState[d.id] || {}).taxCollected || 0), 0);
+  const totalResidents = ownedDistricts.reduce((sum, d) => sum + ((tState[d.id] || {}).residents || []).length, 0);
+
+  container.innerHTML = `
+    <div style="padding: 20px; color: white; max-width: 1100px; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h2 style="color: #d4af37; margin: 0;">🏰 Your Territories</h2>
+          <p style="color: #bdc3c7; margin: 4px 0 0;">Manage your turf zones and district holdings</p>
+        </div>
+        <button class="nav-btn-back" onclick="goBackToMainMenu();">← Back</button>
+      </div>
+
+      <!-- Summary Bar -->
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; justify-content: center;">
+        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(212,175,55,0.3); text-align: center; min-width: 120px;">
+          <div style="color: #d4af37; font-size: 1.4em; font-weight: bold;">${totalTerritories}</div>
+          <div style="color: #888; font-size: 0.8em;">Total Territories</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(231,76,60,0.3); text-align: center; min-width: 120px;">
+          <div style="color: #e74c3c; font-size: 1.4em; font-weight: bold;">${totalTurf}</div>
+          <div style="color: #888; font-size: 0.8em;">Turf Zones</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(52,152,219,0.3); text-align: center; min-width: 120px;">
+          <div style="color: #3498db; font-size: 1.4em; font-weight: bold;">${totalDistricts}</div>
+          <div style="color: #888; font-size: 0.8em;">Online Districts</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(46,204,113,0.3); text-align: center; min-width: 120px;">
+          <div style="color: #2ecc71; font-size: 1.4em; font-weight: bold;">${totalResidents}</div>
+          <div style="color: #888; font-size: 0.8em;">Total Residents</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(46,204,113,0.3); text-align: center; min-width: 120px;">
+          <div style="color: #2ecc71; font-size: 1.4em; font-weight: bold;">$${totalTaxIncome.toLocaleString()}</div>
+          <div style="color: #888; font-size: 0.8em;">Tax Revenue</div>
+        </div>
+      </div>
+
+      <!-- SP Turf Zones Section -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #e74c3c; margin: 0 0 12px; font-family: Georgia, serif;">⚔️ Turf Zones <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Single-Player)</span></h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
+          ${spCards}
+        </div>
+      </div>
+
+      <!-- MP Districts Section -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #3498db; margin: 0 0 12px; font-family: Georgia, serif;">🏙️ Online Districts <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Multiplayer)</span></h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
+          ${mpCards}
+        </div>
+      </div>
+    </div>
+  `;
+}
+window.renderTerritoriesScreen = renderTerritoriesScreen;
+
+// ──────────────────────────────────────────────────────────────
 // TERRITORY RELOCATION (Phase 1)
 // Accessible from main menu — lets player move to another district.
 // ──────────────────────────────────────────────────────────────
@@ -14480,8 +14666,20 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.7.2";
+const CURRENT_VERSION = "1.7.3";
 const VERSION_UPDATES = {
+  "1.7.3": {
+    title: "Territory Management & Alliance Territories",
+    date: "June 2025",
+    changes: [
+      "New Territories button in SafeHouse — manage all owned turf zones & districts",
+      "Territory management screen shows SP turf zones and MP districts with full stats",
+      "Dashboard summary: total territories, residents, tax revenue at a glance",
+      "New Alliance Territories tab — see all districts held by alliance members",
+      "Alliance panel now has tab navigation (Alliance Info / Alliance Territories)",
+      "Server sends alliance territory data with alliance info for faster loading"
+    ]
+  },
   "1.7.2": {
     title: "Comprehensive Systems Audit & Bug Fix",
     date: "February 2026",

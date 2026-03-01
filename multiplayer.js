@@ -1237,6 +1237,18 @@ async function handleServerMessage(message) {
         case 'territory_info':
             // Full territory state response — cache it
             onlineWorldState.territories = message.territories || {};
+            // Refresh territories management screen if visible
+            if (typeof renderTerritoriesScreen === 'function') {
+                const terrScreen = document.getElementById('territories-screen');
+                if (terrScreen && terrScreen.style.display === 'block') {
+                    renderTerritoriesScreen();
+                }
+            }
+            // Refresh alliance territories tab if visible
+            if (typeof renderAllianceTerritoriesTab === 'function') {
+                const allianceTerr = document.getElementById('alliance-territories-tab-content');
+                if (allianceTerr) renderAllianceTerritoriesTab();
+            }
             break;
 
         // ── Phase 2: Territory ownership & conquest ────────────────────
@@ -1640,6 +1652,13 @@ async function handleServerMessage(message) {
             break;
 
         case 'alliance_info_result':
+            // Merge alliance territory data into cached territories
+            if (message.allianceTerritories) {
+                if (!onlineWorldState.territories) onlineWorldState.territories = {};
+                for (const [distId, data] of Object.entries(message.allianceTerritories)) {
+                    onlineWorldState.territories[distId] = Object.assign(onlineWorldState.territories[distId] || {}, data);
+                }
+            }
             handleAllianceInfoResult(message);
             break;
 
@@ -4403,6 +4422,7 @@ function participateInEvent(eventType, district) {
 // ==================== PHASE C: ALLIANCE PANEL ====================
 
 let _currentAllianceData = null;
+let _allianceActiveTab = 'info'; // 'info' or 'territories'
 
 function showAlliancePanel() {
     if (!ensureConnected()) return;
@@ -4410,12 +4430,17 @@ function showAlliancePanel() {
     // Request alliance info from server
     if (onlineWorldState.socket && onlineWorldState.socket.readyState === WebSocket.OPEN) {
         onlineWorldState.socket.send(JSON.stringify({ type: 'alliance_info' }));
+        // Also request territory data for the territories tab
+        onlineWorldState.socket.send(JSON.stringify({ type: 'territory_info' }));
     }
+
+    _allianceActiveTab = 'info';
 
     const content = document.getElementById('multiplayer-content');
     content.innerHTML = `
         <h2 style="color: #c0a062; font-family: Georgia, serif;">🤝 Alliances</h2>
         <p style="color: #ccc;">Form powerful alliances with other players. Share territory bonuses and deposit to a shared treasury.</p>
+        <div id="alliance-tab-bar" style="display: none; margin-bottom: 16px;"></div>
         <div id="alliance-panel-content" style="color: #888; text-align: center; padding: 30px;">Loading alliance data...</div>
         <div style="text-align: center; margin-top: 30px;">
             <button onclick="showOnlineWorld()" style="background: #333; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: Georgia, serif;">← Back to Commission</button>
@@ -4433,6 +4458,25 @@ function handleAllianceInfoResult(message) {
 
     const myAlliance = message.myAlliance;
     const allAlliances = message.allAlliances || [];
+
+    // Show tab bar only if player is in an alliance
+    const tabBar = document.getElementById('alliance-tab-bar');
+    if (tabBar && myAlliance) {
+        tabBar.style.display = 'flex';
+        const tabStyle = (active) => `background: ${active ? '#c0a062' : '#333'}; color: ${active ? '#000' : '#c0a062'}; padding: 10px 24px; border: 1px solid #c0a062; border-radius: 8px 8px 0 0; cursor: pointer; font-family: Georgia, serif; font-weight: ${active ? 'bold' : 'normal'}; font-size: 0.95em; border-bottom: ${active ? '2px solid #000' : '1px solid #c0a062'};`;
+        tabBar.innerHTML = `
+            <button onclick="switchAllianceTab('info')" style="${tabStyle(_allianceActiveTab === 'info')}">🤝 Alliance Info</button>
+            <button onclick="switchAllianceTab('territories')" style="${tabStyle(_allianceActiveTab === 'territories')}">🏰 Alliance Territories</button>
+        `;
+    } else if (tabBar) {
+        tabBar.style.display = 'none';
+    }
+
+    // If territories tab is active, render that instead
+    if (_allianceActiveTab === 'territories' && myAlliance) {
+        renderAllianceTerritoriesTab();
+        return;
+    }
 
     let html = '';
 
@@ -4498,6 +4542,118 @@ function handleAllianceInfoResult(message) {
 
     container.innerHTML = html;
 }
+
+function switchAllianceTab(tab) {
+    _allianceActiveTab = tab;
+    if (_currentAllianceData) {
+        handleAllianceInfoResult(_currentAllianceData);
+    }
+}
+window.switchAllianceTab = switchAllianceTab;
+
+function renderAllianceTerritoriesTab() {
+    const container = document.getElementById('alliance-panel-content');
+    if (!container || !_currentAllianceData || !_currentAllianceData.myAlliance) return;
+
+    const myAlliance = _currentAllianceData.myAlliance;
+    const memberNames = myAlliance.members || [];
+    const tState = (typeof onlineWorldState !== 'undefined' && onlineWorldState.territories) || {};
+
+    // Find all districts owned by alliance members
+    const allianceTerritories = [];
+    if (typeof DISTRICTS !== 'undefined') {
+        DISTRICTS.forEach(d => {
+            const terr = tState[d.id];
+            if (terr && terr.owner && memberNames.includes(terr.owner)) {
+                allianceTerritories.push({ district: d, data: terr });
+            }
+        });
+    }
+
+    let html = '<div id="alliance-territories-tab-content">';
+
+    // Summary
+    const totalDistricts = allianceTerritories.length;
+    const totalResidents = allianceTerritories.reduce((sum, t) => sum + (t.data.residents || []).length, 0);
+    const totalTax = allianceTerritories.reduce((sum, t) => sum + (t.data.taxCollected || 0), 0);
+    const uniqueOwners = [...new Set(allianceTerritories.map(t => t.data.owner))];
+
+    html += `
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; justify-content: center;">
+            <div style="background: rgba(0,0,0,0.5); padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(192,160,98,0.3); text-align: center; min-width: 100px;">
+                <div style="color: #c0a062; font-size: 1.3em; font-weight: bold;">${totalDistricts}</div>
+                <div style="color: #888; font-size: 0.8em;">Districts Held</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.5); padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(46,204,113,0.3); text-align: center; min-width: 100px;">
+                <div style="color: #2ecc71; font-size: 1.3em; font-weight: bold;">${totalResidents}</div>
+                <div style="color: #888; font-size: 0.8em;">Total Residents</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.5); padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(46,204,113,0.3); text-align: center; min-width: 100px;">
+                <div style="color: #2ecc71; font-size: 1.3em; font-weight: bold;">$${totalTax.toLocaleString()}</div>
+                <div style="color: #888; font-size: 0.8em;">Total Tax Revenue</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.5); padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(243,156,18,0.3); text-align: center; min-width: 100px;">
+                <div style="color: #f39c12; font-size: 1.3em; font-weight: bold;">${uniqueOwners.length}</div>
+                <div style="color: #888; font-size: 0.8em;">Territory Holders</div>
+            </div>
+        </div>
+    `;
+
+    if (allianceTerritories.length > 0) {
+        html += '<div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">';
+        allianceTerritories.forEach(({ district: d, data: terr }) => {
+            const isMe = terr.owner === (player.name || '');
+            const resCount = (terr.residents || []).length;
+            const residents = terr.residents || [];
+
+            // Build compact residents list
+            let residentsHTML = '';
+            if (residents.length > 0) {
+                const shown = residents.slice(0, 6);
+                residentsHTML = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">';
+                residentsHTML += '<span style="color: #c0a062; font-size: 0.8em; font-weight: bold;">Residents:</span><br>';
+                residentsHTML += shown.map(r => `<span style="color: #bdc3c7; font-size: 0.8em;">🤵 ${typeof r === 'string' ? r : (r.name || 'Unknown')}</span>`).join('<br>');
+                if (residents.length > 6) {
+                    residentsHTML += `<br><span style="color: #888; font-size: 0.75em;">...and ${residents.length - 6} more</span>`;
+                }
+                residentsHTML += '</div>';
+            }
+
+            html += `
+                <div style="background: rgba(44,62,80,0.85); border: 2px solid ${isMe ? '#d4af37' : '#c0a062'}; border-radius: 12px;
+                            padding: 16px; min-width: 230px; max-width: 290px; text-align: left;">
+                    <div style="font-size: 1.6em; margin-bottom: 4px;">${d.icon}</div>
+                    <h4 style="color: #c0a062; margin: 0 0 4px;">${d.shortName}</h4>
+                    <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
+                        <span>👑 Owner: <strong style="color: ${isMe ? '#ffd700' : '#f39c12'};">${isMe ? 'YOU' : escapeHTML(terr.owner)}</strong></span><br>
+                        <span>👥 Residents: ${resCount}</span><br>
+                        <span>🛡️ Defense: ${terr.defenseRating || 100}</span><br>
+                        <span>💰 Tax: $${(terr.taxCollected || 0).toLocaleString()}</span><br>
+                        <span>💰 Base Income: $${d.baseIncome.toLocaleString()}</span>
+                    </div>
+                    ${residentsHTML}
+                </div>
+            `;
+        });
+        html += '</div>';
+    } else {
+        html += '<p style="color: #888; text-align: center; padding: 30px;">No alliance member owns any districts yet. Claim districts via Relocate to build your alliance\'s territory empire.</p>';
+    }
+
+    // Show which members hold no territory
+    const membersWithout = memberNames.filter(name => !uniqueOwners.includes(name));
+    if (membersWithout.length > 0 && allianceTerritories.length > 0) {
+        html += `
+            <div style="margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.4); border-radius: 8px; border-left: 3px solid #555;">
+                <span style="color: #888; font-size: 0.85em;">Members without territory: ${membersWithout.map(n => escapeHTML(n)).join(', ')}</span>
+            </div>
+        `;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+window.renderAllianceTerritoriesTab = renderAllianceTerritoriesTab;
 
 function createAlliance() {
     const name = document.getElementById('alliance-name-input')?.value?.trim();

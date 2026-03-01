@@ -5,6 +5,17 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.3] - 2025-06-14
+
+### Added
+- **Territories SafeHouse Button** — new "Territories" button in the SafeHouse (unlocks at Level 5) to manage all owned territories from one screen
+- **Territory Management Screen** — shows all owned SP Turf Zones (from Turf Wars) and MP Online Districts with stats: income, fortification, defense rating, tax revenue, residents list
+- **Territory Summary Dashboard** — at-a-glance stats showing total territories, turf zones, online districts, total residents, and tax revenue
+- **Alliance Territories Tab** — new "Alliance Territories" tab in the Alliance panel showing all districts owned by alliance members collectively
+- **Alliance Territory Stats** — summary bar in alliance territories tab showing districts held, total residents, total tax revenue, and number of territory holders
+- Server now includes alliance territory data in `alliance_info_result` response for faster initial load
+- Territory info auto-refreshes when server sends updated territory data
+
 ## [1.6.9] - 2026-02-28
 
 ### Added

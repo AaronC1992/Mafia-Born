@@ -3262,10 +3262,31 @@ function handleAllianceInfo(clientId, message) {
         allAlliances.push(sanitizeAlliance(a));
     }
 
+    // Gather territory data for alliance members
+    let allianceTerritories = {};
+    if (alliance) {
+        const memberNames = alliance.members.map(id => {
+            const p = gameState.players.get(id);
+            return p ? p.name : null;
+        }).filter(Boolean);
+
+        for (const [distId, terr] of Object.entries(gameState.territories)) {
+            if (terr.owner && memberNames.includes(terr.owner)) {
+                allianceTerritories[distId] = {
+                    owner: terr.owner,
+                    residents: terr.residents || [],
+                    defenseRating: terr.defenseRating || 100,
+                    taxCollected: terr.taxCollected || 0
+                };
+            }
+        }
+    }
+
     ws.send(JSON.stringify({
         type: 'alliance_info_result',
         myAlliance: alliance ? sanitizeAlliance(alliance) : null,
-        allAlliances: allAlliances
+        allAlliances: allAlliances,
+        allianceTerritories: allianceTerritories
     }));
 }
 
