@@ -1,12 +1,12 @@
 ﻿// onboarding removed — tutorial system fully stripped
 import { applyDailyPassives, getDrugIncomeMultiplier, getViolenceHeatMultiplier, getWeaponPriceMultiplier } from './passiveManager.js';
 import { showEmpireOverview } from './empireOverview.js';
-import { player, gainExperience, checkLevelUp, regenerateEnergy, startEnergyRegenTimer, startEnergyRegeneration, skillTreeDefinitions, availablePerks, achievements } from './player.js';
+import { player, gainExperience, checkLevelUp, regenerateEnergy, startEnergyRegenTimer, startEnergyRegeneration, skillTreeDefinitions, achievements } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
-import { crimeFamilies, factionEffects, potentialMentors } from './factions.js';
-import { familyStories, missionProgress, factionMissions } from './missions.js?v=1.7.4';
+import { crimeFamilies, factionEffects } from './factions.js';
+import { familyStories, missionProgress, factionMissions } from './missions.js?v=1.7.5';
 import { narrationVariations, getRandomNarration } from './narration.js';
-import { storeItems, realEstateProperties, businessTypes, loanOptions, launderingMethods } from './economy.js';
+import { storeItems, realEstateProperties, businessTypes, launderingMethods } from './economy.js';
 import { prisonerNames, recruitNames, availableRecruits, jailPrisoners, jailbreakPrisoners, setJailPrisoners, setJailbreakPrisoners, generateJailPrisoners, generateJailbreakPrisoners, generateAvailableRecruits } from './generators.js';
 import { EventBus } from './eventBus.js';
 import { GameLogging } from './logging.js';
@@ -56,7 +56,6 @@ Object.defineProperty(window, 'currentWeather', { get() { return currentWeather;
 Object.defineProperty(window, 'currentSeason', { get() { return currentSeason; } });
 window.realEstateProperties = realEstateProperties;
 window.businessTypes = businessTypes;
-window.loanOptions = loanOptions;
 window.launderingMethods = launderingMethods;
 window.prisonerNames = prisonerNames;
 window.recruitNames = recruitNames;
@@ -65,8 +64,8 @@ window.jailPrisoners = jailPrisoners;
 window.jailbreakPrisoners = jailbreakPrisoners;
 window.skillTreeDefinitions = skillTreeDefinitions;
 window.factionEffects = factionEffects;
-window.availablePerks = availablePerks;
-window.potentialMentors = potentialMentors;
+// availablePerks removed (Phase 31)
+// potentialMentors removed (Phase 31)
 window.achievements = achievements;
 window.EventBus = EventBus;
 window.GameLogging = GameLogging;
@@ -1021,7 +1020,7 @@ const GANG_MEMBER_ROLES = {
         name: "Bruiser",
         icon: "\uD83D\uDCAA",
         description: "Muscle for hire. Excels in combat and intimidation.",
-        baseStat: { violence: 15, stealth: 5, intelligence: 5, loyalty: 50 },
+        baseStat: { violence: 15, stealth: 5, intelligence: 5 },
         perk: {
             name: "Enforcer",
             effect: "Reduces arrest chance on violent jobs by 10%"
@@ -1031,7 +1030,7 @@ const GANG_MEMBER_ROLES = {
         name: "Fixer",
         icon: "\uD83E\uDD1D",
         description: "Smooth talker who knows everyone worth knowing.",
-        baseStat: { violence: 5, stealth: 10, intelligence: 15, loyalty: 60 },
+        baseStat: { violence: 5, stealth: 10, intelligence: 15 },
         perk: {
             name: "Connected",
             effect: "Reduces heat gain by 15%"
@@ -1041,7 +1040,7 @@ const GANG_MEMBER_ROLES = {
         name: "Hacker",
         icon: "\uD83D\uDCBB",
         description: "Tech wizard specializing in breaking electronic security.",
-        baseStat: { violence: 3, stealth: 15, intelligence: 20, loyalty: 55 },
+        baseStat: { violence: 3, stealth: 15, intelligence: 20 },
         perk: {
             name: "Digital Ghost",
             effect: "+20% success on intelligence-based jobs"
@@ -1051,7 +1050,7 @@ const GANG_MEMBER_ROLES = {
         name: "Enforcer",
         icon: "\uD83D\uDD2B",
         description: "Professional killer who handles the wet work.",
-        baseStat: { violence: 18, stealth: 12, intelligence: 8, loyalty: 45 },
+        baseStat: { violence: 18, stealth: 12, intelligence: 8 },
         perk: {
             name: "Assassin",
             effect: "+15% damage in territory wars"
@@ -1061,7 +1060,7 @@ const GANG_MEMBER_ROLES = {
         name: "Wheelman",
         icon: "\uD83D\uDE97",
         description: "Master behind the wheel, perfect for getaways.",
-        baseStat: { violence: 8, stealth: 15, intelligence: 10, loyalty: 65 },
+        baseStat: { violence: 8, stealth: 15, intelligence: 10 },
         perk: {
             name: "Fast & Furious",
             effect: "+25% escape chance when heat is high"
@@ -1071,7 +1070,7 @@ const GANG_MEMBER_ROLES = {
         name: "Scout",
         icon: "\uD83D\uDD75\uFE0F",
         description: "Expert at gathering intelligence on targets.",
-        baseStat: { violence: 6, stealth: 18, intelligence: 15, loyalty: 70 },
+        baseStat: { violence: 6, stealth: 18, intelligence: 15 },
         perk: {
             name: "Eyes Everywhere",
             effect: "Reveals territory attack warnings 30 seconds early"
@@ -1081,7 +1080,7 @@ const GANG_MEMBER_ROLES = {
         name: "Accountant",
         icon: "\uD83D\uDCB0",
         description: "Numbers genius who maximizes profits.",
-        baseStat: { violence: 2, stealth: 10, intelligence: 22, loyalty: 75 },
+        baseStat: { violence: 2, stealth: 10, intelligence: 22 },
         perk: {
             name: "Money Launderer",
             effect: "+10% income from businesses and territories"
@@ -1106,8 +1105,7 @@ function generateExpandedGangMember(role = null, name = null) {
         stats: {
             violence: roleData.baseStat.violence + Math.floor(Math.random() * 10),
             stealth: roleData.baseStat.stealth + Math.floor(Math.random() * 10),
-            intelligence: roleData.baseStat.intelligence + Math.floor(Math.random() * 10),
-            loyalty: roleData.baseStat.loyalty + Math.floor(Math.random() * 20) - 10
+            intelligence: roleData.baseStat.intelligence + Math.floor(Math.random() * 10)
         },
         perk: roleData.perk,
         level: 1,
@@ -1154,10 +1152,10 @@ function generateGangMemberName() {
 
 function generateRandomTraits() {
     const allTraits = [
-        { name: "Hothead", effect: "+10% violence, -5% loyalty" },
+        { name: "Hothead", effect: "+10% violence" },
         { name: "Cool Under Pressure", effect: "+10% success in high-heat jobs" },
-        { name: "Loyal to the End", effect: "Never betrays, +10% loyalty" },
-        { name: "Greedy", effect: "+15% payout demand, -10% loyalty" },
+        { name: "Loyal to the End", effect: "Never betrays, +10% morale" },
+        { name: "Greedy", effect: "+15% payout demand" },
         { name: "Cautious", effect: "-10% arrest chance, -5% success" },
         { name: "Reckless", effect: "+10% success, +15% arrest chance" },
         { name: "Charming", effect: "+10% reputation gains" },
@@ -1195,10 +1193,6 @@ function calculateMemberEffectiveness(member, taskType) {
             baseScore = (member.stats.violence + member.stats.stealth + member.stats.intelligence) / 3;
     }
     
-    // Apply loyalty modifier
-    const loyaltyMod = member.stats.loyalty / 100;
-    baseScore *= (0.5 + loyaltyMod * 0.5); // 50% to 100% effectiveness based on loyalty
-    
     // Apply trait modifiers
     member.traits.forEach(trait => {
         if (trait.name === "Veteran") baseScore *= 1.15;
@@ -1210,16 +1204,9 @@ function calculateMemberEffectiveness(member, taskType) {
     return Math.floor(baseScore);
 }
 
-// Update gang member loyalty
+// Gang loyalty system removed — updateMemberLoyalty is now a no-op kept for API compat
 function updateMemberLoyalty(member, change, reason = "") {
-    member.stats.loyalty = Math.max(0, Math.min(100, member.stats.loyalty + change));
-    
-    // Check for betrayal if loyalty too low
-    if (member.stats.loyalty < 20 && Math.random() < 0.3) {
-        return { betrayed: true, member: member };
-    }
-    
-    return { betrayed: false, loyaltyChange: change };
+    return { betrayed: false, loyaltyChange: 0 };
 }
 
 // ==================== 2. SINGLEPLAYER TURF SYSTEM ====================
@@ -1609,10 +1596,9 @@ function processTurfAttack(zone, attackerName, attackStrength, player) {
             const member = player.gang.gangMembers.find(m => m.id === memberId);
             if (!member) return;
             const roll = Math.random();
-            if (roll < 0.1) { member.status = "dead"; result.casualties.push(member.name); }
-            else if (roll < 0.3) { member.status = "jailed"; result.casualties.push(member.name + " (arrested)"); }
-            else if (roll < 0.6) { member.status = "injured"; result.injuredDefenders.push(member.name); setTimeout(() => { if (member.status === "injured") member.status = "active"; }, 300000); }
-            updateMemberLoyalty(member, -10, "Lost turf defense");
+            if (roll < 0.25) { member.status = "dead"; result.casualties.push(member.name); }
+            else if (roll < 0.40) { member.status = "jailed"; result.casualties.push(member.name + " (arrested)"); }
+            else if (roll < 0.65) { member.status = "injured"; result.injuredDefenders.push(member.name); setTimeout(() => { if (member.status === "injured") member.status = "active"; }, 300000); }
         });
         zone.defendingMembers = [];
     } else {
@@ -1620,11 +1606,14 @@ function processTurfAttack(zone, attackerName, attackStrength, player) {
         result.rewards.respect = Math.floor(zone.baseIncome / 100);
         (zone.defendingMembers || []).forEach(memberId => {
             const member = player.gang.gangMembers.find(m => m.id === memberId);
-            if (member) updateMemberLoyalty(member, 5, "Successfully defended turf");
+
         });
-        if (Math.random() < 0.15 && zone.defendingMembers.length > 0) {
+        if (Math.random() < 0.25 && zone.defendingMembers.length > 0) {
             const rand = player.gang.gangMembers.find(m => m.id === zone.defendingMembers[Math.floor(Math.random() * zone.defendingMembers.length)]);
-            if (rand) { rand.status = "injured"; result.injuredDefenders.push(rand.name); setTimeout(() => { if (rand.status === "injured") rand.status = "active"; }, 300000); }
+            if (rand) {
+                if (Math.random() < 0.3) { rand.status = "dead"; result.casualties.push(rand.name); }
+                else { rand.status = "injured"; result.injuredDefenders.push(rand.name); setTimeout(() => { if (rand.status === "injured") rand.status = "active"; }, 300000); }
+            }
         }
     }
     zone.lastAttacked = Date.now();
@@ -1647,14 +1636,12 @@ const INTERACTIVE_EVENTS = [
                         money: 0,
                         heat: 30,
                         respect: 15,
-                        loyalty: 10,
                         message: "Your crew fought like hell. The cops retreated, but they'll be back with reinforcements."
                     },
                     failure: {
                         money: -5000,
                         heat: 50,
                         respect: -10,
-                        loyalty: -15,
                         jailChance: 40,
                         message: "The shootout went badly. Several of your guys are in cuffs, and the feds are pissed."
                     }
@@ -1701,12 +1688,10 @@ const INTERACTIVE_EVENTS = [
                     success: {
                         message: "Your investigation revealed the rat. You handled it... permanently. The crew respects your vigilance.",
                         respect: 10,
-                        loyalty: 15,
                         gangMemberLoss: 1
                     },
                     failure: {
-                        message: "You found nothing. Maybe it was just paranoia... or maybe the rat is still among you.",
-                        loyalty: -5
+                        message: "You found nothing. Maybe it was just paranoia... or maybe the rat is still among you."
                     }
                 },
                 successChance: 0.7
@@ -1716,14 +1701,12 @@ const INTERACTIVE_EVENTS = [
                 requirements: {},
                 outcomes: {
                     success: {
-                        message: "Sometimes rumors are just rumors. The crew appreciates that you trust them.",
-                        loyalty: 5
+                        message: "Sometimes rumors are just rumors. The crew appreciates that you trust them."
                     },
                     failure: {
                         message: "Turns out the rumors were true. One of your guys flipped. The feds now have intel on your operations.",
                         heat: 40,
                         respect: -15,
-                        loyalty: -20,
                         gangMemberLoss: 1
                     }
                 },
@@ -1736,7 +1719,6 @@ const INTERACTIVE_EVENTS = [
                     success: {
                         message: "You whacked someone at random as a warning. The message was received loud and clear.",
                         respect: 15,
-                        loyalty: -25,
                         heat: 20,
                         gangMemberLoss: 1
                     }
@@ -2001,15 +1983,6 @@ function applyEventOutcomes(outcome, player) {
         changes.respect = outcome.respect;
     }
     
-    if (outcome.loyalty) {
-        player.gang.gangMembers.forEach(member => {
-            if (member.status === "active") {
-                updateMemberLoyalty(member, outcome.loyalty);
-            }
-        });
-        changes.loyalty = outcome.loyalty;
-    }
-    
     if (outcome.gangMemberLoss && player.gang.gangMembers.length > 0) {
         const toLose = Math.min(outcome.gangMemberLoss, player.gang.gangMembers.length);
         const lostMembers = [];
@@ -2107,7 +2080,6 @@ export default {
     // Gang functions
     generateGangMember: generateExpandedGangMember,
     calculateMemberEffectiveness,
-    updateMemberLoyalty,
     
     // Territory functions — now use turf system
     assignMembersToTerritory: assignMembersToTurf,
@@ -2279,7 +2251,6 @@ window.makeEventChoice = function(choiceIndex) {
         ${result.result.money ? `<div> Money: ${result.result.money > 0 ? '+' : ''}$${result.result.money.toLocaleString()}</div>` : ''}
         ${result.result.heat ? `<div> Heat: ${result.result.heat > 0 ? '+' : ''}${result.result.heat}</div>` : ''}
         ${result.result.respect ? `<div>⭐ Respect: ${result.result.respect > 0 ? '+' : ''}${result.result.respect}</div>` : ''}
-        ${result.result.loyalty ? `<div> Gang Loyalty: ${result.result.loyalty > 0 ? '+' : ''}${result.result.loyalty}%</div>` : ''}
         ${result.result.lostMembers ? `<div> Lost: ${result.result.lostMembers.join(', ')}</div>` : ''}
         ${result.result.jailed ? `<div> You've been arrested!</div>` : ''}
       </div>
@@ -2393,8 +2364,7 @@ const specialistRoles = [
     trainingTime: 24, // hours
     benefits: {
       jobSuccessBonus: 0.15, // 15% bonus to violent jobs
-      healthProtection: 0.10, // 10% less health loss
-      gangLoyalty: 0.05 // 5% loyalty bonus
+      healthProtection: 0.10 // 10% less health loss
     },
     requiredFor: ["territory_war", "protection_racket", "rival_assassination"]
   },
@@ -2408,8 +2378,7 @@ const specialistRoles = [
     trainingTime: 18,
     benefits: {
       stealthBonus: 0.20, // 20% less jail chance on stealth jobs
-      carTheftBonus: 0.25, // 25% better car theft success
-      gangLoyalty: 0.03
+      carTheftBonus: 0.25 // 25% better car theft success
     },
     requiredFor: ["car_theft", "burglary", "heist"]
   },
@@ -2423,8 +2392,7 @@ const specialistRoles = [
     trainingTime: 20,
     benefits: {
       drugJobBonus: 0.30, // 30% bonus to drug-related jobs
-      moneyBonus: 0.15, // 15% more money from drug jobs
-      gangLoyalty: 0.04
+      moneyBonus: 0.15 // 15% more money from drug jobs
     },
     requiredFor: ["drug_lab", "street_dealing", "smuggling"]
   },
@@ -2438,8 +2406,7 @@ const specialistRoles = [
     trainingTime: 30,
     benefits: {
       intimidationBonus: 0.25, // 25% bonus to intimidation jobs
-      businessProtection: 0.20, // 20% better business income protection
-      gangLoyalty: 0.06
+      businessProtection: 0.20 // 20% better business income protection
     },
     requiredFor: ["debt_collection", "business_protection", "territory_control"]
   },
@@ -2453,8 +2420,7 @@ const specialistRoles = [
     trainingTime: 16,
     benefits: {
       escapeBonus: 0.20, // 20% better escape chance
-      vehicleJobBonus: 0.25, // 25% bonus to vehicle-related jobs
-      gangLoyalty: 0.03
+      vehicleJobBonus: 0.25 // 25% bonus to vehicle-related jobs
     },
     requiredFor: ["getaway_driver", "smuggling_run", "car_theft_ring"]
   },
@@ -2468,8 +2434,7 @@ const specialistRoles = [
     trainingTime: 36,
     benefits: {
       techJobBonus: 0.35, // 35% bonus to tech jobs
-      securityBypass: 0.15, // 15% better at bypassing security
-      gangLoyalty: 0.07
+      securityBypass: 0.15 // 15% better at bypassing security
     },
     requiredFor: ["hacking", "security_bypass", "money_laundering"]
   }
@@ -2486,8 +2451,7 @@ const gangOperations = [
     energy: 0, // Gang member energy, not player
     rewards: {
       money: [500, 1200],
-      experience: 50,
-      loyalty: 2
+      experience: 50
     },
     risks: {
       arrestChance: 15,
@@ -2506,8 +2470,7 @@ const gangOperations = [
     rewards: {
       money: [800, 1500],
       vehicle: true, // Chance to get a stolen car
-      experience: 75,
-      loyalty: 3
+      experience: 75
     },
     risks: {
       arrestChance: 25,
@@ -2526,8 +2489,7 @@ const gangOperations = [
     rewards: {
       money: [1200, 2500],
       dirtyMoney: [400, 800], // Generates dirty money
-      experience: 100,
-      loyalty: 1 // Risky work, lower loyalty gain
+      experience: 100
     },
     risks: {
       arrestChance: 35,
@@ -2545,8 +2507,7 @@ const gangOperations = [
     energy: 0,
     rewards: {
       money: [2000, 4000],
-      experience: 150,
-      loyalty: 5 // High-skill work increases loyalty
+      experience: 150
     },
     risks: {
       arrestChance: 20,
@@ -2566,8 +2527,7 @@ const trainingPrograms = [
     cost: 300,
     duration: 12, // hours
     skillImprovement: {
-      violence: 1,
-      loyalty: 2
+      violence: 1
     },
     availableFor: ["muscle", "enforcer"]
   },
@@ -2578,8 +2538,7 @@ const trainingPrograms = [
     cost: 250,
     duration: 8,
     skillImprovement: {
-      stealth: 1,
-      loyalty: 1
+      stealth: 1
     },
     availableFor: ["thief", "driver"]
   },
@@ -2590,19 +2549,19 @@ const trainingPrograms = [
     cost: 500,
     duration: 16,
     skillImprovement: {
-      intelligence: 1,
-      loyalty: 3
+      intelligence: 1
     },
     availableFor: ["dealer", "enforcer", "technician"]
   },
   {
     id: "loyalty_building",
     name: "Team Building Retreat",
-    description: "Strengthen bonds and gang loyalty",
+    description: "Strengthen bonds and team morale",
     cost: 400,
     duration: 6,
     skillImprovement: {
-      loyalty: 5
+      violence: 1,
+      stealth: 1
     },
     availableFor: ["muscle", "thief", "dealer", "enforcer", "driver", "technician"]
   },
@@ -2614,8 +2573,7 @@ const trainingPrograms = [
     duration: 24,
     skillImprovement: {
       violence: 2,
-      intelligence: 1,
-      loyalty: 3
+      intelligence: 1
     },
     availableFor: ["muscle", "enforcer"],
     prerequisite: { violence: 3 }
@@ -2629,7 +2587,6 @@ const betrayalEvents = [
     name: "Police Informant",
     description: "A gang member has been feeding information to the police",
     triggerConditions: {
-      maxLoyalty: 30,
       minWantedLevel: 20
     },
     consequences: {
@@ -2645,7 +2602,6 @@ const betrayalEvents = [
     name: "Turf Sellout",
     description: "A gang member sells turf information to rivals",
     triggerConditions: {
-      maxLoyalty: 40,
       minTerritory: 2
     },
     consequences: {
@@ -2661,7 +2617,6 @@ const betrayalEvents = [
     name: "Business Sabotage",
     description: "A disloyal member sabotages your business operations",
     triggerConditions: {
-      maxLoyalty: 25,
       minBusinesses: 1
     },
     consequences: {
@@ -2676,7 +2631,6 @@ const betrayalEvents = [
     name: "Gang Coup",
     description: "Multiple members attempt to overthrow your leadership",
     triggerConditions: {
-      maxLoyalty: 20,
       minGangMembers: 8
     },
     consequences: {
@@ -3405,202 +3359,7 @@ async function sellBusiness(businessIndex) {
   showBusinesses();
 }
 
-// Loan Shark Functions
-async function showLoanShark() {
-  if (player.inJail) {
-    showBriefNotification("Can't visit the loan shark while in jail!", 'danger');
-    return;
-  }
-  
-  let loanHTML = `
-    <h2>ˆ Tony's Loan Office</h2>
-    <p style="color: #f39c12;">Need cash fast? Tony's got you covered... for a price.</p>
-  `;
-  
-  // Show active loans
-  if (player.activeLoans && player.activeLoans.length > 0) {
-    loanHTML += `
-      <h3 style="color: #e74c3c;">Active Loans</h3>
-      <div style="margin: 20px 0;">
-        ${player.activeLoans.map((loan, index) => {
-          const daysRemaining = Math.ceil((loan.dueDate - Date.now()) / (1000 * 60 * 60 * 24));
-          const isOverdue = daysRemaining < 0;
-          
-          return `
-            <div style="background: rgba(231, 76, 60, 0.3); border-radius: 10px; padding: 15px; margin: 10px 0; border: 2px solid #e74c3c;">
-              <h4>${loan.name}</h4>
-              <p><strong>Amount Owed:</strong> $${loan.amountOwed.toLocaleString()}</p>
-              <p><strong>Original Loan:</strong> $${loan.originalAmount.toLocaleString()}</p>
-              <p style="color: ${isOverdue ? '#e74c3c' : '#f39c12'};">
-                <strong>Status:</strong> ${isOverdue ? `OVERDUE by ${Math.abs(daysRemaining)} days` : `${daysRemaining} days remaining`}
-              </p>
-              <div style="margin-top: 10px;">
-                <button onclick="repayLoan(${index})" 
-                    style="background: #2ecc71; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
-                  Repay Loan ($${loan.amountOwed.toLocaleString()})
-                </button>
-                ${player.money < loan.amountOwed && player.money > 0 ? 
-                  `<button onclick="repayLoan(${index})" 
-                      style="background: #f39c12; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
-                    Pay What You Can ($${player.money.toLocaleString()})
-                  </button>` : ''
-                }
-                ${isOverdue ? 
-                  '<span style="color: #e74c3c; font-weight: bold;">OVERDUE - Consequences incoming!</span>' : 
-                  ''
-                }
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    `;
-  }
-  
-  // Show available loans
-  loanHTML += `
-    <h3>Available Loans</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
-      ${loanOptions.map(loanOption => {
-        const canTake = checkLoanEligibility(loanOption);
-        const existingLoan = player.activeLoans && player.activeLoans.find(l => l.id === loanOption.id && loanOption.maxLoans === 1);
-        
-        return `
-          <div style="background: rgba(52, 73, 94, 0.6); border-radius: 15px; padding: 20px; border: 2px solid ${canTake && !existingLoan ? '#2ecc71' : '#95a5a6'};">
-            <h4 style="color: ${canTake && !existingLoan ? '#2ecc71' : '#95a5a6'};">${loanOption.name}</h4>
-            <p style="color: #ecf0f1; margin-bottom: 15px;">${loanOption.description}</p>
-            
-            <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-              <p style="margin: 5px 0;"><strong>Amount:</strong> $${loanOption.amount.toLocaleString()}</p>
-              <p style="margin: 5px 0;"><strong>Interest Rate:</strong> ${(loanOption.interestRate * 100).toFixed(0)}% per week</p>
-              <p style="margin: 5px 0;"><strong>Duration:</strong> ${loanOption.duration} days</p>
-              <p style="margin: 5px 0;"><strong>Risk Level:</strong> 
-                <span style="color: ${loanOption.riskLevel === 'low' ? '#2ecc71' : loanOption.riskLevel === 'medium' ? '#f39c12' : loanOption.riskLevel === 'high' ? '#e67e22' : '#e74c3c'};">
-                  ${loanOption.riskLevel.toUpperCase()}
-                </span>
-              </p>
-              ${loanOption.collateralRequired ? '<p style="margin: 5px 0; color: #e74c3c;"><strong>Collateral Required</strong></p>' : ''}
-            </div>
-            
-            ${existingLoan ? 
-              '<span style="color: #95a5a6; font-style: italic;">Already have this loan type</span>' :
-              canTake ? 
-                `<button onclick="takeLoan('${loanOption.id}')" 
-                    style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
-                  Take Loan
-                </button>` :
-                '<span style="color: #e74c3c; font-style: italic;">Requirements not met</span>'
-            }
-          </div>
-        `;
-      }).join('')}
-    </div>
-    
-    <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; border: 1px solid #e74c3c; margin: 20px 0;">
-      <h4 style="color: #e74c3c;">WARNING</h4>
-      <p style="color: #ecf0f1;">Failing to repay loans on time will result in serious consequences including reputation loss, health damage, and potentially losing gang members or property. Tony doesn't mess around.</p>
-    </div>
-    
-    <div class="page-nav" style="justify-content: center;">
-      <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
-    </div>
-  `;
-  
-  document.getElementById("loan-shark-content").innerHTML = loanHTML;
-  hideAllScreens();
-  document.getElementById("loan-shark-screen").style.display = "block";
-}
-
-function checkLoanEligibility(loanOption) {
-  if (loanOption.minReputation && player.reputation < loanOption.minReputation) return false;
-  if (loanOption.minPower && player.power < loanOption.minPower) return false;
-  return true;
-}
-
-async function takeLoan(loanId) {
-  const loanOption = loanOptions.find(lo => lo.id === loanId);
-  if (!loanOption) return;
-  
-  if (!checkLoanEligibility(loanOption)) {
-    showBriefNotification("You don't meet the requirements for this loan!", 'danger');
-    return;
-  }
-  
-  if (!player.activeLoans) player.activeLoans = [];
-  
-  // Global cap on total active loans
-  const MAX_TOTAL_LOANS = 5;
-  if (player.activeLoans.length >= MAX_TOTAL_LOANS) {
-    showBriefNotification(`You can't have more than ${MAX_TOTAL_LOANS} active loans at once. Repay one first!`, 'warning');
-    return;
-  }
-  
-  // Check if already have this type of loan (for limited loans)
-  if (loanOption.maxLoans && player.activeLoans.filter(l => l.id === loanId).length >= loanOption.maxLoans) {
-    showBriefNotification("You already have the maximum number of this loan type!", 'warning');
-    return;
-  }
-  
-  const totalOwed = Math.floor(loanOption.amount * (1 + loanOption.interestRate * (loanOption.duration / 7)));
-  const dueDate = Date.now() + (loanOption.duration * 24 * 60 * 60 * 1000);
-  
-  if (!await ui.confirm(`Confirm loan details:<br><br>Loan Amount: $${loanOption.amount.toLocaleString()}<br>Total to Repay: $${totalOwed.toLocaleString()}<br>Due Date: ${Math.ceil(loanOption.duration)} days from now<br><br>Are you sure you want to take this loan?`)) {
-    return;
-  }
-  
-  player.money += loanOption.amount;
-  player.activeLoans.push({
-    id: loanId,
-    name: loanOption.name,
-    originalAmount: loanOption.amount,
-    amountOwed: totalOwed,
-    dueDate: dueDate,
-    riskLevel: loanOption.riskLevel
-  });
-  
-  showBriefNotification(`Loan approved! +$${loanOption.amount.toLocaleString()} — repay $${totalOwed.toLocaleString()} in ${loanOption.duration} days`, 'success');
-  logAction(`Tony slides the cash across the table with a knowing smile. Easy money... for now. The clock starts ticking on your ${loanOption.name} (+$${loanOption.amount.toLocaleString()}).`);
-  
-  updateUI();
-  showLoanShark();
-}
-
-async function repayLoan(loanIndex) {
-  if (!player.activeLoans || loanIndex >= player.activeLoans.length) return;
-  
-  const loan = player.activeLoans[loanIndex];
-  
-  if (player.money < loan.amountOwed) {
-    // Offer partial repayment
-    const partialAmount = Math.min(player.money, loan.amountOwed);
-    if (partialAmount <= 0) {
-      showBriefNotification("You don't have any money to put towards this loan!", 'danger');
-      return;
-    }
-    const partialConfirm = await ui.confirm(`You don't have enough to pay the full $${loan.amountOwed.toLocaleString()}.\n\nPay $${partialAmount.toLocaleString()} (all your cash) to reduce the debt?\n\nRemaining after payment: $${(loan.amountOwed - partialAmount).toLocaleString()}`);
-    if (!partialConfirm) return;
-    
-    player.money -= partialAmount;
-    loan.amountOwed -= partialAmount;
-    
-    showBriefNotification(`Partial payment of $${partialAmount.toLocaleString()}. Remaining: $${loan.amountOwed.toLocaleString()}`, 'warning');
-    logAction(` You hand over what you can — $${partialAmount.toLocaleString()}. Tony nods. "It's a start." You still owe $${loan.amountOwed.toLocaleString()}.`);
-    
-    updateUI();
-    showLoanShark();
-    return;
-  }
-  
-  player.money -= loan.amountOwed;
-  player.activeLoans.splice(loanIndex, 1);
-  player.reputation += 2;
-  
-  showBriefNotification(`Loan repaid! You paid $${loan.amountOwed.toLocaleString()} to clear your debt. Your reputation with the underworld improves.`, 'success');
-  logAction(` You slide the money back to Tony with interest. He nods approvingly - you're good for your word. Reputation intact, debt cleared (-$${loan.amountOwed.toLocaleString()}).`);
-  
-  updateUI();
-  showLoanShark();
-}
+// [Loan Shark system removed in Phase 31]
 
 // Money Laundering Functions
 function showMoneyLaundering() {
@@ -4019,7 +3778,6 @@ function showGang() {
         <h3 style="color: #3498db;">Gang Overview</h3>
         <div style="margin: 10px 0;">
           <strong>Total Members:</strong> ${player.gang.gangMembers.length} / ${calculateMaxGangMembers()}<br>
-          <strong>Average Loyalty:</strong> ${getAverageLoyalty()}%<br>
           <strong>Gang Power:</strong> ${calculateGangPower()}<br>
           <strong>Active Operations:</strong> ${player.gang.activeOperations.length}<br>
           <strong>In Training:</strong> ${player.gang.trainingQueue.length}
@@ -4082,14 +3840,11 @@ function showGangManagementScreen() {
   
   let crewHTML = `
     <h2>Crew Details</h2>
-    <p>Manage individual crew members, boost loyalty, and assign specializations.</p>
+    <p>Manage individual crew members and assign specializations.</p>
     
     <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
       <div style="background: rgba(52,73,94,0.8); padding: 12px 20px; border-radius: 8px; border: 1px solid #3498db;">
         <strong style="color: #3498db;">Roster:</strong> ${members.length} / ${maxMembers}
-      </div>
-      <div style="background: rgba(52,73,94,0.8); padding: 12px 20px; border-radius: 8px; border: 1px solid ${getAverageLoyalty() > 60 ? '#2ecc71' : '#e74c3c'};">
-        <strong style="color: #f39c12;">Avg Loyalty:</strong> ${getAverageLoyalty()}%
       </div>
       <div style="background: rgba(52,73,94,0.8); padding: 12px 20px; border-radius: 8px; border: 1px solid #9b59b6;">
         <strong style="color: #9b59b6;">Total Power:</strong> ${calculateGangPower()}
@@ -4108,8 +3863,6 @@ function showGangManagementScreen() {
     crewHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">';
     
     members.forEach((member, index) => {
-      const loyaltyColor = member.loyalty > 70 ? '#2ecc71' : member.loyalty > 40 ? '#f39c12' : '#e74c3c';
-      const loyaltyBar = Math.min(100, Math.max(0, member.loyalty));
       const statusText = member.arrested ? 'Arrested' :
                 member.onOperation ? 'On Operation' : 
                 member.inTraining ? 'In Training' : 'Available';
@@ -4122,7 +3875,7 @@ function showGangManagementScreen() {
       const daysActive = Math.floor((Date.now() - (member.joinedDate || Date.now())) / (1000 * 60 * 60 * 24));
       
       crewHTML += `
-        <div style="background: rgba(44,62,80,0.8); padding: 15px; border-radius: 10px; border-left: 4px solid ${loyaltyColor};">
+        <div style="background: rgba(44,62,80,0.8); padding: 15px; border-radius: 10px; border-left: 4px solid #3498db;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <h4 style="margin:0; color:#ecf0f1;">${member.name}</h4>
             <span style="font-size:0.8em; color: ${statusColor};">${statusText}</span>
@@ -4140,31 +3893,13 @@ function showGangManagementScreen() {
             <div style="font-size:0.85em; color:#7f8c8d;">${daysActive > 0 ? daysActive + ' day' + (daysActive > 1 ? 's' : '') + ' in crew' : 'Just joined'}</div>
           </div>
           
-          <div style="margin-bottom:10px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.85em;">
-              <span>Loyalty</span>
-              <span style="color:${loyaltyColor};">${member.loyalty}%</span>
-            </div>
-            <div style="background:rgba(0,0,0,0.3); border-radius:4px; height:8px; overflow:hidden;">
-              <div style="background:${loyaltyColor}; width:${loyaltyBar}%; height:100%; border-radius:4px; transition: width 0.3s;"></div>
-            </div>
-          </div>
-          
           <div style="display:flex; flex-wrap:wrap; gap:5px;">
             ${!member.onOperation && !member.inTraining ? `
-              <button onclick="boostMemberLoyalty(${index})" style="background:#f39c12; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;" title="Pay to increase loyalty">
-                Pay Respect
-              </button>
               <button onclick="startTraining(${index})" style="background:#1abc9c; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
                 Train
               </button>
               <button onclick="fireGangMember(${index})" style="background:#95a5a6; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
                 Fire
-              </button>
-            ` : ''}
-            ${member.loyalty < 30 ? `
-              <button onclick="dealWithDisloyalty(${index})" style="background:#e74c3c; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
-                Discipline
               </button>
             ` : ''}
           </div>
@@ -4191,34 +3926,15 @@ function showGangManagementScreen() {
   document.getElementById("gang-screen").style.display = "block";
 }
 
-// Boost a gang member's loyalty by paying them
+// boostMemberLoyalty removed — loyalty system no longer active
 function boostMemberLoyalty(memberIndex) {
-  const member = player.gang.gangMembers[memberIndex];
-  if (!member) return;
-  
-  const cost = Math.floor(500 + (member.experienceLevel || 1) * 200);
-  
-  if (player.money < cost) {
-    showBriefNotification(`Need $${cost.toLocaleString()} to pay respects to ${member.name}.`, 'warning');
-    return;
-  }
-  
-  player.money -= cost;
-  const loyaltyGain = Math.min(100 - member.loyalty, Math.floor(10 + Math.random() * 10));
-  member.loyalty = Math.min(100, member.loyalty + loyaltyGain);
-  
-  showBriefNotification(`${member.name}'s loyalty increased by ${loyaltyGain}% (now ${member.loyalty}%). Cost: $${cost.toLocaleString()}`, 'success');
-  logAction(`Paid $${cost.toLocaleString()} in respects to ${member.name}. Loyalty +${loyaltyGain}%.`);
-  
-  updateUI();
-  showGangManagementScreen();
+  // No-op: loyalty system removed
+  return;
 }
 
-// Calculate average loyalty of gang members
+// getAverageLoyalty removed — loyalty system no longer active
 function getAverageLoyalty() {
-  if (player.gang.gangMembers.length === 0) return 100;
-  const totalLoyalty = player.gang.gangMembers.reduce((sum, member) => sum + member.loyalty, 0);
-  return Math.floor(totalLoyalty / player.gang.gangMembers.length);
+  return 100; // Stub: always returns 100 for backward compat
 }
 
 // Calculate total gang power
@@ -4229,7 +3945,7 @@ function calculateGangPower() {
     const hasLegacyRole = specialistRoles.find(r => r.id === member.specialization);
     const hasExpandedRole = member.role && EXPANDED_TO_SPECIALIZATION[member.role];
     if (hasLegacyRole || hasExpandedRole) {
-      totalPower += (member.experienceLevel * 20) + (member.loyalty * 0.5);
+      totalPower += (member.experienceLevel * 20);
     }
   });
   return Math.floor(totalPower);
@@ -4281,8 +3997,7 @@ function getAvailableMembersForOperation(requiredRole) {
     return (matchesSpecialization || matchesExpandedRole) &&
       !member.onOperation && 
       !member.inTraining &&
-      !member.arrested &&
-      member.loyalty > 20;
+      !member.arrested;
   });
 }
 
@@ -4314,8 +4029,7 @@ function generateGangMembersHTML() {
              member.inTraining ? 'In Training' : 
              'Available';
     
-    const loyaltyColor = member.loyalty > 70 ? '#2ecc71' : 
-              member.loyalty > 40 ? '#f39c12' : '#e74c3c';
+    const loyaltyColor = '#3498db';
     
     html += `
       <div style="background: rgba(52, 73, 94, 0.6); padding: 15px; border-radius: 8px; border-left: 4px solid ${loyaltyColor};">
@@ -4323,7 +4037,6 @@ function generateGangMembersHTML() {
         <div style="font-size: 0.9em;">
           <strong>Role:</strong> ${roleName}${perkText}<br>
           <strong>Level:</strong> ${member.experienceLevel}<br>
-          <strong>Loyalty:</strong> <span style="color: ${loyaltyColor};">${member.loyalty}%</span><br>
           <strong>Status:</strong> ${statusText}<br>
           <strong>Tribute:</strong> $${Math.floor(member.tributeMultiplier * 100)}/collection
         </div>
@@ -4335,12 +4048,6 @@ function generateGangMembersHTML() {
             </button>
             <button onclick="startTraining(${index})" style="background: #1abc9c; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
               Train
-            </button>
-          ` : ''}
-          
-          ${member.loyalty < 30 ? `
-            <button onclick="dealWithDisloyalty(${index})" style="background: #e74c3c; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
-              Address Loyalty
             </button>
           ` : ''}
         </div>
@@ -4422,12 +4129,6 @@ function startGangOperation(operationId) {
   const member = player.gang.gangMembers.find(m => m.name === selectedMemberName);
   if (!member) return;
   
-  // Check member loyalty
-  if (member.loyalty < 20) {
-    showBriefNotification(`${member.name} is too disloyal to be trusted with this operation!`, 'danger');
-    return;
-  }
-  
   // Start the operation
   member.onOperation = true;
   const operationData = {
@@ -4462,12 +4163,26 @@ function completeGangOperation(operationData) {
   member.onOperation = false;
   
   // Calculate success based on member stats and operation risks
-  const successChance = 60 + (member.experienceLevel * 8) + (member.loyalty * 0.3);
+  const successChance = 60 + (member.experienceLevel * 8);
   const betrayalRoll = Math.random() * 100;
   const arrestRoll = Math.random() * 100;
   
-  // Check for betrayal first
-  if (betrayalRoll < operation.risks.betrayalRisk && member.loyalty < 50) {
+  // Check for death — operations are dangerous
+  if (Math.random() < 0.08) {
+    const memberIndex = player.gang.gangMembers.indexOf(member);
+    if (memberIndex !== -1) {
+      player.gang.gangMembers.splice(memberIndex, 1);
+      player.gang.members = player.gang.gangMembers.length;
+    }
+    player.gang.activeOperations = player.gang.activeOperations.filter(op => op !== operationData);
+    showBriefNotification(`${member.name} was killed during the ${operation.name}. The streets are unforgiving.`, 'danger');
+    logAction(`${member.name} didn't make it back from the ${operation.name}. Another soldier lost to the game.`);
+    updateUI();
+    return;
+  }
+  
+  // Check for betrayal
+  if (betrayalRoll < operation.risks.betrayalRisk) {
     handleOperationBetrayal(member, operation);
     return;
   }
@@ -4502,7 +4217,6 @@ function completeGangOperation(operationData) {
   
   // Update member stats
   member.experienceLevel = Math.min(10, member.experienceLevel + 0.1);
-  member.loyalty = Math.min(100, member.loyalty + operation.rewards.loyalty);
   player.experience += Math.floor(operation.rewards.experience * 0.7); // Reduce XP for operations
   
   // Remove from active operations
@@ -4510,7 +4224,7 @@ function completeGangOperation(operationData) {
   
   const moneyTag = (operation.rewards && operation.rewards.cleanMoney) ? '' : ' (dirty)';
   showBriefNotification(`${member.name} successfully completed the ${operation.name}! Earned $${moneyEarned.toLocaleString()}${moneyTag}.`, 'success');
-  logAction(`${member.name} returns from the ${operation.name} with pockets full and loyalty stronger. Your crew delivers results (+$${moneyEarned.toLocaleString()}${moneyTag}).`);
+  logAction(`${member.name} returns from the ${operation.name} with pockets full. Your crew delivers results (+$${moneyEarned.toLocaleString()}${moneyTag}).`);
   if (typeof showBriefNotification === 'function') {
     showBriefNotification(`${member.name} completed ${operation.name}: +$${moneyEarned.toLocaleString()}${moneyTag}`, 2000);
   }
@@ -4537,14 +4251,13 @@ function handleOperationBetrayal(member, operation) {
 
 // Handle operation arrest
 function handleOperationArrest(member, operation) {
-  // Member gets arrested, loses loyalty, operation fails
+  // Member gets arrested, operation fails
   member.arrested = true;
   member.arrestTime = Date.now() + (Math.random() * 72 + 24) * 60 * 60 * 1000; // 1-3 days
-  member.loyalty = Math.max(0, member.loyalty - 15);
   player.wantedLevel += 3;
   
   showBriefNotification(`${member.name} was arrested during the ${operation.name}! They'll be in custody for a while.`, 'danger');
-  logAction(`The operation goes sideways! ${member.name} gets pinched by the law and hauled away in handcuffs. The heat is rising and loyalty takes a hit.`);
+  logAction(`The operation goes sideways! ${member.name} gets pinched by the law and hauled away in handcuffs. The heat is rising.`);
   
   updateUI();
 }
@@ -4565,10 +4278,9 @@ async function assignRole(memberIndex) {
     if (selectedRole && roles[selectedRole]) {
       member.role = selectedRole;
       member.specialization = EXPANDED_TO_SPECIALIZATION[selectedRole] || member.specialization;
-      member.loyalty += 3;
       
       showBriefNotification(`${member.name} assigned as ${roles[selectedRole].name}!`, 'success');
-      logAction(`${member.name} takes on the role of ${roles[selectedRole].name}. Specialization brings focus and loyalty to your organization.`);
+      logAction(`${member.name} takes on the role of ${roles[selectedRole].name}. Specialization brings focus to your organization.`);
       updateUI();
       showGang();
     }
@@ -4578,10 +4290,9 @@ async function assignRole(memberIndex) {
     
     if (selectedRole && specialistRoles.find(r => r.id === selectedRole)) {
       member.specialization = selectedRole;
-      member.loyalty += 3;
       
       showBriefNotification(`${member.name} assigned as ${specialistRoles.find(r => r.id === selectedRole).name}!`, 'success');
-      logAction(`${member.name} takes on the role of ${specialistRoles.find(r => r.id === selectedRole).name}. Specialization brings focus and loyalty to your organization.`);
+      logAction(`${member.name} takes on the role of ${specialistRoles.find(r => r.id === selectedRole).name}. Specialization brings focus to your organization.`);
       updateUI();
       showGang();
     }
@@ -4666,18 +4377,14 @@ function completeTraining(trainingData) {
   
   // Apply improvements
   Object.entries(trainingData.improvements).forEach(([skill, improvement]) => {
-    if (skill === 'loyalty') {
-      member.loyalty = Math.min(100, member.loyalty + improvement);
-    } else {
-      member[skill] = (member[skill] || 0) + improvement;
-    }
+    member[skill] = (member[skill] || 0) + improvement;
   });
   
   // Remove from training queue
   player.gang.trainingQueue = player.gang.trainingQueue.filter(t => t !== trainingData);
   
   showBriefNotification(`${member.name} has completed their training program! Their skills have improved.`, 'success');
-  logAction(`${member.name} graduates from training with new skills and renewed dedication. Your investment in education pays off in capability and loyalty.`);
+  logAction(`${member.name} graduates from training with new skills and renewed dedication. Your investment in education pays off in capability.`);
   
   updateUI();
 }
@@ -4727,74 +4434,10 @@ function enrollInTraining(programId) {
   showGang();
 }
 
-// Deal with disloyal gang members
+// dealWithDisloyalty removed — loyalty system no longer active
 async function dealWithDisloyalty(memberIndex) {
-  const member = player.gang.gangMembers[memberIndex];
-  if (!member) return;
-  
-  const choice = await ui.show(
-    `Handle Disloyalty: ${member.name}`,
-    `${member.name} has low loyalty (${member.loyalty}%). How do you want to handle this?`,
-    [
-      { text: 'Heart-to-heart ($500)', class: 'modal-btn-secondary', value: '1' },
-      { text: 'Bonus Payment ($1000)', class: 'modal-btn-secondary', value: '2' },
-      { text: 'Threaten', class: 'modal-btn-secondary', value: '3' },
-      { text: 'Kick Out', class: 'modal-btn-danger', value: '4' },
-      { text: 'Cancel', class: 'modal-btn-secondary', value: null }
-    ]
-  );
-  
-  if (!choice) return;
-
-  switch(choice) {
-    case "1":
-      if (player.money >= 500) {
-        player.money -= 500;
-        member.loyalty = Math.min(100, member.loyalty + 10);
-        showBriefNotification(`Heart-to-heart with ${member.name}: +10 loyalty`, 'success');
-        logAction(`A heart-to-heart with ${member.name} over drinks and cigars. Sometimes the personal touch works better than intimidation (+10 loyalty, -$500).`);
-      } else {
-        showBriefNotification("Not enough money for this approach.", 'danger');
-      }
-      break;
-      
-    case "2":
-      if (player.money >= 1000) {
-        player.money -= 1000;
-        member.loyalty = Math.min(100, member.loyalty + 15);
-        showBriefNotification(`Bonus for ${member.name}: +15 loyalty`, 'success');
-        logAction(`A generous bonus for ${member.name} shows that loyalty is rewarded in your organization. Money talks, and loyalty listens (+15 loyalty, -$1000).`);
-      } else {
-        showBriefNotification("Not enough money for this approach.", 'danger');
-      }
-      break;
-      
-    case "3":
-      if (Math.random() < 0.3) {
-        // 30% chance they leave
-        player.gang.gangMembers = player.gang.gangMembers.filter((_, index) => index !== memberIndex);
-        player.gang.members = Math.max(0, player.gang.members - 1);
-        showBriefNotification(`${member.name} left the gang after your threats!`, 'danger');
-        logAction(`${member.name} doesn't take kindly to threats and walks away from the organization. Heavy-handed tactics sometimes backfire.`);
-      } else {
-        member.loyalty = Math.min(100, member.loyalty + 5);
-        showBriefNotification(`${member.name} falls in line. +5 loyalty`, 'warning');
-        logAction(`A firm word and steely gaze reminds ${member.name} who's in charge. Fear can be a motivator, but it's a double-edged sword (+5 loyalty).`);
-      }
-      break;
-      
-    case "4":
-      if (await ui.confirm(`Are you sure you want to kick out ${member.name}? This action cannot be undone.`)) {
-        player.gang.gangMembers = player.gang.gangMembers.filter((_, index) => index !== memberIndex);
-        player.gang.members = Math.max(0, player.gang.members - 1);
-        showBriefNotification(`${member.name} removed from the gang.`, 'warning');
-        logAction(`${member.name} is shown the door. Sometimes cutting loose the disloyal is necessary for the health of the organization.`);
-      }
-      break;
-  }
-  
-  updateUI();
-  showGang();
+  // No-op: loyalty system removed
+  return;
 }
 
 // Check for betrayal events
@@ -4820,12 +4463,6 @@ function checkForBetrayals() {
 // Check if betrayal should trigger
 function shouldTriggerBetrayal(event) {
   const conditions = event.triggerConditions;
-  
-  // Check if any gang member meets the disloyalty threshold
-  if (conditions.maxLoyalty) {
-    const hasDisloyalMember = player.gang.gangMembers.some(member => member.loyalty <= conditions.maxLoyalty);
-    if (!hasDisloyalMember) return false;
-  }
   
   if (conditions.minWantedLevel && player.wantedLevel < conditions.minWantedLevel) return false;
   if (conditions.minTerritory && (player.turf?.owned || []).length < conditions.minTerritory) return false;
@@ -4864,10 +4501,10 @@ function triggerBetrayalEvent(event) {
   }
   
   if (consequences.gangMemberLoss) {
-    // Remove the most disloyal members (copy before sorting to avoid mutating order)
-    const sorted = [...player.gang.gangMembers].sort((a, b) => a.loyalty - b.loyalty);
-    for (let i = 0; i < consequences.gangMemberLoss && sorted.length > 0; i++) {
-      player.gang.gangMembers = player.gang.gangMembers.filter(m => m !== sorted[i]);
+    // Remove random members
+    const shuffled = [...player.gang.gangMembers].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < consequences.gangMemberLoss && shuffled.length > 0; i++) {
+      player.gang.gangMembers = player.gang.gangMembers.filter(m => m !== shuffled[i]);
     }
     player.gang.members = player.gang.gangMembers.length;
   }
@@ -5386,7 +5023,7 @@ function showFamilyChoice() {
       Choose Your Family
     </h2>
     <p style="color:#bdc3c7; text-align:center; margin-bottom:25px; font-size:1em;">
-      Every player must pledge to a crime family. Your choice determines your allies, enemies, and unique perks.<br>
+      Every player must pledge to a crime family. Your choice determines your allies, enemies, and unique advantages.<br>
       <strong style="color:#e74c3c;">This decision is permanent.</strong>
     </p>
     <div style="display:grid; gap:20px;">`;
@@ -7588,7 +7225,8 @@ function hideAllScreens() {
   document.getElementById("mini-games-screen").style.display = "none";
   document.getElementById("missions-screen").style.display = "none";
   document.getElementById("business-screen").style.display = "none";
-  document.getElementById("loan-shark-screen").style.display = "none";
+  const loanSharkScreen = document.getElementById("loan-shark-screen");
+  if (loanSharkScreen) loanSharkScreen.style.display = "none";
   document.getElementById("money-laundering-screen").style.display = "none";
   const fenceScreen = document.getElementById("fence-screen");
   if (fenceScreen) fenceScreen.style.display = "none";
@@ -7781,9 +7419,6 @@ function trackJobPlaystyle(job, success = true) {
     jobName.includes('computer') || jobName.includes('tech')) {
     player.playstyleStats.hackingAttempts = (player.playstyleStats.hackingAttempts || 0) + 1;
   }
-  
-  // Check for newly unlocked perks
-  checkForNewPerks();
 }
 
 function applySkillTreeBonuses(job, successChance) {
@@ -7813,27 +7448,6 @@ function applySkillTreeBonuses(job, successChance) {
     bonuses += player.skillTrees.intelligence.hacking * 7; // 7% per level
     bonuses += player.skillTrees.intelligence.planning * 4; // 4% per level
     bonuses += player.skillTrees.intelligence.forensics * 3; // 3% per level - helps with clean execution
-  }
-  
-  // Apply perk bonuses
-  if (player.unlockedPerks.includes('shadowWalker') && 
-    (jobName.includes('stealth') || jobName.includes('sneak'))) {
-    bonuses += 10; // Additional stealth bonus
-  }
-  
-  if (player.unlockedPerks.includes('warMachine') && 
-    (jobName.includes('fight') || jobName.includes('rob'))) {
-    bonuses += 15; // Additional violence bonus
-  }
-  
-  if (player.unlockedPerks.includes('silverTongue') && 
-    (jobName.includes('negotiate') || jobName.includes('bribe'))) {
-    bonuses += 20; // Additional charisma bonus
-  }
-  
-  if (player.unlockedPerks.includes('digitalGod') && 
-    (jobName.includes('hack') || jobName.includes('cyber'))) {
-    bonuses += 25; // Additional hacking bonus
   }
   
   return Math.min(bonuses, 50); // Cap at 50% bonus
@@ -7881,18 +7495,7 @@ function updateFactionReputation(job, success) {
   });
 }
 
-function checkForNewPerks() {
-  Object.entries(availablePerks).forEach(([perkId, perk]) => {
-    if (!player.unlockedPerks.includes(perkId) && checkPerkRequirements(perk.requirements)) {
-      // Auto-unlock if requirements are met (some perks might require manual unlock)
-      if (perk.autoUnlock !== false) {
-        player.unlockedPerks.push(perkId);
-        logAction(`New Perk Unlocked: ${perk.name} - ${perk.description}`);
-        applyPerkEffects(perkId);
-      }
-    }
-  });
-}
+// checkForNewPerks removed — Phase 31
 
 function getReputationPriceModifier(faction) {
   const reputation = player.streetReputation[faction] || 0;
@@ -8088,34 +7691,12 @@ async function startJob(index) {
   // Cap success chance at 95%
   successChance = Math.min(successChance, 95);
 
-  // Mastermind perk: 25% chance for jobs to auto-succeed
-  if (player.unlockedPerks.includes('mastermind') && Math.random() < 0.25) {
-    logAction(`  Mastermind instinct kicks in — you see the perfect opportunity and execute flawlessly!`);
-    successChance = 100; // Guarantee success
-  }
-
-  // Fear Monger perk: intimidation-related jobs get +30% chance
-  if (player.unlockedPerks.includes('fearMonger')) {
-    const jn = job.name.toLowerCase();
-    if (jn.includes('extortion') || jn.includes('protection') || jn.includes('shakedown') || jn.includes('intimidat')) {
-      successChance = Math.min(successChance + 30, 99);
-      logAction(`ˆ Your fearsome reputation makes the target comply more easily (+30% success).`);
-    }
-  }
 
   // Random chance for job success
   if (Math.random() * 100 > successChance) {
     // Handle failure with advanced skills considerations
     updateFactionReputation(job, false);
     trackJobPlaystyle(job, false);
-    
-    // Check for Shadow Walker perk (25% chance to avoid consequences)
-    if (player.unlockedPerks.includes('shadowWalker') && Math.random() < 0.25) {
-      logAction(`Your Shadow Walker abilities activate! You slip away undetected despite the failed attempt, avoiding all consequences.`);
-      gainExperience(4); // Bonus experience for avoiding consequences
-      updateUI();
-      return;
-    }
     
     showBriefNotification(`${getRandomNarration('jobFailure')} You lost ${actualEnergyCost} energy.`, 'danger');
     logAction(getRandomNarration('jobFailure'));
@@ -8206,11 +7787,6 @@ async function startJob(index) {
   let intimidationReduction = player.skillTrees.violence.intimidation * 0.1; // 10% reduction per level
   wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - intimidationReduction)));
   
-  // Ghost Protocol perk: reduce heat generation by 50%
-  if (player.unlockedPerks.includes('ghostProtocol')) {
-    wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * 0.5));
-  }
-  
   // Utility item: Police Scanner reduces wanted level gain by 20%
   if (hasUtilityItem('Police Scanner')) {
     wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * 0.8));
@@ -8254,19 +7830,6 @@ async function startJob(index) {
   // Advanced Skills System Integration
   trackJobPlaystyle(job, true);
   updateFactionReputation(job, true);
-  
-  // Apply War Machine perk bonus (50% more money for violent jobs)
-  if (player.unlockedPerks.includes('warMachine') && 
-    (job.name.toLowerCase().includes('fight') || job.name.toLowerCase().includes('rob'))) {
-    const bonus = Math.floor(earnings * 0.5);
-    if (job.paysDirty) {
-      player.dirtyMoney = (player.dirtyMoney || 0) + bonus;
-      logAction(`War Machine bonus: Your reputation for violence earns you an extra $${bonus.toLocaleString()} (dirty)!`);
-    } else {
-      player.money += bonus;
-      logAction(`War Machine bonus: Your reputation for violence earns you an extra $${bonus.toLocaleString()}!`);
-    }
-  }
   
   // Update mission progress
   updateMissionProgress('job_completed', 1);
@@ -8481,9 +8044,6 @@ function handleLaunderMoneyJob(job, approachLabel) {
 
   // Deduct energy
   let actualEnergyCost = job.energyCost;
-  if (player.unlockedPerks && player.unlockedPerks.includes('streetSmart')) {
-    actualEnergyCost = Math.max(1, Math.floor(actualEnergyCost * 0.8));
-  }
   player.energy -= actualEnergyCost;
 
   // Calculate how much dirty money we can launder this run (based on job payout range + luck)
@@ -8575,9 +8135,6 @@ function handleLaunderMoneyJob(job, approachLabel) {
   }
   let intimidationReduction = player.skillTrees.violence.intimidation * 0.1;
   wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - intimidationReduction)));
-  if (player.unlockedPerks.includes('ghostProtocol')) {
-    wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * 0.5));
-  }
   if (hasUtilityItem('Police Scanner')) {
     wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * 0.8));
     logAction(`Your Police Scanner intercepts radio chatter — you dodge the heat.`);
@@ -9170,12 +8727,7 @@ function showSkills() {
         <button onclick="showSkillTab('reputation')" id="tab-reputation" class="skill-tab">
           Reputation
         </button>
-        <button onclick="showSkillTab('mentors')" id="tab-mentors" class="skill-tab">
-          Mentors
-        </button>
-        <button onclick="showSkillTab('perks')" id="tab-perks" class="skill-tab">
-          Perks
-        </button>
+
       </div>
       
       <!-- Tab Content -->
@@ -9250,26 +8802,7 @@ function showSkills() {
         transition: width 0.3s ease;
       }
       
-      .mentor-card {
-        background: rgba(44, 62, 80, 0.9);
-        border-radius: 10px;
-        padding: 20px;
-        margin: 15px 0;
-        border: 2px solid #8e44ad;
-      }
-      
-      .perk-card {
-        background: rgba(241, 196, 15, 0.1);
-        border: 2px solid #f1c40f;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px 0;
-      }
-      
-      .perk-unlocked {
-        background: rgba(46, 204, 113, 0.2);
-        border-color: #2ecc71;
-      }
+
     </style>
   `;
 
@@ -9306,13 +8839,6 @@ function showSkillTab(tabName) {
       break;
     case 'reputation':
       content = generateReputationContent();
-      break;
-    case 'mentors':
-      checkMentorDiscovery(); // Check for newly qualified mentors
-      content = generateMentorsContent();
-      break;
-    case 'perks':
-      content = generatePerksContent();
       break;
   }
 
@@ -9534,211 +9060,8 @@ function generateReputationContent() {
   return content;
 }
 
-function generateMentorsContent() {
-  let content = `
-    <h3 class="skill-tab-title">Mentorship Program</h3>
-    <p class="skill-tab-subtitle">
-      Learn from captured rivals and enemy specialists to unlock unique techniques.
-    </p>
-  `;
-  
-  if (player.mentors.length === 0) {
-    content += `
-      <div style="text-align: center; padding: 40px; background: rgba(52, 73, 94, 0.3); border-radius: 15px;">
-        <span style="font-size: 4em; opacity: 0.5;">‍</span>
-        <h4 style="color: #95a5a6; margin: 20px 0;">No Mentors Available</h4>
-        <p style="color: #bdc3c7; margin: 0;">
-          Build your skills and reputation to attract mentors, or capture rival gang members during gang wars.<br>
-          Each mentor teaches specialized techniques from their faction.
-        </p>
-        <div style="margin-top: 20px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
-          <h5 style="color: #f39c12; margin-bottom: 10px;">Known Mentors in the Underground:</h5>
-          ${potentialMentors.map(m => {
-            const reqs = m.requirements || {};
-            const reqText = Object.entries(reqs).map(([k, v]) => `${k}: ${v}`).join(', ');
-            const met = Object.entries(reqs).every(([k, v]) => {
-              if (k === 'reputation') return player.reputation >= v;
-              return (player.skills[k] || 0) >= v;
-            });
-            return `<div style="padding: 6px 10px; margin: 4px 0; background: rgba(0,0,0,0.3); border-radius: 6px; border-left: 3px solid ${met ? '#2ecc71' : '#7f8c8d'};">
-              <span style="color: ${met ? '#2ecc71' : '#ecf0f1'};">${m.name}</span>
-              <span style="color: #95a5a6; font-size: 0.85em; float: right;">Requires: ${reqText}</span>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>
-    `;
-  } else {
-    content += `<div class="skill-grid">`;
-    
-    player.mentors.forEach(mentor => {
-      const mentoringCost = 100 + (mentor.sessionsCompleted * 25);
-      const canAfford = player.money >= mentoringCost;
-      const isAvailable = !mentor.lastSession || (Date.now() - mentor.lastSession) > 24 * 60 * 60 * 1000;
-      
-      content += `
-        <div class="mentor-card">
-          <div class="mentor-card-header">
-            <span class="mentor-card-icon">${factionEffects[mentor.faction].icon}</span>
-            <div>
-              <h4 class="mentor-card-name">${mentor.name}</h4>
-              <p class="mentor-card-faction">${factionEffects[mentor.faction].name}</p>
-            </div>
-          </div>
-          
-          <p class="mentor-card-quote">"${mentor.dialogue.teaching}"</p>
-          
-          <div style="margin-bottom: 15px;">
-            <h5 class="mentor-specialties-title">Specialties:</h5>
-            ${mentor.specialties.map(specialty => {
-              const [skill, branch] = specialty.split('.');
-              const skillDef = skillTreeDefinitions[skill];
-              const branchDef = skillDef.branches[branch];
-              return `
-                <div class="mentor-specialty-item">
-                  <span class="mentor-specialty-icon">${branchDef.icon}</span>
-                  <span class="mentor-specialty-name">${branchDef.name}</span>
-                </div>
-              `;
-            }).join('')}
-          </div>
-          
-          <div class="mentor-session-info">
-            <p>Sessions completed: ${mentor.sessionsCompleted || 0}/10<br>
-            Next session cost: $${mentoringCost.toLocaleString()}</p>
-          </div>
-          
-          <button onclick="startMentoring('${mentor.id}')"
-              class="mentor-train-btn ${canAfford && isAvailable ? 'available' : ''}"
-              ${!canAfford || !isAvailable ? 'disabled' : ''}>
-            ${!isAvailable ? 'Available in 24h' : !canAfford ? 'Insufficient Funds' : 'Start Training Session'}
-          </button>
-        </div>
-      `;
-    });
-    
-    content += `</div>`;
-  }
-  
-  content += `
-    <div class="mentor-tips">
-      <h4>Mentorship Tips</h4>
-      <ul>
-        <li>Build skills to attract mentors, or capture them during gang wars</li>
-        <li>Each mentor teaches 2-3 specialized skill tree branches</li>
-        <li>Training sessions have a 24-hour cooldown</li>
-        <li>Completing 10 sessions with a mentor unlocks special bonuses</li>
-        <li>Your reputation with their faction affects their willingness to teach</li>
-      </ul>
-    </div>
-  `;
-  
-  return content;
-}
-
-function generatePerksContent() {
-  let content = `
-    <h3 class="skill-tab-title">Perks & Achievements</h3>
-    <p class="skill-tab-subtitle">
-      Unlock powerful passive abilities based on your playstyle and achievements.
-    </p>
-    
-    <div class="skill-grid-narrow">
-  `;
-  
-  Object.entries(availablePerks).forEach(([perkId, perk]) => {
-    const isUnlocked = player.unlockedPerks.includes(perkId);
-    const meetsRequirements = checkPerkRequirements(perk.requirements);
-    
-    content += `
-      <div class="perk-card ${isUnlocked ? 'perk-unlocked' : ''}">
-        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-          <span style="font-size: 2em; margin-right: 15px; ${!isUnlocked && !meetsRequirements ? 'opacity: 0.5;' : ''}">${perk.icon}</span>
-          <div>
-            <h4 style="color: ${isUnlocked ? '#2ecc71' : meetsRequirements ? '#f39c12' : '#95a5a6'}; margin: 0;">${perk.name}</h4>
-            <p style="color: #bdc3c7; margin: 5px 0; font-size: 0.9em;">
-              ${isUnlocked ? 'UNLOCKED' : meetsRequirements ? 'AVAILABLE' : 'LOCKED'}
-            </p>
-          </div>
-        </div>
-        
-        <p style="color: #ecf0f1; font-size: 0.9em; margin-bottom: 15px;">
-          ${perk.description}
-        </p>
-        
-        <div style="margin-bottom: 15px; padding: 10px; background: rgba(52, 73, 94, 0.5); border-radius: 5px;">
-          <p style="color: #3498db; font-size: 0.9em; margin: 0; font-weight: bold;">Effect:</p>
-          <p style="color: #bdc3c7; font-size: 0.9em; margin: 5px 0 0 0;">${perk.effects}</p>
-        </div>
-        
-        <div>
-          <h5 style="color: #e67e22; margin: 0 0 10px 0;">Requirements:</h5>
-          ${Object.entries(perk.requirements).map(([req, value]) => {
-            let reqText = '';
-            let isMet = false;
-            
-            switch(req) {
-              case 'playstyle':
-                const count = perk.requirements.count;
-                const current = player.playstyleStats[value] || 0;
-                isMet = current >= count;
-                reqText = `${value.replace(/([A-Z])/g, ' $1').toLowerCase()}: ${current}/${count}`;
-                break;
-              case 'skills':
-                const skillEntries = Object.entries(value);
-                isMet = skillEntries.every(([skill, level]) => player.skills[skill] >= level);
-                reqText = skillEntries.map(([skill, level]) => `${skill} ${player.skills[skill]}/${level}`).join(', ');
-                break;
-              case 'skillTree':
-                const [skill, branch] = value.split('.');
-                const reqLevel = perk.requirements.level;
-                const currentLevel = player.skillTrees[skill][branch];
-                isMet = currentLevel >= reqLevel;
-                reqText = `${skill}.${branch}: ${currentLevel}/${reqLevel}`;
-                break;
-              case 'reputation':
-                isMet = player.reputation >= value;
-                reqText = `reputation: ${player.reputation}/${value}`;
-                break;
-              case 'level':
-                isMet = player.level >= value;
-                reqText = `level: ${player.level}/${value}`;
-                break;
-              case 'territories':
-                const territoryCount = (player.turf?.owned || []).length;
-                isMet = territoryCount >= value;
-                reqText = `territories: ${territoryCount}/${value}`;
-                break;
-              case 'mentors':
-                const mentorCount = player.mentors ? player.mentors.length : 0;
-                isMet = mentorCount >= value;
-                reqText = `mentors: ${mentorCount}/${value}`;
-                break;
-            }
-            
-            return `
-              <p style="color: ${isMet ? '#2ecc71' : '#e74c3c'}; font-size: 0.8em; margin: 2px 0;">
-                ${isMet ? '✓' : ''} ${reqText}
-              </p>
-            `;
-          }).join('')}
-        </div>
-        
-        ${meetsRequirements && !isUnlocked ? `
-          <button onclick="unlockPerk('${perkId}')" 
-              style="background: linear-gradient(135deg, #f39c12, #e67e22); 
-                  color: white; border: none; padding: 10px 15px; border-radius: 8px; 
-                  cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px;">
-            Unlock Perk
-          </button>
-        ` : ''}
-      </div>
-    `;
-  });
-  
-  content += `</div>`;
-  return content;
-}
+// generateMentorsContent removed — Phase 31
+// generatePerksContent removed — Phase 31
 
 function getSkillDescription(skillName, level) {
   const nextLevel = level + 1;
@@ -9769,7 +9092,7 @@ function upgradeSkillTree(skillName, branchName) {
   if (currentLevel < maxLevel) {
     player.skillTrees[skillName][branchName]++;
     player.skillPoints -= cost;
-    player.playstyleStats.mentoringSessions++; // Track skill tree usage
+    player.playstyleStats.skillTreeUpgrades = (player.playstyleStats.skillTreeUpgrades || 0) + 1; // Track skill tree usage
     
     const newLevel = currentLevel + 1;
     
@@ -9787,180 +9110,9 @@ function upgradeSkillTree(skillName, branchName) {
   }
 }
 
-function startMentoring(mentorId) {
-  const mentor = player.mentors.find(m => m.id === mentorId);
-  if (!mentor) return;
-  
-  const cost = 100 + (mentor.sessionsCompleted * 25);
-  if (player.money < cost) {
-    showBriefNotification("You don't have enough money for this training session!", 'danger');
-    return;
-  }
-  
-  const isAvailable = !mentor.lastSession || (Date.now() - mentor.lastSession) > 24 * 60 * 60 * 1000;
-  if (!isAvailable) {
-    showBriefNotification("This mentor needs time to prepare the next lesson. Come back in 24 hours.", 'success');
-    return;
-  }
-  
-  player.money -= cost;
-  mentor.lastSession = Date.now();
-  mentor.sessionsCompleted = (mentor.sessionsCompleted || 0) + 1;
-  player.playstyleStats.mentoringSessions++;
-  
-  // Randomly improve one of the mentor's specialty skills
-  const specialty = mentor.specialties[Math.floor(Math.random() * mentor.specialties.length)];
-  const [skillName, branchName] = specialty.split('.');
-  
-  if (player.skillTrees[skillName][branchName] < skillTreeDefinitions[skillName].branches[branchName].maxLevel) {
-    player.skillTrees[skillName][branchName]++;
-    logAction(`${mentor.name} shares ancient wisdom! Your ${branchName} techniques have improved through their teachings.`);
-  } else {
-    // Give skill points if branch is maxed
-    player.skillPoints += 2;
-    logAction(`${mentor.name} is impressed by your mastery and grants you additional training points to allocate as you see fit.`);
-  }
-  
-  // Small reputation boost with mentor's faction
-  if (player.streetReputation[mentor.faction] !== undefined) {
-    player.streetReputation[mentor.faction] = Math.min(100, player.streetReputation[mentor.faction] + 2);
-  }
-  
-  updateUI();
-  showSkillTab('mentors'); // Refresh the mentors view
-}
-
-// Check if player qualifies for any new mentors based on skill requirements
-function checkMentorDiscovery() {
-  if (!potentialMentors || !player.mentors) return;
-  
-  const existingMentorNames = player.mentors.map(m => m.name);
-  
-  potentialMentors.forEach(mentorDef => {
-    // Skip if already have this mentor
-    if (existingMentorNames.includes(mentorDef.name)) return;
-    
-    // Check requirements
-    const reqs = mentorDef.requirements || {};
-    let qualified = true;
-    
-    for (const [key, value] of Object.entries(reqs)) {
-      if (key === 'reputation') {
-        if (player.reputation < value) qualified = false;
-      } else if (player.skills[key] !== undefined) {
-        if (player.skills[key] < value) qualified = false;
-      }
-    }
-    
-    if (!qualified) return;
-    
-    // Unlock this mentor!
-    const newMentor = {
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 4),
-      name: mentorDef.name,
-      faction: mentorDef.faction,
-      specialties: mentorDef.specialties,
-      dialogue: mentorDef.dialogue,
-      sessionsCompleted: 0,
-      lastSession: null
-    };
-    
-    player.mentors.push(newMentor);
-    existingMentorNames.push(mentorDef.name);
-    
-    showBriefNotification(`New Mentor: ${mentorDef.name} has agreed to train you!`, 'success', 5000);
-    logAction(`${mentorDef.unlockMessage || `${mentorDef.name} recognizes your skills and offers to mentor you.`}`);
-  });
-}
-
-function checkPerkRequirements(requirements) {
-  return Object.entries(requirements).every(([req, value]) => {
-    switch(req) {
-      case 'playstyle':
-        const count = requirements.count;
-        return (player.playstyleStats[value] || 0) >= count;
-      case 'skills':
-        return Object.entries(value).every(([skill, level]) => player.skills[skill] >= level);
-      case 'skillTree':
-        const [skill, branch] = value.split('.');
-        const reqLevel = requirements.level;
-        return player.skillTrees[skill][branch] >= reqLevel;
-      case 'reputation':
-        return player.reputation >= value;
-      case 'level':
-        return player.level >= value;
-      case 'territories':
-        return (player.turf?.owned || []).length >= value;
-      case 'mentors':
-        return (player.mentors ? player.mentors.length : 0) >= value;
-      case 'count':
-        return true; // This is handled by other requirements
-      default:
-        return false;
-    }
-  });
-}
-
-function unlockPerk(perkId) {
-  const perk = availablePerks[perkId];
-  if (!perk || player.unlockedPerks.includes(perkId)) return;
-  
-  if (checkPerkRequirements(perk.requirements)) {
-    player.unlockedPerks.push(perkId);
-    logAction(`Perk Unlocked! ${perk.name}: ${perk.description}`);
-    updateUI();
-    showSkillTab('perks'); // Refresh the perks view
-    
-    // Apply immediate perk effects if needed
-    applyPerkEffects(perkId);
-  }
-}
-
-function applyPerkEffects(perkId) {
-  // Apply any immediate effects when perks are unlocked
-  switch(perkId) {
-    case 'kingmaker':
-      // Boost all gang member loyalty to max
-      if (player.gang && player.gang.gangMembers) {
-        player.gang.gangMembers.forEach(member => {
-          member.loyalty = 100;
-        });
-      }
-      logAction("Kingmaker unlocked! All gang members are now fiercely loyal.");
-      break;
-    case 'legendaryStatus':
-      // Unlock special content or abilities
-      logAction("Your legendary status opens doors that were previously closed to mortal criminals...");
-      break;
-    case 'ghostProtocol':
-      logAction("Ghost Protocol active! You leave no trace — heat generation reduced by 50%.");
-      break;
-    case 'fearMonger':
-      logAction("Fear Monger unlocked! Your reputation precedes you — intimidation +30% success.");
-      break;
-    case 'mastermind':
-      logAction("Mastermind unlocked! 25% of jobs now auto-succeed with zero risk.");
-      break;
-    case 'masterTeacher':
-      logAction("Master Teacher unlocked! All skill gains increased by 25%.");
-      break;
-    case 'shadowWalker':
-      logAction("Shadow Walker unlocked! 25% chance to avoid consequences on failed stealth jobs.");
-      break;
-    case 'warMachine':
-      logAction("War Machine unlocked! Combat jobs pay 50% more.");
-      break;
-    case 'silverTongue':
-      logAction("Silver Tongue unlocked! Negotiation jobs get massive success bonus.");
-      break;
-    case 'digitalGod':
-      logAction("Digital God unlocked! Hacking jobs get massive success bonus.");
-      break;
-    case 'fortuneSon':
-      logAction("Fortune's Son unlocked! Gambling odds permanently improved.");
-      break;
-  }
-}
+// startMentoring removed — Phase 31
+// checkMentorDiscovery removed — Phase 31
+// checkPerkRequirements, unlockPerk, applyPerkEffects removed — Phase 31
 
 function upgradeSkill(skillName) {
   // Prevent rapid clicking
@@ -9977,12 +9129,6 @@ function upgradeSkill(skillName) {
     window.upgradingSkill = true;
     player.skills[skillName]++;
     player.skillPoints -= cost;
-    
-    // Master Teacher perk: 25% bonus — chance to gain an extra skill level
-    if (player.unlockedPerks.includes('masterTeacher') && Math.random() < 0.25) {
-      player.skills[skillName]++;
-      logAction(`Master Teacher instinct! You gain an extra level in ${skillName}!`);
-    }
     
     // Check for milestone achievements
     const newLevel = player.skills[skillName];
@@ -10049,11 +9195,6 @@ function collectTribute() {
   const territoryBonus = player.territory * 50;
   tribute += territoryBonus;
   
-  // Loyalty affects tribute amount (use average of individual member loyalties)
-  const avgLoyalty = typeof getAverageLoyalty === 'function' ? getAverageLoyalty() : (player.gang.loyalty || 100);
-  const loyaltyMultiplier = avgLoyalty / 100;
-  tribute = Math.floor(tribute * loyaltyMultiplier);
-  
   // Tribute is dirty cash
   player.dirtyMoney = (player.dirtyMoney || 0) + tribute;
   player.gang.lastTributeTime = currentTime;
@@ -10065,9 +9206,6 @@ function collectTribute() {
   let bonusText = "";
   if (territoryBonus > 0) {
     bonusText += ` (+$${territoryBonus} territory bonus)`;
-  }
-  if (loyaltyMultiplier < 1) {
-    bonusText += ` (${Math.floor((1 - loyaltyMultiplier) * 100)}% reduced due to low loyalty)`;
   }
   
   showBriefNotification(`Collected $${tribute.toLocaleString()} in tribute (dirty)!${bonusText}`, 'success');
@@ -10122,7 +9260,7 @@ function expandTerritory() {
     degradeEquipment('territory_expand');
     logAction("Your influence spreads like ink in water. New blocks fall under your protection, new corners pay tribute. The empire grows one street at a time.");
   } else {
-    let losses = Math.floor(Math.random() * 3) + 1;
+    let losses = Math.floor(Math.random() * 4) + 2;
     player.gang.members = Math.max(0, player.gang.members - losses);
     
     // Also remove from detailed gang members array
@@ -10172,36 +9310,6 @@ function gangWar() {
     player.reputation += 10;
     player.wantedLevel += 15;
     
-    // Chance to capture a mentor (20% base chance, increased by charisma and leadership skills)
-    let captureChance = 0.20;
-    captureChance += player.skills.charisma * 0.02; // +2% per charisma level
-    captureChance += player.skillTrees.charisma.leadership * 0.03; // +3% per leadership level
-    captureChance += player.skillTrees.violence.intimidation * 0.025; // +2.5% per intimidation level
-    
-    if (Math.random() < captureChance && player.mentors.length < 4) {
-      const availableMentors = potentialMentors.filter(mentor => {
-        if (player.mentors.some(existing => existing.name === mentor.name)) return false;
-        return Object.entries(mentor.requirements).every(([req, val]) => {
-          if (req === 'reputation') return player.reputation >= val;
-          return (player.skills[req] || 0) >= val;
-        });
-      });
-      
-      if (availableMentors.length > 0) {
-        const capturedMentor = availableMentors[Math.floor(Math.random() * availableMentors.length)];
-        const newMentor = {
-          ...capturedMentor,
-          id: Date.now().toString(),
-          sessionsCompleted: 0,
-          lastSession: null
-        };
-        
-        player.mentors.push(newMentor);
-        logAction(`Mentor Captured! ${capturedMentor.name} has been taken prisoner. "${capturedMentor.dialogue.first}"`);
-        showBriefNotification(`Mentor Captured! ${capturedMentor.name} from the ${factionEffects[capturedMentor.faction].name} can now teach you in the Skills menu.`, 'success', 6000);
-      }
-    }
-    
     showBriefNotification(`Gang war victory! Earned $${winnings.toLocaleString()} (dirty) and gained turf rep!`, 'success');
     logAction(`Victorious in gang warfare! The streets echo with your name as you claim $${winnings.toLocaleString()} (dirty) and expand your domain.`);
     if (player.turf) player.turf.reputation = (player.turf.reputation || 0) + 10;
@@ -10219,7 +9327,7 @@ function gangWar() {
       player.selectedCar = null;
     }
   } else {
-    let losses = Math.floor(actualGangSize * 0.3);
+    let losses = Math.floor(actualGangSize * 0.45);
     
     // Remove from detailed gang members array
     for (let i = 0; i < losses && player.gang.gangMembers.length > 0; i++) {
@@ -10232,8 +9340,7 @@ function gangWar() {
     }
     player.gang.members = player.gang.gangMembers.length;
     
-    player.gang.loyalty = Math.max(50, player.gang.loyalty - 20);
-    showBriefNotification(`Gang war defeat! Lost ${losses} members and loyalty decreased.`, 'warning');
+    showBriefNotification(`Gang war defeat! Lost ${losses} members.`, 'warning');
     logAction(`Lost gang war, lost ${losses} members.`);
     
     // Car takes extreme damage in defeat
@@ -10264,9 +9371,6 @@ async function fireGangMember(memberIndex) {
     return;
   }
   
-  // Calculate loyalty impact based on how the member is treated
-  const loyaltyImpact = Math.min(15, Math.floor(member.loyalty / 10)); // Higher loyalty members cause more impact when fired
-  
   // Remove the member from the gang first
   player.gang.gangMembers.splice(memberIndex, 1);
   player.gang.members = player.gang.gangMembers.length;
@@ -10277,9 +9381,6 @@ async function fireGangMember(memberIndex) {
   // Reduce territory power for fired member
   const powerLoss = Math.floor((member.experienceLevel || 1) * 2) + 5;
   player.territoryPower = Math.max(50, player.territoryPower - powerLoss);
-  
-  // Reduce loyalty due to firing someone (shows you're ruthless)
-  player.gang.loyalty = Math.max(30, player.gang.loyalty - loyaltyImpact);
   
   // Update UI and refresh gang screen
   updateUI();
@@ -10292,7 +9393,7 @@ async function fireGangMember(memberIndex) {
   ];
   const reason = fireReasons[Math.floor(Math.random() * fireReasons.length)];
   
-  logAction(`${member.name} has been terminated from your organization due to ${reason}. Word spreads quickly in the underworld - sometimes tough decisions must be made (-${member.power || 5} power, -${loyaltyImpact} loyalty).`);
+  logAction(`${member.name} has been terminated from your organization due to ${reason}. Word spreads quickly in the underworld - sometimes tough decisions must be made (-${member.power || 5} power).`);
   
   // Achievement check in case this affects any achievements
   checkAchievements();
@@ -11809,8 +10910,6 @@ const menuUnlockConfig = [
   // === LATE GAME (Level 10-15) ===
   { id: 'businesses',  fn: 'showBusinesses()',        label: 'Fronts',         tip: 'Buy & manage businesses',          level: 10 },
   // Turf Wars & Turf Map are now inside Operations
-  { id: 'loanshark',   fn: 'showLoanShark()',         label: 'Shylock',        tip: 'Borrow money (high interest)',     level: 10 },
-
   { id: 'laundering',  fn: 'showMoneyLaundering()',   label: 'The Wash',       tip: 'Launder dirty money into clean cash', level: 12 },
 
   // === ENDGAME (Level 15+) ===
@@ -12038,7 +11137,6 @@ function showPlayerStats() {
   // ---- SECTION 4: Gang & Territory ----
   const gangHTML = [
     row('Gang Members', (player.gang.gangMembers || []).length, '#3498db'),
-    row('Gang Loyalty', `${player.gang.loyalty || 100}%`, '#2ecc71'),
     row('Max Gang Size', player.realEstate.maxGangMembers || 5, '#ecf0f1'),
     row('Territories Held', (player.turf?.owned || []).length, '#e67e22'),
     row('Territory Power', player.territoryPower || 100, '#e74c3c'),
@@ -12087,7 +11185,6 @@ function showPlayerStats() {
     row('Diplomatic Actions', ps.diplomaticActions || 0),
     row('Hacking Attempts', ps.hackingAttempts || 0),
     row('Gambling Wins', ps.gamblingWins || 0),
-    row('Training Sessions', ps.mentoringSessions || 0),
   ].join('');
 
   // ---- Assemble full page ----
@@ -12613,7 +11710,6 @@ function showRecruitment() {
                   </span>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.95em;">
-                  <div><strong>Loyalty:</strong> ${recruit.loyalty}%</div>
                   <div><strong>Tribute:</strong> ${(recruit.tributeMultiplier * 100).toFixed(0)}%</div>
                 </div>
               </div>
@@ -12701,7 +11797,6 @@ function recruitMember(index) {
         experienceLevel: recruit.experienceLevel,
         tributeMultiplier: recruit.tributeMultiplier,
         specialization: recruit.specialization,
-        loyalty: recruit.loyalty,
         skills: recruit.skills || {
           violence: Math.floor(Math.random() * 3) + 1,
           stealth: Math.floor(Math.random() * 3) + 1,
@@ -13473,9 +12568,6 @@ function closeLevelUpOverlay() {
     }, 300);
   }
   
-  // Check if any mentors can be unlocked at this new level
-  checkMentorDiscovery();
-  
   // Show alert with level up info
   showBriefNotification(`Level Up! You are now level ${player.level}. You gained 3 skill points!`, 'success');
 }
@@ -13601,19 +12693,16 @@ function resetPlayerForNewGame() {
       civilians: 0,
       underground: 0
     },
-    unlockedPerks: [],
     playstyleStats: {
       stealthyJobs: 0,
       violentJobs: 0,
       diplomaticActions: 0,
       hackingAttempts: 0,
-      gamblingWins: 0,
-      mentoringSessions: 0
+      gamblingWins: 0
     },
     territory: 0,
     gang: {
       members: 0,
-      loyalty: 100,
       lastTributeTime: 0,
       gangMembers: [],
       activeOperations: [],
@@ -13649,7 +12738,6 @@ function resetPlayerForNewGame() {
       }
     },
     businesses: [],
-    activeLoans: [],
     dirtyMoney: 0,
     suspicionLevel: 0,
     launderingSetups: [],
@@ -14504,8 +13592,7 @@ async function wageWar(districtId) {
       type: 'territory_war',
       district: districtId,
       gangMembers: gangSize,
-      power: player.gang ? (player.gang.power || 0) : 0,
-      gangLoyalty: player.gang ? (player.gang.loyalty || 0) : 0
+      power: player.gang ? (player.gang.power || 0) : 0
     }));
   } else {
     showBriefNotification('Must be connected to multiplayer to wage territory war.', 'danger');
@@ -14607,8 +13694,22 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.7.4";
+const CURRENT_VERSION = "1.7.5";
 const VERSION_UPDATES = {
+  "1.7.5": {
+    title: "System Removal & Rebalance",
+    date: "March 2026",
+    changes: [
+      "Removed Mentorship Program system entirely (potentialMentors, startMentoring, checkMentorDiscovery)",
+      "Removed Expertise Perks system entirely (availablePerks, 11 perk effects, unlock/check flows)",
+      "Removed Gang Loyalty system entirely (loyalty stats, UI bars, buttons, calculations, 35+ change areas)",
+      "Removed Loan Shark system entirely (showLoanShark, takeLoan, repayLoan, loanOptions, Shylock menu)",
+      "Increased gang member death chance: Turf defense 10%→25%, expansion losses 1-3→2-5, war defeat 30%→45%",
+      "Added 8% death chance during gang operations (members can now die on missions)",
+      "Turf defense victories now have 25% chance of injury/death (up from 15% injury only)",
+      "Cleaned all stale references across player.js, economy.js, casino.js, generators.js, index.html"
+    ]
+  },
   "1.7.4": {
     title: "Bug Audit & Alert/Confirm Overhaul",
     date: "March 2026",
@@ -14642,7 +13743,7 @@ const VERSION_UPDATES = {
       "All territory references migrated from dead player.territories to player.turf.owned",
       "Map rewritten to use TURF_ZONES — shows actual turf war zones with boss info",
       "Removed ~500 lines of dead code (legacy missions, rivalGangs, districtTypes)",
-      "Wired mini-game rewards: Quick Draw boosts combat, TikTakToe buffers loyalty loss",
+      "Wired mini-game rewards: Quick Draw boosts combat, TikTakToe boosts gang respect",
       "Fixed 5 routing bugs (hotkey t, map button, back buttons)",
       "Fixed 11 crash bugs from missing window exports (jailbreak, achievements, calendar, rivals, leaderboards)",
       "Blocking alert popups converted to toast notifications"
@@ -16277,7 +15378,6 @@ function gangRecruitment() {
       name: recruitNames[Math.floor(Math.random() * recruitNames.length)],
       skill: skills[Math.floor(Math.random() * skills.length)],
       cost: Math.floor(Math.random() * 3000) + 1000, // $1,000 - $4,000
-      loyalty: Math.floor(Math.random() * 30) + 70, // 70-100 loyalty
       power: Math.floor(Math.random() * 15) + 5 // 5-20 power
     };
     
@@ -16286,7 +15386,7 @@ function gangRecruitment() {
     // Create clickable action log entry
     const recruitmentId = 'recruitment-' + Date.now();
     logAction(` <strong>${recruit.name}</strong> approaches you in the shadows. They've heard about your reputation and want to join your crew for <strong>$${recruit.cost.toLocaleString()}</strong>. 
-          Specializes in <em>${recruit.skill}</em> (+${recruit.power} power, ${recruit.loyalty}% loyalty). 
+          Specializes in <em>${recruit.skill}</em> (+${recruit.power} power). 
           <button id="${recruitmentId}" onclick="hireRandomRecruit('${recruitmentId}')" style="background: #27ae60; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; font-weight: bold;">
             Hire for $${recruit.cost.toLocaleString()}
           </button>
@@ -16366,7 +15466,6 @@ async function hireRandomRecruit(buttonId) {
   const newMember = {
     name: recruit.name,
     skill: recruit.skill,
-    loyalty: recruit.loyalty,
     power: recruit.power,
     joinedDate: Date.now()
   };
@@ -16395,7 +15494,7 @@ async function hireRandomRecruit(buttonId) {
   }
   
   updateUI();
-  logAction(`${recruit.name} joins your crew! Their expertise in ${recruit.skill} will serve you well. (+${recruit.power} power, ${recruit.loyalty}% loyalty)`);
+  logAction(`${recruit.name} joins your crew! Their expertise in ${recruit.skill} will serve you well. (+${recruit.power} power)`);
   
   // Check achievements
   checkAchievements();
@@ -16410,11 +15509,8 @@ function territoryDispute() {
     } else {
       // Reduce turf power instead of decrementing territory counter
       if (player.turf) player.turf.power = Math.max(0, (player.turf.power || 100) - 15);
-      // gangRespect (from TikTakToe) cushions loyalty loss
-      const respectBuffer = Math.min(5, (player.gangRespect || 0));
-      player.gang.loyalty = Math.max(50, player.gang.loyalty - Math.max(2, 10 - respectBuffer));
       showBriefNotification('Lost territory to rivals!', 3000);
-      logAction('A rival gang overwhelmed your defenses! You lost turf power and gang loyalty dropped.');
+      logAction('A rival gang overwhelmed your defenses! You lost turf power.');
     }
     updateUI();
   }
@@ -16583,8 +15679,6 @@ function autoCollectBusinessesAndTribute() {
       }
       const territoryBonus = player.territory * 50;
       tribute += territoryBonus;
-      const loyaltyMultiplier = player.gang.loyalty / 100;
-      tribute = Math.floor(tribute * loyaltyMultiplier);
       if (tribute > 0) {
         player.dirtyMoney = (player.dirtyMoney || 0) + tribute;
         player.gang.lastTributeTime = now;
@@ -17384,7 +16478,7 @@ document.addEventListener('keydown', function(event) {
 // Initialize the game when the page loads
 function initGame() {
   // Wire up casino module with game.js dependencies
-  initCasino({ hideAllScreens, updateUI, alert, logAction, showBriefNotification, checkForNewPerks });
+  initCasino({ hideAllScreens, updateUI, alert, logAction, showBriefNotification });
   // Wire up mini-games module
   initMiniGames({ hideAllScreens, updateUI, alert, logAction, updateStatistic });
 
@@ -18122,7 +17216,7 @@ function calculateEmpireRating() {
   
   // Gang Power (max 1500 points)
   const gangSize = player.gang.gangMembers ? player.gang.gangMembers.length : player.gang.members;
-  player.empireRating.gangPower = Math.min(1500, gangSize * 50 + (player.gang.loyalty || 0) * 10);
+  player.empireRating.gangPower = Math.min(1500, gangSize * 50);
   
   // Territory Power (max 1500 points)
   player.empireRating.territoryPower = Math.min(1500, player.territory * 100);
@@ -19145,7 +18239,7 @@ const COMPETITION_SYSTEM = {
     { id: 'wealth', name: 'Criminal Wealth', icon: '💰', description: 'Total money accumulated' },
     { id: 'reputation', name: 'Street Reputation', icon: '👑', description: 'Respect in the criminal underworld' },
     { id: 'territory', name: 'Turf Control', icon: '🏛️', description: 'Turf zones under your family\'s control' },
-    { id: 'gang', name: 'Gang Power', icon: '👥', description: 'Size and loyalty of criminal organization' },
+    { id: 'gang', name: 'Gang Power', icon: '👥', description: 'Size and strength of criminal organization' },
     { id: 'business', name: 'Business Empire', icon: '🏭', description: 'Number of criminal enterprises' },
     { id: 'longevity', name: 'Career Longevity', icon: '⏰', description: 'Time survived in the criminal world' }
   ],
@@ -20369,10 +19463,6 @@ window.purchaseBusiness = purchaseBusiness;
 window.upgradeBusiness = upgradeBusiness;
 window.collectBusinessIncome = collectBusinessIncome;
 window.sellBusiness = sellBusiness;
-window.showLoanShark = showLoanShark;
-window.checkLoanEligibility = checkLoanEligibility;
-window.takeLoan = takeLoan;
-window.repayLoan = repayLoan;
 window.showMoneyLaundering = showMoneyLaundering;
 window.checkLaunderingEligibility = checkLaunderingEligibility;
 window.startLaundering = startLaundering;
@@ -20392,8 +19482,6 @@ window.closeVehiclePurchaseResult = closeVehiclePurchaseResult;
 
 // Gang & Territory
 window.showGang = showGang;
-window.boostMemberLoyalty = boostMemberLoyalty;
-window.getAverageLoyalty = getAverageLoyalty;
 window.calculateGangPower = calculateGangPower;
 window.generateGangOperationsHTML = generateGangOperationsHTML;
 window.getAvailableMembersForOperation = getAvailableMembersForOperation;
@@ -20448,14 +19536,8 @@ window.showSkillTab = showSkillTab;
 window.generateBasicSkillsContent = generateBasicSkillsContent;
 window.generateSkillTreesContent = generateSkillTreesContent;
 window.generateReputationContent = generateReputationContent;
-window.generateMentorsContent = generateMentorsContent;
-window.generatePerksContent = generatePerksContent;
 window.getSkillDescription = getSkillDescription;
 window.upgradeSkillTree = upgradeSkillTree;
-window.startMentoring = startMentoring;
-window.checkPerkRequirements = checkPerkRequirements;
-window.unlockPerk = unlockPerk;
-window.applyPerkEffects = applyPerkEffects;
 window.upgradeSkill = upgradeSkill;
 window.gainExperience = gainExperience;
 window.checkLevelUp = checkLevelUp;
@@ -20581,7 +19663,6 @@ window.formatShortMoney = formatShortMoney;
 window.trackJobPlaystyle = trackJobPlaystyle;
 window.applySkillTreeBonuses = applySkillTreeBonuses;
 window.updateFactionReputation = updateFactionReputation;
-window.checkForNewPerks = checkForNewPerks;
 window.getReputationPriceModifier = getReputationPriceModifier;
 window.hasRequiredItems = hasRequiredItems;
 window.flashHurtScreen = flashHurtScreen;
@@ -20655,7 +19736,6 @@ window.showHospital = showHospital;
 window.showCasino = showCasino;
 window.healAtHospital = healAtHospital;
 window.renderHospitalContent = renderHospitalContent;
-window.checkMentorDiscovery = checkMentorDiscovery;
 
 // Player Stats (combined screen)
 window.exportStatistics = exportStatistics;

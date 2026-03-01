@@ -5,6 +5,22 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.5] - 2026-03-01
+
+### Removed
+- **Mentorship Program** — potentialMentors data, startMentoring(), checkMentorDiscovery(), mentor capture in gang wars, Mentors expertise tab
+- **Expertise Perks System** — availablePerks data (11 perks), all perk effect checks (mastermind, fearMonger, shadowWalker, ghostProtocol, warMachine, streetSmart, fortuneSon, masterTeacher), Perks expertise tab, checkForNewPerks(), unlockPerk(), applyPerkEffects()
+- **Gang Loyalty System** — loyalty stats from all 7 specialist roles, loyalty bars/buttons in crew UI, loyalty calculations in gang power/operations/betrayal/tribute, boostMemberLoyalty(), getAverageLoyalty(), updateMemberLoyalty(), dealWithDisloyalty(), loyalty_building training program, 35+ change areas cleaned
+- **Loan Shark System** — showLoanShark(), takeLoan(), repayLoan(), checkLoanEligibility(), loanOptions data (4 loan types), Shylock SafeHouse menu entry, loan-shark-screen HTML
+
+### Changed
+- **Gang Member Death Rates Increased** — Turf defense death chance 10%→25%, territory expansion losses 1-3→2-5 members, gang war defeat losses 30%→45% of gang
+- Gang operations now have 8% chance of member death (previously only arrest/betrayal)
+- Turf defense victories now 25% chance of injury/death with 30% death sub-chance (was 15% injury only)
+- Expertise screen now has 3 tabs: Basic Skills, Skill Trees, Reputation
+- Faction selection text updated ("unique perks" → "unique advantages")
+- Jailbreak description updated ("builds loyalty" → "earns respect")
+
 ## [1.7.4] - 2026-03-01
 
 ### Fixed

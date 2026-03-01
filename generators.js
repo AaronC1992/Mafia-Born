@@ -132,7 +132,6 @@ export function generateAvailableRecruits() {
             cost: cost,
             tributeMultiplier: tributeMultiplier,
             specialization: specialization,
-            loyalty: Math.floor(Math.random() * 30) + 70, // 70-100% initial loyalty
             skills: {
                 violence: Math.floor(Math.random() * 3) + 1,
                 stealth: Math.floor(Math.random() * 3) + 1,

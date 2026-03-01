@@ -4,15 +4,14 @@
 import { player } from './player.js';
 
 // ── Dependencies (injected from game.js via initCasino) ──────────────
-let _hideAllScreens, _updateUI, _alert, _logAction, _showBriefNotification, _checkForNewPerks;
+let _hideAllScreens, _updateUI, _alert, _logAction, _showBriefNotification;
 
-export function initCasino({ hideAllScreens, updateUI, alert, logAction, showBriefNotification, checkForNewPerks }) {
+export function initCasino({ hideAllScreens, updateUI, alert, logAction, showBriefNotification }) {
   _hideAllScreens = hideAllScreens;
   _updateUI = updateUI;
   _alert = alert;
   _logAction = logAction;
   _showBriefNotification = showBriefNotification;
-  _checkForNewPerks = checkForNewPerks;
 }
 
 // ── Casino-session state ─────────────────────────────────────────────
@@ -37,7 +36,6 @@ function getCasinoBetRange() {
 
 function getGamblingLuckBonus() {
   let bonus = player.skillTrees.luck.gambling * 0.01;
-  if (player.unlockedPerks.includes('fortuneSon')) bonus += 0.05;
   return bonus;
 }
 
@@ -45,7 +43,6 @@ function casinoWin(winnings) {
   player.money += winnings;
   player.playstyleStats.gamblingWins = (player.playstyleStats.gamblingWins || 0) + 1;
   _casinoWins++;
-  _checkForNewPerks();
   _updateUI();
   updateCasinoWallet();
 }
@@ -358,7 +355,6 @@ export function slotSpin() {
 
   // Pre-determine final symbols
   let winChance = 0.12 + player.skillTrees.luck.gambling * 0.008;
-  if (player.unlockedPerks.includes('fortuneSon')) winChance *= 1.5;
   winChance = Math.min(0.30, winChance);
 
   let finalSymbols;

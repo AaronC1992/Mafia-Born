@@ -77,7 +77,6 @@ export const player = {
       resistance: 0 // Tough as nails
     }
   },
-  mentors: [], // Array of captured rivals who can teach skills
   streetReputation: {
     torrino: 0, // Torrino Family reputation
     kozlov: 0, // Kozlov Bratva reputation
@@ -87,14 +86,12 @@ export const player = {
     civilians: 0, // Public respect
     underground: 0 // Standing in the Commission
   },
-  unlockedPerks: [], // Array of unlocked perks based on playstyle
   playstyleStats: {
     stealthyJobs: 0,
     violentJobs: 0,
     diplomaticActions: 0,
     hackingAttempts: 0,
-    gamblingWins: 0,
-    mentoringSessions: 0
+    gamblingWins: 0
   },
   territory: 0, // Legacy — kept for backward compat; see turf system below
   currentTerritory: null, // District ID where the player currently lives (MP spawn/relocation)
@@ -152,7 +149,6 @@ export const player = {
     }
   },
   businesses: [], // Array to store owned fronts
-  activeLoans: [], // Array to store active debts
   dirtyMoney: 0, // Cash that needs to be cleaned
   suspicionLevel: 0, // 0-100, affects Fed attention
   launderingSetups: [], // Array to store active wash cycles
@@ -477,99 +473,7 @@ export const skillTreeDefinitions = {
   }
 };
 
-// Perk System
-export const availablePerks = {
-  // Stealth-based perks
-  shadowWalker: {
-    name: "Shadow Walker",
-    icon: "🌑",
-    description: "Your stealth expertise is legendary",
-    requirements: { playstyle: "stealthyJobs", count: 25, skills: { stealth: 15 } },
-    effects: "25% chance to avoid all negative consequences from failed stealth jobs"
-  },
-  ghostProtocol: {
-    name: "Ghost Protocol",
-    icon: "👻",
-    description: "You leave no trace behind",
-    requirements: { playstyle: "stealthyJobs", count: 50, skillTree: "stealth.surveillance", level: 5 },
-    effects: "Automatically clean up evidence after jobs, reducing heat generation by 50%"
-  },
-  
-  // Violence-based perks
-  fearMonger: {
-    name: "Fear Monger",
-    icon: "😱",
-    description: "Your reputation precedes you",
-    requirements: { playstyle: "violentJobs", count: 25, skills: { violence: 15 } },
-    effects: "Intimidation attempts have 30% higher success rate, enemies may flee before combat"
-  },
-  warMachine: {
-    name: "War Machine",
-    icon: "💣",
-    description: "Violence is your language",
-    requirements: { playstyle: "violentJobs", count: 50, skillTree: "violence.firearms", level: 7 },
-    effects: "Combat jobs pay 50% more, but attract 25% more police attention"
-  },
-  
-  // Charisma-based perks
-  silverTongue: {
-    name: "Silver Tongue",
-    icon: "👄",
-    description: "You could sell ice to an eskimo",
-    requirements: { playstyle: "diplomaticActions", count: 30, skills: { charisma: 18 } },
-    effects: "All negotiation attempts automatically succeed on first try"
-  },
-  kingmaker: {
-    name: "Kingmaker",
-    icon: "👑",
-    description: "Leaders are made, not born",
-    requirements: { playstyle: "diplomaticActions", count: 45, skillTree: "charisma.leadership", level: 8 },
-    effects: "Gang members gain experience 100% faster, loyalty never decreases"
-  },
-  
-  // Intelligence-based perks
-  mastermind: {
-    name: "Mastermind",
-    icon: "🧪",
-    description: "Always three steps ahead",
-    requirements: { playstyle: "hackingAttempts", count: 20, skills: { intelligence: 20 } },
-    effects: "25% chance for jobs to succeed automatically without risk"
-  },
-  digitalGod: {
-    name: "Digital God",
-    icon: "🔱",
-    description: "The internet bends to your will",
-    requirements: { playstyle: "hackingAttempts", count: 40, skillTree: "intelligence.hacking", level: 9 },
-    effects: "Can hack any system for massive payouts, but creates digital traces"
-  },
-  
-  // Luck-based perks
-  fortuneSon: {
-    name: "Fortune's Son",
-    icon: "🌟",
-    description: "Lady Luck is your mistress",
-    requirements: { playstyle: "gamblingWins", count: 15, skills: { luck: 12 } },
-    effects: "Random events are always positive, critical failures become critical successes"
-  },
-  
-  // Mentorship perks
-  masterTeacher: {
-    name: "Master Teacher",
-    icon: "🎓",
-    description: "Knowledge shared is power multiplied",
-    requirements: { playstyle: "mentoringSessions", count: 10, mentors: 3 },
-    effects: "Can teach skills to gang members, all skill gains increased by 25%"
-  },
-  
-  // Universal perks
-  legendaryStatus: {
-    name: "Legendary Status",
-    icon: "⭐",
-    description: "Your name is whispered in fear and respect",
-    requirements: { reputation: 1000, level: 25, territories: 5 },
-    effects: "All faction reputations change 50% faster, special legendary jobs unlock"
-  }
-};
+// Perk System removed — Phase 31
 
 // Achievements system
 export const achievements = [

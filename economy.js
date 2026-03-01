@@ -239,53 +239,7 @@ export const businessTypes = [
     }
 ];
 
-// Loan Shark System
-export const loanOptions = [
-    {
-        id: "small_loan",
-        name: "Small Loan",
-        amount: 500000,
-        interestRate: 0.15, // 15% weekly
-        duration: 7, // days
-        description: "Quick cash for immediate needs",
-        riskLevel: "low",
-        collateralRequired: false
-    },
-    {
-        id: "medium_loan",
-        name: "Business Loan",
-        amount: 2500000,
-        interestRate: 0.20, // 20% weekly
-        duration: 14, // days
-        description: "Expand your operations with serious capital",
-        riskLevel: "medium",
-        collateralRequired: true,
-        minReputation: 20
-    },
-    {
-        id: "large_loan",
-        name: "High Roller Loan",
-        amount: 10000000,
-        interestRate: 0.25, // 25% weekly
-        duration: 21, // days
-        description: "Big money for big moves - don't default",
-        riskLevel: "high",
-        collateralRequired: true,
-        minReputation: 50,
-        minPower: 200
-    },
-    {
-        id: "emergency_loan",
-        name: "Emergency Cash",
-        amount: 200000,
-        interestRate: 0.30, // 30% weekly (predatory)
-        duration: 3, // days
-        description: "Desperate times call for desperate measures",
-        riskLevel: "extreme",
-        collateralRequired: false,
-        maxLoans: 1 // Can only have one at a time
-    }
-];
+// [Loan Shark system removed in Phase 31]
 
 // Money Laundering Methods
 // timeRequired is in real-time MINUTES (displayed as "Processing Time")
