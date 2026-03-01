@@ -975,7 +975,9 @@ export const SIDE_QUESTS = [
         narrative: "Big Mike at the Rusty Anchor hears everything. Drunks talk. You need him listening for you. He wants protection — someone's been shaking him down.",
         objective: { type: "money", target: 5000, text: "Pay $5,000 to secure Big Mike" },
         reward: { money: -5000, respect: 5 },
-        completionText: "Big Mike's on your team now. Every Friday, he passes along what he's heard. It's surprising what people say when they think nobody's listening."
+        completionText: "Big Mike's on your team now. Every Friday, he passes along what he's heard. It's surprising what people say when they think nobody's listening.",
+        timerMinutes: 5,
+        linkedStories: [{ storyId: "ss_the_barber", trigger: "start" }]
       },
       {
         id: "sq_informant_2",
@@ -983,7 +985,9 @@ export const SIDE_QUESTS = [
         narrative: "Rosa drives a cab through every borough. She sees who meets who, who goes where, who's lying about where they've been. Her mother needs medical care.",
         objective: { type: "money", target: 10000, text: "Pay $10,000 for Rosa's help" },
         reward: { money: -10000, respect: 5 },
-        completionText: "Rosa starts feeding you movement data. You now know when rivals travel, where cops eat lunch, and which politicians visit which hotels. Knowledge is power."
+        completionText: "Rosa starts feeding you movement data. You now know when rivals travel, where cops eat lunch, and which politicians visit which hotels. Knowledge is power.",
+        timerMinutes: 8,
+        linkedStories: [{ storyId: "ss_the_journalist", trigger: "start" }]
       },
       {
         id: "sq_informant_3",
@@ -991,7 +995,9 @@ export const SIDE_QUESTS = [
         narrative: "Timothy works the front desk at the Grand Meridian — where every powerful person in the city stays. He has access to guest lists, phone records, and room service bills that reveal mistresses and vices.",
         objective: { type: "level", target: 10, text: "Reach level 10 to earn Timothy's trust" },
         reward: { respect: 15, reputation: 5 },
-        completionText: "Your network is complete. Three sets of ears in three crucial locations. The information flows like a river — and you control the dam."
+        completionText: "Your network is complete. Three sets of ears in three crucial locations. The information flows like a river — and you control the dam.",
+        timerMinutes: 10,
+        linkedStories: [{ storyId: "ss_crooked_cop", trigger: "complete" }]
       }
     ],
     completionReward: { money: 25000, respect: 30, reputation: 10 },
@@ -1011,7 +1017,9 @@ export const SIDE_QUESTS = [
         narrative: "An abandoned building in Prospect Heights has a sub-basement that doesn't appear on any blueprints. A little renovation and it becomes invisible.",
         objective: { type: "money", target: 15000, text: "Invest $15,000 in the first safe house" },
         reward: { money: -15000, respect: 5 },
-        completionText: "The basement is stocked with supplies, cash, fake IDs, and a shortwave radio. If everything goes wrong, this is Plan B."
+        completionText: "The basement is stocked with supplies, cash, fake IDs, and a shortwave radio. If everything goes wrong, this is Plan B.",
+        timerMinutes: 8,
+        linkedStories: [{ storyId: "ss_old_rival", trigger: "start" }]
       },
       {
         id: "sq_safe_2",
@@ -1019,7 +1027,9 @@ export const SIDE_QUESTS = [
         narrative: "Dr. Vasquez runs a clinic in the Bronx. For the right price, she treats gunshots without calling the cops. She needs funding to keep the clinic open.",
         objective: { type: "money", target: 25000, text: "Fund Dr. Vasquez's clinic ($25,000)" },
         reward: { money: -25000, respect: 10 },
-        completionText: "Dr. Vasquez is now on call 24/7 for your crew. Bullet wounds, knife cuts, broken bones — all treated discreetly. The clinic also serves as a safe house and medical facility."
+        completionText: "Dr. Vasquez is now on call 24/7 for your crew. Bullet wounds, knife cuts, broken bones — all treated discreetly. The clinic also serves as a safe house and medical facility.",
+        timerMinutes: 10,
+        linkedStories: [{ storyId: "ss_the_hospital", trigger: "start" }]
       },
       {
         id: "sq_safe_3",
@@ -1027,7 +1037,9 @@ export const SIDE_QUESTS = [
         narrative: "A 40-foot fishing boat docked at the marina. Registered to a dead man. If the city gets too hot, this is your ticket to international waters.",
         objective: { type: "money", target: 50000, text: "Purchase and outfit the boat ($50,000)" },
         reward: { money: -50000, respect: 10 },
-        completionText: "The boat is fueled, provisioned, and ready. False compartments hide weapons and cash. If the feds kick in every door in the city, you've got a way out."
+        completionText: "The boat is fueled, provisioned, and ready. False compartments hide weapons and cash. If the feds kick in every door in the city, you've got a way out.",
+        timerMinutes: 15,
+        linkedStories: [{ storyId: "ss_fbi_approach", trigger: "complete" }]
       }
     ],
     completionReward: { money: 0, respect: 25, reputation: 15 },
@@ -1047,7 +1059,9 @@ export const SIDE_QUESTS = [
         narrative: "Every criminal empire starts with a front. A chain of laundromats is classic for a reason — high cash volume, minimal paper trail.",
         objective: { type: "money", target: 30000, text: "Open a laundromat chain ($30,000)" },
         reward: { money: -30000, respect: 5 },
-        completionText: "Three locations, all cash businesses. Every week, dirty money goes in as 'revenue' and comes out squeaky clean. Pun intended."
+        completionText: "Three locations, all cash businesses. Every week, dirty money goes in as 'revenue' and comes out squeaky clean. Pun intended.",
+        timerMinutes: 10,
+        linkedStories: [{ storyId: "ss_dock_strike", trigger: "start" }]
       },
       {
         id: "sq_ghost_2",
@@ -1055,7 +1069,9 @@ export const SIDE_QUESTS = [
         narrative: "A forensic accountant named Gerald has been disbarred for 'creative bookkeeping.' His skills are exactly what you need to layer your money through a maze of shell companies.",
         objective: { type: "level", target: 15, text: "Reach level 15 to recruit Gerald" },
         reward: { respect: 10 },
-        completionText: "Gerald builds you a financial labyrinth. Money flows through twelve shell companies in four countries before landing in your offshore accounts. The IRS would need a decade to untangle it."
+        completionText: "Gerald builds you a financial labyrinth. Money flows through twelve shell companies in four countries before landing in your offshore accounts. The IRS would need a decade to untangle it.",
+        timerMinutes: 15,
+        linkedStories: [{ storyId: "ss_the_painting", trigger: "start" }]
       },
       {
         id: "sq_ghost_3",
@@ -1063,7 +1079,9 @@ export const SIDE_QUESTS = [
         narrative: "The final piece: buying and flipping commercial real estate. Clean money buys property, property generates income, income buys more property. An infinite loop of legitimacy.",
         objective: { type: "money", target: 100000, text: "Invest $100,000 in real estate" },
         reward: { money: -100000, respect: 15 },
-        completionText: "Your real estate portfolio is your crown jewel. On paper, you're a successful property developer. In reality, every building is a monument to the streets that built you."
+        completionText: "Your real estate portfolio is your crown jewel. On paper, you're a successful property developer. In reality, every building is a monument to the streets that built you.",
+        timerMinutes: 20,
+        linkedStories: [{ storyId: "ss_casino_whale", trigger: "complete" }]
       }
     ],
     completionReward: { money: 200000, respect: 40, reputation: 20 },
@@ -1083,7 +1101,9 @@ export const SIDE_QUESTS = [
         narrative: "A dispute with a rival escalates. One of your lieutenants suggests targeting the rival's family. This is the moment that defines what kind of organization you run.",
         objective: { type: "jobs", target: 15, text: "Complete 15 jobs without harming civilians" },
         reward: { respect: 15, reputation: 5 },
-        completionText: "You lay down the law: families are off-limits. Some of your crew grumble, but the ones who matter — the ones with brains — understand. Honor isn't just a word. It's a weapon."
+        completionText: "You lay down the law: families are off-limits. Some of your crew grumble, but the ones who matter — the ones with brains — understand. Honor isn't just a word. It's a weapon.",
+        timerMinutes: 3,
+        linkedStories: [{ storyId: "ss_the_kid", trigger: "start" }, { storyId: "ss_the_stray", trigger: "start" }]
       },
       {
         id: "sq_code_2",
@@ -1091,7 +1111,9 @@ export const SIDE_QUESTS = [
         narrative: "One of your men gets pinched. The cops are offering him a deal. This is the test of your organization's loyalty.",
         objective: { type: "money", target: 20000, text: "Fund legal defense ($20,000)" },
         reward: { money: -20000, respect: 20 },
-        completionText: "You hire the best lawyer in the city. Your man keeps his mouth shut. The case falls apart. The message is clear: loyalty is rewarded. Always."
+        completionText: "You hire the best lawyer in the city. Your man keeps his mouth shut. The case falls apart. The message is clear: loyalty is rewarded. Always.",
+        timerMinutes: 5,
+        linkedStories: [{ storyId: "ss_the_confession", trigger: "start" }]
       },
       {
         id: "sq_code_3",
@@ -1099,7 +1121,9 @@ export const SIDE_QUESTS = [
         narrative: "Every week, you set aside a percentage of earnings for the families of imprisoned members. It's expensive. It's also what separates a crew from a family.",
         objective: { type: "money", target: 50000, text: "Establish the weekly tithe fund ($50,000)" },
         reward: { money: -50000, respect: 25, reputation: 10 },
-        completionText: "The tithe becomes sacred. Wives and children of imprisoned members receive weekly envelopes — enough to cover rent, food, and school. In return, you have absolute loyalty from every man who walks through your door."
+        completionText: "The tithe becomes sacred. Wives and children of imprisoned members receive weekly envelopes — enough to cover rent, food, and school. In return, you have absolute loyalty from every man who walks through your door.",
+        timerMinutes: 8,
+        linkedStories: [{ storyId: "ss_old_debts", trigger: "complete" }, { storyId: "ss_mothers_visit", trigger: "complete" }]
       }
     ],
     completionReward: { money: 10000, respect: 50, reputation: 25 },
@@ -1119,7 +1143,9 @@ export const SIDE_QUESTS = [
         narrative: "A burned-out warehouse in the Meatpacking District. With the right investment, it becomes the hottest lounge in the city — dim lights, leather booths, jazz quartet. The kind of place where deals are made over old fashioneds.",
         objective: { type: "money", target: 40000, text: "Open The Velvet Room ($40,000)" },
         reward: { money: -40000, respect: 10 },
-        completionText: "Opening night is electric. Everyone who's anyone shows up. Politicians, athletes, movie stars — all mixing with your crew like it's the most natural thing in the world. The Velvet Room is officially the place to be."
+        completionText: "Opening night is electric. Everyone who's anyone shows up. Politicians, athletes, movie stars — all mixing with your crew like it's the most natural thing in the world. The Velvet Room is officially the place to be.",
+        timerMinutes: 10,
+        linkedStories: [{ storyId: "ss_the_wedding", trigger: "start" }]
       },
       {
         id: "sq_night_2",
@@ -1127,7 +1153,9 @@ export const SIDE_QUESTS = [
         narrative: "Below The Velvet Room, behind a bookshelf that slides open with a password, lies something special: a prohibition-era speakeasy rebuilt for the modern age. Invite only.",
         objective: { type: "level", target: 13, text: "Reach level 13 to unlock the VIP network" },
         reward: { respect: 15, reputation: 10 },
-        completionText: "The Underground becomes the most exclusive space in the city. A place where judges drink with criminals, where cops dance with con artists. What happens underground, stays underground. And you control the guest list."
+        completionText: "The Underground becomes the most exclusive space in the city. A place where judges drink with criminals, where cops dance with con artists. What happens underground, stays underground. And you control the guest list.",
+        timerMinutes: 12,
+        linkedStories: [{ storyId: "ss_the_funeral", trigger: "start" }]
       },
       {
         id: "sq_night_3",
@@ -1135,7 +1163,9 @@ export const SIDE_QUESTS = [
         narrative: "Three more venues: a rooftop bar in Midtown, a dive bar in Brooklyn that serves craft cocktails, and a members-only cigar lounge. All connected. All yours.",
         objective: { type: "money", target: 75000, text: "Expand the nightlife empire ($75,000)" },
         reward: { money: -75000, respect: 15 },
-        completionText: "Five venues, seven nights a week. The money flows like champagne. But more importantly, every conversation, every handshake, every secret whispered in the dark — you control the spaces where power congregates."
+        completionText: "Five venues, seven nights a week. The money flows like champagne. But more importantly, every conversation, every handshake, every secret whispered in the dark — you control the spaces where power congregates.",
+        timerMinutes: 15,
+        linkedStories: [{ storyId: "ss_the_don_call", trigger: "complete" }]
       }
     ],
     completionReward: { money: 100000, respect: 35, reputation: 20 },

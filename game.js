@@ -1928,24 +1928,8 @@ const INTERACTIVE_EVENTS = [
 
 // Trigger an interactive event
 function triggerInteractiveEvent(player) {
-    // Merge classic events + street stories from storyExpansion
+    // Classic random events only — Street Stories are now quest-linked (v1.9)
     const allEvents = [...INTERACTIVE_EVENTS];
-    // Street stories are richer — adapt them to the interactive event format
-    STREET_STORIES.forEach(ss => {
-      if (player.level >= (ss.minLevel || 0) && player.level <= (ss.maxLevel || 999)) {
-        allEvents.push({
-          id: ss.id,
-          title: ss.title,
-          description: ss.scene + '\n\n' + ss.dialogue.map(d => d.speaker === 'Narrator' ? d.text : `${d.speaker}: ${d.text}`).join('\n\n'),
-          choices: ss.choices.map(c => ({
-            text: c.text,
-            requirements: c.requirements || {},
-            successChance: c.successChance,
-            outcomes: c.outcomes
-          }))
-        });
-      }
-    });
 
     // Filter events based on player status
     const availableEvents = allEvents.filter(event => {
@@ -2107,16 +2091,21 @@ const RIVAL_KINGPINS = Object.values(RIVAL_FAMILIES).flatMap(f => {
 
 // processRivalTurn removed — dead code (never called)
 
-// ==================== SIDE QUEST SYSTEM ====================
+// ==================== SIDE QUEST SYSTEM (v1.9 — Timers + Linked Street Stories) ====================
 
 function initSideQuests() {
   if (!player.sideQuests) {
     player.sideQuests = {
-      active: [],      // quest IDs the player has accepted
-      stepProgress: {}, // { questId: currentStepIndex }
-      completed: []     // finished quest IDs
+      active: [],        // quest IDs the player has accepted
+      stepProgress: {},  // { questId: currentStepIndex }
+      completed: [],     // finished quest IDs
+      timers: {},        // { questId: { startedAt: timestamp, duration: ms } }
+      triggeredStories: [] // street story IDs already shown for quest linkage
     };
   }
+  // Migrate older saves that lack timers/triggeredStories
+  if (!player.sideQuests.timers) player.sideQuests.timers = {};
+  if (!player.sideQuests.triggeredStories) player.sideQuests.triggeredStories = [];
 }
 
 function getSideQuestState(questId) {
@@ -2135,6 +2124,86 @@ function canStartSideQuest(quest) {
   return player.level >= (quest.minLevel || 1);
 }
 
+// ── Timer helpers ────────────────────────────────────────────
+function startStepTimer(questId, step) {
+  const minutes = step.timerMinutes || 1;
+  player.sideQuests.timers[questId] = {
+    startedAt: Date.now(),
+    duration: minutes * 60000
+  };
+}
+
+function getStepTimeRemaining(questId) {
+  const t = player.sideQuests.timers?.[questId];
+  if (!t) return 0;
+  const elapsed = Date.now() - t.startedAt;
+  return Math.max(0, t.duration - elapsed);
+}
+
+function isStepTimerComplete(questId) {
+  return getStepTimeRemaining(questId) <= 0;
+}
+
+function formatTimeRemaining(ms) {
+  if (ms <= 0) return 'Ready!';
+  const totalSec = Math.ceil(ms / 1000);
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return m > 0 ? `${m}m ${s.toString().padStart(2, '0')}s` : `${s}s`;
+}
+
+// ── Linked street story trigger ──────────────────────────────
+function triggerLinkedStories(step, triggerType) {
+  if (!step.linkedStories || step.linkedStories.length === 0) return;
+
+  const storiesToShow = step.linkedStories.filter(ls => ls.trigger === triggerType);
+  if (storiesToShow.length === 0) return;
+
+  // Queue stories sequentially (each shows after the previous is dismissed)
+  const queue = [...storiesToShow];
+  function showNext() {
+    if (queue.length === 0) return;
+    const ls = queue.shift();
+    // Don't repeat a story the player already saw for this quest run
+    if (player.sideQuests.triggeredStories.includes(ls.storyId)) {
+      showNext();
+      return;
+    }
+    const story = STREET_STORIES.find(ss => ss.id === ls.storyId);
+    if (!story) { showNext(); return; }
+
+    player.sideQuests.triggeredStories.push(ls.storyId);
+
+    // Convert to interactive event format and show
+    const event = {
+      id: story.id,
+      title: story.title,
+      description: story.scene + '\n\n' + story.dialogue.map(d =>
+        d.speaker === 'Narrator' ? d.text : `${d.speaker}: ${d.text}`
+      ).join('\n\n'),
+      choices: story.choices.map(c => ({
+        text: c.text,
+        requirements: c.requirements || {},
+        successChance: c.successChance,
+        outcomes: c.outcomes
+      }))
+    };
+
+    // Track in interactiveEvents for history
+    if (!player.interactiveEvents) player.interactiveEvents = { eventsTriggered: [], lastEventTime: 0, eventCooldown: 300000 };
+    player.interactiveEvents.eventsTriggered.push(event.id);
+    player.interactiveEvents.lastEventTime = Date.now();
+
+    // Show the event — when dismissed, show next queued story
+    currentEvent = event;
+    showInteractiveEvent(event);
+    // After the player makes a choice (or closes), showNext will be called by the patched close handler
+    window._questStoryQueueNext = showNext;
+  }
+  showNext();
+}
+
+// ── Start a side quest ──────────────────────────────────────
 function startSideQuest(questId) {
   initSideQuests();
   const quest = SIDE_QUESTS.find(q => q.id === questId);
@@ -2144,19 +2213,35 @@ function startSideQuest(questId) {
 
   player.sideQuests.active.push(questId);
   player.sideQuests.stepProgress[questId] = 0;
+
+  // Start the first step's timer
+  const firstStep = quest.steps[0];
+  startStepTimer(questId, firstStep);
+
   logAction(`Side quest started: <strong>${quest.title}</strong>`);
   showBriefNotification(`Quest Started: ${quest.title}`, 'success');
   updateUI();
   showSideQuestScreen();
+
+  // Fire 'start' linked stories for the first step (slight delay so UI renders first)
+  setTimeout(() => triggerLinkedStories(firstStep, 'start'), 600);
 }
 window.startSideQuest = startSideQuest;
 
+// ── Complete a side quest step ──────────────────────────────
 function completeSideQuestStep(questId) {
   initSideQuests();
   const quest = SIDE_QUESTS.find(q => q.id === questId);
   if (!quest) return;
   const { step, index } = getActiveQuestStep(quest);
   if (!step) return;
+
+  // Check timer
+  if (!isStepTimerComplete(questId)) {
+    const remaining = formatTimeRemaining(getStepTimeRemaining(questId));
+    showBriefNotification(`Operation still in progress — ${remaining} remaining`, 'danger');
+    return;
+  }
 
   // Check objective
   const obj = step.objective;
@@ -2180,14 +2265,23 @@ function completeSideQuestStep(questId) {
   logAction(`Quest step complete: <strong>${step.title}</strong>`);
   showBriefNotification(step.completionText, 'success');
 
+  // Fire 'complete' linked stories for this step
+  setTimeout(() => triggerLinkedStories(step, 'complete'), 600);
+
   // Advance or finish
   if (index + 1 < quest.steps.length) {
     player.sideQuests.stepProgress[questId] = index + 1;
+    // Start next step's timer
+    const nextStep = quest.steps[index + 1];
+    startStepTimer(questId, nextStep);
+    // Fire 'start' linked stories for the next step
+    setTimeout(() => triggerLinkedStories(nextStep, 'start'), 1200);
   } else {
-    // Quest complete!
+    // Quest complete — clean up timer
     player.sideQuests.active = player.sideQuests.active.filter(id => id !== questId);
     player.sideQuests.completed.push(questId);
     delete player.sideQuests.stepProgress[questId];
+    delete player.sideQuests.timers[questId];
 
     // Completion reward
     const cr = quest.completionReward;
@@ -2198,7 +2292,6 @@ function completeSideQuestStep(questId) {
     }
 
     logAction(`Side quest COMPLETE: <strong>${quest.title}</strong>!`);
-    // Show cinematic overlay
     showNarrativeOverlay(quest.title + ' — Complete', quest.completionNarrative, 'Continue');
   }
 
@@ -2207,6 +2300,32 @@ function completeSideQuestStep(questId) {
 }
 window.completeSideQuestStep = completeSideQuestStep;
 
+// ── Quest timer tick — updates the quest screen countdown every second ──
+let _questTimerInterval = null;
+function startQuestTimerTick() {
+  if (_questTimerInterval) return; // already running
+  _questTimerInterval = setInterval(() => {
+    // Only update if the quest screen is visible
+    const timerEls = document.querySelectorAll('[data-quest-timer]');
+    if (timerEls.length === 0) return;
+    timerEls.forEach(el => {
+      const qid = el.getAttribute('data-quest-timer');
+      const remaining = getStepTimeRemaining(qid);
+      if (remaining <= 0) {
+        el.textContent = '✅ Ready!';
+        el.style.color = '#2ecc71';
+        // Also show/enable the complete button if objective met
+        const btn = document.querySelector(`[data-complete-btn="${qid}"]`);
+        if (btn) btn.style.display = '';
+      } else {
+        el.textContent = '⏳ ' + formatTimeRemaining(remaining);
+        el.style.color = '#f39c12';
+      }
+    });
+  }, 1000);
+}
+
+// ── Show side quest screen with timer display ────────────────
 function showSideQuestScreen() {
   initSideQuests();
   const sq = player.sideQuests;
@@ -2215,13 +2334,13 @@ function showSideQuestScreen() {
     <div class="story-screen">
       <div class="story-title-block">
         <h1 class="story-main-title">Side Operations</h1>
-        <p class="story-subtitle">Optional quest chains that build your empire from the ground up.</p>
+        <p class="story-subtitle">Multi-step operations that build your empire. Each step takes time — and triggers events on the streets.</p>
       </div>`;
 
   // Active quests first
   const activeQuests = SIDE_QUESTS.filter(q => sq.active.includes(q.id));
   if (activeQuests.length > 0) {
-    html += `<h2 style="color:#f1c40f;margin:20px 0 10px;">Active Quests</h2>`;
+    html += `<h2 style="color:#f1c40f;margin:20px 0 10px;">Active Operations</h2>`;
     activeQuests.forEach(quest => {
       const { step, index } = getActiveQuestStep(quest);
       if (!step) return;
@@ -2230,21 +2349,35 @@ function showSideQuestScreen() {
       if (obj.type === 'money') currentVal = player.money;
       if (obj.type === 'level') currentVal = player.level;
       if (obj.type === 'jobs') currentVal = player.missions?.missionStats?.jobsCompleted || 0;
-      const met = currentVal >= obj.target;
+      const objMet = currentVal >= obj.target;
+      const timerDone = isStepTimerComplete(quest.id);
+      const remaining = getStepTimeRemaining(quest.id);
+      const canComplete = objMet && timerDone;
 
       html += `
         <div class="story-family-card" style="--fam-color:#f1c40f;margin-bottom:15px;">
           <div class="story-family-icon">${quest.icon}</div>
           <h2 class="story-family-name">${quest.title}</h2>
-          <div style="color:#aaa;margin-bottom:8px;">Step ${index +1} of ${quest.steps.length}</div>
+          <div style="color:#aaa;margin-bottom:8px;">Step ${index + 1} of ${quest.steps.length}</div>
           <h3 style="color:#e0c068;">${step.title}</h3>
           <p style="color:#ccc;line-height:1.5;">${step.narrative}</p>
-          <div class="story-objective ${met ? 'obj-met' : ''}">
-            <span class="obj-icon">${met ? '✅' : '⬜'}</span>
-            <span class="obj-label">${obj.text}</span>
-            <span class="obj-val">${currentVal.toLocaleString()} / ${obj.target.toLocaleString()}</span>
+
+          <div style="display:flex;gap:15px;flex-wrap:wrap;margin:10px 0;">
+            <div class="story-objective ${objMet ? 'obj-met' : ''}">
+              <span class="obj-icon">${objMet ? '✅' : '⬜'}</span>
+              <span class="obj-label">${obj.text}</span>
+              <span class="obj-val">${currentVal.toLocaleString()} / ${obj.target.toLocaleString()}</span>
+            </div>
+            <div style="background:#1a1a2e;border:1px solid #f39c1244;border-radius:8px;padding:8px 14px;font-size:0.95em;">
+              <span data-quest-timer="${quest.id}" style="color:${timerDone ? '#2ecc71' : '#f39c12'};">${timerDone ? '✅ Ready!' : '⏳ ' + formatTimeRemaining(remaining)}</span>
+              <span style="color:#888;margin-left:6px;font-size:0.85em;">(${step.timerMinutes || '?'}m operation)</span>
+            </div>
           </div>
-          ${met ? `<button class="story-advance-btn" onclick="completeSideQuestStep('${quest.id}')">Complete Step →</button>` : ''}
+
+          ${canComplete
+            ? `<button class="story-advance-btn" data-complete-btn="${quest.id}" onclick="completeSideQuestStep('${quest.id}')">Complete Step →</button>`
+            : `<button class="story-advance-btn" data-complete-btn="${quest.id}" style="display:${objMet && !timerDone ? '' : 'none'};opacity:0.5;cursor:not-allowed;" disabled>Waiting for operation…</button>`
+          }
         </div>`;
     });
   }
@@ -2252,18 +2385,19 @@ function showSideQuestScreen() {
   // Available quests
   const availableQuests = SIDE_QUESTS.filter(q => getSideQuestState(q.id) === 'available' && canStartSideQuest(q));
   if (availableQuests.length > 0) {
-    html += `<h2 style="color:#3498db;margin:20px 0 10px;">Available Quests</h2>`;
+    html += `<h2 style="color:#3498db;margin:20px 0 10px;">Available Operations</h2>`;
     availableQuests.forEach(quest => {
+      const totalTime = quest.steps.reduce((sum, s) => sum + (s.timerMinutes || 0), 0);
       html += `
         <div class="story-family-card" style="--fam-color:#3498db;margin-bottom:15px;">
           <div class="story-family-icon">${quest.icon}</div>
           <h2 class="story-family-name">${quest.title}</h2>
           <p style="color:#ccc;line-height:1.5;">${quest.description}</p>
-          <div style="color:#888;font-size:0.9em;">Min Level: ${quest.minLevel} &middot; ${quest.steps.length} Steps</div>
+          <div style="color:#888;font-size:0.9em;">Min Level: ${quest.minLevel} &middot; ${quest.steps.length} Steps &middot; ~${totalTime}min total</div>
           <div style="color:#f1c40f;font-size:0.9em;margin-top:5px;">
             Completion Reward: ${quest.completionReward.money ? '$' + quest.completionReward.money.toLocaleString() + ' ' : ''}${quest.completionReward.respect ? '+' + quest.completionReward.respect + ' Respect ' : ''}${quest.completionReward.reputation ? '+' + quest.completionReward.reputation + ' Rep' : ''}
           </div>
-          <button class="story-pledge-btn" style="background:linear-gradient(135deg,#3498db,#2980b9);" onclick="startSideQuest('${quest.id}')">Accept Quest</button>
+          <button class="story-pledge-btn" style="background:linear-gradient(135deg,#3498db,#2980b9);" onclick="startSideQuest('${quest.id}')">Accept Operation</button>
         </div>`;
     });
   }
@@ -2271,7 +2405,7 @@ function showSideQuestScreen() {
   // Locked quests
   const lockedQuests = SIDE_QUESTS.filter(q => getSideQuestState(q.id) === 'available' && !canStartSideQuest(q));
   if (lockedQuests.length > 0) {
-    html += `<h2 style="color:#666;margin:20px 0 10px;">Locked Quests</h2>`;
+    html += `<h2 style="color:#666;margin:20px 0 10px;">Locked Operations</h2>`;
     lockedQuests.forEach(quest => {
       html += `
         <div class="story-family-card" style="--fam-color:#444;margin-bottom:15px;opacity:0.6;">
@@ -2305,6 +2439,9 @@ function showSideQuestScreen() {
   document.getElementById("missions-content").innerHTML = html;
   hideAllScreens();
   document.getElementById("missions-screen").style.display = "block";
+
+  // Start the 1-second timer tick so countdowns update live
+  startQuestTimerTick();
 }
 window.showSideQuestScreen = showSideQuestScreen;
 
@@ -2550,7 +2687,7 @@ function showInteractiveEvent(event) {
         }).join('')}
       </div>
       
-      <button onclick="closeScreen(); updateUI();" style="margin-top: 20px; padding: 12px 25px; background: #95a5a6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">Close</button>
+      <button onclick="closeScreenAndContinueQueue(); updateUI();" style="margin-top: 20px; padding: 12px 25px; background: #95a5a6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">Close</button>
     </div>
   `;
   
@@ -2613,7 +2750,7 @@ window.makeEventChoice = function(choiceIndex) {
         ${result.result.jailed ? `<div> You've been arrested!</div>` : ''}
       </div>
       
-      <button onclick="closeScreen(); updateUI();">Continue</button>
+      <button onclick="closeScreenAndContinueQueue(); updateUI();">Continue</button>
     </div>
   `;
   
@@ -2625,6 +2762,17 @@ window.makeEventChoice = function(choiceIndex) {
       closeScreen();
       sendToJail();
     }, 3000);
+  }
+};
+
+// Close screen and advance the quest-story queue if any stories remain
+window.closeScreenAndContinueQueue = function() {
+  closeScreen();
+  // If there are queued linked stories from a quest step, show the next one
+  if (typeof window._questStoryQueueNext === 'function') {
+    const next = window._questStoryQueueNext;
+    window._questStoryQueueNext = null;
+    setTimeout(next, 400);
   }
 };
 
@@ -13749,8 +13897,23 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.8.4";
+const CURRENT_VERSION = "1.9.0";
 const VERSION_UPDATES = {
+  "1.9.0": {
+    title: "Quest-Linked Street Stories & Operation Timers",
+    date: "March 2026",
+    changes: [
+      "Street Stories are no longer random encounters — each is now tied to a specific side quest step",
+      "Side quest steps now have countdown timers (3–20 min) — operations take real time to complete",
+      "Street Stories trigger at the START or COMPLETION of their linked quest step, matching the quest's theme",
+      "All 17 Street Stories mapped to 15 quest steps across 5 quest chains (some steps trigger 2 stories)",
+      "Live countdown timer displayed on active quest steps — updates every second",
+      "Quest screen shows total estimated time and per-step timer duration",
+      "Steps require BOTH timer completion AND objective met before advancing",
+      "Queued street stories show sequentially when a step triggers multiple stories",
+      "Side Operations renamed from 'Side Quests' to better reflect the timer-based gameplay",
+    ]
+  },
   "1.8.4": {
     title: "Black Market Tabs — Fence & Player Market Merged",
     date: "March 2026",
