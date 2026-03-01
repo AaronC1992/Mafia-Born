@@ -9,43 +9,43 @@
  * - Money laundering mechanics
  */
 
-// Store items
+// Store items — v1.11.0 Rebalance: Prices increased for Omerta-style tight economy
 export const storeItems = [
     // === Low-tier Weapons (melee) ===
-    { name: "Brass Knuckles", price: 7500, power: 10, type: "weapon", durability: 40, maxDurability: 40, description: "Crude but effective in a street fight. +10 attack power. No ammo needed." },
-    { name: "Switchblade", price: 12000, power: 20, type: "weapon", durability: 35, maxDurability: 35, description: "Quick and concealable. +20 attack power. No ammo needed." },
-    { name: "Baseball Bat", price: 18000, power: 30, type: "weapon", durability: 50, maxDurability: 50, description: "A classic problem-solver. +30 attack power. No ammo needed." },
+    { name: "Brass Knuckles", price: 10000, power: 10, type: "weapon", durability: 40, maxDurability: 40, description: "Crude but effective in a street fight. +10 attack power. No ammo needed." },
+    { name: "Switchblade", price: 16000, power: 20, type: "weapon", durability: 35, maxDurability: 35, description: "Quick and concealable. +20 attack power. No ammo needed." },
+    { name: "Baseball Bat", price: 24000, power: 30, type: "weapon", durability: 50, maxDurability: 50, description: "A classic problem-solver. +30 attack power. No ammo needed." },
     // === Mid-tier Guns ===
-    { name: "Pistol", price: 30000, power: 50, type: "weapon", durability: 30, maxDurability: 30, description: "Reliable sidearm for any occasion. +50 attack power. Requires Bullets." },
-    { name: "Revolver", price: 45000, power: 70, type: "weapon", durability: 35, maxDurability: 35, description: "Six shots, six problems solved. +70 attack power. Requires Bullets." },
-    { name: "Sawed-Off Shotgun", price: 125000, power: 90, type: "weapon", durability: 25, maxDurability: 25, description: "Devastating at close range. +90 attack power. Requires Bullets." },
-    { name: "Tommy Gun", price: 150000, power: 100, type: "weapon", durability: 20, maxDurability: 20, description: "The kingpin's weapon of choice. +100 attack power. Requires Bullets." },
-    { name: "Sniper Rifle", price: 250000, power: 120, type: "weapon", durability: 15, maxDurability: 15, description: "For when you need distance. +120 attack power. Requires Bullets." },
+    { name: "Pistol", price: 40000, power: 50, type: "weapon", durability: 30, maxDurability: 30, description: "Reliable sidearm for any occasion. +50 attack power. Requires Bullets." },
+    { name: "Revolver", price: 60000, power: 70, type: "weapon", durability: 35, maxDurability: 35, description: "Six shots, six problems solved. +70 attack power. Requires Bullets." },
+    { name: "Sawed-Off Shotgun", price: 165000, power: 90, type: "weapon", durability: 25, maxDurability: 25, description: "Devastating at close range. +90 attack power. Requires Bullets." },
+    { name: "Tommy Gun", price: 200000, power: 100, type: "weapon", durability: 20, maxDurability: 20, description: "The kingpin's weapon of choice. +100 attack power. Requires Bullets." },
+    { name: "Sniper Rifle", price: 325000, power: 120, type: "weapon", durability: 15, maxDurability: 15, description: "For when you need distance. +120 attack power. Requires Bullets." },
     // === Armor ===
-    { name: "Leather Jacket", price: 15000, power: 15, type: "armor", durability: 50, maxDurability: 50, description: "Looks cool, stops a knife. +15 defense power. Basic protection against melee attacks." },
-    { name: "Stab Vest", price: 50000, power: 25, type: "armor", durability: 40, maxDurability: 40, description: "Lightweight protection from blades. +25 defense power. Reduces damage from melee weapons." },
-    { name: "Bulletproof Vest", price: 100000, power: 40, type: "armor", durability: 30, maxDurability: 30, description: "Standard issue for the paranoid. +40 defense power. Reduces damage from firearms." },
-    { name: "Reinforced Body Armor", price: 200000, power: 60, type: "armor", durability: 25, maxDurability: 25, description: "Military-grade protection. +60 defense power. Best-in-class damage reduction." },
+    { name: "Leather Jacket", price: 20000, power: 15, type: "armor", durability: 50, maxDurability: 50, description: "Looks cool, stops a knife. +15 defense power. Basic protection against melee attacks." },
+    { name: "Stab Vest", price: 65000, power: 25, type: "armor", durability: 40, maxDurability: 40, description: "Lightweight protection from blades. +25 defense power. Reduces damage from melee weapons." },
+    { name: "Bulletproof Vest", price: 130000, power: 40, type: "armor", durability: 30, maxDurability: 30, description: "Standard issue for the paranoid. +40 defense power. Reduces damage from firearms." },
+    { name: "Reinforced Body Armor", price: 260000, power: 60, type: "armor", durability: 25, maxDurability: 25, description: "Military-grade protection. +60 defense power. Best-in-class damage reduction." },
     // === Vehicles ===
-    { name: "Armored Car", price: 120000, power: 25, type: "vehicle", durability: 60, maxDurability: 60, description: "Bulletproof windows, reinforced frame. +25 power. Requires Gasoline to operate." },
-    { name: "Luxury Automobile", price: 400000, power: 50, type: "vehicle", durability: 45, maxDurability: 45, description: "Travel in style and power. +50 power. Requires Gasoline. Boosts respect." },
-    { name: "Private Airplane", price: 1500000, power: 200, type: "vehicle", durability: 30, maxDurability: 30, description: "Leave the country at a moment's notice. +200 power. Requires Gasoline. Unlocks escape options." },
+    { name: "Armored Car", price: 150000, power: 25, type: "vehicle", durability: 60, maxDurability: 60, description: "Bulletproof windows, reinforced frame. +25 power. Requires Gasoline to operate." },
+    { name: "Luxury Automobile", price: 500000, power: 50, type: "vehicle", durability: 45, maxDurability: 45, description: "Travel in style and power. +50 power. Requires Gasoline. Boosts respect." },
+    { name: "Private Airplane", price: 1800000, power: 200, type: "vehicle", durability: 30, maxDurability: 30, description: "Leave the country at a moment's notice. +200 power. Requires Gasoline. Unlocks escape options." },
     // === Supplies ===
-    { name: "Bullets", price: 2500, power: 0, type: "ammo", description: "Standard ammunition. Required to use firearms in combat. Stock up before a fight." },
-    { name: "Gasoline", price: 4000, power: 0, type: "gas", description: "Fuel for your vehicles. Required to operate cars and planes. Consumed per use." },
-    // === Energy Items ===
-    { name: "Strong Coffee", price: 1000, power: 0, type: "energy", energyRestore: 15, description: "Cheap caffeine boost. Restores 15 energy instantly. No side effects." },
-    { name: "Energy Drink", price: 2500, power: 0, type: "energy", energyRestore: 30, description: "Chemical energy, slight health risk. Restores 30 energy instantly. (-1 health)" },
-    { name: "Steroids", price: 4000, power: 0, type: "energy", energyRestore: 60, description: "Maximum energy, maximum risk. Restores 60 energy instantly. (-5 health, +5 suspicion)" },
+    { name: "Bullets", price: 3000, power: 0, type: "ammo", description: "Standard ammunition. Required to use firearms in combat. Stock up before a fight." },
+    { name: "Gasoline", price: 5000, power: 0, type: "gas", description: "Fuel for your vehicles. Required to operate cars and planes. Consumed per use." },
+    // === Energy Items — v1.11.0: significantly more expensive to prevent energy-buy spam ===
+    { name: "Strong Coffee", price: 2500, power: 0, type: "energy", energyRestore: 15, description: "Cheap caffeine boost. Restores 15 energy instantly. No side effects." },
+    { name: "Energy Drink", price: 6000, power: 0, type: "energy", energyRestore: 30, description: "Chemical energy, slight health risk. Restores 30 energy instantly. (-1 health)" },
+    { name: "Steroids", price: 10000, power: 0, type: "energy", energyRestore: 60, description: "Maximum energy, maximum risk. Restores 60 energy instantly. (-5 health, +5 suspicion)" },
     // === Utility Items ===
-    { name: "Lockpick Set", price: 10000, power: 0, type: "utility", description: "Passively grants +10% success chance on all jobs while owned." },
-    { name: "Police Scanner", price: 35000, power: 0, type: "utility", description: "Passively reduces wanted level gain by 20% on every job and combat action while owned." },
-    { name: "Burner Phone", price: 8000, power: 0, type: "utility", description: "Passively reduces suspicion risk by 15% when laundering money while owned." },
-    { name: "Fake ID Kit", price: 25000, power: 0, type: "utility", description: "Passively reduces jail time by 5 seconds when arrested. Also required for the Counterfeiting Money job." },
+    { name: "Lockpick Set", price: 15000, power: 0, type: "utility", description: "Passively grants +10% success chance on all jobs while owned." },
+    { name: "Police Scanner", price: 50000, power: 0, type: "utility", description: "Passively reduces wanted level gain by 20% on every job and combat action while owned." },
+    { name: "Burner Phone", price: 12000, power: 0, type: "utility", description: "Passively reduces suspicion risk by 15% when laundering money while owned." },
+    { name: "Fake ID Kit", price: 35000, power: 0, type: "utility", description: "Passively reduces jail time by 5 seconds when arrested. Also required for the Counterfeiting Money job." },
     // === High-Level Drugs (Trade Goods) ===
-    { name: "Crate Moonshine", price: 60000, power: 0, type: "highLevelDrug", maxPayout: 100000, requiredVehicle: "Freight Truck", description: "Bootleg gold. Trade good worth up to $100,000. Requires a Freight Truck to deliver." },
-    { name: "Bag of Mary Jane", price: 120000, power: 0, type: "highLevelDrug", maxPayout: 200000, requiredVehicle: "Freight Truck", description: "The green rush. Trade good worth up to $200,000. Requires a Freight Truck to deliver." },
-    { name: "Pure Cocaine", price: 200000, power: 0, type: "highLevelDrug", maxPayout: 350000, requiredVehicle: "Freight Truck", description: "White gold — high risk, high reward. Trade good worth up to $350,000. Requires a Freight Truck to deliver." }
+    { name: "Crate Moonshine", price: 75000, power: 0, type: "highLevelDrug", maxPayout: 100000, requiredVehicle: "Freight Truck", description: "Bootleg gold. Trade good worth up to $100,000. Requires a Freight Truck to deliver." },
+    { name: "Bag of Mary Jane", price: 150000, power: 0, type: "highLevelDrug", maxPayout: 200000, requiredVehicle: "Freight Truck", description: "The green rush. Trade good worth up to $200,000. Requires a Freight Truck to deliver." },
+    { name: "Pure Cocaine", price: 250000, power: 0, type: "highLevelDrug", maxPayout: 350000, requiredVehicle: "Freight Truck", description: "White gold — high risk, high reward. Trade good worth up to $350,000. Requires a Freight Truck to deliver." }
 ];
 
 // Real Estate Properties
@@ -66,7 +66,7 @@ export const realEstateProperties = [
         gangCapacity: 5, 
         description: "A secure underground hideout with multiple escape routes.",
         power: 60,
-        income: 500
+        income: 250
     },
     { 
         name: "Criminal Safehouse", 
@@ -75,7 +75,7 @@ export const realEstateProperties = [
         gangCapacity: 8, 
         description: "A well-equipped safehouse with advanced security and communications.",
         power: 100,
-        income: 1500
+        income: 750
     },
     { 
         name: "Underground Bunker", 
@@ -84,7 +84,7 @@ export const realEstateProperties = [
         gangCapacity: 15, 
         description: "A fortified underground complex for serious criminal enterprises.",
         power: 180,
-        income: 5000
+        income: 2500
     },
     { 
         name: "Criminal Fortress", 
@@ -93,7 +93,7 @@ export const realEstateProperties = [
         gangCapacity: 25, 
         description: "An impenetrable fortress that serves as the ultimate criminal headquarters.",
         power: 300,
-        income: 5000
+        income: 2500
     },
     { 
         name: "Luxury Penthouse", 
@@ -102,7 +102,7 @@ export const realEstateProperties = [
         gangCapacity: 20, 
         description: "A high-class penthouse that provides legitimacy and luxury for your operations.",
         power: 250,
-        income: 8000
+        income: 4000
     },
     { 
         name: "Private Island", 
@@ -111,7 +111,7 @@ export const realEstateProperties = [
         gangCapacity: 50, 
         description: "Your own private island - the ultimate symbol of criminal success.",
         power: 500,
-        income: 15000
+        income: 8000
     }
 ];
 
@@ -122,7 +122,7 @@ export const businessTypes = [
         name: "Family Restaurant",
         description: "A cozy Italian restaurant perfect for discreet meetings",
         basePrice: 2500000,
-        baseIncome: 50000,
+        baseIncome: 25000,
         maxLevel: 5,
         upgradeMultiplier: 1.5,
         incomeMultiplier: 1.3,
@@ -135,7 +135,7 @@ export const businessTypes = [
         name: "Underground Nightclub",
         description: "Where the city's nightlife meets business opportunities",
         basePrice: 5000000,
-        baseIncome: 120000,
+        baseIncome: 60000,
         maxLevel: 5,
         upgradeMultiplier: 1.8,
         incomeMultiplier: 1.4,
@@ -148,7 +148,7 @@ export const businessTypes = [
         name: "24/7 Laundromat",
         description: "Clean clothes, cleaner money - everyone wins",
         basePrice: 1500000,
-        baseIncome: 30000,
+        baseIncome: 15000,
         maxLevel: 3,
         upgradeMultiplier: 1.4,
         incomeMultiplier: 1.2,
@@ -161,7 +161,7 @@ export const businessTypes = [
         name: "Premium Car Wash",
         description: "Making dirty cars clean since forever",
         basePrice: 3000000,
-        baseIncome: 60000,
+        baseIncome: 30000,
         maxLevel: 4,
         upgradeMultiplier: 1.6,
         incomeMultiplier: 1.3,
@@ -174,7 +174,7 @@ export const businessTypes = [
         name: "Private Casino",
         description: "High stakes, higher rewards, highest risks",
         basePrice: 10000000,
-        baseIncome: 250000,
+        baseIncome: 125000,
         maxLevel: 5,
         upgradeMultiplier: 2.0,
         incomeMultiplier: 1.3,
@@ -187,7 +187,7 @@ export const businessTypes = [
         name: "Discount Pawn Shop",
         description: "No questions asked, fair prices given",
         basePrice: 2000000,
-        baseIncome: 40000,
+        baseIncome: 20000,
         maxLevel: 4,
         upgradeMultiplier: 1.5,
         incomeMultiplier: 1.25,
@@ -200,7 +200,7 @@ export const businessTypes = [
         name: "Counterfeiting Operation",
         description: "A hidden printing press churning out fake bills — high profit, but the money needs laundering",
         basePrice: 4000000,
-        baseIncome: 120000,
+        baseIncome: 60000,
         maxLevel: 5,
         upgradeMultiplier: 1.7,
         incomeMultiplier: 1.3,
@@ -214,7 +214,7 @@ export const businessTypes = [
         name: "Drug Lab",
         description: "A clandestine lab cooking up product in an abandoned building — massive returns, massive risk",
         basePrice: 6000000,
-        baseIncome: 150000,
+        baseIncome: 75000,
         maxLevel: 5,
         upgradeMultiplier: 1.8,
         incomeMultiplier: 1.3,
@@ -228,7 +228,7 @@ export const businessTypes = [
         name: "Chop Shop",
         description: "Strip stolen cars for parts and sell them on the black market — pairs well with Boost a Ride",
         basePrice: 3500000,
-        baseIncome: 90000,
+        baseIncome: 45000,
         maxLevel: 5,
         upgradeMultiplier: 1.6,
         incomeMultiplier: 1.25,

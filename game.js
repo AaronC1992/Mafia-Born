@@ -8722,8 +8722,8 @@ async function startJob(index) {
     
     showBriefNotification(`${getFamilyNarration('jobFailure')} You lost ${actualEnergyCost} energy.`, 'danger');
     logAction(getFamilyNarration('jobFailure'));
-    // Still gain some experience for trying
-    gainExperience(2);
+    // Still gain some experience for trying (reduced in v1.11.0 rebalance)
+    gainExperience(1);
     updateUI();
     return;
   }
@@ -8866,36 +8866,37 @@ async function startJob(index) {
   // Calculate chance of getting hurt based on job risk and player's power
   let hurtChance;
   let maxHealthLoss;
+  // v1.11.0 Rebalance: XP and reputation gains reduced — Omerta-style slow grind
   if (job.risk === "low") {
     hurtChance = Math.max(0, 1 - player.power * 0.01 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 5;
-    player.reputation += 0.3;
+    player.reputation += 0.2;
     gainExperience(2);
   } else if (job.risk === "medium") {
     hurtChance = Math.max(0, 5 - player.power * 0.05 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 20;
-    player.reputation += 0.5;
-    gainExperience(6);
+    player.reputation += 0.3;
+    gainExperience(4);
   } else if (job.risk === "high") {
     hurtChance = Math.max(0, 10 - player.power * 0.1 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 50;
-    player.reputation += 1;
-    gainExperience(14);
+    player.reputation += 0.6;
+    gainExperience(10);
   } else if (job.risk === "very high") {
     hurtChance = Math.max(0, 15 - player.power * 0.12 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 60;
-    player.reputation += 1.5;
-    gainExperience(22);
+    player.reputation += 1.0;
+    gainExperience(16);
   } else if (job.risk === "extreme") {
     hurtChance = Math.max(0, 20 - player.power * 0.15 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 75;
-    player.reputation += 2.5;
-    gainExperience(35);
+    player.reputation += 1.5;
+    gainExperience(25);
   } else if (job.risk === "legendary") {
     hurtChance = Math.max(0, 25 - player.power * 0.18 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 90;
-    player.reputation += 4;
-    gainExperience(50);
+    player.reputation += 2.5;
+    gainExperience(40);
   }
 
   // Track reputation changes for campaign objectives
@@ -14404,8 +14405,29 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.10.1";
+const CURRENT_VERSION = "1.11.0";
 const VERSION_UPDATES = {
+  "1.11.0": {
+    title: "Omerta-Style Economy Rebalance",
+    date: "March 2026",
+    changes: [
+      "Full economy rebalance — game pace now matches old-school Omerta browser game grind",
+      "Energy regen slowed: 45s base (was 20s) — energy management matters, no more infinite spam",
+      "Job energy costs increased across the board — Street Soldier now costs 3 energy (was 1)",
+      "Early job payouts reduced — Street Soldier $40-180 (was $60-300), Store Heist $800-2,200 (was $1,200-3,000)",
+      "XP curve steepened by ~50% — leveling takes real commitment",
+      "XP rewards per job reduced — low risk: 2 XP, medium: 4, high: 10, extreme: 25, legendary: 40",
+      "Reputation gains slowed ~40% across all risk tiers",
+      "Hospital costs increased — full heal $25/HP (was $10), patch $20/HP (was $8), rest costs 25 energy (was 20)",
+      "Store prices increased ~30% — weapons, armor, vehicles, utilities all cost more",
+      "Energy items significantly more expensive — Coffee $2,500 (was $1K), Steroids $10,000 (was $4K)",
+      "Property passive income halved — Basement Hideout $250/cycle (was $500), Private Island $8K (was $15K)",
+      "Business base income halved across all 9 business types",
+      "Passive income reduced — gang members $25/cycle (was $50), territory $100 (was $200)",
+      "Casino minimum bet raised to $100 (was $1) — no more risk-free penny gambling",
+      "Trade goods prices increased — Moonshine $75K, Mary Jane $150K, Cocaine $250K",
+    ]
+  },
   "1.10.0": {
     title: "Tutorial System, Help Guide & Objective Cleanup",
     date: "March 2026",
@@ -15743,11 +15765,11 @@ function renderHospitalContent() {
   if (!container) return;
   
   const missingHealth = 100 - player.health;
-  const fullHealCost = missingHealth * 10;
+  const fullHealCost = missingHealth * 25;
   const partialHealAmount = 25;
-  const partialHealCost = Math.min(missingHealth, partialHealAmount) * 8; // Slightly cheaper per HP
-  const restHealAmount = Math.min(15, missingHealth);
-  const restEnergyCost = 20;
+  const partialHealCost = Math.min(missingHealth, partialHealAmount) * 20; // Slightly cheaper per HP
+  const restHealAmount = Math.min(12, missingHealth);
+  const restEnergyCost = 25;
   
   // Health bar color
   const healthColor = player.health > 60 ? '#2ecc71' : player.health > 30 ? '#f39c12' : '#e74c3c';
@@ -15824,12 +15846,12 @@ function renderHospitalContent() {
   container.innerHTML = html;
 }
 
-// Function to heal player at the hospital
+// Function to heal player at the hospital — v1.11.0 Rebalance: costs increased
 function healAtHospital(healType) {
   const missingHealth = 100 - player.health;
   
   if (healType === 'full') {
-    const cost = missingHealth * 10;
+    const cost = missingHealth * 25;
     if (player.money < cost) {
       showBriefNotification("You don't have enough money to heal to full health.", 'danger');
       return;
@@ -15840,7 +15862,7 @@ function healAtHospital(healType) {
     logAction("Clean white sheets and the smell of antiseptic. The doc patches you up with no questions asked — some debts are paid in silence (Full health restored).");
   } else if (healType === 'partial') {
     const healAmount = Math.min(missingHealth, 25);
-    const cost = healAmount * 8;
+    const cost = healAmount * 20;
     if (player.money < cost) {
       showBriefNotification("You don't have enough money for this treatment.", 'danger');
       return;
@@ -15850,15 +15872,15 @@ function healAtHospital(healType) {
     showBriefNotification(`Quick patch-up done. Restored ${healAmount} health.`, 'success');
     logAction(`A quick patch job — bandages, painkillers and a shot of whiskey. Good enough to get back on the streets (+${healAmount} HP).`);
   } else if (healType === 'rest') {
-    if (player.energy < 20) {
+    if (player.energy < 25) {
       showBriefNotification("You're too exhausted to rest effectively.", 'success');
       return;
     }
-    const healAmount = Math.min(15, missingHealth);
-    player.energy -= 20;
+    const healAmount = Math.min(12, missingHealth);
+    player.energy -= 25;
     player.health = Math.min(100, player.health + healAmount);
     showBriefNotification(`You rested and recovered ${healAmount} health.`, 'success');
-    logAction(`️ You find a quiet corner and lay low for a while. Sleep does its work slowly but surely (+${healAmount} HP, -20 energy).`);
+    logAction(`️ You find a quiet corner and lay low for a while. Sleep does its work slowly but surely (+${healAmount} HP, -25 energy).`);
   }
   
   updateUI();
@@ -16375,15 +16397,15 @@ function policeInformant() {
 
 // (Removed duplicate regenerateEnergy, startEnergyRegenTimer, startEnergyRegeneration; using player.js exports)
 
-// Passive income system
+// Passive income system — v1.11.0 Rebalance: halved rates
 function generatePassiveIncome() {
   let income = 0;
   
-  // Gang members generate income
-  income += player.gang.members * 50;
+  // Gang members generate income (reduced from $50 to $25)
+  income += player.gang.members * 25;
   
-  // Territory generates income
-  income += player.territory * 200;
+  // Territory generates income (reduced from $200 to $100)
+  income += player.territory * 100;
   
   // Business properties generate income
   const businesses = player.inventory.filter(item => item.type === "business");

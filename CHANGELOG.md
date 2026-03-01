@@ -5,6 +5,26 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-03-XX
+
+### Changed — Omerta-Style Economy Rebalance
+- **Energy regen slowed** — 45s base interval (was 20s), min 25s (was 10s). Full refill ~75 min.
+- **Job energy costs increased** — Street Soldier 3 (was 1), Boost a Ride 8 (was 5), Store Heist 14 (was 10), all others +20-30%
+- **Early job payouts reduced** — Street Soldier $40-180 (was $60-300), Store Heist $800-2,200 (was $1,200-3,000), Protection $500-1,400 (was $600-1,600)
+- **XP curve steepened ~50%** — formula now `level*600 + level²*120 + level³*8` (Level 1: 728 XP, Level 10: 20,000 XP)
+- **XP rewards reduced** — low: 2, medium: 4 (was 6), high: 10 (was 14), very high: 16 (was 22), extreme: 25 (was 35), legendary: 40 (was 50)
+- **Reputation gains slowed ~40%** — low: 0.2 (was 0.3), medium: 0.3 (was 0.5), high: 0.6 (was 1.0), etc.
+- **Hospital costs increased** — full heal $25/HP (was $10), patch $20/HP (was $8), rest 25 energy for 12 HP (was 20 energy for 15 HP)
+- **Store prices increased ~30%** — Brass Knuckles $10K (was $7.5K), Pistol $40K (was $30K), Tommy Gun $200K (was $150K), all armor/vehicles up
+- **Energy items 2.5x more expensive** — Coffee $2,500 (was $1K), Energy Drink $6K (was $2.5K), Steroids $10K (was $4K)
+- **Utility items increased** — Lockpick $15K (was $10K), Police Scanner $50K (was $35K), Fake ID $35K (was $25K)
+- **Trade goods increased** — Moonshine $75K (was $60K), Mary Jane $150K (was $120K), Cocaine $250K (was $200K)
+- **Property income halved** — Basement Hideout $250/cycle (was $500), Private Island $8K (was $15K)
+- **Business income halved** — all 9 business types base income reduced 50%
+- **Passive income reduced** — gang members $25/cycle (was $50), territory $100 (was $200)
+- **Casino min bet $100** — all games now enforce $100 minimum (was $1)
+- **Failure XP reduced** — 1 XP on job failure (was 2)
+
 ## [1.8.4] - 2026-03-01
 
 ### Changed

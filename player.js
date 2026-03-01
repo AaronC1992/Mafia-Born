@@ -277,8 +277,8 @@ export function gainExperience(amount) {
  * Check if player has enough XP to level up and process the level up
  */
 export function checkLevelUp() {
-  // Very steep XP curve for 60+ hour gameplay: high base + strong cubic scaling
-  let requiredXP = Math.floor(player.level * 500 + Math.pow(player.level, 2) * 80 + Math.pow(player.level, 3) * 5);
+  // v1.11.0 Rebalance: Even steeper XP curve — Omerta-style slow grind progression
+  let requiredXP = Math.floor(player.level * 600 + Math.pow(player.level, 2) * 120 + Math.pow(player.level, 3) * 8);
   if (player.experience >= requiredXP) {
     player.level++;
     player.experience -= requiredXP;
@@ -320,8 +320,9 @@ export function regenerateEnergy() {
       
       player.energy = Math.min(player.energy + energyGain, player.maxEnergy);
       
-      // Regen interval: 20s base, reduced by 1s per 2 recovery levels (min 10s)
-      const regenInterval = Math.max(10, 20 - Math.floor(recoveryLevel / 2));
+      // v1.11.0 Rebalance: Regen interval 45s base (was 20s) — Omerta-style energy scarcity
+      // Reduced by 1s per 2 recovery levels (min 25s)
+      const regenInterval = Math.max(25, 45 - Math.floor(recoveryLevel / 2));
       player.energyRegenTimer = regenInterval;
       
       if (typeof logAction === 'function') {
