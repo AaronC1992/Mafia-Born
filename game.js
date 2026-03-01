@@ -4,7 +4,7 @@ import { showEmpireOverview } from './empireOverview.js';
 import { player, gainExperience, checkLevelUp, regenerateEnergy, startEnergyRegenTimer, startEnergyRegeneration, skillTreeDefinitions, availablePerks, achievements } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
 import { crimeFamilies, factionEffects, potentialMentors } from './factions.js';
-import { familyStories, storyCampaigns, factionMissions, turfMissions, bossBattles, missionProgress } from './missions.js?v=1.7.0';
+import { familyStories, storyCampaigns, factionMissions, bossBattles, missionProgress } from './missions.js?v=1.7.0';
 import { narrationVariations, getRandomNarration } from './narration.js';
 import { storeItems, realEstateProperties, businessTypes, loanOptions, launderingMethods } from './economy.js';
 import { prisonerNames, recruitNames, availableRecruits, jailPrisoners, jailbreakPrisoners, setJailPrisoners, setJailbreakPrisoners, generateJailPrisoners, generateJailbreakPrisoners, generateAvailableRecruits } from './generators.js';
@@ -48,7 +48,6 @@ window.crimeFamilies = crimeFamilies;
 window.familyStories = familyStories;
 window.storyCampaigns = storyCampaigns;
 window.factionMissions = factionMissions;
-window.turfMissions = turfMissions;
 window.bossBattles = bossBattles;
 window.missionProgress = missionProgress;
 window.narrationVariations = narrationVariations;
@@ -386,17 +385,7 @@ function updateMissionAvailability() {
     });
   });
   
-  // Unlock territory missions based on gang size and reputation
-  const unlockedTurf = player.missions?.unlockedTurfMissions || (player.missions.unlockedTurfMissions = ["old_quarter_expansion"]);
-  turfMissions.forEach(mission => {
-    const missionId = mission.id;
-    if (!unlockedTurf.includes(missionId)) {
-      if (player.gang.members >= mission.requiredGangMembers && player.reputation >= (mission.difficulty === 'easy' ? 15 : mission.difficulty === 'medium' ? 30 : 50)) {
-        unlockedTurf.push(missionId);
-        logAction(`New territory mission available: "${mission.name}"`);
-      }
-    }
-  });
+
   
   // Unlock boss battles based on power and reputation
   bossBattles.forEach(battle => {
@@ -747,6 +736,9 @@ function renderStoryChapter() {
       <!-- Advance -->
       ${advanceHTML}
 
+      <!-- Turf Access -->
+      <button class="story-action-btn" style="margin-bottom:10px;" onclick="showTerritoryControl();">🗺️ View Turf Map</button>
+
       <!-- Back Button -->
       <button class="story-back-btn" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
     </div>`;
@@ -783,7 +775,7 @@ function renderStoryEpilogue(famKey, fam) {
       </div>
 
       <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0;">
-        <button class="story-action-btn" onclick="window._opsActiveTab='territory'; showMissions();">🗺️ Turf Wars &amp; Territory</button>
+        <button class="story-action-btn" onclick="showTerritoryControl();">🗺️ Turf Wars &amp; Territory</button>
         <button class="story-action-btn" onclick="showProtectionRackets();">🏪 Protection Rackets</button>
         <button class="story-action-btn" onclick="showCorruption();">🏛️ Corruption Network</button>
       </div>
@@ -1091,86 +1083,7 @@ function startSignatureJob(familyKey) {
   showMissions();
 }
 
-async function startTurfMission(missionId) {
-  const mission = turfMissions.find(m => m.id === missionId);
-  if (!mission) return;
-  
-  // Check requirements
-  if (player.energy < mission.energyCost) {
-    showBriefNotification(`Need ${mission.energyCost} energy for this operation!`, 'danger');
-    return;
-  }
-  
-  if (player.gang.members < mission.requiredGangMembers) {
-    showBriefNotification(`Need at least ${mission.requiredGangMembers} gang members!`, 'danger');
-    return;
-  }
-  
-  // Consume energy
-  player.energy -= mission.energyCost;
-  
-  // Calculate success chance based on gang size and power
-  let successChance = 40 + (player.gang.members * 3) + (player.power * 0.3);
-  successChance = Math.min(successChance, 85);
-  
-  // Execute mission
-  if (Math.random() * 100 < successChance) {
-    // Success
-    player.money += mission.rewards.money;
-    // player.territory updated via turf system — grant the zone if named
-    if (mission.territory && player.turf) {
-      const zoneId = Object.keys(typeof TURF_ZONES !== 'undefined' ? TURF_ZONES : {}).find(id => {
-        const z = TURF_ZONES[id];
-        return z && z.name && z.name.toLowerCase().includes(mission.territory.toLowerCase().split(' ')[0]);
-      });
-      if (zoneId && !player.turf.owned.includes(zoneId)) {
-        player.turf.owned.push(zoneId);
-      }
-      player.turf.reputation = (player.turf.reputation || 0) + 5;
-    }
-    player.reputation += mission.rewards.reputation;
-    
-    // Remove from available missions
-    player.missions.unlockedTurfMissions = player.missions.unlockedTurfMissions.filter(id => id !== missionId);
-    player.missions.completedMissions.push(missionId);
-    updateMissionProgress('turf_controlled');
-    
-    logAction(`Turf mission "${mission.name}" successful! You now control ${mission.territory}. +$${mission.rewards.money}, +${mission.rewards.territory} territory.`);
-    logAction(mission.story);
-    
-    showBriefNotification(`Turf secured! +$${mission.rewards.passive_income}/tribute from ${mission.territory}`, 'success');
-    degradeEquipment('territory_mission');
-  } else {
-    // Mission failed
-    if (Math.random() * 100 < mission.risks.jailChance) {
-      sendToJail(10);
-      return;
-    }
-    
-    // Potential gang member loss
-    if (Math.random() * 100 < mission.risks.gangMemberLoss && player.gang.gangMembers.length > 0) {
-      const lostMember = player.gang.gangMembers.pop();
-      player.gang.members = Math.max(0, player.gang.members - 1);
-      recalculatePower();
-      logAction(`${lostMember.name} was lost during the failed territory operation. The streets claimed another soldier.`);
-    }
-    
-    // Health loss
-    const healthLoss = Math.floor(Math.random() * mission.risks.healthLoss) + 5;
-    player.health -= healthLoss;
-    
-    logAction(`💥 Turf mission "${mission.name}" failed! You retreat with casualties and learn the hard lesson of overreach.`);
-    showBriefNotification(`Mission failed! Lost ${healthLoss} health.`, 'danger');
-    
-    if (player.health <= 0) {
-      showDeathScreen(`Killed during the "${mission.name}" territory mission`);
-      return;
-    }
-  }
-  
-  updateUI();
-  showMissions();
-}
+// startTurfMission removed — turfMissions was always empty; turf is handled by attackTurfZone()
 
 async function startBossBattle(battleId) {
   const battle = bossBattles.find(b => b.id === battleId);
@@ -1852,9 +1765,11 @@ function getChosenFamilyBuff() {
     return fam ? fam.buff : null;
 }
 
-// Check and auto-promote the player's family rank
+// Check and auto-promote the player's family rank (only fires post-story to avoid conflicting with chapter rank assignments)
 function checkFamilyRankUp() {
     if (!player.chosenFamily) return;
+    // During the story, ranks are assigned by chapter completion (rankOnComplete) — skip auto-promote
+    if (player.storyProgress && !player.storyProgress.isDon) return;
     const currentIdx = FAMILY_RANKS.indexOf(player.familyRank || 'associate');
     const nextRank = FAMILY_RANKS[currentIdx + 1];
     if (!nextRank) return; // Already Don
@@ -5398,7 +5313,7 @@ function triggerBetrayalEvent(event) {
 
 // Show the main Turf Control screen
 function showTerritoryControl() {
-  if (player.inJail) { alert("You can't manage turf while you're in jail!"); return; }
+  if (player.inJail) { showBriefNotification("You can't manage turf while you're in jail!", 'danger'); return; }
   
   initTurfZones();
   const zones = player.turf._zones || [];
@@ -20643,7 +20558,6 @@ window.toggleFamilyGroup = toggleFamilyGroup;
 window.toggleLockedMissions = toggleLockedMissions;
 window.startFactionMission = startFactionMission;
 window.startSignatureJob = startSignatureJob;
-window.startTurfMission = startTurfMission;
 window.startBossBattle = startBossBattle;
 
 // Business & Economy
