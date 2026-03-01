@@ -157,6 +157,7 @@ export const player = {
   dirtyMoney: 0, // Cash that needs to be cleaned
   suspicionLevel: 0, // 0-100, affects Fed attention
   launderingSetups: [], // Array to store active wash cycles
+  activeLaundering: [], // Array of pending laundering ops {id, methodId, methodName, amount, cleanAmount, startedAt, completesAt}
   businessLastCollected: {}, // Object to track last collection time for each front
   
   // Legacy Territory Control — kept for backward compat, see turf system above

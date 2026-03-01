@@ -4,7 +4,7 @@ import { showEmpireOverview } from './empireOverview.js';
 import { player, gainExperience, checkLevelUp, regenerateEnergy, startEnergyRegenTimer, startEnergyRegeneration, skillTreeDefinitions, availablePerks, achievements } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
 import { crimeFamilies, factionEffects, potentialMentors } from './factions.js';
-import { familyStories, storyCampaigns, factionMissions, turfMissions, bossBattles, missionProgress } from './missions.js?v=1.6.9';
+import { familyStories, storyCampaigns, factionMissions, turfMissions, bossBattles, missionProgress } from './missions.js?v=1.7.0';
 import { narrationVariations, getRandomNarration } from './narration.js';
 import { storeItems, realEstateProperties, businessTypes, loanOptions, launderingMethods } from './economy.js';
 import { prisonerNames, recruitNames, availableRecruits, jailPrisoners, jailbreakPrisoners, setJailPrisoners, setJailbreakPrisoners, generateJailPrisoners, generateJailbreakPrisoners, generateAvailableRecruits } from './generators.js';
@@ -4118,6 +4118,10 @@ function showMoneyLaundering() {
   }
   
   if (!player.dirtyMoney) player.dirtyMoney = 0;
+  if (!player.activeLaundering) player.activeLaundering = [];
+
+  // Check for any completed laundering ops first
+  checkLaunderingCompletions();
   
   let launderHTML = `
     <h2>💧 Money Laundering</h2>
@@ -4130,15 +4134,56 @@ function showMoneyLaundering() {
       <p><strong>Suspicion Level:</strong> ${player.suspicionLevel || 0}%</p>
     </div>
   `;
+
+  // ── Active Laundering Operations ──
+  if (player.activeLaundering.length > 0) {
+    launderHTML += `
+      <div style="background: rgba(46, 204, 113, 0.15); border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid #2ecc71;">
+        <h3 style="color: #2ecc71;">⏳ Active Operations</h3>
+        <div id="active-laundering-ops" style="display: grid; gap: 12px;">
+          ${player.activeLaundering.map(op => {
+            const now = Date.now();
+            const remaining = Math.max(0, op.completesAt - now);
+            const totalDuration = op.completesAt - op.startedAt;
+            const progress = totalDuration > 0 ? Math.min(100, ((totalDuration - remaining) / totalDuration) * 100) : 100;
+            const mins = Math.floor(remaining / 60000);
+            const secs = Math.floor((remaining % 60000) / 1000);
+            const isDone = remaining <= 0;
+            
+            return `
+              <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid ${isDone ? '#2ecc71' : '#f39c12'};">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #ecf0f1;">${op.methodName}</strong>
+                  <span style="color: ${isDone ? '#2ecc71' : '#f39c12'}; font-weight: bold;" data-launder-timer="${op.id}">
+                    ${isDone ? '✅ READY TO COLLECT' : `${mins}m ${secs}s remaining`}
+                  </span>
+                </div>
+                <div style="margin: 8px 0;">
+                  <div style="background: rgba(0,0,0,0.5); border-radius: 4px; height: 8px; overflow: hidden;">
+                    <div data-launder-bar="${op.id}" style="height: 100%; background: ${isDone ? '#2ecc71' : 'linear-gradient(90deg, #f39c12, #e67e22)'}; width: ${progress}%; transition: width 1s linear;"></div>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #aaa;">
+                  <span>Dirty: $${op.amount.toLocaleString()}</span>
+                  <span>Expected Clean: $${op.cleanAmount.toLocaleString()}</span>
+                </div>
+                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #2ecc71; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">💰 Collect Clean Money</button>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
   
-  if (player.dirtyMoney <= 0) {
+  if (player.dirtyMoney <= 0 && player.activeLaundering.length === 0) {
     launderHTML += `
       <div style="text-align: center; margin: 40px 0; padding: 30px; background: rgba(52, 73, 94, 0.6); border-radius: 15px; border: 2px solid #2ecc71;">
         <h3 style="color: #2ecc71; margin-bottom: 15px;">All Money Clean</h3>
         <p style="color: #ecf0f1;">You currently have no dirty money to launder. Earn some through illegal activities first!</p>
       </div>
     `;
-  } else {
+  } else if (player.dirtyMoney > 0) {
     launderHTML += `
       <h3>Laundering Methods</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin: 20px 0;">
@@ -4153,7 +4198,7 @@ function showMoneyLaundering() {
               
               <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                 <p style="margin: 5px 0;"><strong>Clean Rate:</strong> ${(method.cleanRate * 100).toFixed(0)}%</p>
-                <p style="margin: 5px 0;"><strong>Time Required:</strong> ${method.timeRequired} hours</p>
+                <p style="margin: 5px 0;"><strong>Processing Time:</strong> ${method.timeRequired} min</p>
                 <p style="margin: 5px 0;"><strong>Suspicion Risk:</strong> ${method.suspicionRisk}%</p>
                 <p style="margin: 5px 0;"><strong>Range:</strong> $${method.minAmount.toLocaleString()} - $${method.maxAmount.toLocaleString()}</p>
                 <p style="margin: 5px 0;"><strong>Energy Cost:</strong> ${method.energyCost}</p>
@@ -4199,6 +4244,9 @@ function showMoneyLaundering() {
   document.getElementById("money-laundering-content").innerHTML = launderHTML;
   hideAllScreens();
   document.getElementById("money-laundering-screen").style.display = "block";
+
+  // Start live countdown timer if there are active operations
+  startLaunderingCountdown();
 }
 
 function checkLaunderingEligibility(method) {
@@ -4215,21 +4263,29 @@ function startLaundering(methodId) {
   const method = launderingMethods.find(m => m.id === methodId);
   if (!method) return;
   
+  if (!player.activeLaundering) player.activeLaundering = [];
+  
   const amountInput = document.getElementById(`launder-amount-${methodId}`);
   const amount = parseInt(amountInput.value);
   
   if (!amount || amount < method.minAmount || amount > method.maxAmount) {
-    alert(`Please enter a valid amount between $${method.minAmount.toLocaleString()} and $${method.maxAmount.toLocaleString()}`);
+    showToast(`Enter a valid amount between $${method.minAmount.toLocaleString()} and $${method.maxAmount.toLocaleString()}`, 'error');
     return;
   }
   
   if (amount > player.dirtyMoney) {
-    alert("You don't have enough dirty money to launder this amount!");
+    showToast("You don't have enough dirty money!", 'error');
     return;
   }
   
   if (player.energy < method.energyCost) {
-    alert("You don't have enough energy for this laundering operation!");
+    showToast("Not enough energy for this operation!", 'error');
+    return;
+  }
+  
+  // Limit concurrent operations to 3
+  if (player.activeLaundering.length >= 3) {
+    showToast("You can only run 3 laundering operations at once! Wait for one to finish.", 'error');
     return;
   }
   
@@ -4239,26 +4295,27 @@ function startLaundering(methodId) {
     return sum + (bizType ? (bizType.launderingCapacity || 0) : 0);
   }, 0);
   if (totalCapacity > 0 && amount > totalCapacity) {
-    alert(`Your businesses can only launder up to $${totalCapacity.toLocaleString()} at a time. Buy more legitimate fronts to increase capacity!`);
+    showToast(`Businesses can only launder up to $${totalCapacity.toLocaleString()} at a time!`, 'error');
     return;
   }
   
   // One-time setup cost
   if (method.oneTimeSetupCost && (!player.launderingSetups || !player.launderingSetups.includes(methodId))) {
     if (player.money < method.oneTimeSetupCost) {
-      alert(`You need $${method.oneTimeSetupCost.toLocaleString()} for the initial setup of this laundering method!`);
+      showToast(`Need $${method.oneTimeSetupCost.toLocaleString()} for initial setup!`, 'error');
       return;
     }
     player.money -= method.oneTimeSetupCost;
     if (!player.launderingSetups) player.launderingSetups = [];
     player.launderingSetups.push(methodId);
-    alert(`Setup complete! Paid $${method.oneTimeSetupCost.toLocaleString()} for ${method.name} setup.`);
+    showToast(`Setup complete! Paid $${method.oneTimeSetupCost.toLocaleString()} for ${method.name}.`, 'success');
   }
   
+  // Deduct energy and dirty money
   player.energy -= method.energyCost;
   player.dirtyMoney -= amount;
   
-  // Calculate success and clean amount
+  // Roll for suspicion (interception check happens NOW)
   const suspicionRoll = Math.random() * 100;
   const currentSuspicion = player.suspicionLevel || 0;
   let adjustedSuspicionRisk = method.suspicionRisk + (currentSuspicion * 0.5);
@@ -4270,31 +4327,184 @@ function startLaundering(methodId) {
   }
   
   if (suspicionRoll < adjustedSuspicionRisk) {
-    // Caught! Lose money and gain suspicion
-    const lossPercentage = 0.3 + (Math.random() * 0.4); // 30-70% loss
+    // CAUGHT — Lose 30-70%, return the rest as dirty money
+    const lossPercentage = 0.3 + (Math.random() * 0.4);
     const lost = Math.floor(amount * lossPercentage);
+    const returned = amount - lost;
     const suspicionGain = 10 + Math.floor(Math.random() * 15);
     
+    player.dirtyMoney += returned; // Give back the non-confiscated portion
     player.suspicionLevel = (player.suspicionLevel || 0) + suspicionGain;
     player.wantedLevel += Math.floor(suspicionGain / 2);
     
-    alert(`Laundering operation compromised! Lost $${lost.toLocaleString()} and gained ${suspicionGain} suspicion. Law enforcement is getting closer.`);
-    logAction(`The operation goes sideways! Suspicious transactions trigger alerts and your money vanishes into bureaucratic black holes. The heat is rising (-$${lost.toLocaleString()}, +${suspicionGain} suspicion).`);
+    showToast(`🚨 Operation compromised! Lost $${lost.toLocaleString()}, $${returned.toLocaleString()} returned. +${suspicionGain} suspicion.`, 'error');
+    logAction(`🚨 The operation goes sideways! Feds intercept the cash. $${lost.toLocaleString()} seized, but $${returned.toLocaleString()} dirty money was recovered. The heat is rising (+${suspicionGain} suspicion).`);
   } else {
-    // Success! Clean the money
+    // SUCCESS — Queue the laundering operation with a real timer
     const cleanAmount = Math.floor(amount * method.cleanRate);
-    const suspicionGain = Math.floor(method.suspicionRisk * 0.1); // Small suspicion even on success
+    const suspicionGain = Math.floor(method.suspicionRisk * 0.1);
+    const processingTimeMs = method.timeRequired * 60 * 1000; // timeRequired is in minutes (real-time)
     
-    player.money += cleanAmount;
     player.suspicionLevel = (player.suspicionLevel || 0) + suspicionGain;
     
-    // Schedule completion (for now, instant completion)
-    alert(`Laundering successful! Cleaned $${cleanAmount.toLocaleString()} through ${method.name}. Operation completed.`);
-    logAction(`💧 Money flows through legitimate channels like water through a sieve. The dirty cash emerges clean and untraceable (+$${cleanAmount.toLocaleString()} clean money).`);
+    const operation = {
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+      methodId: method.id,
+      methodName: method.name,
+      amount: amount,
+      cleanAmount: cleanAmount,
+      startedAt: Date.now(),
+      completesAt: Date.now() + processingTimeMs
+    };
+    
+    player.activeLaundering.push(operation);
+    
+    const mins = Math.floor(processingTimeMs / 60000);
+    const secs = Math.floor((processingTimeMs % 60000) / 1000);
+    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    
+    showToast(`💧 Laundering started! $${amount.toLocaleString()} → $${cleanAmount.toLocaleString()} clean in ${timeStr}.`, 'success');
+    logAction(`💧 ${method.name} operation initiated. $${amount.toLocaleString()} of dirty cash is being cleaned — expect $${cleanAmount.toLocaleString()} back in ${timeStr}.`);
   }
   
   updateUI();
   showMoneyLaundering();
+}
+
+// Collect a completed laundering operation
+function collectLaundering(opId) {
+  if (!player.activeLaundering) return;
+  
+  const opIndex = player.activeLaundering.findIndex(op => op.id === opId);
+  if (opIndex === -1) return;
+  
+  const op = player.activeLaundering[opIndex];
+  const now = Date.now();
+  
+  if (now < op.completesAt) {
+    showToast("This operation hasn't finished yet!", 'error');
+    return;
+  }
+  
+  // Pay out clean money
+  player.money += op.cleanAmount;
+  player.activeLaundering.splice(opIndex, 1);
+  
+  showToast(`💰 Collected $${op.cleanAmount.toLocaleString()} clean money from ${op.methodName}!`, 'success');
+  logAction(`💰 The ${op.methodName} laundering operation is complete. $${op.cleanAmount.toLocaleString()} of squeaky-clean cash has been added to your wallet.`);
+  
+  updateUI();
+  showMoneyLaundering();
+}
+
+// Check for completed laundering operations (called periodically)
+function checkLaunderingCompletions() {
+  if (!player.activeLaundering || player.activeLaundering.length === 0) return;
+  
+  const now = Date.now();
+  const completed = player.activeLaundering.filter(op => now >= op.completesAt);
+  
+  // Auto-collect is NOT done here — player must manually collect via the Collect button
+  // But we do notify when something finishes
+  completed.forEach(op => {
+    if (!op.notified) {
+      op.notified = true;
+      showToast(`✅ ${op.methodName} operation complete! Visit Money Laundering to collect $${op.cleanAmount.toLocaleString()}.`, 'success');
+    }
+  });
+}
+
+// Live countdown timer for the laundering screen
+let launderingCountdownInterval = null;
+function startLaunderingCountdown() {
+  if (launderingCountdownInterval) {
+    clearInterval(launderingCountdownInterval);
+    launderingCountdownInterval = null;
+  }
+  
+  if (!player.activeLaundering || player.activeLaundering.length === 0) return;
+  
+  launderingCountdownInterval = setInterval(() => {
+    // If we navigated away from laundering screen, stop the timer
+    const screen = document.getElementById('money-laundering-screen');
+    if (!screen || screen.style.display === 'none') {
+      clearInterval(launderingCountdownInterval);
+      launderingCountdownInterval = null;
+      return;
+    }
+    
+    const now = Date.now();
+    let anyChanged = false;
+    
+    player.activeLaundering.forEach(op => {
+      const timerEl = document.querySelector(`[data-launder-timer="${op.id}"]`);
+      const barEl = document.querySelector(`[data-launder-bar="${op.id}"]`);
+      if (!timerEl) return;
+      
+      const remaining = Math.max(0, op.completesAt - now);
+      const totalDuration = op.completesAt - op.startedAt;
+      const progress = totalDuration > 0 ? Math.min(100, ((totalDuration - remaining) / totalDuration) * 100) : 100;
+      
+      if (remaining <= 0) {
+        timerEl.textContent = '✅ READY TO COLLECT';
+        timerEl.style.color = '#2ecc71';
+        if (barEl) {
+          barEl.style.width = '100%';
+          barEl.style.background = '#2ecc71';
+        }
+        // Add collect button if not already there
+        const parent = timerEl.closest('div[style*="background: rgba(0,0,0,0.4)"]');
+        if (parent && !parent.querySelector('button')) {
+          parent.style.borderLeftColor = '#2ecc71';
+          const btn = document.createElement('button');
+          btn.textContent = '💰 Collect Clean Money';
+          btn.style.cssText = 'background: #2ecc71; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;';
+          btn.onclick = () => collectLaundering(op.id);
+          parent.appendChild(btn);
+          anyChanged = true;
+        }
+      } else {
+        const mins = Math.floor(remaining / 60000);
+        const secs = Math.floor((remaining % 60000) / 1000);
+        timerEl.textContent = `${mins}m ${secs}s remaining`;
+        if (barEl) barEl.style.width = `${progress}%`;
+      }
+    });
+  }, 1000);
+}
+
+// Background laundering completion checker (runs every 10 seconds regardless of screen)
+function startLaunderingCompletionChecker() {
+  setInterval(() => {
+    checkLaunderingCompletions();
+  }, 10000);
+}
+
+// Toast notification system for in-page feedback
+function showToast(message, type = 'info') {
+  // Remove old toasts
+  const existing = document.querySelectorAll('.game-toast');
+  existing.forEach(t => t.remove());
+  
+  const toast = document.createElement('div');
+  toast.className = 'game-toast';
+  const bgColor = type === 'error' ? 'rgba(231, 76, 60, 0.95)' 
+                 : type === 'success' ? 'rgba(46, 204, 113, 0.95)' 
+                 : 'rgba(52, 152, 219, 0.95)';
+  toast.style.cssText = `
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: ${bgColor}; color: #fff; padding: 14px 28px; border-radius: 10px;
+    font-size: 1em; font-weight: bold; z-index: 99999; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    animation: toastFadeIn 0.3s ease-out; max-width: 90vw; text-align: center;
+  `;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.5s';
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 500);
+  }, 4000);
 }
 
 // ==================== GANG MANAGEMENT OVERHAUL FUNCTIONS ====================
@@ -14750,8 +14960,21 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.6.9";
+const CURRENT_VERSION = "1.7.0";
 const VERSION_UPDATES = {
+  "1.7.0": {
+    title: "Money Laundering Overhaul",
+    date: "February 2026",
+    changes: [
+      "Complete timer-based laundering system — dirty money now takes real time to process",
+      "Live countdown progress bars on active operations (2–15 min per method)",
+      "Collect button appears when laundering completes — no more missed payouts",
+      "Fixed failure path: caught operations now return 30–70% of dirty money instead of losing all",
+      "Max 3 concurrent laundering operations",
+      "Toast notifications replace alert popups for all laundering feedback",
+      "Background completion checker notifies you when operations finish"
+    ]
+  },
   "1.6.9": {
     title: "NPC Rival Bosses & Territory Overhaul",
     date: "February 2026",
@@ -17511,6 +17734,9 @@ function activateGameplaySystems() {
   if (typeof initUIEvents === 'function') {
     initUIEvents();
   }
+
+  // Start money laundering completion checker
+  startLaunderingCompletionChecker();
 
 
 
@@ -20427,6 +20653,7 @@ window.repayLoan = repayLoan;
 window.showMoneyLaundering = showMoneyLaundering;
 window.checkLaunderingEligibility = checkLaunderingEligibility;
 window.startLaundering = startLaundering;
+window.collectLaundering = collectLaundering;
 window.showStore = showStore;
 window.switchStoreTab = switchStoreTab;
 window.renderStoreTab = renderStoreTab;

@@ -288,13 +288,14 @@ export const loanOptions = [
 ];
 
 // Money Laundering Methods
+// timeRequired is in real-time MINUTES (displayed as "Processing Time")
 export const launderingMethods = [
     {
         id: "casino_chips",
         name: "Casino Chips",
         description: "Convert dirty money through gambling chips",
         cleanRate: 0.85, // 85% of money comes out clean
-        timeRequired: 2, // hours
+        timeRequired: 2, // 2 minutes real-time
         suspicionRisk: 15, // % chance of raising suspicion
         minAmount: 100000,
         maxAmount: 5000000,
@@ -306,7 +307,7 @@ export const launderingMethods = [
         name: "Restaurant Revenue",
         description: "Inflate restaurant sales to clean money",
         cleanRate: 0.90,
-        timeRequired: 4,
+        timeRequired: 4, // 4 minutes
         suspicionRisk: 10,
         minAmount: 50000,
         maxAmount: 2000000,
@@ -318,7 +319,7 @@ export const launderingMethods = [
         name: "Cash Business Front",
         description: "Use cash-heavy businesses to clean money",
         cleanRate: 0.80,
-        timeRequired: 6,
+        timeRequired: 6, // 6 minutes
         suspicionRisk: 25,
         minAmount: 200000,
         maxAmount: 10000000,
@@ -330,7 +331,7 @@ export const launderingMethods = [
         name: "Art Auction",
         description: "Buy and sell overpriced art to clean large sums",
         cleanRate: 0.75,
-        timeRequired: 24,
+        timeRequired: 10, // 10 minutes
         suspicionRisk: 30,
         minAmount: 1000000,
         maxAmount: 50000000,
@@ -342,7 +343,7 @@ export const launderingMethods = [
         name: "Offshore Banking",
         description: "Move money through international accounts",
         cleanRate: 0.95,
-        timeRequired: 48,
+        timeRequired: 15, // 15 minutes
         suspicionRisk: 5,
         minAmount: 5000000,
         maxAmount: 100000000,
