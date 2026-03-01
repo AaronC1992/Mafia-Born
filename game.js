@@ -11211,7 +11211,7 @@ const menuUnlockConfig = [
 ];
 
 function isMenuItemUnlocked(item) {
-  return (player.level || 1) >= item.level;
+  return true; // All buttons available from the start
 }
 
 function getUnlockedItems() {
@@ -11302,41 +11302,15 @@ function showCommandCenter() {
   const grid = document.getElementById("safehouse-grid");
   if (!grid) return;
   
-  const unlocked = getUnlockedItems();
-  const locked = getLockedItems();
-  const nextUnlocks = getNextUnlocks();
-  
   let html = '';
   
-  // Render unlocked buttons with tooltips
-  unlocked.forEach(item => {
+  // Render all buttons — no level gating
+  menuUnlockConfig.forEach(item => {
     html += `<button class="menu-btn-unlocked" onclick="${item.fn}">
       <span class="menu-btn-label">${item.label}</span>
       <span class="menu-btn-tip">${item.tip}</span>
     </button>`;
   });
-  
-  // Show next unlock preview (teaser for locked items)
-  if (nextUnlocks.length > 0) {
-    const nextLevel = nextUnlocks[0].level;
-    html += `<div class="menu-locked-section">
-      <div class="menu-locked-header">🔒 Unlocks at Level ${nextLevel} (${nextUnlocks.length} feature${nextUnlocks.length > 1 ? 's' : ''})</div>`;
-    nextUnlocks.forEach(item => {
-      html += `<button class="menu-btn-locked" disabled>
-        <span class="menu-btn-label">🔒 ${item.label}</span>
-        <span class="menu-btn-tip">Reach level ${item.level} to unlock</span>
-      </button>`;
-    });
-    html += `</div>`;
-  }
-  
-  // Show remaining locked count
-  const remainingLocked = locked.length - nextUnlocks.length;
-  if (remainingLocked > 0) {
-    html += `<div class="menu-locked-remaining">
-      +${remainingLocked} more feature${remainingLocked > 1 ? 's' : ''} to discover as you level up
-    </div>`;
-  }
   
   grid.innerHTML = html;
 }
