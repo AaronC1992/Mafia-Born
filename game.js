@@ -491,7 +491,7 @@ function renderStoryChapter() {
   const rw = chapter.rewards;
   let rewardsHTML = `<div class="story-rewards">
     ${rw.money ? `<span class="story-reward-tag">$${rw.money.toLocaleString()}</span>` : ''}
-    ${rw.experience ? `<span class="story-reward-tag">⭐ ${rw.experience} XP</span>` : ''}
+    ${rw.experience ? `<span class="story-reward-tag">${rw.experience} XP</span>` : ''}
     ${rw.reputation ? `<span class="story-reward-tag">+${rw.reputation} Rep</span>` : ''}
     ${chapter.rankOnComplete ? `<span class="story-reward-tag rank-up">→ ${chapter.rankOnComplete.charAt(0).toUpperCase() + chapter.rankOnComplete.slice(1)}</span>` : ''}
   </div>`;
@@ -1387,7 +1387,7 @@ const TURF_ZONES = [
 const RIVAL_FAMILIES = {
     torrino: {
         name: "Torrino Family",
-        icon: "🇮🇹",
+        icon: "ITA",
         color: "#8b0000",
         motto: "Blood is thicker than wine.",
         don: {
@@ -1415,7 +1415,7 @@ const RIVAL_FAMILIES = {
     },
     kozlov: {
         name: "Kozlov Bratva",
-        icon: "🇷🇺",
+        icon: "RUS",
         color: "#4169e1",
         motto: "Strength is the only law.",
         don: {
@@ -1441,7 +1441,7 @@ const RIVAL_FAMILIES = {
     },
     chen: {
         name: "Chen Triad",
-        icon: "🇨🇳",
+        icon: "CHN",
         color: "#2e8b57",
         motto: "Patience is the sharpest blade.",
         don: {
@@ -1467,7 +1467,7 @@ const RIVAL_FAMILIES = {
     },
     morales: {
         name: "Morales Cartel",
-        icon: "🇲🇽",
+        icon: "MEX",
         color: "#ff8c00",
         motto: "Fear is the foundation of empire.",
         don: {
@@ -2425,7 +2425,7 @@ function showSideQuestScreen() {
       html += `
         <div class="story-family-card" style="--fam-color:#2ecc71;margin-bottom:15px;opacity:0.7;">
           <div class="story-family-icon">${quest.icon}</div>
-          <h2 class="story-family-name">✅ ${quest.title}</h2>
+          <h2 class="story-family-name">${quest.title}</h2>
           <p style="color:#888;font-style:italic;">${quest.completionNarrative.substring(0, 120)}...</p>
         </div>`;
     });
@@ -2467,7 +2467,7 @@ function showPostDonArc(arcId) {
         <div style="background:#1a1a2e;border:1px solid #f1c40f33;border-radius:12px;padding:15px;">
           <h3 style="color:#f1c40f;margin:0 0 8px;">${c.name}</h3>
           <p style="color:#ccc;font-size:0.9em;line-height:1.4;">${c.desc}</p>
-          <div style="color:#e74c3c;font-size:0.8em;margin-top:8px;">⚠ Risk: ${c.risk}</div>
+          <div style="color:#e74c3c;font-size:0.8em;margin-top:8px;">Risk: ${c.risk}</div>
         </div>`).join('') +
       `</div>`;
   }
@@ -2745,7 +2745,7 @@ window.makeEventChoice = function(choiceIndex) {
       <div class="outcome-effects">
         ${result.result.money ? `<div> Money: ${result.result.money > 0 ? '+' : ''}$${result.result.money.toLocaleString()}</div>` : ''}
         ${result.result.heat ? `<div> Heat: ${result.result.heat > 0 ? '+' : ''}${result.result.heat}</div>` : ''}
-        ${result.result.respect ? `<div>⭐ Respect: ${result.result.respect > 0 ? '+' : ''}${result.result.respect}</div>` : ''}
+        ${result.result.respect ? `<div>Respect: ${result.result.respect > 0 ? '+' : ''}${result.result.respect}</div>` : ''}
         ${result.result.lostMembers ? `<div> Lost: ${result.result.lostMembers.join(', ')}</div>` : ''}
         ${result.result.jailed ? `<div> You've been arrested!</div>` : ''}
       </div>
@@ -2811,7 +2811,7 @@ function renderRival(rival) {
         <div> Gang Size: ${rival.gangSize}</div>
         <div> Wealth: $${rival.wealth.toLocaleString()}</div>
         <div> Territories: ${rival.territories.length}</div>
-        <div style="color: ${respectColor}">⭐ Respect: ${playerRespect > 0 ? '+' : ''}${playerRespect}</div>
+        <div style="color: ${respectColor}">Respect: ${playerRespect > 0 ? '+' : ''}${playerRespect}</div>
       </div>
       
       <div class="rival-personality">
@@ -4179,7 +4179,7 @@ function checkLaunderingCompletions() {
   completed.forEach(op => {
     if (!op.notified) {
       op.notified = true;
-      showToast(`✅ ${op.methodName} operation complete! Visit Money Laundering to collect $${op.cleanAmount.toLocaleString()}.`, 'success');
+      showToast(`${op.methodName} operation complete! Visit Money Laundering to collect $${op.cleanAmount.toLocaleString()}.`, 'success');
     }
   });
 }
@@ -5330,7 +5330,7 @@ async function attackTurfZone(zoneId) {
       if (!result.won) {
         player.health = Math.max(1, player.health - result.damageTaken);
         player.turf.power = Math.max(10, (player.turf.power || 100) - 15);
-        showBriefNotification(`❌ ${bossInfo.name} defeated you! Lost 15 power and ${result.damageTaken} health.`, 'danger');
+        showBriefNotification(`${bossInfo.name} defeated you! Lost 15 power and ${result.damageTaken} health.`, 'danger');
         logAction(`You attacked ${zone.name} but ${bossInfo.name} crushed your assault. Regroup and try again.`);
         updateUI();
         return;
@@ -5677,7 +5677,7 @@ function showProtectionRackets() {
             <button onclick="dropProtection('${racket.id}')" 
                 style="padding: 5px 10px; background: #e74c3c; border: none; border-radius: 5px; 
                     color: white; cursor: pointer; font-size: 0.8em;">
-              ❌ Drop
+              Drop
             </button>
           </div>
         </div>`;
@@ -6142,7 +6142,7 @@ function generateRacketsHTML() {
           <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
             <button onclick="collectProtection('${racket.id}')" style="padding:5px 10px; background:#27ae60; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Collect</button>
             <button onclick="pressureBusiness('${racket.id}')" style="padding:5px 10px; background:#e67e22; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Pressure</button>
-            <button onclick="dropProtection('${racket.id}')" style="padding:5px 10px; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">❌ Drop</button>
+            <button onclick="dropProtection('${racket.id}')" style="padding:5px 10px; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Drop</button>
           </div>
         </div>`;
     });
@@ -6501,7 +6501,7 @@ function approachBusiness(businessId, territoryId) {
       logAction(`${business.name} refused your offer and called the authorities. Sometimes the sheep bite back.`);
     } else {
       showBriefNotification(`${business.name} refused your offer.`, 'warning');
-      logAction(`❌ ${business.name} shows no fear. Some prey require a different approach.`);
+      logAction(`${business.name} shows no fear. Some prey require a different approach.`);
     }
   }
   
@@ -7265,11 +7265,11 @@ function updateQuickActions() {
 
   // Skip Tutorial button (only visible when tutorials are still active)
   if (localStorage.getItem('tutorialSkipAll') !== '1') {
-    html += `<button onclick="skipAllTutorials(); updateQuickActions();" class="quick-btn" style="border-color:#e74c3c;color:#e74c3c;font-size:0.85em;">⏭ Skip Tutorials</button>`;
+    html += `<button onclick="skipAllTutorials(); updateQuickActions();" class="quick-btn" style="border-color:#e74c3c;color:#e74c3c;font-size:0.85em;">Skip Tutorials</button>`;
   }
 
   // Help button
-  html += `<button onclick="showHelpScreen()" class="quick-btn" style="border-color:#3498db;color:#3498db;">❓ Help</button>`;
+  html += `<button onclick="showHelpScreen()" class="quick-btn" style="border-color:#3498db;color:#3498db;">Help</button>`;
 
   container.innerHTML = html;
 }
@@ -7898,7 +7898,7 @@ function showTutorialOverlay(screenId) {
          border-radius: 16px; padding: 30px; max-width: 520px; width: 90%; max-height: 80vh;
          overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); position: relative;">
       <div style="text-align: center; margin-bottom: 20px;">
-        <div style="font-size: 2em; margin-bottom: 8px;">📖</div>
+        <div style="font-size: 2em; margin-bottom: 8px;"></div>
         <h2 style="color: #c0a062; margin: 0; font-size: 1.5em; font-family: 'Georgia', serif;">${content.title}</h2>
         <p style="color: #7f8c8d; font-size: 0.85em; margin: 6px 0 0;">First time here? Here's what you need to know.</p>
       </div>
@@ -8008,7 +8008,7 @@ const SCREEN_TUTORIAL_MAP = {
 // Full help reference accessed from Settings > Help button.
 
 const HELP_TOPICS = [
-  { id: 'getting-started', icon: '🏁', title: 'Getting Started', content: `
+  { id: 'getting-started', icon: '', title: 'Getting Started', content: `
     <p>Welcome to <strong>Mafia-Born</strong> — a browser-based crime RPG where you rise from street thug to Don.</p>
     <ul>
       <li><strong>Energy</strong> — Most actions cost energy. It regenerates over time, or buy coffee/energy drinks from the mobile nav.</li>
@@ -8017,14 +8017,14 @@ const HELP_TOPICS = [
       <li><strong>Health</strong> — Drops when attacked or during failed jobs. Heal at the Hospital or rest.</li>
     </ul>
   `},
-  { id: 'safehouse-help', icon: '🏠', title: 'SafeHouse', content: `
+  { id: 'safehouse-help', icon: '', title: 'SafeHouse', content: `
     <p>Your home base. All navigation starts here. Buttons unlock as you level up.</p>
     <ul>
       <li><strong>Quick Actions</strong> — The right-side panel (desktop) or swipe menu (mobile) with shortcuts to your favourite screens.</li>
       <li><strong>Status Bar</strong> — Top bar showing cash, health, energy, heat, rank, and more. Customise which stats show in Settings.</li>
     </ul>
   `},
-  { id: 'jobs-help', icon: '💼', title: 'Jobs', content: `
+  { id: 'jobs-help', icon: '', title: 'Jobs', content: `
     <p>Your main source of income and XP early on.</p>
     <ul>
       <li>Each job has an <strong>energy cost</strong> and pays cash + XP on success.</li>
@@ -8032,7 +8032,7 @@ const HELP_TOPICS = [
       <li>Some jobs increase <strong>Heat</strong> (wanted level), which makes cops more aggressive.</li>
     </ul>
   `},
-  { id: 'store-help', icon: '🏪', title: 'Black Market', content: `
+  { id: 'store-help', icon: '', title: 'Black Market', content: `
     <p>Three tabs: <strong>Buy</strong>, <strong>The Fence</strong>, and <strong>Player Market</strong>.</p>
     <ul>
       <li><strong>Buy</strong> — Purchase weapons, armour, and supplies. Better gear = higher attack/defence.</li>
@@ -8040,7 +8040,7 @@ const HELP_TOPICS = [
       <li><strong>Player Market</strong> — Buy/sell vehicles with other real players.</li>
     </ul>
   `},
-  { id: 'missions-help', icon: '📜', title: 'Missions & Story', content: `
+  { id: 'missions-help', icon: '', title: 'Missions & Story', content: `
     <p>The narrative heart of the game.</p>
     <ul>
       <li><strong>Family Story</strong> — Choose a crime family (Corleone, Moretti, etc.) and play through their cinematic storyline from thug to Don.</li>
@@ -8048,7 +8048,7 @@ const HELP_TOPICS = [
       <li><strong>Street Stories</strong> — Narrative events tied to side operation steps. They add consequences and flavour.</li>
     </ul>
   `},
-  { id: 'gang-help', icon: '👥', title: 'The Family (Gang)', content: `
+  { id: 'gang-help', icon: '', title: 'The Family (Gang)', content: `
     <p>Crime families are the multiplayer social system.</p>
     <ul>
       <li><strong>Create</strong> a family (costs cash) or <strong>join</strong> an existing one.</li>
@@ -8057,25 +8057,25 @@ const HELP_TOPICS = [
       <li><strong>Recruitment</strong> — Hire AI crew members that boost your stats and join heists.</li>
     </ul>
   `},
-  { id: 'properties-help', icon: '🏢', title: 'Properties & Fronts', content: `
+  { id: 'properties-help', icon: '', title: 'Properties & Fronts', content: `
     <ul>
       <li><strong>Properties</strong> — Buy apartments, shops, warehouses. They generate <strong>passive income</strong> every cycle.</li>
       <li><strong>Fronts</strong> — Business fronts (laundromats, restaurants, etc.) launder dirty money into clean cash automatically.</li>
     </ul>
   `},
-  { id: 'casino-help', icon: '🎰', title: 'Casino & Mini Games', content: `
+  { id: 'casino-help', icon: '', title: 'Casino & Mini Games', content: `
     <ul>
       <li><strong>Casino</strong> — Poker, Blackjack, Slots, Roulette, and more. High risk, high reward.</li>
       <li><strong>Mini Games</strong> — Quick games like Lockpicking and Number Cracking with small but consistent rewards.</li>
     </ul>
   `},
-  { id: 'stash-help', icon: '📦', title: 'Stash & Motor Pool', content: `
+  { id: 'stash-help', icon: '', title: 'Stash & Motor Pool', content: `
     <ul>
       <li><strong>Stash</strong> — Your inventory. Equip weapons and armour, use consumables, or sell items at the Fence.</li>
       <li><strong>Motor Pool</strong> — Manage your vehicle collection. Vehicles give speed bonuses and are used in heists/getaways.</li>
     </ul>
   `},
-  { id: 'hospital-help', icon: '🏥', title: 'Hospital', content: `
+  { id: 'hospital-help', icon: '', title: 'Hospital', content: `
     <p>Heal injuries at the underground doctor.</p>
     <ul>
       <li><strong>Full Treatment</strong> — Expensive but heals to 100%.</li>
@@ -8083,7 +8083,7 @@ const HELP_TOPICS = [
       <li><strong>Rest</strong> — Costs energy instead of cash but heals less.</li>
     </ul>
   `},
-  { id: 'skills-help', icon: '⭐', title: 'Talents & Skills', content: `
+  { id: 'skills-help', icon: '', title: 'Talents & Skills', content: `
     <p>Spend skill points in 6 trees:</p>
     <ul>
       <li><strong>Combat</strong> — Attack power, crit chance, armour penetration.</li>
@@ -8094,7 +8094,7 @@ const HELP_TOPICS = [
       <li><strong>Leadership</strong> — Crew bonuses, family buffs, territory defence.</li>
     </ul>
   `},
-  { id: 'territory-help', icon: '🗺️', title: 'Territory Control', content: `
+  { id: 'territory-help', icon: '', title: 'Territory Control', content: `
     <ul>
       <li><strong>Districts</strong> — The city is split into districts. Claim them by spending influence and fighting NPCs/players.</li>
       <li><strong>Tribute</strong> — Controlled districts pay tribute income every cycle. More turf = more money.</li>
@@ -8102,14 +8102,14 @@ const HELP_TOPICS = [
       <li><strong>Relocation</strong> — Move to a different district to access local bonuses and job variants.</li>
     </ul>
   `},
-  { id: 'stats-help', icon: '📊', title: 'Stats & Empire', content: `
+  { id: 'stats-help', icon: '', title: 'Stats & Empire', content: `
     <ul>
       <li><strong>Player Stats</strong> — Full stat breakdown: level, cash, combat stats, reputation, etc.</li>
       <li><strong>Empire Rating</strong> — Composite score of your territory, businesses, crew, and story progress.</li>
       <li><strong>Empire Overview</strong> — Visual dashboard of all your assets at a glance.</li>
     </ul>
   `},
-  { id: 'heat-help', icon: '🔥', title: 'Heat (Wanted Level)', content: `
+  { id: 'heat-help', icon: '', title: 'Heat (Wanted Level)', content: `
     <p>Heat is your wanted level. It rises from crime and falls over time.</p>
     <ul>
       <li><strong>Low Heat (0-30)</strong> — Cops mostly leave you alone.</li>
@@ -8118,7 +8118,7 @@ const HELP_TOPICS = [
       <li><strong>Reducing Heat</strong> — Lay low (wait), bribe officials, or use certain skills.</li>
     </ul>
   `},
-  { id: 'energy-help', icon: '⚡', title: 'Energy System', content: `
+  { id: 'energy-help', icon: '', title: 'Energy System', content: `
     <p>Energy is needed for most actions.</p>
     <ul>
       <li><strong>Regeneration</strong> — Energy regenerates slowly over time.</li>
@@ -8128,7 +8128,7 @@ const HELP_TOPICS = [
       <li><strong>Max Energy</strong> — Increases with Endurance skill tree investments.</li>
     </ul>
   `},
-  { id: 'multiplayer-help', icon: '🌐', title: 'Multiplayer & Cloud', content: `
+  { id: 'multiplayer-help', icon: '', title: 'Multiplayer & Cloud', content: `
     <p>Play with others and sync your progress.</p>
     <ul>
       <li><strong>Cloud Save</strong> — Sign in from Settings to sync saves across devices.</li>
@@ -8137,7 +8137,7 @@ const HELP_TOPICS = [
       <li><strong>PvP</strong> — Attack other players, steal their cash, and climb the leaderboard.</li>
     </ul>
   `},
-  { id: 'saving-help', icon: '💾', title: 'Saving & Loading', content: `
+  { id: 'saving-help', icon: '', title: 'Saving & Loading', content: `
     <ul>
       <li><strong>Auto-Save</strong> — Game auto-saves to Slot 0 periodically.</li>
       <li><strong>Manual Save</strong> — Save to any slot from Settings > Save Game.</li>
@@ -8225,7 +8225,7 @@ function showHelpScreen(topicId) {
           <button onclick="${tutorialsSkipped ? 'reEnableTutorials(); showHelpScreen();' : 'skipAllTutorials(); showHelpScreen();'}"
             style="background: ${tutorialsSkipped ? '#27ae60' : '#e74c3c'}; color: #fff;
             padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em;">
-            ${tutorialsSkipped ? '✅ Re-enable Tutorials' : '⏭ Disable All Tutorials'}
+            ${tutorialsSkipped ? 'Re-enable Tutorials' : 'Disable All Tutorials'}
           </button>
         </div>
 
@@ -8758,7 +8758,7 @@ async function startJob(index) {
     if (drugMultiplier > 1) {
       const bonus = Math.floor(earnings * (drugMultiplier - 1));
       earnings += bonus;
-      logAction(`🇨🇳 Chen Triad smuggling routes boost your earnings by $${bonus.toLocaleString()}.`);
+      logAction(`Chen Triad smuggling routes boost your earnings by $${bonus.toLocaleString()}.`);
     }
   }
   
@@ -9544,7 +9544,7 @@ function sendToJail(wantedLevelLoss) {
   if (hasPlayerPerk('iron_will')) {
     const reduced = Math.floor(calculatedJailTime * 0.25);
     calculatedJailTime = Math.max(5, calculatedJailTime - reduced);
-    logAction(`🔥 Iron Will kicks in — your jail sentence is shortened by ${reduced}s.`);
+    logAction(`Iron Will kicks in — your jail sentence is shortened by ${reduced}s.`);
   }
   
   // Utility item: Fake ID Kit reduces jail time by 5 seconds
@@ -9770,7 +9770,7 @@ function renderSkillTreeUI() {
   document.getElementById("skills-content").innerHTML = `
     <div class="rpg-skill-container">
       <div class="rpg-skill-header">
-        <h2 class="rpg-skill-title">⚔️ Skill Trees</h2>
+        <h2 class="rpg-skill-title">Skill Trees</h2>
         <div class="rpg-skill-points">
           <span class="rpg-sp-label">Skill Points</span>
           <span class="rpg-sp-value">${player.skillPoints}</span>
@@ -10193,7 +10193,7 @@ function displayPlayerJailPortrait() {
   } else {
     portraitHTML = `
       <div style="text-align: center; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; border: 2px solid #7f8c8d; margin: 20px;">
-        <h3 style="color: #e74c3c;">🔒 Behind Bars</h3>
+        <h3 style="color: #e74c3c;">Behind Bars</h3>
         <p style="color: #ecf0f1;">You sit in your cell, contemplating your choices...</p>
       </div>
     `;
@@ -11466,17 +11466,17 @@ function showPlayerStats() {
       <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#1a1a2e;padding:8px 16px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Player Stats</button>
       <button id="tab-career" onclick="showPlayerStatsTab('career')" style="background:rgba(52,152,219,0.3);color:#3498db;padding:8px 16px;border:1px solid #3498db;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Career Statistics</button>
       <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#9b59b6;padding:8px 16px;border:1px solid #9b59b6;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Character Showcase</button>
-      <button id="tab-empire" onclick="showPlayerStatsTab('empire')" style="background:rgba(231,76,60,0.3);color:#e74c3c;padding:8px 16px;border:1px solid #e74c3c;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">⭐ Empire Rating</button>
-      <button id="tab-overview" onclick="showPlayerStatsTab('overview')" style="background:rgba(230,126,34,0.3);color:#e67e22;padding:8px 16px;border:1px solid #e67e22;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">🏛️ Empire Overview</button>
-      <button id="tab-skills" onclick="showPlayerStatsTab('skills')" style="background:rgba(46,204,113,0.3);color:#2ecc71;padding:8px 16px;border:1px solid #2ecc71;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">🎯 Expertise</button>
+      <button id="tab-empire" onclick="showPlayerStatsTab('empire')" style="background:rgba(231,76,60,0.3);color:#e74c3c;padding:8px 16px;border:1px solid #e74c3c;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Rating</button>
+      <button id="tab-overview" onclick="showPlayerStatsTab('overview')" style="background:rgba(230,126,34,0.3);color:#e67e22;padding:8px 16px;border:1px solid #e67e22;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Overview</button>
+      <button id="tab-skills" onclick="showPlayerStatsTab('skills')" style="background:rgba(46,204,113,0.3);color:#2ecc71;padding:8px 16px;border:1px solid #2ecc71;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Expertise</button>
     </div>
     
     <!-- Stats Tab (default) -->
     <div id="panel-stats">
       <h2 style="color:#d4af37;text-align:center;margin:10px 0 18px;">Player Stats Overview</h2>
-      ${card('Origin &amp; Perk', '🎭', originHTML)}
+      ${card('Origin &amp; Perk', '', originHTML)}
       ${card('Core Stats', '', coreHTML)}
-      ${card('Skill Trees', '⚔️', skillTreeOverviewHTML)}
+      ${card('Skill Trees', '', skillTreeOverviewHTML)}
       ${card('Gang & Territory', '', gangHTML)}
       ${card('Faction Reputation', '', factionHTML)}
       ${card('Equipment', '', equipHTML)}
@@ -12180,12 +12180,12 @@ let _currentBlackMarketTab = 'buy';
 
 // Store item category definitions
 const storeCategories = [
-  { id: 'all',       label: 'All',          icon: '🏪', types: null },
+  { id: 'all',       label: 'All',          icon: '', types: null },
   { id: 'weapons',   label: 'Weapons',       icon: '🔫', types: ['weapon'] },
   { id: 'armor',     label: 'Armor',         icon: '🛡️', types: ['armor'] },
   { id: 'vehicles',  label: 'Vehicles',      icon: '🚗', types: ['vehicle'] },
-  { id: 'supplies',  label: 'Supplies',      icon: '📦', types: ['ammo', 'gas'] },
-  { id: 'energy',    label: 'Energy',        icon: '⚡', types: ['energy'] },
+  { id: 'supplies',  label: 'Supplies',      icon: '', types: ['ammo', 'gas'] },
+  { id: 'energy',    label: 'Energy',        icon: '', types: ['energy'] },
   { id: 'utility',   label: 'Utility',       icon: '🔧', types: ['utility'] },
   { id: 'trade',     label: 'Trade Goods',   icon: '💊', types: ['highLevelDrug'] }
 ];
@@ -12200,9 +12200,9 @@ function showStore(activeTab) {
 
   // Build top-level tabs (Buy / Fence / Player Market)
   const topTabs = [
-    { id: 'buy',    label: '🏪 Buy',           tip: 'Browse weapons, armor & supplies' },
-    { id: 'fence',  label: '🔄 The Fence',     tip: 'Sell stolen goods at premium rates' },
-    { id: 'market', label: '👥 Player Market',  tip: 'Trade vehicles with other players' }
+    { id: 'buy',    label: 'Buy',           tip: 'Browse weapons, armor & supplies' },
+    { id: 'fence',  label: 'The Fence',     tip: 'Sell stolen goods at premium rates' },
+    { id: 'market', label: 'Player Market',  tip: 'Trade vehicles with other players' }
   ];
   const topTabsHTML = topTabs.map(tab => {
     const isActive = tab.id === _currentBlackMarketTab;
@@ -15471,8 +15471,8 @@ function showInventory(initialTab) {
   document.getElementById("stash-content").innerHTML = `
     <!-- Tab Navigation -->
     <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-      <button id="stash-tab-stash" onclick="showStashTab('stash')" style="padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">📦 Stash</button>
-      <button id="stash-tab-motorpool" onclick="showStashTab('motorpool')" style="padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">🚗 Motor Pool</button>
+      <button id="stash-tab-stash" onclick="showStashTab('stash')" style="padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Stash</button>
+      <button id="stash-tab-motorpool" onclick="showStashTab('motorpool')" style="padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Motor Pool</button>
     </div>
     <div id="panel-stash">${stashHTML}</div>
     <div id="panel-motorpool" style="display:none;">${motorpoolHTML}</div>
@@ -15913,7 +15913,7 @@ function renderHospitalContent() {
   let html = `<div class="content-card">${healthBar}`;
   
   if (player.health >= 100) {
-    html += `<p style="color: #2ecc71; text-align: center; font-size: 1.1em;">✅ You're in perfect health. No treatment needed.</p>`;
+    html += `<p style="color: #2ecc71; text-align: center; font-size: 1.1em;">You're in perfect health. No treatment needed.</p>`;
   } else {
     html += `<div class="hospital-services">`;
     
@@ -17023,7 +17023,7 @@ function loadGameFromIntroSlot(slotNumber) {
     logAction(`Welcome back, ${playerName}! Your criminal empire has been restored.`);
     
     // Show brief notification
-    showBriefNotification(`✅ Loaded: ${playerName}'s saved game`, 2000);
+    showBriefNotification(`Loaded: ${playerName}'s saved game`, 2000);
   } else {
     // Load failed - show error to user
     showBriefNotification("Failed to load save data! The save may be corrupted or incompatible with the current version.", 'danger');
@@ -17171,7 +17171,7 @@ function checkForUpdates() {
         // Short pause so player sees the message, then force reload
         setTimeout(() => forceHardReload(), 1800);
       } else {
-        btn.innerHTML = `✅ You're up to date! (v${localVersion})`;
+        btn.innerHTML = `You're up to date! (v${localVersion})`;
         btn.style.borderColor = '#2ecc71';
         btn.style.color = '#2ecc71';
 
@@ -18269,7 +18269,7 @@ function buildEmpireRatingHTML() {
   return `
     <div style="max-width: 1000px; margin: 0 auto;">
       <h2 style="text-align: center; color: ${grade.color}; font-size: 2.2em; margin-bottom: 10px;">
-        Empire Rating ⭐
+        Empire Rating
       </h2>
       
       <div style="text-align: center; margin-bottom: 24px; padding: 18px; background: rgba(0,0,0,0.3); border-radius: 15px; border: 3px solid ${grade.color};">
@@ -18410,21 +18410,21 @@ function buildEmpireOverviewHTML() {
 
   return `
     <div style="max-width: 800px; margin: 0 auto;">
-      <h2 style="color: #d4af37; text-align: center; margin-bottom: 20px;">🏛️ Empire Overview: ${player.name || "The Don"}</h2>
+      <h2 style="color: #d4af37; text-align: center; margin-bottom: 20px;">Empire Overview: ${player.name || "The Don"}</h2>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;">
         <div style="background: #2c2c2c; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(212,175,55,0.2);">
-          <div style="font-size: 2em;">💰</div>
+          
           <div style="color: #aaa; font-size: 0.9em;">Liquid Assets</div>
           <div style="font-size: 1.4em; color: #4caf50;">$${(player.money || 0).toLocaleString()}</div>
         </div>
         <div style="background: #2c2c2c; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(212,175,55,0.2);">
-          <div style="font-size: 2em;">🗺️</div>
+          
           <div style="color: #aaa; font-size: 0.9em;">Turf Controlled</div>
           <div style="font-size: 1.4em; color: #2196f3;">${totalTerritory} Zones</div>
         </div>
         <div style="background: #2c2c2c; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(212,175,55,0.2);">
-          <div style="font-size: 2em;">📈</div>
+          
           <div style="color: #aaa; font-size: 0.9em;">Est. Daily Income</div>
           <div style="font-size: 1.4em; color: #ffeb3b;">$${dailyIncome.toLocaleString()}</div>
         </div>
@@ -18620,7 +18620,7 @@ function loadGameFromSlot(slotNumber) {
     // Note: If player is in jail, applySaveData() already showed the jail screen
     
     logAction(`Game loaded from slot ${slotNumber}: ${saveEntry.saveName}`);
-    showBriefNotification(`✅ Loaded: ${saveEntry.saveName}`, 2000);
+    showBriefNotification(`Loaded: ${saveEntry.saveName}`, 2000);
     
     return true;
   } catch (error) {
@@ -18816,7 +18816,7 @@ function applySaveData(saveData) {
       }, 100);
       
       updateJailTimer();
-      logAction("🔒 Resuming jail sentence...");
+      logAction("Resuming jail sentence...");
     } else {
       // Jail time expired, release player
       player.inJail = false;
@@ -19397,7 +19397,7 @@ const WEEKLY_CHALLENGES = {
       id: 'gang_leader',
       name: 'Gang Leader',
       description: 'Recruit {target} gang members',
-      icon: '👥',
+      icon: '',
       targets: { easy: 5, medium: 15, hard: 30, extreme: 50 },
       checkProgress: (target) => (player.gang.gangMembers ? player.gang.gangMembers.length : player.gang.members) >= target
     },
@@ -19747,7 +19747,7 @@ function exportCharacterShowcase() {
     
   } catch (error) {
     console.error('Export showcase error:', error);
-    showBriefNotification("❌ Failed to export character showcase", 3000);
+    showBriefNotification("Failed to export character showcase", 3000);
   }
 }
 
@@ -20217,7 +20217,7 @@ function showWeeklyChallenges() {
         </div>
         
         <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #2ecc71; text-align: center;">
-          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">✅ Completed</h3>
+          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">Completed</h3>
           <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">
             ${completedThisWeek} / ${currentChallenges.length}
           </div>
@@ -20283,7 +20283,7 @@ function showWeeklyChallenges() {
                   
                   ${challenge.completed ? `
                     <div style="text-align: center; margin-top: 15px; color: #2ecc71; font-weight: bold;">
-                      ✅ Completed on ${new Date(challenge.completedAt).toLocaleDateString()}
+                      Completed on ${new Date(challenge.completedAt).toLocaleDateString()}
                     </div>
                   ` : ''}
                 </div>

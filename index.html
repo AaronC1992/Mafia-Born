@@ -11,7 +11,7 @@
     <meta property="og:image" content="GameLogo.png">
     <link rel="icon" href="GameLogo.png" type="image/png">
     <title>Mafia Born - From Dusk To Don</title>
-    <link rel="stylesheet" href="styles.css?v=1.11.2">
+    <link rel="stylesheet" href="styles.css?v=1.11.3">
 </head>
 <body>
     <noscript>
@@ -431,8 +431,8 @@
 
             <!-- Tab Navigation -->
             <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-                <button id="casino-tab-gambling" onclick="showCasinoTab('gambling')" style="background:#d4af37;color:#1a1a2e;padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">🎰 Gambling</button>
-                <button id="casino-tab-minigames" onclick="showCasinoTab('minigames')" style="background:rgba(192,160,98,0.3);color:#c0a062;padding:8px 20px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">🎮 Mini Games</button>
+                <button id="casino-tab-gambling" onclick="showCasinoTab('gambling')" style="background:#d4af37;color:#1a1a2e;padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Gambling</button>
+                <button id="casino-tab-minigames" onclick="showCasinoTab('minigames')" style="background:rgba(192,160,98,0.3);color:#c0a062;padding:8px 20px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Mini Games</button>
             </div>
 
             <!-- Gambling Tab (default) -->
@@ -571,7 +571,7 @@
             </div>
             <div class="section-header">Help & Tutorials</div>
             <div class="content-card">
-                <button onclick="showHelpScreen()" style="border-color: #3498db; color: #3498db;">❓ Help & Game Guide</button>
+                <button onclick="showHelpScreen()" style="border-color: #3498db; color: #3498db;">Help & Game Guide</button>
                 <button id="tutorial-toggle-btn" onclick="toggleTutorialFromSettings()" style="border-color: #2ecc71; color: #2ecc71;">Tutorials: Enabled</button>
             </div>
             <div class="section-header">UI Toggles</div>
@@ -929,6 +929,6 @@
     <!-- Multiplayer client (global script, must load before game.js module) -->
     <script src="multiplayer.js"></script>
     <!-- Main game logic (Module) -->
-    <script type="module" src="game.js?v=1.11.2"></script>
+    <script type="module" src="game.js?v=1.11.3"></script>
 </body>
 </html>
