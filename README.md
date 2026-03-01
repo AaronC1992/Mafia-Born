@@ -1,6 +1,6 @@
 # Mafia Born
 
-**v1.6.8** | A deep criminal empire-building browser game where you rise from street thug to legendary kingpin. Build your crew, claim territory, run businesses, and outmanoeuvre rival crime families — all from your browser.
+**v1.7.6** | A deep criminal empire-building browser game where you rise from street thug to legendary kingpin. Build your crew, claim territory, run businesses, and outmanoeuvre rival crime families — all from your browser.
 
 ## **[PLAY NOW](https://mafiaborn.com/)**
 
@@ -28,18 +28,19 @@ The game features persistent progression via local storage and cloud saves, a fu
 - **9 businesses** (6 legitimate fronts and 3 illegal operations) generating passive income, each upgradeable to level 5
 - **7 properties** from hideouts to private islands, expanding gang capacity and unlocking new jobs
 - **12 map districts** to capture and control, with protection rackets and territory events
-- **Loan shark** system for high-risk borrowing
+- **Money laundering** — clean your dirty cash through casino chips, shell companies, crypto, art galleries, and more
 
 ### Gang & Factions
-- Recruit and manage gang members with unique specializations
-- **4 crime families** with reputation systems, faction missions, and mentors
+- Recruit and manage gang members with unique specializations and roles
+- **4 crime families** with reputation systems and faction missions
 - **5 rival gangs** to challenge in boss battles with unique rewards
-- Loyalty mechanics, betrayal events, and gang operations
+- Dangerous operations where gang members can be killed, arrested, or betray you
+- Gang wars with high stakes — members die frequently in the criminal underworld
 
 ### Progression
 - **Progressive unlock system** — game features unlock as you level up, from basics at level 0 to endgame content at level 15+
 - **6 base skills** with 18 advanced skill tree branches
-- **Perks and achievements** unlocked through gameplay milestones
+- **Achievements** unlocked through gameplay milestones
 - **Empire rating** system grading your criminal empire from D to Legendary
 - **4 retirement paths** leading to the Hall of Fame, with legacy bonuses for future characters
 - **Weekly challenges** with tiered rewards
@@ -58,7 +59,7 @@ The game features persistent progression via local storage and cloud saves, a fu
 
 ### Mini-Games & Casino
 - 6 arcade mini-games playable in jail or at the arcade
-- Casino with slot machines, roulette, blackjack, and dice
+- Casino with slot machines, roulette, blackjack, dice, and horse racing
 
 ### Customisation
 - **Customisable quick actions panel** — choose which shortcut buttons appear on your screen via Settings > Personalization
@@ -112,21 +113,17 @@ Compatible with Chrome, Firefox, Safari, Edge, and their mobile counterparts.
 
 ---
 
-## Recent Changes (v1.6.8)
+## Recent Changes (v1.7.6)
 
-- **Horse Racing** — new casino game with 6 horses, varied odds (2x–12x), animated racetrack, and adjustable bets
-- **Turf Wars removed** — dead feature (never triggered) replaced by Horse Racing in the Gambling Den
-- **Street News removed** — cleaned out unused city events system from Activities
-- **Objective tracker removed** — orphaned tutorial sidebar UI fully stripped
-- **Onboarding disabled** — tutorial system no longer initialises; HTML + JS refs removed
-- **Territory labels fixed** — leaderboard tab and district explorer now say "Territories" instead of "Turf"
-- **Server wake-up on load** — game pings the server during startup and holds the loading screen while the Render server wakes from sleep
-- **Delete save fix** — deleting a save from Settings now correctly returns to the title screen
-- **Operations unlocked early** — Operations (story missions) available from level 0 instead of level 3
-- **Turf System Overhaul (v1.6.0)** — 8 unique zones, 4 rival crime families, family allegiance, turf missions, boss fights
-- **PVP screen fix (v1.6.4)** — World Chat no longer destroys multiplayer screens
-- **Dynamic stats bar (v1.6.2)** — stats bar height adapts automatically, fixing header clipping on mobile
-- **Status bar customisation (v1.5.9)** — toggle visibility of individual HUD stats from Settings
+- **System Removal** — Mentorship Program, Expertise Perks, Gang Loyalty, and Loan Shark systems all removed to streamline gameplay
+- **Gang danger increased** — gang members die more frequently during turf defense, territory expansion, gang wars, and operations
+- **Expertise screen** simplified to 3 tabs: Basic Skills, Skill Trees, Reputation
+- **Vehicle System Overhaul** — buy/sell/upgrade vehicles from a dedicated garage, car degradation and repair
+- **Territory Management** — alliance territories tab, territory power and defense mechanics
+- **Unified popup styling** — all screens and popups follow a consistent dark theme
+- **Alert/confirm overhaul** — all browser dialogs replaced with themed in-game modals
+- **Horse Racing** — casino game with 6 horses, varied odds, animated racetrack
+- **Dynamic weather** — weather buffs/debuffs on jobs with narrative flavour
 
 ---
 

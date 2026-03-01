@@ -5,6 +5,13 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.6] - 2026-03-01
+
+### Changed
+- **README.md** fully updated to v1.7.6 — removed mentions of loans, mentors, loyalty, perks; added current features (laundering, horse racing, vehicle system, weather)
+- Cleaned stale onboarding/tutorial references from mobile nav customizer
+- Updated Recent Changes section to reflect phases 25-31
+
 ## [1.7.5] - 2026-03-01
 
 ### Removed

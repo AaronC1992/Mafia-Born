@@ -4,7 +4,7 @@ import { showEmpireOverview } from './empireOverview.js';
 import { player, gainExperience, checkLevelUp, regenerateEnergy, startEnergyRegenTimer, startEnergyRegeneration, skillTreeDefinitions, achievements } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
 import { crimeFamilies, factionEffects } from './factions.js';
-import { familyStories, missionProgress, factionMissions } from './missions.js?v=1.7.5';
+import { familyStories, missionProgress, factionMissions } from './missions.js?v=1.7.6';
 import { narrationVariations, getRandomNarration } from './narration.js';
 import { storeItems, realEstateProperties, businessTypes, launderingMethods } from './economy.js';
 import { prisonerNames, recruitNames, availableRecruits, jailPrisoners, jailbreakPrisoners, setJailPrisoners, setJailbreakPrisoners, generateJailPrisoners, generateJailbreakPrisoners, generateAvailableRecruits } from './generators.js';
@@ -6874,12 +6874,9 @@ function showMobileNavCustomizer() {
     </div>
 
     <div style="max-width:700px;margin:0 auto;">
-      <p style="color:#bdc3c7;text-align:center;margin-bottom:10px;font-size:0.95em;">
+      <p style="color:#bdc3c7;text-align:center;margin-bottom:20px;font-size:0.95em;">
         Choose up to <strong>5 tabs</strong> for your mobile bottom navigation bar.<br>
         <span style="color:#e74c3c;">Safehouse is locked and always shown.</span>
-      </p>
-      <p style="color:#95a5a6;text-align:center;margin-bottom:20px;font-size:0.85em;">
-        During onboarding, the last slot is automatically replaced with Objective.
       </p>
 
       <div id="mnav-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:25px;">
@@ -6898,7 +6895,6 @@ function showMobileNavCustomizer() {
             <div>
               <span style="color:${locked ? '#ff6b6b' : '#ecf0f1'};font-weight:bold;">${def.label}</span>
               ${locked ? '<br><small style="color:#ff6b6b;">Always shown</small>' : ''}
-              ${isObjective ? '<br><small style="color:#95a5a6;">Auto during onboarding</small>' : ''}
             </div>
           </label>`;
         }).join('')}
@@ -13694,8 +13690,17 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.7.5";
+const CURRENT_VERSION = "1.7.6";
 const VERSION_UPDATES = {
+  "1.7.6": {
+    title: "README & Cleanup",
+    date: "March 2026",
+    changes: [
+      "Updated README to v1.7.6 — removed references to loans, mentors, loyalty, perks",
+      "Cleaned stale onboarding references from mobile nav customizer",
+      "Updated feature descriptions to reflect current game state"
+    ]
+  },
   "1.7.5": {
     title: "System Removal & Rebalance",
     date: "March 2026",
