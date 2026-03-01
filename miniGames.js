@@ -38,32 +38,32 @@ const tttContexts = {
     statusId: 'game-status',
     opponentName: 'Cellmate',
     onStart: () => {
-      _logAction(`🎮 You challenge a cellmate to TikTakToe. Time to see who has the sharper mind in this concrete jungle!`);
+      _logAction(`You challenge a cellmate to TikTakToe. Time to see who has the sharper mind in this concrete jungle!`);
     },
     onWin: () => {
       const timeReduction = Math.min(10, Math.floor(player.jailTime * 0.2));
       player.jailTime -= timeReduction;
       if (!player.gangRespect) player.gangRespect = 0;
       player.gangRespect = Math.min(100, player.gangRespect + 2);
-      const msg = `🎉 Victory! You outsmarted your cellmate with superior strategy. Word spreads fast - your sentence is reduced by ${timeReduction} seconds and you gain +2 Gang Respect!`;
-      _logAction(`🏆 TikTakToe victory! You proved your mental superiority over your cellmate. Sentence reduced by ${timeReduction}s. Gang Respect +2. Even in confinement, the criminal mastermind shines.`);
+      const msg = `Victory! You outsmarted your cellmate with superior strategy. Word spreads fast - your sentence is reduced by ${timeReduction} seconds and you gain +2 Gang Respect!`;
+      _logAction(`TikTakToe victory! You proved your mental superiority over your cellmate. Sentence reduced by ${timeReduction}s. Gang Respect +2. Even in confinement, the criminal mastermind shines.`);
       return msg;
     },
     onLose: () => {
-      const msg = `😔 Defeat! Your cellmate outplayed you this time. Sometimes the student becomes the teacher.`;
-      _logAction(`💭 TikTakToe defeat! Your cellmate's cunning exceeded your own this round. A humbling reminder that every criminal has something to learn.`);
+      const msg = `Defeat! Your cellmate outplayed you this time. Sometimes the student becomes the teacher.`;
+      _logAction(`TikTakToe defeat! Your cellmate's cunning exceeded your own this round. A humbling reminder that every criminal has something to learn.`);
       return msg;
     },
     onTie: () => {
       if (!player.gangRespect) player.gangRespect = 0;
       player.gangRespect = Math.min(100, player.gangRespect + 1);
-      const msg = `🤝 Stalemate! Neither you nor your cellmate could claim victory. Respect earned on both sides (+1 Gang Respect).`;
-      _logAction(`🤝 TikTakToe stalemate! Both players showed equal skill in this battle of wits. Gang Respect +1. Honor among thieves indeed.`);
+      const msg = `Stalemate! Neither you nor your cellmate could claim victory. Respect earned on both sides (+1 Gang Respect).`;
+      _logAction(`TikTakToe stalemate! Both players showed equal skill in this battle of wits. Gang Respect +1. Honor among thieves indeed.`);
       return msg;
     },
     onQuit: () => {
       _alert(`You forfeit the game and walk away. Your cellmate chuckles at your strategic retreat.`);
-      _logAction(`🏃 You quit the TikTakToe game mid-match. Sometimes knowing when to fold is the mark of a true strategist.`);
+      _logAction(`You quit the TikTakToe game mid-match. Sometimes knowing when to fold is the mark of a true strategist.`);
     }
   },
   minigame: {
@@ -83,18 +83,18 @@ const tttContexts = {
       _updateStatistic('miniGamesWon');
       _updateStatistic('totalMoneyEarned', 100);
       _updateUI();
-      const msg = `🎉 Victory! You've proven your strategic superiority and earned $100! Your mind is as sharp as your criminal instincts! (Intelligence +50 XP)`;
-      _logAction(`🏆 TikTakToe victory! Your strategic thinking pays off with $100 earned and increased Intelligence.`);
+      const msg = `Victory! You've proven your strategic superiority and earned $100! Your mind is as sharp as your criminal instincts! (Intelligence +50 XP)`;
+      _logAction(`TikTakToe victory! Your strategic thinking pays off with $100 earned and increased Intelligence.`);
       return msg;
     },
     onLose: () => {
-      const msg = `😔 Defeat! The AI outmaneuvered you this time. Even master criminals can learn from failure.`;
-      _logAction(`💭 TikTakToe defeat! The AI proves its worth, but every loss is a lesson learned.`);
+      const msg = `Defeat! The AI outmaneuvered you this time. Even master criminals can learn from failure.`;
+      _logAction(`TikTakToe defeat! The AI proves its worth, but every loss is a lesson learned.`);
       return msg;
     },
     onTie: () => {
-      const msg = `🤝 Stalemate! Neither player could claim victory. A battle of equals!`;
-      _logAction(`🤝 TikTakToe stalemate! Sometimes the greatest victories are knowing when to call it even.`);
+      const msg = `Stalemate! Neither player could claim victory. A battle of equals!`;
+      _logAction(`TikTakToe stalemate! Sometimes the greatest victories are knowing when to call it even.`);
       return msg;
     },
     onQuit: () => {}
@@ -289,7 +289,7 @@ export function canPlayMiniGame(gameType) {
   const now = Date.now();
   if (miniGameCooldowns[gameType] > now) {
     const remaining = Math.ceil((miniGameCooldowns[gameType] - now) / 1000 / 60);
-    _alert(`⏳ Cool down! You need to wait ${remaining} more minute(s) before playing this again.`);
+    _alert(`Cool down! You need to wait ${remaining} more minute(s) before playing this again.`);
     return false;
   }
   if (miniGameDailyPlays[gameType].count >= DAILY_GAME_LIMIT) {
@@ -321,7 +321,7 @@ export function showMiniGames() {
   document.getElementById("minigame-tiktaktoe").style.display = "none";
   document.getElementById("other-minigames").style.display = "none";
 
-  _logAction("🎮 You step into the Criminal's Arcade. Time to test your skills in games that don't involve actual crimes!");
+  _logAction("You step into the Criminal's Arcade. Time to test your skills in games that don't involve actual crimes!");
 }
 
 export function backToMiniGamesList() {
@@ -390,7 +390,7 @@ export function startMiniGameTikTakToe() {
   setTimeout(() => {
     document.getElementById("minigame-tiktaktoe").scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
-  _logAction("🎯 You sit down for a strategic game of TikTakToe. Time to prove your tactical superiority!");
+  _logAction("You sit down for a strategic game of TikTakToe. Time to prove your tactical superiority!");
 }
 
 export function mgStartTikTakToe()          { tttStart(tttContexts.minigame); }
@@ -409,7 +409,7 @@ export function startNumberGuessing() {
   numberGuessingAttempts = 0;
 
   document.getElementById("minigame-content").innerHTML = `
-    <h3 style="color: #2ecc71; text-align: center; margin-bottom: 20px;">🔢 Number Hunter</h3>
+    <h3 style="color: #2ecc71; text-align: center; margin-bottom: 20px;">Number Hunter</h3>
     <div style="text-align: center;">
       <p style="font-size: 1.2em; margin-bottom: 20px;">I'm thinking of a number between 1 and 100!</p>
       <p>Attempts: <span id="guess-attempts">0</span></p>
@@ -433,7 +433,7 @@ export function startNumberGuessing() {
     document.getElementById("guess-input").focus();
   }, 100);
 
-  _logAction("🔢 You challenge yourself to a game of Number Hunter. Can your intuition guide you to victory?");
+  _logAction("You challenge yourself to a game of Number Hunter. Can your intuition guide you to victory?");
 }
 
 export function makeGuess() {
@@ -459,13 +459,13 @@ export function makeGuess() {
     _updateStatistic('totalMoneyEarned', totalReward);
 
     _updateUI();
-    document.getElementById('guess-feedback').innerHTML = `<span style="color: #2ecc71;">🎉 Correct! You found ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}! (Luck +50 XP)</span>`;
-    _logAction(`🎯 Number Hunter victory! Found the target ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}. Your intuition is razor-sharp. (Luck +50 XP)`);
+    document.getElementById('guess-feedback').innerHTML = `<span style="color: #2ecc71;">Correct! You found ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}! (Luck +50 XP)</span>`;
+    _logAction(`Number Hunter victory! Found the target ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}. Your intuition is razor-sharp. (Luck +50 XP)`);
     setTimeout(() => startNumberGuessing(), 3000);
   } else if (guess < numberGuessingTarget) {
-    document.getElementById('guess-feedback').innerHTML = '<span style="color: #f39c12;">📈 Too low! Go higher!</span>';
+    document.getElementById('guess-feedback').innerHTML = '<span style="color: #f39c12;">Too low! Go higher!</span>';
   } else {
-    document.getElementById('guess-feedback').innerHTML = '<span style="color: #f39c12;">📉 Too high! Go lower!</span>';
+    document.getElementById('guess-feedback').innerHTML = '<span style="color: #f39c12;">Too high! Go lower!</span>';
   }
 
   input.value = '';
@@ -491,12 +491,12 @@ export function startRockPaperScissors() {
     });
   }, 100);
 
-  _logAction("✂️ You challenge the AI to Rock Paper Scissors. Best of 5 rounds - may the best strategist win!");
+  _logAction("You challenge the AI to Rock Paper Scissors. Best of 5 rounds - may the best strategist win!");
 }
 
 export function updateRPSDisplay() {
   document.getElementById("minigame-content").innerHTML = `
-    <h3 style="color: #e74c3c; text-align: center; margin-bottom: 20px;">✂️ Rock Paper Scissors</h3>
+    <h3 style="color: #e74c3c; text-align: center; margin-bottom: 20px;">Rock Paper Scissors</h3>
     <div style="text-align: center;">
       <p style="font-size: 1.2em; margin-bottom: 20px;">Best of 5 Rounds</p>
       <div style="display: flex; justify-content: space-around; margin: 20px 0;">
@@ -516,18 +516,18 @@ export function updateRPSDisplay() {
       ${rpsPlayerScore < 3 && rpsAIScore < 3 ? `
         <div style="display: flex; justify-content: center; gap: 20px; margin: 30px 0;">
           <button onclick="playRPS('rock')" style="background: #95a5a6; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
-            🪨 Rock
+            Rock
           </button>
           <button onclick="playRPS('paper')" style="background: #3498db; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
-            📄 Paper
+            Paper
           </button>
           <button onclick="playRPS('scissors')" style="background: #e74c3c; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
-            ✂️ Scissors
+            Scissors
           </button>
         </div>
       ` : `
         <div style="margin: 30px 0;">
-          <h3>${rpsPlayerScore > rpsAIScore ? '🎉 You Won the Match! +$' + (100 + (player.level * 50)).toLocaleString() : '😔 AI Won the Match!'}</h3>
+          <h3>${rpsPlayerScore > rpsAIScore ? 'You Won the Match! +$' + (100 + (player.level * 50)).toLocaleString() : 'AI Won the Match!'}</h3>
           <button onclick="startRockPaperScissors()" style="background: #2ecc71; color: white; padding: 15px 25px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px;">
             Play Again
           </button>
@@ -542,7 +542,7 @@ export function playRPS(playerChoice) {
   const choices = ['rock', 'paper', 'scissors'];
   const aiChoice = choices[Math.floor(Math.random() * 3)];
 
-  const choiceEmojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
+  const choiceEmojis = { rock: '', paper: '', scissors: '' };
 
   let result = '';
   if (playerChoice === aiChoice) {
@@ -569,9 +569,9 @@ export function playRPS(playerChoice) {
       player.money += rpsReward;
       gainExperience('charisma', 50);
       _updateUI();
-      _logAction(`🏆 Rock Paper Scissors champion! Your tactical mind proves superior in this classic game of psychology and earned $${rpsReward.toLocaleString()}. (Charisma +50 XP)`);
+      _logAction(`Rock Paper Scissors champion! Your tactical mind proves superior in this classic game of psychology and earned $${rpsReward.toLocaleString()}. (Charisma +50 XP)`);
     } else if (rpsAIScore >= 3) {
-      _logAction("💔 The AI outplays you in Rock Paper Scissors. Sometimes the algorithms know best.");
+      _logAction("The AI outplays you in Rock Paper Scissors. Sometimes the algorithms know best.");
     }
   }, 1500);
 }
@@ -592,9 +592,9 @@ export function startMemoryMatch() {
 
   const bestTimeText = memoryPersonalBest ? `Personal Best: ${memoryPersonalBest}s` : 'No personal best yet';
 
-  let cardHTML = '<h3 style="color: #f39c12; text-align: center; margin-bottom: 20px;">🧠 Memory Match</h3>';
+  let cardHTML = '<h3 style="color: #f39c12; text-align: center; margin-bottom: 20px;">Memory Match</h3>';
   cardHTML += '<p style="text-align: center; margin-bottom: 10px;">Find all pairs in under 60s for $100! Beat your best time for $500!</p>';
-  cardHTML += '<p style="text-align: center; margin-bottom: 5px; color: #9b59b6; font-weight: bold;">🥷 Rewards: Stealth & Planning XP boost</p>';
+  cardHTML += '<p style="text-align: center; margin-bottom: 5px; color: #9b59b6; font-weight: bold;">Rewards: Stealth & Planning XP boost</p>';
   cardHTML += `<p style="text-align: center; margin-bottom: 10px; color: #f39c12; font-weight: bold;">${bestTimeText}</p>`;
   cardHTML += '<p style="text-align: center; margin-bottom: 20px;">Time: <span id="memory-timer" style="color: #e74c3c; font-weight: bold;">60</span>s | Pairs: <span id="memory-score">0</span>/8</p>';
   cardHTML += '<div style="display: grid; grid-template-columns: repeat(4, 80px); gap: 10px; justify-content: center; margin: 20px auto;">';
@@ -621,8 +621,8 @@ export function startMemoryMatch() {
 
     if (remaining <= 0 && memoryMatchedPairs < 8) {
       clearInterval(timerInterval);
-      _alert('⏰ Time\'s up! Try again for the bonuses.');
-      _logAction("⏰ Memory Match: Time ran out! Practice makes perfect in the criminal mind game.");
+      _alert('Time\'s up! Try again for the bonuses.');
+      _logAction("Memory Match: Time ran out! Practice makes perfect in the criminal mind game.");
       setTimeout(() => startMemoryMatch(), 2000);
     }
   }, 1000);
@@ -636,7 +636,7 @@ export function startMemoryMatch() {
     });
   }, 100);
 
-  _logAction("🧠 You test your memory with a challenging card matching game. Beat the clock and your records for maximum rewards!");
+  _logAction("You test your memory with a challenging card matching game. Beat the clock and your records for maximum rewards!");
 }
 
 export function flipMemoryCard(index) {
@@ -694,19 +694,19 @@ export function flipMemoryCard(index) {
           trackMiniGamePlay('memory');
 
           if (earnedPersonalBest && earnedTimeBonus) {
-            bonusMessage = ` 🏆 NEW PERSONAL BEST! You earned $600 total ($500 + $100)!`;
-            _logAction(`🏆 Memory Match master! New personal best of ${totalTime}s under the time limit, earning you $600 total + Stealth/Planning XP for exceptional memory skills!`);
+            bonusMessage = ` NEW PERSONAL BEST! You earned $600 total ($500 + $100)!`;
+            _logAction(`Memory Match master! New personal best of ${totalTime}s under the time limit, earning you $600 total + Stealth/Planning XP for exceptional memory skills!`);
           } else if (earnedPersonalBest) {
-            bonusMessage = ` 🏆 NEW PERSONAL BEST! You earned $500!`;
-            _logAction(`🏆 Memory Match: New personal best of ${totalTime}s! Your improving memory earned you $500!`);
+            bonusMessage = ` NEW PERSONAL BEST! You earned $500!`;
+            _logAction(`Memory Match: New personal best of ${totalTime}s! Your improving memory earned you $500!`);
           } else if (earnedTimeBonus) {
             bonusMessage = ` You completed it in time and earned $100!`;
-            _logAction(`🏆 Memory Match completed in ${totalTime}s under the time limit, earning you $100 + Stealth/Planning XP for your sharp criminal intellect!`);
+            _logAction(`Memory Match completed in ${totalTime}s under the time limit, earning you $100 + Stealth/Planning XP for your sharp criminal intellect!`);
           } else {
-            _logAction(`🧠 Memory Match completed in ${totalTime}s. Good memory, but you needed to be faster for bonuses.`);
+            _logAction(`Memory Match completed in ${totalTime}s. Good memory, but you needed to be faster for bonuses.`);
           }
 
-          _alert(`🎉 All pairs found in ${totalTime} seconds!${bonusMessage}\nPersonal Best: ${memoryPersonalBest}s`);
+          _alert(`All pairs found in ${totalTime} seconds!${bonusMessage}\nPersonal Best: ${memoryPersonalBest}s`);
           setTimeout(() => startMemoryMatch(), 2000);
         }
       } else {
@@ -731,9 +731,9 @@ export function startSnakeGame() {
   document.getElementById("other-minigames").style.display = "block";
 
   document.getElementById("minigame-content").innerHTML = `
-    <h3 style="color: #9b59b6; text-align: center; margin-bottom: 20px;">🐍 Snake</h3>
+    <h3 style="color: #9b59b6; text-align: center; margin-bottom: 20px;">Snake</h3>
     <div style="text-align: center;">
-      <p style="margin-bottom: 5px; color: #27ae60; font-weight: bold;">💪 Rewards: Stamina & Endurance boost</p>
+      <p style="margin-bottom: 5px; color: #27ae60; font-weight: bold;">Rewards: Stamina & Endurance boost</p>
       <p>Score: <span id="snake-score">0</span></p>
       <canvas id="snake-canvas" width="400" height="400"
           style="border: 2px solid #9b59b6; background: #2c3e50; margin: 20px auto; display: block; cursor: crosshair;"></canvas>
@@ -755,7 +755,7 @@ export function startSnakeGame() {
   }, 100);
 
   initSnakeGame();
-  _logAction("🐍 You start a classic game of Snake. Precision and planning will keep you alive and growing!");
+  _logAction("You start a classic game of Snake. Precision and planning will keep you alive and growing!");
 }
 
 export function initSnakeGame() {
@@ -942,9 +942,9 @@ export function gameOverSnake() {
     player.money += earnings;
     _updateUI();
     bonusMessage = ` You earned $${earnings.toLocaleString()} ($${perFoodReward} per food)${staminaBonus > 0 ? ` + ${staminaBonus} max energy` : ''}! (Endurance +${enduranceXP} XP)`;
-    _logAction(`🐍 Snake game over! Final score: ${snakeGame.score}. Your reflexes earned you $${earnings.toLocaleString()}${staminaBonus > 0 ? ' + stamina boost' : ''}! (Endurance +${enduranceXP} XP)`);
+    _logAction(`Snake game over! Final score: ${snakeGame.score}. Your reflexes earned you $${earnings.toLocaleString()}${staminaBonus > 0 ? ' + stamina boost' : ''}! (Endurance +${enduranceXP} XP)`);
   } else {
-    _logAction(`🐍 Snake game over! Final score: ${snakeGame.score}. Your reflexes were tested and measured.`);
+    _logAction(`Snake game over! Final score: ${snakeGame.score}. Your reflexes were tested and measured.`);
   }
 
   trackMiniGamePlay('snake');
@@ -976,10 +976,10 @@ export function startQuickDraw() {
   const bestTimeText = quickDrawPersonalBest ? `Personal Best: ${quickDrawPersonalBest}ms` : 'No personal best yet';
 
   document.getElementById("minigame-content").innerHTML = `
-    <h3 style="color: #1abc9c; text-align: center; margin-bottom: 20px;">⚡ Quick Draw</h3>
+    <h3 style="color: #1abc9c; text-align: center; margin-bottom: 20px;">Quick Draw</h3>
     <div style="text-align: center;">
       <p style="margin-bottom: 10px;">React under 300ms for cash | Beat your best time for bonus!</p>
-      <p style="margin-bottom: 5px; color: #8b0000; font-weight: bold;">🔫 Rewards: Combat Reflex boost (better violent job success)</p>
+      <p style="margin-bottom: 5px; color: #8b0000; font-weight: bold;">Rewards: Combat Reflex boost (better violent job success)</p>
       <p style="margin-bottom: 20px; color: #f39c12; font-weight: bold;">${bestTimeText}</p>
       <div id="reaction-area" onclick="handleReactionClick()"
          style="width: 300px; height: 200px; margin: 20px auto; border: 3px solid #1abc9c;
@@ -1002,7 +1002,7 @@ export function startQuickDraw() {
     });
   }, 100);
 
-  _logAction("⚡ You prepare for a Quick Draw test. Lightning reflexes and personal records await the truly skilled!");
+  _logAction("You prepare for a Quick Draw test. Lightning reflexes and personal records await the truly skilled!");
 }
 
 export function startReactionTest() {
@@ -1064,17 +1064,17 @@ export function handleReactionClick() {
     player.money += qdBaseReward;
 
     if (reactionTime < 200) {
-      message = '🚀 Lightning fast!';
+      message = 'Lightning fast!';
       color = '#2ecc71';
     } else {
-      message = '⚡ Excellent reflexes!';
+      message = 'Excellent reflexes!';
       color = '#3498db';
     }
   } else if (reactionTime < 500) {
-    message = '👍 Good reaction time!';
+    message = 'Good reaction time!';
     color = '#f39c12';
   } else {
-    message = '🐌 Could be faster...';
+    message = 'Could be faster...';
     color = '#e74c3c';
   }
 
@@ -1094,23 +1094,23 @@ export function handleReactionClick() {
 
   let bonusText = '';
   if (personalBestBonus && earnedMoney) {
-    bonusText = `<br><span style="color: #2ecc71;">🏆 NEW PERSONAL BEST! +$500!</span><br><span style="color: #2ecc71;">⚡ Sub-300ms reflexes! +$100!</span><br><span style="color: #f1c40f;">Total earned: $${totalEarned}</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #2ecc71;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #2ecc71;">Sub-300ms reflexes! +$100!</span><br><span style="color: #f1c40f;">Total earned: $${totalEarned}</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
   } else if (personalBestBonus) {
-    bonusText = `<br><span style="color: #2ecc71;">🏆 NEW PERSONAL BEST! +$500!</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #2ecc71;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
   } else if (earnedMoney) {
-    bonusText = `<br><span style="color: #2ecc71;">⚡ Sub-300ms reflexes! +$100!</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #2ecc71;">Sub-300ms reflexes! +$100!</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
   }
 
   document.getElementById('reaction-result').innerHTML =
     `<span style="color: ${color};">${message}</span><br>Reaction Time: ${reactionTime}ms<br>Personal Best: ${quickDrawPersonalBest}ms${bonusText}`;
 
   if (personalBestBonus && earnedMoney) {
-    _logAction(`⚡ Quick Draw: ${reactionTime}ms - NEW PERSONAL BEST! Lightning reflexes earned you $600 total + Combat Reflex boost! (Violence +50 XP)`);
+    _logAction(`Quick Draw: ${reactionTime}ms - NEW PERSONAL BEST! Lightning reflexes earned you $600 total + Combat Reflex boost! (Violence +50 XP)`);
   } else if (personalBestBonus) {
-    _logAction(`⚡ Quick Draw: ${reactionTime}ms - NEW PERSONAL BEST! You earned $500 + Combat Reflex boost! (Violence +50 XP)`);
+    _logAction(`Quick Draw: ${reactionTime}ms - NEW PERSONAL BEST! You earned $500 + Combat Reflex boost! (Violence +50 XP)`);
   } else if (earnedMoney) {
-    _logAction(`⚡ Quick Draw: ${reactionTime}ms - Sub-300ms reflexes earned you $100 + Combat Reflex boost! (Violence +50 XP)`);
+    _logAction(`Quick Draw: ${reactionTime}ms - Sub-300ms reflexes earned you $100 + Combat Reflex boost! (Violence +50 XP)`);
   } else {
-    _logAction(`⚡ Quick Draw: ${reactionTime}ms - ${message.replace(/[🚀⚡👍🐌]/g, '').trim()} Combat Reflex improved slightly.`);
+    _logAction(`Quick Draw: ${reactionTime}ms - ${message.replace(/[]/g, '').trim()} Combat Reflex improved slightly.`);
   }
 }

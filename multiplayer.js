@@ -194,20 +194,20 @@ function showWhackRivalDon() {
     
     content.innerHTML = `
         <div style="background: rgba(0,0,0,0.95); padding: 30px; border-radius: 15px; border: 3px solid #c0a062;">
-            <h2 style="color: #c0a062; text-align: center; font-family: 'Georgia', serif;">👊 Whack Rival Don</h2>
+            <h2 style="color: #c0a062; text-align: center; font-family: 'Georgia', serif;">Whack Rival Don</h2>
             <p style="color: #ccc; text-align: center; font-style: italic;">A casual PvP brawl between Dons. No permadeath — just bragging rights.</p>
             <div style="background: rgba(192, 160, 98, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #c0a062;">
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
                     <div>
-                        <div style="color: #c0a062; font-weight: bold;">⚡ 5 Energy</div>
+                        <div style="color: #c0a062; font-weight: bold;">5 Energy</div>
                         <div style="color: #888; font-size: 0.8em;">Cost per fight</div>
                     </div>
                     <div>
-                        <div style="color: #f1c40f; font-weight: bold;">👑 Don Rep</div>
+                        <div style="color: #f1c40f; font-weight: bold;">Don Rep</div>
                         <div style="color: #888; font-size: 0.8em;">Win = +Rep / Lose = -Rep</div>
                     </div>
                     <div>
-                        <div style="color: #e67e22; font-weight: bold;">❤️ Health</div>
+                        <div style="color: #e67e22; font-weight: bold;">Health</div>
                         <div style="color: #888; font-size: 0.8em;">Both fighters take damage</div>
                     </div>
                 </div>
@@ -228,13 +228,13 @@ function showWhackRivalDon() {
 
 // Heist target definitions with difficulty, reward, and requirements
 const HEIST_TARGETS = [
-    { id: 'jewelry_store', name: '💎 Jewelry Store', difficulty: 'Easy', reward: 50000, minLevel: 1, minCrew: 1, maxCrew: 3, successBase: 75 },
-    { id: 'bank_vault', name: '🏦 Bank Vault', difficulty: 'Medium', reward: 150000, minLevel: 5, minCrew: 2, maxCrew: 4, successBase: 60 },
-    { id: 'armored_truck', name: '🚛 Armored Truck', difficulty: 'Medium', reward: 200000, minLevel: 8, minCrew: 2, maxCrew: 4, successBase: 55 },
-    { id: 'casino_heist', name: '🎰 Casino Vault', difficulty: 'Hard', reward: 400000, minLevel: 12, minCrew: 3, maxCrew: 5, successBase: 40 },
-    { id: 'art_museum', name: '🖼️ Art Museum', difficulty: 'Hard', reward: 350000, minLevel: 10, minCrew: 2, maxCrew: 4, successBase: 45 },
-    { id: 'federal_reserve', name: '🏛️ Federal Reserve', difficulty: 'Extreme', reward: 800000, minLevel: 18, minCrew: 4, maxCrew: 6, successBase: 25 },
-    { id: 'drug_cartel', name: '💊 Cartel Warehouse', difficulty: 'Extreme', reward: 600000, minLevel: 15, minCrew: 3, maxCrew: 5, successBase: 30 },
+    { id: 'jewelry_store', name: 'Jewelry Store', difficulty: 'Easy', reward: 50000, minLevel: 1, minCrew: 1, maxCrew: 3, successBase: 75 },
+    { id: 'bank_vault', name: 'Bank Vault', difficulty: 'Medium', reward: 150000, minLevel: 5, minCrew: 2, maxCrew: 4, successBase: 60 },
+    { id: 'armored_truck', name: 'Armored Truck', difficulty: 'Medium', reward: 200000, minLevel: 8, minCrew: 2, maxCrew: 4, successBase: 55 },
+    { id: 'casino_heist', name: 'Casino Vault', difficulty: 'Hard', reward: 400000, minLevel: 12, minCrew: 3, maxCrew: 5, successBase: 40 },
+    { id: 'art_museum', name: 'Art Museum', difficulty: 'Hard', reward: 350000, minLevel: 10, minCrew: 2, maxCrew: 4, successBase: 45 },
+    { id: 'federal_reserve', name: 'Federal Reserve', difficulty: 'Extreme', reward: 800000, minLevel: 18, minCrew: 4, maxCrew: 6, successBase: 25 },
+    { id: 'drug_cartel', name: 'Cartel Warehouse', difficulty: 'Extreme', reward: 600000, minLevel: 15, minCrew: 3, maxCrew: 5, successBase: 30 },
 ];
 
 // Show active heists available to join + create new heist
@@ -279,21 +279,21 @@ function showActiveHeists() {
                         <div style="color: #c0a062; font-weight: bold; font-size: 1.1em; font-family: 'Georgia', serif;">${escapeHTML(h.target || 'Unknown Heist')}</div>
                         <div style="margin-top: 6px;">
                             <span style="color: ${diffColor}; font-size: 0.85em; padding: 2px 8px; border: 1px solid ${diffColor}; border-radius: 4px;">${escapeHTML(h.difficulty || 'Unknown')}</span>
-                            <span style="color: #2ecc71; margin-left: 10px; font-size: 0.9em;">💰 $${(h.reward || 0).toLocaleString()}</span>
+                            <span style="color: #2ecc71; margin-left: 10px; font-size: 0.9em;">$${(h.reward || 0).toLocaleString()}</span>
                         </div>
                         <div style="color: #ccc; font-size: 0.85em; margin-top: 8px;">
-                            👥 Crew: ${participantCount}/${maxCount} ${crewNames ? '— ' + crewNames : ''}
+                            Crew: ${participantCount}/${maxCount} ${crewNames ? '— ' + crewNames : ''}
                         </div>
                         <div style="color: #888; font-size: 0.8em; margin-top: 4px;">Organized by: ${escapeHTML(h.organizer || 'Unknown')}</div>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 6px; min-width: 130px;">
                         ${isMyHeist ? `
                             <button onclick="manageHeist('${h.id}')" style="background: linear-gradient(180deg, #c0a062, #8b7340); color: #000; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
-                                ⚙️ Manage
+                                Manage
                             </button>
                             ${participantCount >= (h.minCrew || 1) ? `
                             <button onclick="forceStartHeist('${h.id}')" style="background: linear-gradient(180deg, #27ae60, #1a7a40); color: #fff; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
-                                🚀 Launch!
+                                Launch!
                             </button>` : `
                             <div style="color: #ff8800; font-size: 0.8em; text-align: center;">Need ${h.minCrew || 1}+ crew</div>`}
                         ` : alreadyJoined ? `
@@ -305,7 +305,7 @@ function showActiveHeists() {
                             <div style="color: #888; padding: 10px; text-align: center;">Crew Full</div>
                         ` : `
                             <button onclick="joinHeist('${h.id}')" style="background: linear-gradient(180deg, #8b0000, #3a0000); color: #ff4444; padding: 10px 18px; border: 1px solid #ff0000; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
-                                🤝 Join Crew
+                                Join Crew
                             </button>
                         `}
                     </div>
@@ -319,7 +319,7 @@ function showActiveHeists() {
     content.innerHTML = `
         <div style="background: rgba(0,0,0,0.95); padding: 30px; border-radius: 15px; border: 3px solid #8b0000;">
             <div style="text-align: center; margin-bottom: 25px;">
-                <div style="font-size: 3em;">💰</div>
+                <div style="font-size: 3em;"></div>
                 <h2 style="color: #c0a062; font-family: 'Georgia', serif; font-size: 2em; margin: 10px 0 5px 0;">Big Scores</h2>
                 <p style="color: #ccc; font-style: italic; margin: 0;">Plan heists, recruit crew, and hit high-value targets together.</p>
             </div>
@@ -327,16 +327,16 @@ function showActiveHeists() {
             <!-- Create Heist Button -->
             <div style="text-align: center; margin-bottom: 20px;">
                 ${myHeist
-                    ? '<div style="color: #ff8800; font-size: 0.9em;">⚠️ You already have an active heist. Manage or complete it first.</div>'
+                    ? '<div style="color: #ff8800; font-size: 0.9em;">You already have an active heist. Manage or complete it first.</div>'
                     : `<button onclick="showCreateHeist()" style="background: linear-gradient(180deg, #c0a062, #8b7340); color: #000; padding: 14px 30px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-size: 1.1em; font-weight: bold;">
-                        📋 Plan a Heist
+                        Plan a Heist
                     </button>`
                 }
             </div>
 
             <!-- Active Heists List -->
             <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid #555;">
-                <h3 style="color: #c0a062; margin: 0 0 10px 0; font-family: 'Georgia', serif;">🔥 Active Heists</h3>
+                <h3 style="color: #c0a062; margin: 0 0 10px 0; font-family: 'Georgia', serif;">Active Heists</h3>
                 ${heistListHTML}
             </div>
 
@@ -370,16 +370,16 @@ function showCreateHeist() {
                     <div style="color: ${locked ? '#666' : '#c0a062'}; font-weight: bold; font-size: 1.05em;">${t.name}</div>
                     <div style="margin-top: 6px; display: flex; gap: 10px; flex-wrap: wrap;">
                         <span style="color: ${diffColor}; font-size: 0.8em; padding: 2px 6px; border: 1px solid ${diffColor}; border-radius: 4px;">${t.difficulty}</span>
-                        <span style="color: #2ecc71; font-size: 0.85em;">💰 $${t.reward.toLocaleString()}</span>
-                        <span style="color: #ccc; font-size: 0.85em;">👥 ${t.minCrew}-${t.maxCrew} crew</span>
+                        <span style="color: #2ecc71; font-size: 0.85em;">$${t.reward.toLocaleString()}</span>
+                        <span style="color: #ccc; font-size: 0.85em;">${t.minCrew}-${t.maxCrew} crew</span>
                     </div>
                     <div style="color: #888; font-size: 0.8em; margin-top: 4px;">Base success: ${t.successBase}% | Requires Level ${t.minLevel}+</div>
                 </div>
                 <div>
                     ${locked 
-                        ? `<div style="color: #666; font-size: 0.85em;">🔒 Level ${t.minLevel}</div>`
+                        ? `<div style="color: #666; font-size: 0.85em;">Level ${t.minLevel}</div>`
                         : `<button onclick="createHeist('${t.id}')" style="background: linear-gradient(180deg, #8b0000, #3a0000); color: #ff4444; padding: 10px 20px; border: 1px solid #ff0000; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
-                            📋 Plan This
+                            Plan This
                         </button>`
                     }
                 </div>
@@ -390,7 +390,7 @@ function showCreateHeist() {
     content.innerHTML = `
         <div style="background: rgba(0,0,0,0.95); padding: 30px; border-radius: 15px; border: 3px solid #c0a062;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 3em;">📋</div>
+                <div style="font-size: 3em;"></div>
                 <h2 style="color: #c0a062; font-family: 'Georgia', serif; font-size: 1.8em; margin: 10px 0 5px 0;">Plan a Heist</h2>
                 <p style="color: #ccc; font-style: italic; margin: 0;">Choose a target. Harder targets need bigger crews but pay more.</p>
             </div>
@@ -441,7 +441,7 @@ async function createHeist(targetId) {
         successBase: target.successBase
     }));
 
-    logAction(`📋 Planning heist: ${target.name}. Looking for crew...`);
+    logAction(`Planning heist: ${target.name}. Looking for crew...`);
     
     // Brief delay then show heists list
     setTimeout(() => showActiveHeists(), 500);
@@ -479,7 +479,7 @@ function manageHeist(heistId) {
                 <div>
                     <span style="color: ${isOrganizer ? '#c0a062' : '#ff4444'}; font-weight: bold;">${name}</span>
                     <span style="color: #888; font-size: 0.85em;"> Lvl ${level}</span>
-                    ${isOrganizer ? '<span style="color: #c0a062; font-size: 0.8em; margin-left: 8px;">👑 Leader</span>' : ''}
+                    ${isOrganizer ? '<span style="color: #c0a062; font-size: 0.8em; margin-left: 8px;">Leader</span>' : ''}
                     ${isMe && !isOrganizer ? '<span style="color: #2ecc71; font-size: 0.8em; margin-left: 8px;">(You)</span>' : ''}
                 </div>
                 ${isOrganizer || !isMe ? '' : `
@@ -500,7 +500,7 @@ function manageHeist(heistId) {
     content.innerHTML = `
         <div style="background: rgba(0,0,0,0.95); padding: 30px; border-radius: 15px; border: 3px solid #c0a062;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 3em;">⚙️</div>
+                <div style="font-size: 3em;"></div>
                 <h2 style="color: #c0a062; font-family: 'Georgia', serif; font-size: 1.8em; margin: 10px 0 5px 0;">Heist Management</h2>
                 <div style="color: #ccc; font-size: 1.1em; margin-top: 5px;">${escapeHTML(heist.target || 'Unknown')}</div>
             </div>
@@ -517,7 +517,7 @@ function manageHeist(heistId) {
 
             <!-- Crew -->
             <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #555;">
-                <h3 style="color: #c0a062; margin: 0 0 10px 0; font-family: 'Georgia', serif;">👥 Crew (${participantCount}/${maxCount})</h3>
+                <h3 style="color: #c0a062; margin: 0 0 10px 0; font-family: 'Georgia', serif;">Crew (${participantCount}/${maxCount})</h3>
                 ${crewHTML}
             </div>
 
@@ -526,7 +526,7 @@ function manageHeist(heistId) {
                 ${heist.organizerId === onlineWorldState.playerId ? `
                     ${canLaunch ? `
                         <button onclick="forceStartHeist('${heistId}')" style="background: linear-gradient(180deg, #27ae60, #1a7a40); color: #fff; padding: 14px 25px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold; font-size: 1.05em;">
-                            🚀 Launch Heist!
+                            Launch Heist!
                         </button>
                     ` : `
                         <div style="color: #ff8800; padding: 14px; text-align: center;">Need at least ${minCrew} crew member${minCrew > 1 ? 's' : ''} to launch</div>
@@ -536,7 +536,7 @@ function manageHeist(heistId) {
                     </button>
                 ` : `
                     <button onclick="leaveHeist('${heistId}')" style="background: #333; color: #ff4444; padding: 14px 20px; border: 1px solid #ff4444; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                        🚪 Leave Crew
+                        Leave Crew
                     </button>
                 `}
                 <button onclick="showActiveHeists()" style="background: #333; color: #c0a062; padding: 14px 20px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
@@ -571,7 +571,7 @@ async function forceStartHeist(heistId) {
         heistId: heistId
     }));
 
-    logAction(`🚀 Launching heist on ${heist.target}!`);
+    logAction(`Launching heist on ${heist.target}!`);
 }
 
 // Leave a heist you joined
@@ -592,7 +592,7 @@ function leaveHeist(heistId) {
         heist.participants = heist.participants.filter(pid => pid !== onlineWorldState.playerId);
     }
 
-    logAction('🚪 Left the heist crew.');
+    logAction('Left the heist crew.');
     showActiveHeists();
 }
 
@@ -642,7 +642,7 @@ function inviteToHeist(playerName) {
         targetPlayer: playerName
     }));
 
-    logAction(`📨 Sent heist invitation to ${playerName} for ${myHeist.target}`);
+    logAction(`Sent heist invitation to ${playerName} for ${myHeist.target}`);
     if (typeof showBriefNotification === 'function') {
         showBriefNotification(`Heist invite sent to ${playerName}!`, 3000);
     } else {
@@ -676,7 +676,7 @@ function joinHeist(heistId) {
             type: 'heist_join',
             heistId: heistId
         }));
-        logAction(`🤝 Requested to join heist: ${heist.target}`);
+        logAction(`Requested to join heist: ${heist.target}`);
         
         // Optimistic local update
         if (Array.isArray(heist.participants)) {
@@ -702,7 +702,7 @@ function showHeistResult(result) {
     
     modal.innerHTML = `
         <div class="popup-card ${isSuccess ? 'popup-success' : 'popup-danger'}" style="max-width:450px;">
-            <div style="font-size:4em;margin-bottom:15px;text-align:center;">${isSuccess ? '💰' : '🚔'}</div>
+            <div style="font-size:4em;margin-bottom:15px;text-align:center;">${isSuccess ? '' : ''}</div>
             <h2 class="popup-title">${isSuccess ? 'HEIST SUCCESSFUL!' : 'HEIST FAILED!'}</h2>
             <p class="popup-subtitle">Target: ${escapeHTML(result.target || 'Unknown')}</p>
             
@@ -1002,7 +1002,7 @@ function connectToLocalDemo() {
     onlineWorldState.connectionStatus = 'offline';
     onlineWorldState.serverInfo.playerCount = 0;
     updateConnectionStatus();
-    logAction('⚠️ Server unavailable — World Chat is offline. Will retry automatically.');
+    logAction('Server unavailable — World Chat is offline. Will retry automatically.');
 }
 
 // Handle messages from the server
@@ -1011,6 +1011,11 @@ async function handleServerMessage(message) {
         case 'world_update':
             onlineWorldState.serverInfo.playerCount = message.playerCount;
             onlineWorldState.lastUpdate = new Date().toLocaleTimeString();
+            
+            // Sync weather from server
+            if (message.weather && typeof window.applyServerWeather === 'function') {
+                window.applyServerWeather(message.weather, message.season);
+            }
             
             // Sync territory state from server
             if (message.territories) {
@@ -1152,9 +1157,9 @@ async function handleServerMessage(message) {
         case 'territory_spawn_result':
             if (message.success) {
                 player.currentTerritory = message.district;
-                logAction(`🏙️ Spawned in ${message.district}.`);
+                logAction(`Spawned in ${message.district}.`);
             } else {
-                logAction(`⚠️ Territory spawn failed: ${message.error}`);
+                logAction(`Territory spawn failed: ${message.error}`);
             }
             break;
 
@@ -1163,11 +1168,11 @@ async function handleServerMessage(message) {
                 player.currentTerritory = message.district;
                 if (typeof message.money === 'number') player.money = message.money;
                 player.lastTerritoryMove = Date.now();
-                logAction(`🏙️ Relocated to ${message.district}.`);
+                logAction(`Relocated to ${message.district}.`);
                 updateUI();
             } else {
                 // Revert local state on failure
-                logAction(`⚠️ Relocation failed: ${message.error}`);
+                logAction(`Relocation failed: ${message.error}`);
                 if (window.ui) window.ui.toast(message.error || 'Move failed.', 'error');
             }
             break;
@@ -1201,11 +1206,11 @@ async function handleServerMessage(message) {
             if (message.success) {
                 if (typeof message.money === 'number') player.money = message.money;
                 onlineWorldState.territories = message.territories || onlineWorldState.territories;
-                logAction(`👑 Claimed ownership of ${message.district}!`);
-                if (window.ui) window.ui.toast(`You now own ${message.district.replace(/_/g, ' ')}! 👑`, 'success');
+                logAction(`Claimed ownership of ${message.district}!`);
+                if (window.ui) window.ui.toast(`You now own ${message.district.replace(/_/g, ' ')}! `, 'success');
                 updateUI();
             } else {
-                logAction(`⚠️ Claim failed: ${message.error}`);
+                logAction(`Claim failed: ${message.error}`);
                 if (window.ui) window.ui.toast(message.error || 'Claim failed.', 'error');
             }
             break;
@@ -1353,7 +1358,7 @@ async function handleServerMessage(message) {
 
         case 'heist_broadcast':
             onlineWorldState.activeHeists.push(message.heist);
-            addWorldEvent(`💰 ${message.playerName} is organizing a heist: ${message.heist ? message.heist.target : 'Unknown'}`);
+            addWorldEvent(`${message.playerName} is organizing a heist: ${message.heist ? message.heist.target : 'Unknown'}`);
             break;
 
         case 'heist_update':
@@ -1416,7 +1421,7 @@ async function handleServerMessage(message) {
                         type: 'heist_join',
                         heistId: message.heistId
                     }));
-                    logAction(`🤝 Accepted heist invitation from ${message.inviterName}`);
+                    logAction(`Accepted heist invitation from ${message.inviterName}`);
                 }
             }
             break;
@@ -1490,7 +1495,7 @@ async function handleServerMessage(message) {
                 }
                 // Show bounty claim toast
                 if (isWinner && message.bountyClaimed) {
-                    showMPToast(`💀 Bounty collected! +$${message.bountyClaimed.reward.toLocaleString()}`, '#ff6600', 5000);
+                    showMPToast(`Bounty collected! +$${message.bountyClaimed.reward.toLocaleString()}`, '#ff6600', 5000);
                     player.money = (player.money || 0) + message.bountyClaimed.reward;
                     playNotificationSound('cash');
                 }
@@ -1523,10 +1528,10 @@ async function handleServerMessage(message) {
         case 'jailbreak_bot_result':
             // Result of attempting to break out a jail bot
             if (message.success) {
-                logAction(`🗝️ ${message.message}`);
+                logAction(`${message.message}`);
                 if (message.expReward) player.experience += message.expReward;
                 if (message.cashReward) player.money += message.cashReward;
-                showSystemMessage(`🎉 ${message.message}`, '#2ecc71');
+                showSystemMessage(`${message.message}`, '#2ecc71');
                 if (typeof checkLevelUp === 'function') checkLevelUp();
                 updateUI();
                 if (typeof updateJailbreakPrisonerList === 'function') updateJailbreakPrisonerList();
@@ -1534,10 +1539,10 @@ async function handleServerMessage(message) {
                 if (window.ui) {
                     window.ui.alert(`${message.message}`, 'Jailbreak Successful');
                 } else {
-                    showSystemMessage(`🎉 ${message.message}`, '#2ecc71');
+                    showSystemMessage(`${message.message}`, '#2ecc71');
                 }
             } else {
-                logAction(`💀 ${message.message}`);
+                logAction(`${message.message}`);
                 if (message.arrested) {
                     // Got caught — go straight to jail, no more breakout attempts
                     player.inJail = true;
@@ -1549,16 +1554,16 @@ async function handleServerMessage(message) {
                     syncJailStatus(true, player.jailTime);
                     updateUI();
                     if (typeof showJailScreen === 'function') showJailScreen();
-                    showSystemMessage(`🚔 ${message.message}`, '#e74c3c');
+                    showSystemMessage(`${message.message}`, '#e74c3c');
                 } else {
-                    showSystemMessage(`💀 ${message.message}`, '#f39c12');
+                    showSystemMessage(`${message.message}`, '#f39c12');
                     updateUI();
                     if (typeof updateJailbreakPrisonerList === 'function') updateJailbreakPrisonerList();
                     // Show visible alert so user sees the failure
                     if (window.ui) {
                         window.ui.alert(`${message.message}`, 'Jailbreak Failed');
                     } else {
-                        showSystemMessage(`💠 ${message.message}`, '#e74c3c');
+                        showSystemMessage(`${message.message}`, '#e74c3c');
                     }
                 }
             }
@@ -1569,7 +1574,7 @@ async function handleServerMessage(message) {
             if (message.amount) {
                 player.money += message.amount;
                 showSystemMessage(message.message || `You received a $${message.amount.toLocaleString()} gift!`, '#c0a062');
-                logAction(`💰 ${message.senderName || 'Someone'} sent you $${message.amount.toLocaleString()}!`);
+                logAction(`${message.senderName || 'Someone'} sent you $${message.amount.toLocaleString()}!`);
                 updateUI();
             }
             break;
@@ -1624,16 +1629,8 @@ async function handleServerMessage(message) {
             break;
 
         case 'season_reset':
-            showMPToast(`🏆 Season ${message.seasonNumber} has begun!${message.champion ? ` Last champion: ${message.champion.name}` : ''}`, '#ffd700', 8000);
+            showMPToast(`Season ${message.seasonNumber} has begun!${message.champion ? ` Last champion: ${message.champion.name}` : ''}`, '#ffd700', 8000);
             playNotificationSound('victory');
-            break;
-
-        case 'siege_result':
-            handleSiegeResult(message);
-            break;
-
-        case 'fortify_result':
-            handleFortifyResult(message);
             break;
 
         case 'player_released':
@@ -1664,6 +1661,13 @@ async function handleServerMessage(message) {
             handleMarketplaceMessage(message);
             break;
 
+        // ── Server-synced weather ──
+        case 'weather_update':
+            if (typeof window.applyServerWeather === 'function') {
+                window.applyServerWeather(message.weather, message.season);
+            }
+            break;
+
         default:
             console.log('Unknown message type:', message.type);
     }
@@ -1688,8 +1692,8 @@ function handleMarketplaceMessage(message) {
         case 'marketplace_sold':
             // We sold a vehicle — we receive the money
             player.money += message.amount;
-            if (typeof showBriefNotification === 'function') showBriefNotification(`💰 ${message.buyerName} bought your ${message.vehicleName} for $${message.amount.toLocaleString()}!`, 'success');
-            if (typeof logAction === 'function') logAction(`🏪💰 ${message.buyerName} purchased your ${message.vehicleName} from the marketplace for $${message.amount.toLocaleString()}!`);
+            if (typeof showBriefNotification === 'function') showBriefNotification(`${message.buyerName} bought your ${message.vehicleName} for $${message.amount.toLocaleString()}!`, 'success');
+            if (typeof logAction === 'function') logAction(`${message.buyerName} purchased your ${message.vehicleName} from the marketplace for $${message.amount.toLocaleString()}!`);
             if (typeof playNotificationSound === 'function') playNotificationSound('cash');
             marketplaceListings = message.listings || marketplaceListings;
             if (typeof updateUI === 'function') updateUI();
@@ -1707,8 +1711,8 @@ function handleMarketplaceMessage(message) {
                 image: message.vehicle.image || `vehicles/${message.vehicle.vehicleName}.png`
             };
             player.stolenCars.push(newCar);
-            if (typeof showBriefNotification === 'function') showBriefNotification(`🚗 Bought ${message.vehicle.vehicleName} from ${message.sellerName} for $${message.amount.toLocaleString()}!`, 'success');
-            if (typeof logAction === 'function') logAction(`🏪🚗 Purchased ${message.vehicle.vehicleName} from ${message.sellerName} for $${message.amount.toLocaleString()}. Vehicle added to your garage.`);
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Bought ${message.vehicle.vehicleName} from ${message.sellerName} for $${message.amount.toLocaleString()}!`, 'success');
+            if (typeof logAction === 'function') logAction(`Purchased ${message.vehicle.vehicleName} from ${message.sellerName} for $${message.amount.toLocaleString()}. Vehicle added to your garage.`);
             if (typeof playNotificationSound === 'function') playNotificationSound('cash');
             marketplaceListings = message.listings || marketplaceListings;
             if (typeof updateUI === 'function') updateUI();
@@ -1762,7 +1766,7 @@ function updateOnlinePlayerList() {
         playersHTML += '<div style="color: #95a5a6; font-style: italic; text-align: center;">Loading player list...</div>';
     } else {
         onlinePlayers.forEach(p => {
-            const statusIcon = p.inJail ? '' : '🟢';
+            const statusIcon = p.inJail ? '' : '';
             const statusText = p.inJail ? 'In Jail' : 'Free';
             const statusColor = p.inJail ? '#8b0000' : '#c0a062';
             
@@ -1883,7 +1887,7 @@ async function attemptBotJailbreak(botId, botName) {
                 helperPlayerId: onlineWorldState.playerId,
                 helperPlayerName: player.name || 'You'
             }));
-            logAction(`🔓 Attempting to break out ${botName}...`);
+            logAction(`Attempting to break out ${botName}...`);
         } else {
             window.ui.toast('Connection lost before sending jailbreak intent.', 'error');
         }
@@ -1921,7 +1925,7 @@ function showFreedFromJailPopup(helperName, helperId) {
 
     overlay.innerHTML = `
         <div class="popup-card popup-success" style="max-width:420px;">
-            <h2 class="popup-title" style="color:#2ecc71;">🔓 You're Free!</h2>
+            <h2 class="popup-title" style="color:#2ecc71;">You're Free!</h2>
             <p class="popup-text" style="font-size:16px;line-height:1.5;">
                 <strong style="color:#c0a062;">${escapeHTML(helperName || 'A fellow gangster')}</strong> broke you out of jail!
             </p>
@@ -1948,7 +1952,7 @@ function sendGiftMoney(targetPlayerId, amount) {
             amount: amount
         }));
     }
-    logAction(`💰 You sent $${amount.toLocaleString()} as a thank-you gift!`);
+    logAction(`You sent $${amount.toLocaleString()} as a thank-you gift!`);
     updateUI();
     // Close the popup
     const popup = document.getElementById('freed-from-jail-popup');
@@ -2218,7 +2222,7 @@ function showGlobalChat() {
     
     let chatHTML = `
         <div class="game-screen" style="display: block;">
-            <h2 style="color: #c0a062; font-family: 'Georgia', serif; text-shadow: 2px 2px 4px #000;">💬 World Chat</h2>
+            <h2 style="color: #c0a062; font-family: 'Georgia', serif; text-shadow: 2px 2px 4px #000;">World Chat</h2>
             <p style="color: #ccc;">Chat with players from around the world.</p>
             
             <!-- Connection Status -->
@@ -2460,13 +2464,13 @@ function getConnectionStatusHTML() {
     const status = onlineWorldState.connectionStatus;
     if (onlineWorldState.isConnected || status === 'connected') {
         const count = onlineWorldState.serverInfo.playerCount || 0;
-        return `<span style="color: #2ecc71; font-family: 'Georgia', serif;">🟢 Connected to World Chat — ${count} player${count !== 1 ? 's' : ''} online</span>`;
+        return `<span style="color: #2ecc71; font-family: 'Georgia', serif;">Connected to World Chat — ${count} player${count !== 1 ? 's' : ''} online</span>`;
     } else if (status === 'demo' || status === 'offline') {
-        return `<span style="color: #e74c3c; font-family: 'Georgia', serif;">🔴 Server offline — retrying automatically...</span>`;
+        return `<span style="color: #e74c3c; font-family: 'Georgia', serif;">Server offline — retrying automatically...</span>`;
     } else if (status === 'error') {
-        return `<span style="color: #e74c3c; font-family: 'Georgia', serif;">🔴 Server unavailable — retrying...</span>`;
+        return `<span style="color: #e74c3c; font-family: 'Georgia', serif;">Server unavailable — retrying...</span>`;
     } else {
-        return `<span style="color: #f39c12; font-family: 'Georgia', serif;">⏳ Connecting to World Chat...</span>`;
+        return `<span style="color: #f39c12; font-family: 'Georgia', serif;">Connecting to World Chat...</span>`;
     }
 }
 
@@ -2501,7 +2505,7 @@ function showOnlineWorld(activeTab) {
     
     // ── Tab bar ──
     let worldHTML = `
-        <h2 style="color: #c0a062; font-family: 'Georgia', serif; text-shadow: 2px 2px 4px #000; margin-bottom: 5px;">🏛️ The Commission</h2>
+        <h2 style="color: #c0a062; font-family: 'Georgia', serif; text-shadow: 2px 2px 4px #000; margin-bottom: 5px;">The Commission</h2>
         <p style="color: #ccc; margin: 0 0 15px 0;">The family's HQ — all multiplayer activities under one roof.</p>
         
         <!-- Connection Status -->
@@ -2509,12 +2513,12 @@ function showOnlineWorld(activeTab) {
         
         <!-- Tab Navigation -->
         <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 2px solid #c0a062; padding-bottom: 0;">
-            <button onclick="showOnlineWorld('overview')" style="${tabStyle('overview')}">👥 Overview</button>
-            <button onclick="showOnlineWorld('pvp')" style="${tabStyle('pvp')}">⚔️ PVP</button>
-            <button onclick="showOnlineWorld('territories')" style="${tabStyle('territories')}">🗺️ Territories</button>
-            <button onclick="showOnlineWorld('activities')" style="${tabStyle('activities')}">📋 Activities</button>
-            <button onclick="showOnlineWorld('market')" style="${tabStyle('market')}">🏪 Market</button>
-            <button onclick="showOnlineWorld('chat')" style="${tabStyle('chat')}">💬 Chat</button>
+            <button onclick="showOnlineWorld('overview')" style="${tabStyle('overview')}">Overview</button>
+            <button onclick="showOnlineWorld('pvp')" style="${tabStyle('pvp')}">PVP</button>
+            <button onclick="showOnlineWorld('territories')" style="${tabStyle('territories')}">Territories</button>
+            <button onclick="showOnlineWorld('activities')" style="${tabStyle('activities')}">Activities</button>
+            <button onclick="showOnlineWorld('market')" style="${tabStyle('market')}">Market</button>
+            <button onclick="showOnlineWorld('chat')" style="${tabStyle('chat')}">Chat</button>
         </div>
         
         <!-- Tab Content -->
@@ -2526,7 +2530,7 @@ function showOnlineWorld(activeTab) {
         worldHTML += `
             <!-- Territory Income Timer -->
             <div id="territory-income-timer" style="background: rgba(39, 174, 96, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #27ae60; text-align: center;">
-                <div style="color: #27ae60; font-weight: bold; font-size: 1.1em;">💰 Next Territory Income</div>
+                <div style="color: #27ae60; font-weight: bold; font-size: 1.1em;">Next Territory Income</div>
                 <div id="income-countdown" style="color: #ccc; margin-top: 5px; font-family: monospace; font-size: 1.3em;">Calculating...</div>
                 <div style="color: #888; font-size: 0.85em; margin-top: 5px;">Controlled Territories: <span id="controlled-count" style="color: #27ae60; font-weight: bold;">0</span> | Weekly Income: <span id="weekly-income-total" style="color: #27ae60; font-weight: bold;">$0</span></div>
             </div>
@@ -2535,13 +2539,13 @@ function showOnlineWorld(activeTab) {
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 15px 0;">
                 <div style="background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 15px; border: 2px solid #c0a062;">
                     <div id="online-player-list">
-                        <h4 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif;">👥 Made Men Online</h4>
+                        <h4 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif;">Made Men Online</h4>
                         <div style="color: #95a5a6; font-style: italic; text-align: center;">Loading associates...</div>
                     </div>
                 </div>
                 <div style="background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 15px; border: 2px solid #8b0000;">
                     <div id="online-jail-status">
-                        <h4 style="color: #8b0000; margin: 0 0 15px 0; font-family: 'Georgia', serif;">🔒 In The Can</h4>
+                        <h4 style="color: #8b0000; margin: 0 0 15px 0; font-family: 'Georgia', serif;">In The Can</h4>
                         <div style="color: #95a5a6; font-style: italic; text-align: center;">Checking prison records...</div>
                     </div>
                 </div>
@@ -2549,7 +2553,7 @@ function showOnlineWorld(activeTab) {
             
             <!-- Global Leaderboard -->
             <div style="background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 15px; border: 2px solid #c0a062; margin-top: 15px;">
-                <h3 style="color: #c0a062; text-align: center; margin-bottom: 15px; font-family: 'Georgia', serif;">🏆 The Bosses</h3>
+                <h3 style="color: #c0a062; text-align: center; margin-bottom: 15px; font-family: 'Georgia', serif;">The Bosses</h3>
                 <div id="global-leaderboard">
                     <div style="color: #95a5a6; text-align: center; font-style: italic;">Loading rankings...</div>
                 </div>
@@ -2560,7 +2564,7 @@ function showOnlineWorld(activeTab) {
     // ── PVP TAB ──
     if (tab === 'pvp') {
         worldHTML += `
-            <h3 style="color: #8b0000; text-align: center; font-family: 'Georgia', serif; margin-top: 0;">⚔️ Player vs Player</h3>
+            <h3 style="color: #8b0000; text-align: center; font-family: 'Georgia', serif; margin-top: 0;">Player vs Player</h3>
             <p style="color: #ccc; text-align: center; margin: 0 0 20px 0;">Prove your worth. Crush your rivals. Take what's theirs.</p>
             
             <!-- PVP Actions Grid -->
@@ -2569,14 +2573,14 @@ function showOnlineWorld(activeTab) {
                 <!-- Whack Rival Don -->
                 <div style="background: linear-gradient(180deg, rgba(192, 160, 98, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%); padding: 25px; border-radius: 15px; border: 2px solid #c0a062; cursor: pointer; transition: transform 0.2s;" onclick="showWhackRivalDon()" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <div style="text-align: center;">
-                        <div style="font-size: 3.5em; margin-bottom: 10px;">👊</div>
+                        <div style="font-size: 3.5em; margin-bottom: 10px;"></div>
                         <h3 style="color: #c0a062; margin: 0 0 8px 0; font-family: 'Georgia', serif; font-size: 1.3em;">Whack Rival Don</h3>
                         <p style="color: #ccc; margin: 0 0 12px 0; font-size: 0.9em;">Casual PvP brawl for bragging rights</p>
                         <div style="background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px;">
                             <div style="color: #ccc; font-size: 0.8em; line-height: 1.6;">
-                                ⚡ 5 energy cost<br>
-                                👑 Win/lose Don Rep<br>
-                                ❤️ Both take health damage
+                                5 energy cost<br>
+                                Win/lose Don Rep<br>
+                                Both take health damage
                             </div>
                         </div>
                     </div>
@@ -2585,14 +2589,14 @@ function showOnlineWorld(activeTab) {
                 <!-- Territory Conquest -->
                 <div style="background: linear-gradient(180deg, rgba(243, 156, 18, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%); padding: 25px; border-radius: 15px; border: 2px solid #f39c12; cursor: pointer; transition: transform 0.2s;" onclick="showOnlineWorld('territories')" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <div style="text-align: center;">
-                        <div style="font-size: 3.5em; margin-bottom: 10px;">🗺️</div>
+                        <div style="font-size: 3.5em; margin-bottom: 10px;"></div>
                         <h3 style="color: #f39c12; margin: 0 0 8px 0; font-family: 'Georgia', serif; font-size: 1.3em;">Territory Conquest</h3>
                         <p style="color: #f9ca7e; margin: 0 0 12px 0; font-size: 0.9em;">Conquer districts for weekly income</p>
                         <div style="background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px;">
                             <div style="color: #ccc; font-size: 0.8em; line-height: 1.6;">
-                                🏴 Assign gang/cars/weapons<br>
-                                💰 Weekly dirty money income<br>
-                                ⚠️ Risk: Lose assigned resources
+                                Assign gang/cars/weapons<br>
+                                Weekly dirty money income<br>
+                                Risk: Lose assigned resources
                             </div>
                         </div>
                     </div>
@@ -2601,14 +2605,14 @@ function showOnlineWorld(activeTab) {
                 <!-- Assassination Contract -->
                 <div style="background: linear-gradient(180deg, rgba(75, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.9) 100%); padding: 25px; border-radius: 15px; border: 2px solid #ff4444; cursor: pointer; transition: transform 0.2s;" onclick="showAssassination()" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <div style="text-align: center;">
-                        <div style="font-size: 3.5em; margin-bottom: 10px;">🎯</div>
+                        <div style="font-size: 3.5em; margin-bottom: 10px;"></div>
                         <h3 style="color: #ff4444; margin: 0 0 8px 0; font-family: 'Georgia', serif; font-size: 1.3em;">Assassination</h3>
                         <p style="color: #ff8888; margin: 0 0 12px 0; font-size: 0.9em;">High-risk hit — steal their cash</p>
                         <div style="background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px;">
                             <div style="color: #ccc; font-size: 0.8em; line-height: 1.6;">
-                                🔫 Requires guns, bullets & vehicle<br>
-                                💰 Steal 8-20% of target's cash<br>
-                                🚔 Risk: Arrest on failure
+                                Requires guns, bullets & vehicle<br>
+                                Steal 8-20% of target's cash<br>
+                                Risk: Arrest on failure
                             </div>
                         </div>
                     </div>
@@ -2617,7 +2621,7 @@ function showOnlineWorld(activeTab) {
             
             <!-- PVP Stats -->
             <div style="background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #555;">
-                <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif; text-align: center;">📊 Your PVP Stats</h3>
+                <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif; text-align: center;">Your PVP Stats</h3>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center;">
                     <div>
                         <div style="color: #888; font-size: 0.85em;">Attack Power</div>
@@ -2650,12 +2654,12 @@ function showOnlineWorld(activeTab) {
         worldHTML += `
             <!-- Territory Income Timer -->
             <div id="territory-income-timer" style="background: rgba(39, 174, 96, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #27ae60; text-align: center;">
-                <div style="color: #27ae60; font-weight: bold; font-size: 1.1em;">💰 Next Territory Income</div>
+                <div style="color: #27ae60; font-weight: bold; font-size: 1.1em;">Next Territory Income</div>
                 <div id="income-countdown" style="color: #ccc; margin-top: 5px; font-family: monospace; font-size: 1.3em;">Calculating...</div>
                 <div style="color: #888; font-size: 0.85em; margin-top: 5px;">Your Territory: <span style="color: #c0a062; font-weight: bold;">${playerTerritory ? (districts.find(d => d.id === playerTerritory)?.shortName || playerTerritory) : 'None'}</span> | Tax Rate: <span style="color: #e74c3c; font-weight: bold;">10%</span></div>
             </div>
             
-            <h3 style="color: #f39c12; text-align: center; margin-bottom: 5px; font-family: 'Georgia', serif;">🗺️ Territories</h3>
+            <h3 style="color: #f39c12; text-align: center; margin-bottom: 5px; font-family: 'Georgia', serif;">Territories</h3>
             <p style="color: #aaa; text-align: center; margin: 0 0 15px 0; font-size: 0.85em;">Multiplayer territories — where players live, pay tax, and fight for ownership.</p>
             
             <div style="display: grid; gap: 12px;">
@@ -2680,15 +2684,15 @@ function showOnlineWorld(activeTab) {
                                     </div>
                                     <p style="color: #999; margin: 0 0 8px 0; font-size: 0.85em;">${escapeHTML(d.description)}</p>
                                     <div style="font-size: 0.85em; color: #ccc; line-height: 1.8;">
-                                        <div>👤 Owner: <span style="color: ${tData.owner ? (isNPC ? '#8b4513' : '#27ae60') : '#666'};">${isNPC ? '🤖 ' : ''}${escapeHTML(tData.owner || 'Unclaimed')}</span>${isNPC ? ' <span style="background: #8b4513; color: #fff; padding: 1px 6px; border-radius: 3px; font-size: 0.75em;">RIVAL BOSS</span>' : ''}</div>
-                                        <div>👥 Residents: <span style="color: #3498db;">${residentCount}</span> | 🛡️ Defense: <span style="color: #e74c3c;">${tData.defenseRating}</span></div>
-                                        <div>💰 Tax Collected: <span style="color: #27ae60;">$${(tData.taxCollected || 0).toLocaleString()}</span> | Move Cost: <span style="color: #f39c12;">$${d.moveCost.toLocaleString()}</span></div>
+                                        <div>Owner: <span style="color: ${tData.owner ? (isNPC ? '#8b4513' : '#27ae60') : '#666'};">${isNPC ? '' : ''}${escapeHTML(tData.owner || 'Unclaimed')}</span>${isNPC ? ' <span style="background: #8b4513; color: #fff; padding: 1px 6px; border-radius: 3px; font-size: 0.75em;">RIVAL BOSS</span>' : ''}</div>
+                                        <div>Residents: <span style="color: #3498db;">${residentCount}</span> | Defense: <span style="color: #e74c3c;">${tData.defenseRating}</span></div>
+                                        <div>Tax Collected: <span style="color: #27ae60;">$${(tData.taxCollected || 0).toLocaleString()}</span> | Move Cost: <span style="color: #f39c12;">$${d.moveCost.toLocaleString()}</span></div>
                                     </div>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; min-width: 120px;">
-                                    ${!isHome ? `<button onclick="showTerritoryRelocation()" style="background: #f39c12; color: #000; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">🚚 Relocate</button>` : ''}
-                                    ${!isOwned && !tData.owner ? `<button onclick="claimTerritory('${d.id}')" style="background: linear-gradient(180deg, #27ae60, #1e8449); color: #fff; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;" ${(player.level || 1) < (window.MIN_CLAIM_LEVEL || 10) ? 'disabled title="Level ' + (window.MIN_CLAIM_LEVEL || 10) + ' required"' : ''}>🏴 Claim ($${claimCost.toLocaleString()})</button>` : ''}
-                                    ${!isOwned && tData.owner ? `<button onclick="challengeForTerritory('${d.id}')" style="background: linear-gradient(180deg, #8b0000, #5a0000); color: #fff; padding: 8px 12px; border: 1px solid #ff0000; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">⚔️ Challenge</button>` : ''}
+                                    ${!isHome ? `<button onclick="showTerritoryRelocation()" style="background: #f39c12; color: #000; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">Relocate</button>` : ''}
+                                    ${!isOwned && !tData.owner ? `<button onclick="claimTerritory('${d.id}')" style="background: linear-gradient(180deg, #27ae60, #1e8449); color: #fff; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;" ${(player.level || 1) < (window.MIN_CLAIM_LEVEL || 10) ? 'disabled title="Level ' + (window.MIN_CLAIM_LEVEL || 10) + ' required"' : ''}>Claim ($${claimCost.toLocaleString()})</button>` : ''}
+                                    ${!isOwned && tData.owner ? `<button onclick="challengeForTerritory('${d.id}')" style="background: linear-gradient(180deg, #8b0000, #5a0000); color: #fff; padding: 8px 12px; border: 1px solid #ff0000; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">Challenge</button>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -2697,7 +2701,7 @@ function showOnlineWorld(activeTab) {
             </div>
             
             <div style="background: rgba(192, 160, 98, 0.1); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid #c0a062;">
-                <p style="color: #ccc; margin: 0; font-size: 0.85em; line-height: 1.6;">📋 <strong style="color: #c0a062;">How Territories Work:</strong> Every territory is controlled by a rival NPC boss. Challenge them to seize control! Wars require 5+ gang members and 40 energy. The owner collects 10% tax on all resident income. Relocating costs money and has a 1-hour cooldown.</p>
+                <p style="color: #ccc; margin: 0; font-size: 0.85em; line-height: 1.6;"><strong style="color: #c0a062;">How Territories Work:</strong> Every territory is controlled by a rival NPC boss. Challenge them to seize control! Wars require 5+ gang members and 40 energy. The owner collects 10% tax on all resident income. Relocating costs money and has a 1-hour cooldown.</p>
             </div>
         `;
     }
@@ -2705,34 +2709,31 @@ function showOnlineWorld(activeTab) {
     // ── ACTIVITIES TAB ──
     if (tab === 'activities') {
         worldHTML += `
-            <h3 style="color: #c0a062; text-align: center; margin: 0 0 15px 0; font-family: 'Georgia', serif;">📋 Family Business</h3>
+            <h3 style="color: #c0a062; text-align: center; margin: 0 0 15px 0; font-family: 'Georgia', serif;">Family Business</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                 <button onclick="showGlobalChat()" style="background: #222; color: #c0a062; padding: 15px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    💬 The Wire<br><small style="color: #ccc;">Talk with the family</small>
+                    The Wire<br><small style="color: #ccc;">Talk with the family</small>
                 </button>
                 <button onclick="showWhackRivalDon()" style="background: linear-gradient(180deg, rgba(192,160,98,0.2) 0%, #1a1a1a 100%); color: #c0a062; padding: 15px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
-                    👊 Whack Rival Don<br><small style="color: #ccc;">Casual PvP for Don Rep</small>
+                    Whack Rival Don<br><small style="color: #ccc;">Casual PvP for Don Rep</small>
                 </button>
                 <button onclick="showAssassination()" style="background: linear-gradient(180deg, #4b0000 0%, #1a0000 100%); color: #ff4444; padding: 15px; border: 1px solid #ff4444; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
-                    🎯 Assassination<br><small style="color: #ff8888;">Hunt rivals for their cash</small>
+                    Assassination<br><small style="color: #ff8888;">Hunt rivals for their cash</small>
                 </button>
                 <button onclick="showActiveHeists()" style="background: #222; color: #8b0000; padding: 15px; border: 1px solid #8b0000; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    💰 Big Scores<br><small style="color: #ccc;">Join ongoing jobs</small>
+                    Big Scores<br><small style="color: #ccc;">Join ongoing jobs</small>
                 </button>
                 <button onclick="showNearbyPlayers()" style="background: #222; color: #f39c12; padding: 15px; border: 1px solid #f39c12; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    👥 Local Crew<br><small style="color: #ccc;">Players in your area</small>
+                    Local Crew<br><small style="color: #ccc;">Players in your area</small>
                 </button>
                 <button onclick="showAlliancePanel()" style="background: #222; color: #c0a062; padding: 15px; border: 2px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    🤝 Alliances<br><small style="color: #ccc;">Form a crew</small>
+                    Alliances<br><small style="color: #ccc;">Form a crew</small>
                 </button>
                 <button onclick="showBountyBoard()" style="background: linear-gradient(180deg, #4a2600 0%, #1a0a00 100%); color: #ff6600; padding: 15px; border: 1px solid #ff6600; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    💀 Bounty Board<br><small style="color: #ffaa66;">Put a price on heads</small>
+                    Bounty Board<br><small style="color: #ffaa66;">Put a price on heads</small>
                 </button>
                 <button onclick="showRankedSeason()" style="background: linear-gradient(180deg, #1a1a3a 0%, #0a0a1a 100%); color: #ffd700; padding: 15px; border: 1px solid #ffd700; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    🏆 Ranked Season<br><small style="color: #ffe066;">ELO combat rating</small>
-                </button>
-                <button onclick="showSiegePanel()" style="background: linear-gradient(180deg, #2a1a00 0%, #0a0600 100%); color: #e67e22; padding: 15px; border: 1px solid #e67e22; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    🏰 Territory Siege<br><small style="color: #f0a050;">Fortify & conquer</small>
+                    Ranked Season<br><small style="color: #ffe066;">ELO combat rating</small>
                 </button>
             </div>
         `;
@@ -2747,7 +2748,7 @@ function showOnlineWorld(activeTab) {
     if (tab === 'chat') {
         worldHTML += `
             <!-- Quick Wire -->
-            <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif;">💬 The Wire</h3>
+            <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif;">The Wire</h3>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
                 <input type="text" id="quick-chat-input" placeholder="Send a message to the family..." 
                        style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #c0a062; background: #222; color: #c0a062; font-size: 1em;"
@@ -2767,7 +2768,7 @@ function showOnlineWorld(activeTab) {
             </div>
             
             <!-- Street Activity -->
-            <h3 style="color: #ccc; font-family: 'Georgia', serif;">📰 Street Activity</h3>
+            <h3 style="color: #ccc; font-family: 'Georgia', serif;">Street Activity</h3>
             <div id="world-activity-feed" style="height: 250px; overflow-y: auto; background: rgba(20, 20, 20, 0.8); padding: 12px; border-radius: 5px; border: 1px solid #555;">
                 <div style="color: #95a5a6; font-style: italic;">Loading activity...</div>
             </div>
@@ -2781,7 +2782,7 @@ function showOnlineWorld(activeTab) {
             <button onclick="goBackToMainMenu()" 
                     style="background: linear-gradient(180deg, #333 0%, #000 100%); color: #c0a062; padding: 15px 30px; 
                            border: 1px solid #c0a062; border-radius: 10px; font-size: 1.1em; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
-                🏠 Back to Safehouse
+                Back to Safehouse
             </button>
         </div>
     `;
@@ -2837,14 +2838,14 @@ function renderMarketplaceTab() {
     const playerCars = (typeof player !== 'undefined' && player.stolenCars) ? player.stolenCars : [];
     
     let html = `
-        <h3 style="color: #2980b9; text-align: center; font-family: 'Georgia', serif; margin-top: 0;">🏪 Vehicle Marketplace</h3>
+        <h3 style="color: #2980b9; text-align: center; font-family: 'Georgia', serif; margin-top: 0;">Vehicle Marketplace</h3>
         <p style="color: #ccc; text-align: center; margin: 0 0 20px 0;">List your vehicles for sale or buy from other players. All sales are final.</p>
     `;
     
     // === LIST A VEHICLE SECTION ===
     html += `
         <div style="background: rgba(41, 128, 185, 0.15); padding: 15px; border-radius: 12px; border: 1px solid #2980b9; margin-bottom: 20px;">
-            <h4 style="color: #2980b9; margin: 0 0 10px 0;">📋 List a Vehicle for Sale</h4>
+            <h4 style="color: #2980b9; margin: 0 0 10px 0;">List a Vehicle for Sale</h4>
     `;
     
     if (playerCars.length === 0) {
@@ -2869,7 +2870,7 @@ function renderMarketplaceTab() {
                            style="width: 100px; padding: 6px; border-radius: 5px; border: 1px solid #c0a062; background: #222; color: #ecf0f1; font-size: 0.9em;">
                     <button onclick="listVehicleForSale(${idx})" 
                             style="background: #2980b9; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; white-space: nowrap;">
-                        📤 List
+                        List
                     </button>`}
                 </div>
             </div>`;
@@ -2882,7 +2883,7 @@ function renderMarketplaceTab() {
     if (myListings.length > 0) {
         html += `
             <div style="background: rgba(230, 126, 34, 0.15); padding: 15px; border-radius: 12px; border: 1px solid #e67e22; margin-bottom: 20px;">
-                <h4 style="color: #e67e22; margin: 0 0 10px 0;">📦 Your Active Listings (${myListings.length})</h4>
+                <h4 style="color: #e67e22; margin: 0 0 10px 0;">Your Active Listings (${myListings.length})</h4>
                 <div style="display: grid; gap: 8px;">
         `;
         myListings.forEach(listing => {
@@ -2903,7 +2904,7 @@ function renderMarketplaceTab() {
     // === AVAILABLE LISTINGS FROM OTHER PLAYERS ===
     html += `
         <div style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-radius: 12px; border: 1px solid #2ecc71; margin-bottom: 20px;">
-            <h4 style="color: #2ecc71; margin: 0 0 10px 0;">🛒 Available Vehicles (${otherListings.length})</h4>
+            <h4 style="color: #2ecc71; margin: 0 0 10px 0;">Available Vehicles (${otherListings.length})</h4>
     `;
     
     if (otherListings.length === 0) {
@@ -2927,7 +2928,7 @@ function renderMarketplaceTab() {
                         ${!canAfford ? 'disabled' : ''}
                         style="background: ${canAfford ? '#27ae60' : '#7f8c8d'}; color: white; border: none; padding: 10px 18px; border-radius: 8px; 
                                cursor: ${canAfford ? 'pointer' : 'not-allowed'}; font-weight: bold; white-space: nowrap; font-size: 1em;">
-                    ${canAfford ? '💰 Buy' : '💸 Can\'t Afford'}
+                    ${canAfford ? 'Buy' : 'Can\'t Afford'}
                 </button>
             </div>`;
         });
@@ -2940,7 +2941,7 @@ function renderMarketplaceTab() {
         <div style="text-align: center; margin-top: 10px;">
             <button onclick="requestMarketplaceListings()" 
                     style="background: rgba(52, 152, 219, 0.3); color: #3498db; border: 1px solid #3498db; padding: 8px 20px; border-radius: 6px; cursor: pointer;">
-                🔄 Refresh Listings
+                Refresh Listings
             </button>
         </div>
     `;
@@ -2988,7 +2989,7 @@ function listVehicleForSale(carIndex) {
     player.stolenCars.splice(carIndex, 1);
     
     if (typeof showBriefNotification === 'function') showBriefNotification(`Listed ${car.name} for $${askingPrice.toLocaleString()}!`, 'success');
-    if (typeof logAction === 'function') logAction(`🏪 Listed ${car.name} on the marketplace for $${askingPrice.toLocaleString()}.`);
+    if (typeof logAction === 'function') logAction(`Listed ${car.name} on the marketplace for $${askingPrice.toLocaleString()}.`);
     if (typeof updateUI === 'function') updateUI();
     
     // Refresh the tab after a short delay for server response
@@ -3080,7 +3081,7 @@ function updateConnectionStatus() {
                         <div><strong>Server:</strong> ${onlineWorldState.serverInfo.serverName}</div>
                         <div><strong>Players Online:</strong> ${onlineWorldState.serverInfo.playerCount}</div>
                         <div><strong>Your ID:</strong> ${onlineWorldState.playerId}</div>
-                        <div><strong>Status:</strong> <span style="color: #2ecc71;">🟢 Live</span></div>
+                        <div><strong>Status:</strong> <span style="color: #2ecc71;">Live</span></div>
                     </div>
                 </div>
             `;
@@ -3094,7 +3095,7 @@ function updateConnectionStatus() {
                         <div><strong>Mode:</strong> Offline Demo</div>
                         <div><strong>Simulated Players:</strong> ${onlineWorldState.serverInfo.playerCount}</div>
                         <div><strong>Your ID:</strong> ${onlineWorldState.playerId}</div>
-                        <div><strong>Status:</strong> <span style="color: #f39c12;">🟡 Demo</span></div>
+                        <div><strong>Status:</strong> <span style="color: #f39c12;">Demo</span></div>
                     </div>
                     <p style="margin-top: 10px; color: #95a5a6; font-size: 0.9em;">
                         Server unavailable - running in demo mode with simulated players
@@ -3188,7 +3189,7 @@ function showWelcomeMessage() {
     const welcomeMsg = messages[Math.floor(Math.random() * messages.length)];
     
     // Show as a non-blocking log message instead of an alert
-    logAction(`🌐 ${welcomeMsg}`);
+    logAction(`${welcomeMsg}`);
 }
 
 // Generate player ID
@@ -3268,10 +3269,10 @@ function loadGlobalLeaderboard() {
     // Tab bar
     const tabs = [
         { key: 'reputation', label: '⭐ Rep', color: '#f39c12' },
-        { key: 'wealth', label: '💰 Wealth', color: '#2ecc71' },
-        { key: 'combat', label: '⚔️ Combat', color: '#e74c3c' },
+        { key: 'wealth', label: 'Wealth', color: '#2ecc71' },
+        { key: 'combat', label: 'Combat', color: '#e74c3c' },
         { key: 'territories', label: '�️ Territories', color: '#3498db' },
-        { key: 'ranked', label: '🏆 ELO', color: '#ffd700' }
+        { key: 'ranked', label: 'ELO', color: '#ffd700' }
     ];
     const tabHTML = `<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">${tabs.map(t =>
         `<button onclick="_leaderboardCategory='${t.key}';loadGlobalLeaderboard();" style="background:${_leaderboardCategory === t.key ? t.color : '#222'};color:${_leaderboardCategory === t.key ? '#000' : '#ccc'};border:1px solid ${t.color};padding:5px 10px;border-radius:4px;cursor:pointer;font-family:Georgia,serif;font-size:0.8em;">${t.label}</button>`
@@ -3508,10 +3509,10 @@ function doDistrictJob(districtName) {
 
         resultModal.innerHTML = `
             <div class="popup-card popup-danger" style="max-width:520px;">
-                <h3 style="color:#c0a062;margin:0 0 5px 0;">🏙️ ${districtName.charAt(0).toUpperCase() + districtName.slice(1)} District Job</h3>
+                <h3 style="color:#c0a062;margin:0 0 5px 0;">${districtName.charAt(0).toUpperCase() + districtName.slice(1)} District Job</h3>
                 <p class="popup-subtitle">Crime Level: ${crimeLevel}%</p>
                 <div class="popup-section" style="border-color:rgba(231,76,60,0.3);">
-                <p style="color:#e74c3c;font-weight:bold;margin:0 0 8px 0;">🚔 Busted!</p>
+                <p style="color:#e74c3c;font-weight:bold;margin:0 0 8px 0;">Busted!</p>
                 <p style="margin:0;color:#ccc;">You attempted: <strong>${job.name}</strong></p>
                 <p style="margin:8px 0 0 0;color:#e74c3c;">The cops were tipped off. You've been sentenced to ${jailTime} seconds in jail.</p>
                 </div>
@@ -3521,7 +3522,7 @@ function doDistrictJob(districtName) {
             </div>
         `;
 
-        logAction(`🚔 Busted doing a ${job.name} in ${districtName}! Jailed for ${jailTime}s.`);
+        logAction(`Busted doing a ${job.name} in ${districtName}! Jailed for ${jailTime}s.`);
         if (window.EventBus) EventBus.emit('jailStatusChanged', { inJail: true, jailTime: jailTime });
         if (typeof updateJailTimer === 'function') updateJailTimer();
     } else {
@@ -3536,7 +3537,7 @@ function doDistrictJob(districtName) {
 
         resultModal.innerHTML = `
             <div class="popup-card popup-success" style="max-width:520px;">
-                <h3 class="popup-title">🏙️ ${districtName.charAt(0).toUpperCase() + districtName.slice(1)} District Job</h3>
+                <h3 class="popup-title">${districtName.charAt(0).toUpperCase() + districtName.slice(1)} District Job</h3>
                 <p class="popup-subtitle">Crime Level: ${crimeLevel}% (${crimeLevel > 60 ? 'High Risk / High Reward' : crimeLevel > 35 ? 'Moderate Risk' : 'Low Profile'})</p>
                 <div class="popup-section" style="border-color:rgba(46,204,113,0.3);">
                     <p style="color:#2ecc71;font-weight:bold;margin:0 0 8px 0;">✅ ${job.name}</p>
@@ -3562,8 +3563,8 @@ function doDistrictJob(districtName) {
             </div>
         `;
 
-        logAction(`💼 ${job.name} in ${districtName}: earned $${earned.toLocaleString()}, +${adjustedXp} XP`);
-        addWorldEvent(`💼 ${player.name || 'A player'} pulled off a job in ${districtName}!`);
+        logAction(`${job.name} in ${districtName}: earned $${earned.toLocaleString()}, +${adjustedXp} XP`);
+        addWorldEvent(`${player.name || 'A player'} pulled off a job in ${districtName}!`);
     }
 
     if (typeof updateUI === 'function') updateUI();
@@ -3675,7 +3676,7 @@ function showAssassination() {
         const secs = remaining % 60;
         cooldownHTML = `
             <div style="background: rgba(255, 68, 68, 0.15); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #ff4444; text-align: center;">
-                <div style="color: #ff4444; font-weight: bold; font-size: 1.1em;">⏳ Cooldown Active</div>
+                <div style="color: #ff4444; font-weight: bold; font-size: 1.1em;">Cooldown Active</div>
                 <div style="color: #ff8888; margin-top: 5px;">Next hit available in: <strong>${mins}m ${secs}s</strong></div>
             </div>
         `;
@@ -3725,7 +3726,7 @@ function showAssassination() {
                 <button onclick="attemptAssassination('${escapeHTML(p.name)}')" 
                     style="background: ${canAttempt ? 'linear-gradient(180deg, #8b0000 0%, #3a0000 100%)' : '#333'}; color: ${canAttempt ? '#ff4444' : '#666'}; padding: 10px 20px; border: 1px solid ${canAttempt ? '#ff0000' : '#555'}; border-radius: 6px; cursor: ${canAttempt ? 'pointer' : 'not-allowed'}; font-family: 'Georgia', serif; font-weight: bold;"
                     ${canAttempt ? '' : 'disabled'}>
-                    🎯 Order Hit
+                    Order Hit
                 </button>
             </div>
         `).join('');
@@ -3734,14 +3735,14 @@ function showAssassination() {
     content.innerHTML = `
         <div style="background: rgba(0,0,0,0.95); padding: 30px; border-radius: 15px; border: 3px solid #8b0000;">
             <div style="text-align: center; margin-bottom: 25px;">
-                <div style="font-size: 3em;">🎯</div>
+                <div style="font-size: 3em;"></div>
                 <h2 style="color: #ff4444; font-family: 'Georgia', serif; font-size: 2em; margin: 10px 0 5px 0;">Assassination Contract</h2>
                 <p style="color: #ff6666; font-style: italic; margin: 0;">Send a message they can't refuse. Hunt a rival and take their wealth.</p>
             </div>
 
             <!-- Requirements Box -->
             <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #555;">
-                <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif;">📋 Requirements</h3>
+                <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif;">Requirements</h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
                     <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid ${requirementColor(hasGun)};">
                         <div style="color: ${requirementColor(hasGun)}; font-weight: bold;">${requirementIcon(hasGun)} Firearm</div>
@@ -3760,7 +3761,7 @@ function showAssassination() {
 
             <!-- Odds Breakdown -->
             <div style="background: rgba(139, 0, 0, 0.15); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #5a0000;">
-                <h3 style="color: #ff4444; margin: 0 0 15px 0; font-family: 'Georgia', serif;">🎲 Your Odds</h3>
+                <h3 style="color: #ff4444; margin: 0 0 15px 0; font-family: 'Georgia', serif;">Your Odds</h3>
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
                     <div style="flex: 1; background: rgba(0,0,0,0.4); border-radius: 8px; height: 30px; overflow: hidden;">
                         <div style="background: linear-gradient(90deg, #8b0000, #ff4444); height: 100%; width: ${estimatedChance}%; border-radius: 8px; transition: width 0.3s;"></div>
@@ -3768,18 +3769,18 @@ function showAssassination() {
                     <div style="color: #ff4444; font-weight: bold; font-size: 1.3em; min-width: 50px;">${estimatedChance}%</div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85em;">
-                    <div style="color: #ccc;">🔫 Guns: <span style="color: #c0a062;">${guns.length}</span> <small style="color: #888;">(+${Math.min((guns.length - 1) * 1, 5)}%)</small></div>
-                    <div style="color: #ccc;">💣 Bullets: <span style="color: #c0a062;">${bullets}</span> <small style="color: #888;">(+${Math.min(Math.round(bullets * 0.5), 15)}%)</small></div>
-                    <div style="color: #ccc;">🚗 Vehicles: <span style="color: #c0a062;">${totalVehicles}</span> <small style="color: #888;">(+${Math.min(totalVehicles * 2, 6)}%)</small></div>
-                    <div style="color: #ccc;">👥 Gang: <span style="color: #c0a062;">${gangCount}</span> <small style="color: #888;">(+${Math.min(Math.round(gangCount * 0.5), 10)}%)</small></div>
-                    <div style="color: #ccc;">💪 Power: <span style="color: #c0a062;">${player.power || 0}</span> <small style="color: #888;">(+${Math.min(Math.round((player.power || 0) * 0.002), 5)}%)</small></div>
-                    <div style="color: #ccc;">⚡ Base Chance: <span style="color: #888;">8%</span></div>
+                    <div style="color: #ccc;">Guns: <span style="color: #c0a062;">${guns.length}</span> <small style="color: #888;">(+${Math.min((guns.length - 1) * 1, 5)}%)</small></div>
+                    <div style="color: #ccc;">Bullets: <span style="color: #c0a062;">${bullets}</span> <small style="color: #888;">(+${Math.min(Math.round(bullets * 0.5), 15)}%)</small></div>
+                    <div style="color: #ccc;">Vehicles: <span style="color: #c0a062;">${totalVehicles}</span> <small style="color: #888;">(+${Math.min(totalVehicles * 2, 6)}%)</small></div>
+                    <div style="color: #ccc;">Gang: <span style="color: #c0a062;">${gangCount}</span> <small style="color: #888;">(+${Math.min(Math.round(gangCount * 0.5), 10)}%)</small></div>
+                    <div style="color: #ccc;">Power: <span style="color: #c0a062;">${player.power || 0}</span> <small style="color: #888;">(+${Math.min(Math.round((player.power || 0) * 0.002), 5)}%)</small></div>
+                    <div style="color: #ccc;">Base Chance: <span style="color: #888;">8%</span></div>
                 </div>
                 <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #5a0000;">
-                <div style="color: #ff6666; font-size: 0.85em;">⚠️ Costs 30 energy + 3-5 bullets. You WILL take heavy damage. 40% arrest chance on failure.</div>
-                    <div style="color: #ff6666; font-size: 0.85em; margin-top: 4px;">💀 Gang members sent may be killed in the firefight (20% each).</div>
-                    <div style="color: #c0a062; font-size: 0.85em; margin-top: 4px;">💰 Steal 8-20% of target's cash on success.</div>
-                    <div style="color: #ff8800; font-size: 0.85em; margin-top: 4px;">⏳ 10 minute cooldown between attempts.</div>
+                <div style="color: #ff6666; font-size: 0.85em;">Costs 30 energy + 3-5 bullets. You WILL take heavy damage. 40% arrest chance on failure.</div>
+                    <div style="color: #ff6666; font-size: 0.85em; margin-top: 4px;">Gang members sent may be killed in the firefight (20% each).</div>
+                    <div style="color: #c0a062; font-size: 0.85em; margin-top: 4px;">Steal 8-20% of target's cash on success.</div>
+                    <div style="color: #ff8800; font-size: 0.85em; margin-top: 4px;">10 minute cooldown between attempts.</div>
                 </div>
             </div>
 
@@ -3787,7 +3788,7 @@ function showAssassination() {
 
             <!-- Target List -->
             <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border: 1px solid #555;">
-                <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif;">🎯 Select Target</h3>
+                <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif;">Select Target</h3>
                 ${targetListHTML}
             </div>
 
@@ -3853,14 +3854,14 @@ async function attemptAssassination(targetName) {
         power: player.power || 0
     }));
 
-    logAction(`🎯 Sent a hitman after ${targetName}... awaiting results.`);
+    logAction(`Sent a hitman after ${targetName}... awaiting results.`);
 
     // Show waiting state
     const content = document.getElementById('multiplayer-content');
     if (content) {
         content.innerHTML = `
             <div style="background: rgba(0,0,0,0.95); padding: 60px 30px; border-radius: 15px; border: 3px solid #8b0000; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎯</div>
+                <div style="font-size: 4em; margin-bottom: 20px;"></div>
                 <h2 style="color: #ff4444; font-family: 'Georgia', serif;">Hit in Progress...</h2>
                 <p style="color: #ff6666; font-style: italic;">Your crew is moving on ${escapeHTML(targetName)}. Stand by.</p>
                 <div style="margin-top: 20px;">
@@ -3885,7 +3886,7 @@ function handleAssassinationResult(message) {
         if (content) {
             content.innerHTML = `
                 <div style="background: rgba(0,0,0,0.95); padding: 40px; border-radius: 15px; border: 3px solid #ff8800; text-align: center;">
-                    <div style="font-size: 4em; margin-bottom: 15px;">⏳</div>
+                    <div style="font-size: 4em; margin-bottom: 15px;"></div>
                     <h2 style="color: #ff8800; font-family: 'Georgia', serif;">Cooldown Active</h2>
                     <p style="color: #ccc; margin: 15px 0;">${escapeHTML(message.error || 'You must wait before ordering another hit.')}</p>
                     <p style="color: #ff8800; font-size: 1.3em; font-weight: bold;">${mins}m ${secs}s remaining</p>
@@ -3928,18 +3929,18 @@ function handleAssassinationResult(message) {
         const seizedTerritories = message.territoriesSeized || [];
         if (seizedTerritories.length > 0) {
             onlineWorldState.territories = message.territories || onlineWorldState.territories;
-            logAction(`👑 Seized ${seizedTerritories.join(', ')} from ${message.targetName}!`);
+            logAction(`Seized ${seizedTerritories.join(', ')} from ${message.targetName}!`);
         }
 
-        logAction(`🎯 HIT SUCCESSFUL! Assassinated ${message.targetName} and stole $${(message.stolenAmount || 0).toLocaleString()} (${message.stealPercent}%)! +${message.repGain} rep. Took ${message.healthDamage || 0} damage.${gangLost > 0 ? ` Lost ${gangLost} gang member${gangLost > 1 ? 's' : ''}.` : ''}`);
+        logAction(`HIT SUCCESSFUL! Assassinated ${message.targetName} and stole $${(message.stolenAmount || 0).toLocaleString()} (${message.stealPercent}%)! +${message.repGain} rep. Took ${message.healthDamage || 0} damage.${gangLost > 0 ? ` Lost ${gangLost} gang member${gangLost > 1 ? 's' : ''}.` : ''}`);
 
         if (content) {
             const seizedHTML = seizedTerritories.length > 0
-                ? `<div style="color: #ffd700; margin-top: 10px; font-size: 1.1em;">👑 Seized territories: ${seizedTerritories.map(t => t.replace(/_/g, ' ')).join(', ')}</div>`
+                ? `<div style="color: #ffd700; margin-top: 10px; font-size: 1.1em;">Seized territories: ${seizedTerritories.map(t => t.replace(/_/g, ' ')).join(', ')}</div>`
                 : '';
             content.innerHTML = `
                 <div style="background: rgba(0,0,0,0.95); padding: 40px; border-radius: 15px; border: 3px solid #2ecc71; text-align: center;">
-                    <div style="font-size: 4em; margin-bottom: 15px;">💀</div>
+                    <div style="font-size: 4em; margin-bottom: 15px;"></div>
                     <h2 style="color: #2ecc71; font-family: 'Georgia', serif; font-size: 2em;">HIT SUCCESSFUL</h2>
                     <p style="color: #ccc; font-size: 1.1em; margin: 15px 0;">
                         ${escapeHTML(message.targetName)} has been eliminated.
@@ -3949,14 +3950,14 @@ function handleAssassinationResult(message) {
                         <div style="color: #ccc;">Stole ${message.stealPercent}% of their wealth</div>
                         <div style="color: #c0a062; margin-top: 8px;">+${message.repGain} Reputation</div>
                         <div style="color: #ff6666; margin-top: 4px;">+25 Wanted Level</div>
-                        <div style="color: #ff4444; margin-top: 8px;">❤️ -${message.healthDamage || 0} Health (now ${message.newHealth || '?'})</div>
-                        ${(message.gangMembersLost || 0) > 0 ? '<div style="color: #ff8800; margin-top: 4px;">💀 Lost ' + message.gangMembersLost + ' gang member' + (message.gangMembersLost > 1 ? 's' : '') + ' in the firefight</div>' : ''}
+                        <div style="color: #ff4444; margin-top: 8px;">-${message.healthDamage || 0} Health (now ${message.newHealth || '?'})</div>
+                        ${(message.gangMembersLost || 0) > 0 ? '<div style="color: #ff8800; margin-top: 4px;">Lost ' + message.gangMembersLost + ' gang member' + (message.gangMembersLost > 1 ? 's' : '') + ' in the firefight</div>' : ''}
                         ${seizedHTML}
                         <div style="color: #888; margin-top: 8px; font-size: 0.85em;">Hit chance was ${message.chance}% | ${message.bulletsUsed} bullets used</div>
-                        <div style="color: #ff8800; margin-top: 4px; font-size: 0.85em;">⏳ Next hit available in 10 minutes</div>
+                        <div style="color: #ff8800; margin-top: 4px; font-size: 0.85em;">Next hit available in 10 minutes</div>
                     </div>
                     <div style="margin-top: 25px;">
-                        <button onclick="showAssassination()" style="background: #8b0000; color: #fff; padding: 12px 25px; border: 1px solid #ff0000; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; margin-right: 10px;">🎯 Another Hit</button>
+                        <button onclick="showAssassination()" style="background: #8b0000; color: #fff; padding: 12px 25px; border: 1px solid #ff0000; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; margin-right: 10px;">Another Hit</button>
                         <button onclick="goBackToMainMenu()" style="background: #333; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">Back</button>
                     </div>
                 </div>
@@ -3995,12 +3996,12 @@ function handleAssassinationResult(message) {
         }
 
         if (typeof updateUI === 'function') updateUI();
-        logAction(`🎯 HIT FAILED on ${message.targetName}!${message.arrested ? ' ARRESTED!' : ''} -${message.repLoss} rep. Took ${message.healthDamage || 0} damage.${(message.gangMembersLost || 0) > 0 ? ` Lost ${message.gangMembersLost} gang member${message.gangMembersLost > 1 ? 's' : ''}.` : ''}`);
+        logAction(`HIT FAILED on ${message.targetName}!${message.arrested ? ' ARRESTED!' : ''} -${message.repLoss} rep. Took ${message.healthDamage || 0} damage.${(message.gangMembersLost || 0) > 0 ? ` Lost ${message.gangMembersLost} gang member${message.gangMembersLost > 1 ? 's' : ''}.` : ''}`);
 
         if (content) {
             content.innerHTML = `
                 <div style="background: rgba(0,0,0,0.95); padding: 40px; border-radius: 15px; border: 3px solid ${message.arrested ? '#ff0000' : '#ff8800'}; text-align: center;">
-                    <div style="font-size: 4em; margin-bottom: 15px;">${message.arrested ? '🚔' : '💨'}</div>
+                    <div style="font-size: 4em; margin-bottom: 15px;">${message.arrested ? '' : ''}</div>
                     <h2 style="color: ${message.arrested ? '#ff4444' : '#ff8800'}; font-family: 'Georgia', serif; font-size: 2em;">
                         ${message.arrested ? 'HIT FAILED — ARRESTED!' : 'HIT FAILED — ESCAPED'}
                     </h2>
@@ -4010,17 +4011,17 @@ function handleAssassinationResult(message) {
                     <div style="background: rgba(139, 0, 0, 0.2); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 350px; border: 1px solid #8b0000;">
                         <div style="color: #ff4444;">-${message.repLoss || 0} Reputation</div>
                         <div style="color: #ff8800; margin-top: 4px;">+15 Wanted Level</div>
-                        <div style="color: #ff4444; margin-top: 4px;">❤️ -${message.healthDamage || 0} Health (now ${message.newHealth || '?'})</div>
-                        ${(message.gangMembersLost || 0) > 0 ? '<div style="color: #ff8800; margin-top: 4px;">💀 Lost ' + message.gangMembersLost + ' gang member' + (message.gangMembersLost > 1 ? 's' : '') + ' in the firefight</div>' : ''}
+                        <div style="color: #ff4444; margin-top: 4px;">-${message.healthDamage || 0} Health (now ${message.newHealth || '?'})</div>
+                        ${(message.gangMembersLost || 0) > 0 ? '<div style="color: #ff8800; margin-top: 4px;">Lost ' + message.gangMembersLost + ' gang member' + (message.gangMembersLost > 1 ? 's' : '') + ' in the firefight</div>' : ''}
                         <div style="color: #888; margin-top: 4px;">${message.bulletsUsed || 3} bullets wasted</div>
                         ${message.arrested ? '<div style="color: #ff0000; margin-top: 8px; font-weight: bold;">Jail Time: ' + (message.jailTime || 25) + ' seconds</div>' : ''}
                         <div style="color: #888; margin-top: 8px; font-size: 0.85em;">Hit chance was ${message.chance}%</div>
-                        <div style="color: #ff8800; margin-top: 4px; font-size: 0.85em;">⏳ Next hit available in 10 minutes</div>
+                        <div style="color: #ff8800; margin-top: 4px; font-size: 0.85em;">Next hit available in 10 minutes</div>
                     </div>
                     <div style="margin-top: 25px;">
                         ${message.arrested
                             ? '<button onclick="if(typeof showJailScreen===\'function\') showJailScreen();" style="background: #8b0000; color: #fff; padding: 12px 25px; border: 1px solid #ff0000; border-radius: 8px; cursor: pointer; font-family: \'Georgia\', serif;">Go to Jail</button>'
-                            : '<button onclick="showAssassination()" style="background: #8b0000; color: #fff; padding: 12px 25px; border: 1px solid #ff0000; border-radius: 8px; cursor: pointer; font-family: \'Georgia\', serif; margin-right: 10px;">🎯 Try Again</button><button onclick="goBackToMainMenu()" style="background: #333; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: \'Georgia\', serif;">Back</button>'
+                            : '<button onclick="showAssassination()" style="background: #8b0000; color: #fff; padding: 12px 25px; border: 1px solid #ff0000; border-radius: 8px; cursor: pointer; font-family: \'Georgia\', serif; margin-right: 10px;">Try Again</button><button onclick="goBackToMainMenu()" style="background: #333; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: \'Georgia\', serif;">Back</button>'
                         }
                     </div>
                 </div>
@@ -4040,26 +4041,26 @@ function handleAssassinationVictim(message) {
     if (typeof updateUI === 'function') updateUI();
 
     const stolenStr = (message.stolenAmount || 0).toLocaleString();
-    logAction(`💀 You were assassinated by ${message.attackerName}! They stole $${stolenStr} (${message.stealPercent}%) of your cash!`);
-    addWorldEvent(`💀 ${message.attackerName} assassinated you and stole $${stolenStr}!`);
+    logAction(`You were assassinated by ${message.attackerName}! They stole $${stolenStr} (${message.stealPercent}%) of your cash!`);
+    addWorldEvent(`${message.attackerName} assassinated you and stole $${stolenStr}!`);
 
     // Show prominent notification
     if (typeof showBriefNotification === 'function') {
-        showBriefNotification(`💀 ASSASSINATED by ${message.attackerName}! Lost $${stolenStr}!`, 6000);
+        showBriefNotification(`ASSASSINATED by ${message.attackerName}! Lost $${stolenStr}!`, 6000);
     } else {
-        window.ui.alert(`💀 You were assassinated by ${message.attackerName}!\n\nThey stole $${stolenStr} (${message.stealPercent}%) of your cash!`);
+        window.ui.alert(`You were assassinated by ${message.attackerName}!\n\nThey stole $${stolenStr} (${message.stealPercent}%) of your cash!`);
     }
 }
 
 function handleAssassinationSurvived(message) {
     // Someone tried to kill you and failed
-    logAction(`🛡️ ${message.attackerName} sent a hitman after you, but the attempt FAILED!`);
-    addWorldEvent(`🛡️ Survived an assassination attempt by ${message.attackerName}!`);
+    logAction(`${message.attackerName} sent a hitman after you, but the attempt FAILED!`);
+    addWorldEvent(`Survived an assassination attempt by ${message.attackerName}!`);
 
     if (typeof showBriefNotification === 'function') {
-        showBriefNotification(`🛡️ Survived a hit from ${message.attackerName}!`, 5000);
+        showBriefNotification(`Survived a hit from ${message.attackerName}!`, 5000);
     } else {
-        window.ui.alert(`🛡️ Someone tried to assassinate you!\n\n${message.attackerName} sent a hitman, but you survived!`);
+        window.ui.alert(`Someone tried to assassinate you!\n\n${message.attackerName} sent a hitman, but you survived!`);
     }
 }
 
@@ -4097,7 +4098,7 @@ function challengePlayer(playerName) {
 
     modal.innerHTML = `
         <div class="popup-card popup-crimson" style="max-width:480px;">
-            <h3 class="popup-title">⚔️ Challenge to Combat</h3>
+            <h3 class="popup-title">Challenge to Combat</h3>
             <div style="margin:20px 0;display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:center;">
                 <div class="popup-section" style="border-color:rgba(46,204,113,0.3);text-align:center;padding:15px;">
                     <div style="color:#2ecc71;font-weight:bold;font-size:1.1em;">${escapeHTML(player.name || 'You')}</div>
@@ -4113,7 +4114,7 @@ function challengePlayer(playerName) {
             </div>
             <p class="popup-subtitle">Cost: ${energyCost} energy | Winner gains Don Rep</p>
             <div class="popup-actions">
-                <button onclick="executePvpChallenge('${escapeHTML(playerName)}', ${energyCost})" class="popup-btn popup-btn-crimson">⚔️ Fight</button>
+                <button onclick="executePvpChallenge('${escapeHTML(playerName)}', ${energyCost})" class="popup-btn popup-btn-crimson">Fight</button>
                 <button onclick="document.getElementById('pvp-challenge-modal').remove();" class="popup-btn popup-btn-secondary">Walk Away</button>
             </div>
         </div>
@@ -4143,8 +4144,8 @@ function executePvpChallenge(playerName, energyCost) {
         }));
 
         // Show a "waiting" notification
-        showSystemMessage(`⚔️ Engaging ${playerName} in combat...`, '#f39c12');
-        logAction(`⚔️ Challenged ${playerName} to combat!`);
+        showSystemMessage(`Engaging ${playerName} in combat...`, '#f39c12');
+        logAction(`Challenged ${playerName} to combat!`);
     } else {
         // Refund energy on connection failure
         player.energy += energyCost;
@@ -4372,7 +4373,7 @@ function showAlliancePanel() {
 
     const content = document.getElementById('multiplayer-content');
     content.innerHTML = `
-        <h2 style="color: #c0a062; font-family: Georgia, serif;">🤝 Alliances</h2>
+        <h2 style="color: #c0a062; font-family: Georgia, serif;">Alliances</h2>
         <p style="color: #ccc;">Form powerful alliances with other players. Share territory bonuses and deposit to a shared treasury.</p>
         <div id="alliance-tab-bar" style="display: none; margin-bottom: 16px;"></div>
         <div id="alliance-panel-content" style="color: #888; text-align: center; padding: 30px;">Loading alliance data...</div>
@@ -4399,8 +4400,8 @@ function handleAllianceInfoResult(message) {
         tabBar.style.display = 'flex';
         const tabStyle = (active) => `background: ${active ? '#c0a062' : '#333'}; color: ${active ? '#000' : '#c0a062'}; padding: 10px 24px; border: 1px solid #c0a062; border-radius: 8px 8px 0 0; cursor: pointer; font-family: Georgia, serif; font-weight: ${active ? 'bold' : 'normal'}; font-size: 0.95em; border-bottom: ${active ? '2px solid #000' : '1px solid #c0a062'};`;
         tabBar.innerHTML = `
-            <button onclick="switchAllianceTab('info')" style="${tabStyle(_allianceActiveTab === 'info')}">🤝 Alliance Info</button>
-            <button onclick="switchAllianceTab('territories')" style="${tabStyle(_allianceActiveTab === 'territories')}">🏰 Alliance Territories</button>
+            <button onclick="switchAllianceTab('info')" style="${tabStyle(_allianceActiveTab === 'info')}">Alliance Info</button>
+            <button onclick="switchAllianceTab('territories')" style="${tabStyle(_allianceActiveTab === 'territories')}">Alliance Territories</button>
         `;
     } else if (tabBar) {
         tabBar.style.display = 'none';
@@ -4431,17 +4432,17 @@ function handleAllianceInfoResult(message) {
                         <div style="color: #888; font-size: 0.8em;">Treasury</div>
                     </div>
                     <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-                        <div style="color: #f39c12; font-size: 1.3em; font-weight: bold;">👑 ${escapeHTML(myAlliance.leaderName)}</div>
+                        <div style="color: #f39c12; font-size: 1.3em; font-weight: bold;">${escapeHTML(myAlliance.leaderName)}</div>
                         <div style="color: #888; font-size: 0.8em;">Leader</div>
                     </div>
                 </div>
                 <h4 style="color: #ccc; margin: 10px 0 5px;">Members:</h4>
-                ${myAlliance.members.map(m => `<div style="padding:5px;color:${m === myAlliance.leaderName ? '#ffd700' : '#ccc'};">${m === myAlliance.leaderName ? '👑' : '🤵'} ${escapeHTML(m)}</div>`).join('')}
+                ${myAlliance.members.map(m => `<div style="padding:5px;color:${m === myAlliance.leaderName ? '#ffd700' : '#ccc'};">${m === myAlliance.leaderName ? '' : ''} ${escapeHTML(m)}</div>`).join('')}
                 <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
-                    <button onclick="allianceDeposit()" style="background: #2ecc71; color: #000; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">💰 Deposit</button>
-                    ${isLeader ? `<button onclick="allianceInvitePrompt()" style="background: #3498db; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">➕ Invite</button>` : ''}
-                    ${isLeader ? `<button onclick="allianceKickPrompt()" style="background: #e74c3c; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">🚫 Kick</button>` : ''}
-                    <button onclick="allianceLeave()" style="background: #666; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">🚪 Leave</button>
+                    <button onclick="allianceDeposit()" style="background: #2ecc71; color: #000; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Deposit</button>
+                    ${isLeader ? `<button onclick="allianceInvitePrompt()" style="background: #3498db; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Invite</button>` : ''}
+                    ${isLeader ? `<button onclick="allianceKickPrompt()" style="background: #e74c3c; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Kick</button>` : ''}
+                    <button onclick="allianceLeave()" style="background: #666; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Leave</button>
                 </div>
             </div>
         `;
@@ -4456,7 +4457,7 @@ function handleAllianceInfoResult(message) {
                     <input id="alliance-tag-input" type="text" placeholder="Tag (2-4 chars, e.g. MAFIA)" maxlength="4" style="padding: 10px; background: #222; color: #c0a062; border: 1px solid #c0a062; border-radius: 6px; text-transform: uppercase;">
                     <input id="alliance-motto-input" type="text" placeholder="Motto (optional)" maxlength="80" style="padding: 10px; background: #222; color: #c0a062; border: 1px solid #c0a062; border-radius: 6px;">
                 </div>
-                <button onclick="createAlliance()" style="background: #c0a062; color: #000; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%;">🤝 Found Alliance ($10,000)</button>
+                <button onclick="createAlliance()" style="background: #c0a062; color: #000; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%;">Found Alliance ($10,000)</button>
             </div>
         `;
     }
@@ -4546,7 +4547,7 @@ function renderAllianceTerritoriesTab() {
                 const shown = residents.slice(0, 6);
                 residentsHTML = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">';
                 residentsHTML += '<span style="color: #c0a062; font-size: 0.8em; font-weight: bold;">Residents:</span><br>';
-                residentsHTML += shown.map(r => `<span style="color: #bdc3c7; font-size: 0.8em;">🤵 ${typeof r === 'string' ? r : (r.name || 'Unknown')}</span>`).join('<br>');
+                residentsHTML += shown.map(r => `<span style="color: #bdc3c7; font-size: 0.8em;">${typeof r === 'string' ? r : (r.name || 'Unknown')}</span>`).join('<br>');
                 if (residents.length > 6) {
                     residentsHTML += `<br><span style="color: #888; font-size: 0.75em;">...and ${residents.length - 6} more</span>`;
                 }
@@ -4559,11 +4560,11 @@ function renderAllianceTerritoriesTab() {
                     <div style="font-size: 1.6em; margin-bottom: 4px;">${d.icon}</div>
                     <h4 style="color: #c0a062; margin: 0 0 4px;">${d.shortName}</h4>
                     <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
-                        <span>👑 Owner: <strong style="color: ${isMe ? '#ffd700' : '#f39c12'};">${isMe ? 'YOU' : escapeHTML(terr.owner)}</strong></span><br>
-                        <span>👥 Residents: ${resCount}</span><br>
-                        <span>🛡️ Defense: ${terr.defenseRating || 100}</span><br>
-                        <span>💰 Tax: $${(terr.taxCollected || 0).toLocaleString()}</span><br>
-                        <span>💰 Base Income: $${d.baseIncome.toLocaleString()}</span>
+                        <span>Owner: <strong style="color: ${isMe ? '#ffd700' : '#f39c12'};">${isMe ? 'YOU' : escapeHTML(terr.owner)}</strong></span><br>
+                        <span>Residents: ${resCount}</span><br>
+                        <span>Defense: ${terr.defenseRating || 100}</span><br>
+                        <span>Tax: $${(terr.taxCollected || 0).toLocaleString()}</span><br>
+                        <span>Base Income: $${d.baseIncome.toLocaleString()}</span>
                     </div>
                     ${residentsHTML}
                 </div>
@@ -4626,36 +4627,36 @@ function handleAllianceResult(message) {
 
     switch (message.action) {
         case 'created':
-            showMPToast(`🤝 Alliance [${message.alliance.tag}] ${message.alliance.name} founded!`, '#c0a062', 5000);
+            showMPToast(`Alliance [${message.alliance.tag}] ${message.alliance.name} founded!`, '#c0a062', 5000);
             playNotificationSound('victory');
             if (typeof updateUI === 'function') updateUI();
             showAlliancePanel(); // Refresh
             break;
         case 'invited':
-            showMPToast(`✉️ Invite sent to ${message.targetPlayer}.`, '#3498db');
+            showMPToast(`Invite sent to ${message.targetPlayer}.`, '#3498db');
             break;
         case 'member_joined':
-            showMPToast(`🤝 ${message.newMember} joined the alliance!`, '#2ecc71');
+            showMPToast(`${message.newMember} joined the alliance!`, '#2ecc71');
             playNotificationSound('alert');
             showAlliancePanel();
             break;
         case 'left':
-            showMPToast(`🚪 You left ${message.allianceName}.`, '#888');
+            showMPToast(`You left ${message.allianceName}.`, '#888');
             showAlliancePanel();
             break;
         case 'kicked':
-            showMPToast(`🚫 You were kicked from ${message.allianceName}!`, '#e74c3c');
+            showMPToast(`You were kicked from ${message.allianceName}!`, '#e74c3c');
             playNotificationSound('defeat');
             showAlliancePanel();
             break;
         case 'member_left':
-            showMPToast(`🚪 ${message.leftMember} left the alliance.`, '#888');
+            showMPToast(`${message.leftMember} left the alliance.`, '#888');
             break;
         case 'member_kicked':
-            showMPToast(`🚫 ${message.kickedMember} was kicked.`, '#e74c3c');
+            showMPToast(`${message.kickedMember} was kicked.`, '#e74c3c');
             break;
         case 'deposit':
-            showMPToast(`💰 ${message.depositor} deposited $${(message.amount || 0).toLocaleString()} to treasury.`, '#2ecc71');
+            showMPToast(`${message.depositor} deposited $${(message.amount || 0).toLocaleString()} to treasury.`, '#2ecc71');
             // Sync depositor's money
             if (typeof message.newMoney === 'number') {
                 player.money = message.newMoney;
@@ -4673,14 +4674,14 @@ function handleAllianceResult(message) {
 
 function handleAllianceInviteReceived(message) {
     playNotificationSound('alert');
-    showMPToast(`✉️ ${message.inviterName} invited you to [${message.allianceTag}] ${message.allianceName}!`, '#c0a062', 10000);
+    showMPToast(`${message.inviterName} invited you to [${message.allianceTag}] ${message.allianceName}!`, '#c0a062', 10000);
     // Show accept/decline popup
     const modal = document.createElement('div');
     modal.id = 'alliance-invite-modal';
     modal.className = 'popup-overlay';
     modal.innerHTML = `
         <div class="popup-card" style="max-width:400px;">
-            <h3 class="popup-title">🤝 Alliance Invite</h3>
+            <h3 class="popup-title">Alliance Invite</h3>
             <p class="popup-text">${escapeHTML(message.inviterName)} invited you to join:</p>
             <h2 style="color:#ffd700;margin:10px 0;text-align:center;font-family:'Georgia',serif;">[${escapeHTML(message.allianceTag)}] ${escapeHTML(message.allianceName)}</h2>
             <div class="popup-actions">
@@ -4702,7 +4703,7 @@ function showBountyBoard() {
 
     const content = document.getElementById('multiplayer-content');
     content.innerHTML = `
-        <h2 style="color: #ff6600; font-family: Georgia, serif;">💀 Bounty Board</h2>
+        <h2 style="color: #ff6600; font-family: Georgia, serif;">Bounty Board</h2>
         <p style="color: #ccc;">Place bounties on rival players. Kill the target in PvP combat to auto-collect the reward.</p>
 
         <div style="background: rgba(0,0,0,0.8); padding: 20px; border-radius: 12px; border: 2px solid #ff6600; margin-bottom: 20px;">
@@ -4712,7 +4713,7 @@ function showBountyBoard() {
                 <input id="bounty-reward-input" type="number" placeholder="Reward ($5,000 - $500,000)" min="5000" max="500000" style="padding: 10px; background: #222; color: #ff6600; border: 1px solid #ff6600; border-radius: 6px;">
                 <input id="bounty-reason-input" type="text" placeholder="Reason (optional)" maxlength="60" style="padding: 10px; background: #222; color: #ff6600; border: 1px solid #ff6600; border-radius: 6px;">
             </div>
-            <button onclick="postBounty()" style="background: #ff6600; color: #000; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%; margin-top: 10px;">💀 Post Bounty (money deducted upfront)</button>
+            <button onclick="postBounty()" style="background: #ff6600; color: #000; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%; margin-top: 10px;">Post Bounty (money deducted upfront)</button>
         </div>
 
         <div id="bounty-list-content" style="color: #888; text-align: center; padding: 20px;">Loading bounties...</div>
@@ -4741,7 +4742,7 @@ function handleBountyResult(message) {
         return;
     }
     if (message.action === 'posted') {
-        showMPToast(`💀 Bounty posted on ${message.bounty.targetName}!`, '#ff6600', 4000);
+        showMPToast(`Bounty posted on ${message.bounty.targetName}!`, '#ff6600', 4000);
         playNotificationSound('combat');
         player.money = message.newMoney || player.money;
         if (typeof updateUI === 'function') updateUI();
@@ -4756,7 +4757,7 @@ function handleBountyResult(message) {
 
 function handleBountyAlert(message) {
     playNotificationSound('alert');
-    showMPToast(`💀 ${message.message}`, '#ff0000', 8000);
+    showMPToast(`${message.message}`, '#ff0000', 8000);
 }
 
 function handleBountyListResult(message) {
@@ -4779,8 +4780,8 @@ function handleBountyListResult(message) {
                 <div style="padding: 12px; margin: 8px 0; background: rgba(${isOnMe ? '139,0,0' : '255,102,0'},0.15); border-radius: 8px; border-left: 4px solid ${isOnMe ? '#ff0000' : '#ff6600'};">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <strong style="color: #ff6600; font-size: 1.1em;">💀 ${escapeHTML(b.targetName)}</strong>
-                            ${isOnMe ? '<span style="color:#ff0000;font-weight:bold;margin-left:8px;">⚠️ THAT\'S YOU!</span>' : ''}
+                            <strong style="color: #ff6600; font-size: 1.1em;">${escapeHTML(b.targetName)}</strong>
+                            ${isOnMe ? '<span style="color:#ff0000;font-weight:bold;margin-left:8px;">THAT\'S YOU!</span>' : ''}
                             <div style="color: #888; font-size: 0.85em;">${escapeHTML(b.reason || 'Wanted dead or alive.')}</div>
                             <div style="color: #666; font-size: 0.8em;">Posted by: ${escapeHTML(b.posterName)} | Expires in ${timeLeft} min</div>
                         </div>
@@ -4804,7 +4805,7 @@ function showRankedSeason() {
 
     const content = document.getElementById('multiplayer-content');
     content.innerHTML = `
-        <h2 style="color: #ffd700; font-family: Georgia, serif;">🏆 Ranked Season</h2>
+        <h2 style="color: #ffd700; font-family: Georgia, serif;">Ranked Season</h2>
         <p style="color: #ccc;">Compete in ranked PvP combat. Your ELO rating determines your tier. Seasons last 30 days with soft resets.</p>
         <div id="season-info-content" style="color: #888; text-align: center; padding: 30px;">Loading season data...</div>
         <div style="text-align: center; margin-top: 30px;">
@@ -4885,135 +4886,6 @@ function handleSeasonInfoResult(message) {
               `).join('')}
         </div>
     `;
-}
-
-// ==================== PHASE C: TERRITORY SIEGE PANEL ====================
-
-function showSiegePanel() {
-    if (!ensureConnected()) return;
-
-    const territories = onlineWorldState.territories || {};
-    const playerName = player.name || '';
-
-    // Categorize territories
-    const ownedByMe = Object.entries(territories).filter(([, t]) => t.owner === playerName);
-    const attackable = Object.entries(territories).filter(([, t]) => t.owner && t.owner !== playerName);
-
-    const content = document.getElementById('multiplayer-content');
-    content.innerHTML = `
-        <h2 style="color: #e67e22; font-family: Georgia, serif;">🏰 Territory Siege & Fortification</h2>
-        <p style="color: #ccc;">Fortify your territories with defensive upgrades, or launch devastating siege attacks against rival Dons.</p>
-
-        ${ownedByMe.length > 0 ? `
-        <div style="background: rgba(0,0,0,0.8); padding: 20px; border-radius: 12px; border: 2px solid #27ae60; margin-bottom: 20px;">
-            <h3 style="color: #27ae60; margin: 0 0 10px;">🏗️ Fortify Your Territories</h3>
-            <p style="color: #888; font-size: 0.9em;">$500 per fortification point (max 200). Higher fortification = harder to siege.</p>
-            ${ownedByMe.map(([id, t]) => `
-                <div style="padding: 12px; margin: 8px 0; background: rgba(39,174,96,0.1); border-radius: 8px; border-left: 4px solid #27ae60;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="color: #27ae60;">${id.replace(/_/g, ' ')}</strong>
-                            <div style="color: #888; font-size: 0.85em;">Defense: ${t.defenseRating || 100} | Fort: ${t.fortification || 0}/200</div>
-                        </div>
-                        <div style="display: flex; gap: 5px;">
-                            <button onclick="fortifyTerritory('${id}', 10)" style="background:#27ae60;color:#000;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">+10 ($5K)</button>
-                            <button onclick="fortifyTerritory('${id}', 25)" style="background:#2ecc71;color:#000;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">+25 ($12.5K)</button>
-                            <button onclick="fortifyTerritory('${id}', 50)" style="background:#1abc9c;color:#000;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">+50 ($25K)</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        </div>` : '<div style="background:rgba(0,0,0,0.6);padding:15px;border-radius:10px;color:#888;text-align:center;margin-bottom:20px;">You don\'t own any territories to fortify. Claim or conquer one first.</div>'}
-
-        <div style="background: rgba(0,0,0,0.8); padding: 20px; border-radius: 12px; border: 2px solid #e67e22; margin-bottom: 20px;">
-            <h3 style="color: #e67e22; margin: 0 0 10px;">⚔️ Launch a Siege</h3>
-            <p style="color: #888; font-size: 0.9em;">Cost: $5,000 + 60 energy | Requires 8+ gang members | Multi-phase battle | 1hr cooldown</p>
-            ${attackable.length === 0 ? '<div style="color:#888;text-align:center;padding:15px;">No territories to siege. All are unclaimed or yours.</div>' :
-              attackable.map(([id, t]) => `
-                <div style="padding: 12px; margin: 8px 0; background: rgba(231,76,60,0.1); border-radius: 8px; border-left: 4px solid #e67e22;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="color: #e67e22;">${id.replace(/_/g, ' ')}</strong>
-                            <div style="color: #888; font-size: 0.85em;">Owner: ${escapeHTML(t.owner)} | Defense: ${t.defenseRating || 100} | Fort: ${t.fortification || 0}</div>
-                        </div>
-                        <button onclick="declareSiege('${id}')" style="background:linear-gradient(180deg,#e67e22,#a0520a);color:#fff;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">🏰 Siege!</button>
-                    </div>
-                </div>
-              `).join('')}
-        </div>
-
-        <div style="text-align: center; margin-top: 30px;">
-            <button onclick="showOnlineWorld()" style="background: #333; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: Georgia, serif;">← Back to Commission</button>
-        </div>
-    `;
-    hideAllScreens();
-    const ms4 = document.getElementById('multiplayer-screen');
-    if (ms4) ms4.style.display = 'block';
-}
-
-function fortifyTerritory(districtId, points) {
-    sendMP({ type: 'siege_fortify', district: districtId, points: points });
-}
-
-function declareSiege(districtId) {
-    if (!confirm(`Launch a siege on ${districtId.replace(/_/g, ' ')}?\n\nCost: $5,000 + 60 energy\nRequires: 8+ gang members\n\nThis is a multi-phase assault. Casualties are expected.`)) return;
-
-    const gangMembers = (player.gangMembers || []).length;
-    const power = typeof calculatePower === 'function' ? calculatePower() : 0;
-
-    sendMP({
-        type: 'siege_declare',
-        district: districtId,
-        gangMembers: gangMembers,
-        power: power
-    });
-}
-
-function handleSiegeResult(message) {
-    if (!message.success) {
-        showSystemMessage(message.error || 'Siege failed.', '#e74c3c');
-        return;
-    }
-
-    // Sync money/energy
-    if (message.money !== undefined) player.money = message.money;
-    if (message.energy !== undefined) player.energy = message.energy;
-
-    if (message.victory) {
-        playNotificationSound('victory');
-        showMPToast(`🏰 SIEGE VICTORY! Conquered ${(message.district || '').replace(/_/g, ' ')}! +${message.repGain || 0} rep`, '#27ae60', 6000);
-        logAction(`🏰 Your siege on ${(message.district || '').replace(/_/g, ' ')} was successful! Conquered from ${message.oldOwner}. Lost ${message.membersLost || 0} gang members.`);
-    } else {
-        playNotificationSound('defeat');
-        const phase = message.phase === 'breach_failed' ? 'Walls held firm!' : 'Assault repelled!';
-        showMPToast(`🏰 Siege failed — ${phase}${message.jailed ? ' ARRESTED!' : ''}`, '#e74c3c', 6000);
-        logAction(`🏰 Siege on ${(message.district || '').replace(/_/g, ' ')} failed. ${phase} Lost ${message.membersLost || 0} gang members, -${message.repLoss || 0} rep.`);
-
-        if (message.jailed) {
-            player.inJail = true;
-            player.jailTime = message.jailTime || 20;
-            if (window.EventBus) EventBus.emit('jailStatusChanged', { inJail: true, jailTime: player.jailTime });
-        }
-    }
-
-    // Update territories
-    if (message.territories) onlineWorldState.territories = message.territories;
-    if (typeof updateUI === 'function') updateUI();
-}
-
-function handleFortifyResult(message) {
-    if (!message.success) {
-        showSystemMessage(message.error || 'Fortification failed.', '#e74c3c');
-        return;
-    }
-    player.money = message.money || player.money;
-    showMPToast(`🏗️ ${(message.district || '').replace(/_/g, ' ')} fortified to ${message.fortification}/200!`, '#27ae60', 3000);
-    playNotificationSound('cash');
-    if (typeof updateUI === 'function') updateUI();
-    // Update local territory data
-    if (onlineWorldState.territories[message.district]) {
-        onlineWorldState.territories[message.district].fortification = message.fortification;
-    }
 }
 
 // ==================== UTILITY HELPERS ====================

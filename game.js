@@ -148,9 +148,9 @@ function degradeEquipment(context) {
   if (broken.length > 0) {
     recalculatePower();
     const msg = broken.map(n => `Your ${n} broke from wear and tear!`).join(' ');
-    logAction(`💥 ${msg} You'll need to buy a replacement.`);
+    logAction(`${msg} You'll need to buy a replacement.`);
     if (typeof showBriefNotification === 'function') {
-      showBriefNotification(`💥 ${broken.join(', ')} broke!`, 'danger');
+      showBriefNotification(`${broken.join(', ')} broke!`, 'danger');
     }
   }
 }
@@ -387,7 +387,7 @@ function renderStoryFamilyPicker() {
         <h2 class="story-family-name">${rivalFam?.name || famKey}</h2>
         <h3 class="story-family-story-title">"${fam.storyTitle}"</h3>
         <p class="story-family-tagline">${fam.tagline}</p>
-        ${buff ? `<div class="story-family-buff">✨ ${buff.name}: ${buff.description}</div>` : ''}
+        ${buff ? `<div class="story-family-buff">${buff.name}: ${buff.description}</div>` : ''}
         <div class="story-family-chapters">8 Chapters &middot; 4 Acts</div>
         <button class="story-pledge-btn" style="background:linear-gradient(135deg,${fam.color},${fam.color}cc);" onclick="beginFamilyStory('${famKey}')">
           Begin This Story
@@ -410,7 +410,7 @@ async function beginFamilyStory(familyKey) {
   const confirmed = await ui.confirm(
     `Begin "${fam.storyTitle}" with the ${rivalFam?.name || familyKey}?\n\n` +
     `${fam.tagline}\n\n` +
-    `⚠️ This is permanent! You will play through this family's 8-chapter story.`
+    `This is permanent! You will play through this family's 8-chapter story.`
   );
 
   if (!confirmed) return;
@@ -431,8 +431,8 @@ async function beginFamilyStory(familyKey) {
     bossesDefeated: []
   };
 
-  showBriefNotification(`📖 "${fam.storyTitle}" begins...`, 'success');
-  logAction(`📖 You've begun <strong>"${fam.storyTitle}"</strong> with the ${rivalFam?.name || familyKey}.`);
+  showBriefNotification(`"${fam.storyTitle}" begins...`, 'success');
+  logAction(`You've begun <strong>"${fam.storyTitle}"</strong> with the ${rivalFam?.name || familyKey}.`);
 
   updateUI();
   showMissions();
@@ -490,10 +490,10 @@ function renderStoryChapter() {
   // Rewards block
   const rw = chapter.rewards;
   let rewardsHTML = `<div class="story-rewards">
-    ${rw.money ? `<span class="story-reward-tag">💰 $${rw.money.toLocaleString()}</span>` : ''}
+    ${rw.money ? `<span class="story-reward-tag">$${rw.money.toLocaleString()}</span>` : ''}
     ${rw.experience ? `<span class="story-reward-tag">⭐ ${rw.experience} XP</span>` : ''}
-    ${rw.reputation ? `<span class="story-reward-tag">👑 +${rw.reputation} Rep</span>` : ''}
-    ${chapter.rankOnComplete ? `<span class="story-reward-tag rank-up">🎖️ → ${chapter.rankOnComplete.charAt(0).toUpperCase() + chapter.rankOnComplete.slice(1)}</span>` : ''}
+    ${rw.reputation ? `<span class="story-reward-tag">+${rw.reputation} Rep</span>` : ''}
+    ${chapter.rankOnComplete ? `<span class="story-reward-tag rank-up">→ ${chapter.rankOnComplete.charAt(0).toUpperCase() + chapter.rankOnComplete.slice(1)}</span>` : ''}
   </div>`;
 
   // Choice UI (if this chapter has a choice and player hasn't chosen yet)
@@ -525,7 +525,7 @@ function renderStoryChapter() {
     bossHTML = `
       <div class="story-boss-block">
         <div class="story-boss-header">
-          <span class="boss-icon">💀</span>
+          <span class="boss-icon"></span>
           <span class="boss-name">${chapter.boss.name}</span>
         </div>
         <div class="story-boss-intro">${chapter.boss.dialogue.intro}</div>
@@ -535,14 +535,14 @@ function renderStoryChapter() {
           <span>Guards: ${chapter.boss.gangSize}</span>
         </div>
         <button class="story-boss-btn" onclick="startStoryBossFight('${chapter.id}')" ${allObjectivesMet ? '' : 'disabled'}>
-          ${allObjectivesMet ? '⚔️ Face the Boss' : '🔒 Complete objectives first'}
+          ${allObjectivesMet ? 'Face the Boss' : '🔒 Complete objectives first'}
         </button>
       </div>`;
   } else if (chapter.boss && bossDefeated) {
     bossHTML = `
       <div class="story-boss-block defeated">
         <div class="story-boss-header">
-          <span class="boss-icon">☠️</span>
+          <span class="boss-icon"></span>
           <span class="boss-name">${chapter.boss.name} — Defeated</span>
         </div>
         <div class="story-boss-victory">${chapter.boss.dialogue.victory}</div>
@@ -567,7 +567,7 @@ function renderStoryChapter() {
     advanceHTML = `
       ${completionNarrHTML}
       <button class="story-advance-btn" onclick="advanceStoryChapter()">
-        ${chapterNum < totalChapters ? '📖 Continue to Next Chapter →' : '👑 Claim Your Destiny'}
+        ${chapterNum < totalChapters ? 'Continue to Next Chapter →' : 'Claim Your Destiny'}
       </button>`;
   }
 
@@ -606,7 +606,7 @@ function renderStoryChapter() {
 
       <!-- Objectives -->
       <div class="story-objectives-panel">
-        <h3 class="story-obj-header">📋 Objectives</h3>
+        <h3 class="story-obj-header">Objectives</h3>
         ${objectivesHTML}
       </div>
 
@@ -620,7 +620,7 @@ function renderStoryChapter() {
       ${advanceHTML}
 
       <!-- Turf Access -->
-      <button class="story-action-btn" style="margin-bottom:10px;" onclick="showTerritoryControl();">🗺️ View Turf Map</button>
+      <button class="story-action-btn" style="margin-bottom:10px;" onclick="showTerritoryControl();">View Turf Map</button>
 
       <!-- Back Button -->
       <button class="story-back-btn" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
@@ -639,7 +639,7 @@ function renderStoryEpilogue(famKey, fam) {
         <div class="story-header-top">
           <span class="story-fam-icon">${fam.icon}</span>
           <div class="story-header-info">
-            <h1 class="story-header-title">👑 ${rivalFam?.name || famKey} — Don</h1>
+            <h1 class="story-header-title">${rivalFam?.name || famKey} — Don</h1>
             <div class="story-header-meta">Story Complete &middot; Empire Unlocked</div>
           </div>
         </div>
@@ -658,9 +658,9 @@ function renderStoryEpilogue(famKey, fam) {
       </div>
 
       <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0;">
-        <button class="story-action-btn" onclick="showTerritoryControl();">🗺️ Turf Wars &amp; Territory</button>
-        <button class="story-action-btn" onclick="showProtectionRackets();">🏪 Protection Rackets</button>
-        <button class="story-action-btn" onclick="showCorruption();">🏛️ Corruption Network</button>
+        <button class="story-action-btn" onclick="showTerritoryControl();">Turf Wars &amp; Territory</button>
+        <button class="story-action-btn" onclick="showProtectionRackets();">Protection Rackets</button>
+        <button class="story-action-btn" onclick="showCorruption();">Corruption Network</button>
       </div>
 
       <button class="story-back-btn" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
@@ -694,16 +694,16 @@ function makeStoryChoice(chapterId, optionIndex) {
   switch (option.effect) {
     case 'money':
       player.money += option.value;
-      if (option.value > 0) logAction(`💰 Choice reward: +$${option.value.toLocaleString()}`);
-      else logAction(`💰 Choice cost: -$${Math.abs(option.value).toLocaleString()}`);
+      if (option.value > 0) logAction(`Choice reward: +$${option.value.toLocaleString()}`);
+      else logAction(`Choice cost: -$${Math.abs(option.value).toLocaleString()}`);
       break;
     case 'reputation':
       player.reputation += option.value;
-      logAction(`👑 Choice reward: +${option.value} reputation`);
+      logAction(`Choice reward: +${option.value} reputation`);
       break;
     case 'respect':
       sp.respect = (sp.respect || 0) + option.value;
-      logAction(`🤝 Choice reward: +${option.value} family respect`);
+      logAction(`Choice reward: +${option.value} family respect`);
       break;
   }
 
@@ -746,7 +746,7 @@ async function startStoryBossFight(chapterId) {
     player.money += boss.reward;
     sp.bossesDefeated.push(chapterId);
 
-    logAction(`⚔️ VICTORY! ${boss.name} has been defeated!`);
+    logAction(`VICTORY! ${boss.name} has been defeated!`);
     logAction(boss.dialogue.victory);
     await ui.alert(`${boss.name} defeated!\n\n${boss.dialogue.victory}`);
     showBriefNotification(`${boss.name} defeated! +$${boss.reward.toLocaleString()}`, 'success');
@@ -755,7 +755,7 @@ async function startStoryBossFight(chapterId) {
     const healthLoss = Math.floor(Math.random() * 30) + 15;
     player.health -= healthLoss;
 
-    logAction(`💀 ${boss.name} overpowered you!`);
+    logAction(`${boss.name} overpowered you!`);
     logAction(boss.dialogue.defeat);
     showBriefNotification(`Defeated by ${boss.name}! Lost ${healthLoss} health.`, 'danger');
 
@@ -795,19 +795,19 @@ function advanceStoryChapter() {
   player.reputation += chapter.rewards.reputation || 0;
   sp.respect = (sp.respect || 0) + (chapter.respectGain || 0);
 
-  logAction(`📖 Chapter Complete: "${chapter.title}" — +$${(chapter.rewards.money||0).toLocaleString()}, +${chapter.rewards.experience||0} XP, +${chapter.rewards.reputation||0} Rep`);
+  logAction(`Chapter Complete: "${chapter.title}" — +$${(chapter.rewards.money||0).toLocaleString()}, +${chapter.rewards.experience||0} XP, +${chapter.rewards.reputation||0} Rep`);
 
   // Rank promotion
   if (chapter.rankOnComplete) {
     player.familyRank = chapter.rankOnComplete;
     const rankName = chapter.rankOnComplete.charAt(0).toUpperCase() + chapter.rankOnComplete.slice(1);
-    logAction(`🎖️ Promoted to <strong>${rankName}</strong>!`);
+    logAction(`Promoted to <strong>${rankName}</strong>!`);
     showBriefNotification(`Promoted to ${rankName}!`, 'success');
 
     if (chapter.rankOnComplete === 'don') {
       sp.isDon = true;
-      logAction(`👑 You are now the <strong>Don</strong>. The city bows to your will.`);
-      showBriefNotification('👑 You are the Don! Turf Wars unlocked!', 'success');
+      logAction(`You are now the <strong>Don</strong>. The city bows to your will.`);
+      showBriefNotification('You are the Don! Turf Wars unlocked!', 'success');
     }
   }
 
@@ -815,7 +815,7 @@ function advanceStoryChapter() {
   if (chapterIdx + 1 < fam.chapters.length && !sp.isDon) {
     sp.currentChapter = chapterIdx + 1;
     const nextCh = fam.chapters[sp.currentChapter];
-    logAction(`📖 New Chapter: "${nextCh.title}" — Act ${nextCh.act}: ${nextCh.actTitle}`);
+    logAction(`New Chapter: "${nextCh.title}" — Act ${nextCh.act}: ${nextCh.actTitle}`);
   }
 
   updateUI();
@@ -876,7 +876,7 @@ async function startFactionMission(familyKey, missionId) {
       return;
     }
     
-    logAction(`💥 Mission "${mission.name}" failed! The ${crimeFamilies[familyKey].name} is not pleased with your performance.`);
+    logAction(`Mission "${mission.name}" failed! The ${crimeFamilies[familyKey].name} is not pleased with your performance.`);
     showBriefNotification("Mission failed! Try again when you're better prepared.", 'danger');
   }
   
@@ -938,7 +938,7 @@ function startSignatureJob(familyKey) {
       const bonusWeapons = ['Combat Knife', 'Pistol', 'Shotgun'];
       const bonusWeapon = bonusWeapons[Math.floor(Math.random() * bonusWeapons.length)];
       player.inventory.push({ name: bonusWeapon, power: 15 + Math.floor(Math.random() * 20), type: 'weapon' });
-      logAction(`🔫 Kozlov bonus: You scored a ${bonusWeapon} from the convoy!`);
+      logAction(`Kozlov bonus: You scored a ${bonusWeapon} from the convoy!`);
     }
     
     logAction(`⭐ Signature Job "${sigJob.name}" completed for ${family.name}! +$${earnings.toLocaleString()} (dirty), +${sigJob.xpReward} XP, +5 family rep.`);
@@ -1576,9 +1576,9 @@ function checkFamilyRankUp() {
         : true;
     if (meetsOwned && meetsKills && meetsLevel && meetsDons) {
         player.familyRank = nextRank;
-        logAction(`🎖️ You've been promoted to <strong>${nextRank.charAt(0).toUpperCase() + nextRank.slice(1)}</strong> of the ${RIVAL_FAMILIES[player.chosenFamily].name}!`);
+        logAction(`You've been promoted to <strong>${nextRank.charAt(0).toUpperCase() + nextRank.slice(1)}</strong> of the ${RIVAL_FAMILIES[player.chosenFamily].name}!`);
         if (nextRank === 'don') {
-            logAction(`👑 You are now the <strong>Don</strong>. The city bows to your will.`);
+            logAction(`You are now the <strong>Don</strong>. The city bows to your will.`);
         }
     }
 }
@@ -2965,7 +2965,7 @@ async function showBusinesses() {
       <div style="margin: 10px 0;">
         <button onclick="collectAllBusinessIncome()" 
             style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 3px 10px rgba(46,204,113,0.3);">
-          💰 Collect All Income
+          Collect All Income
         </button>
       </div>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin: 20px 0;">
@@ -2993,9 +2993,9 @@ async function showBusinesses() {
           
           // Max level perk display for illegal businesses
           const maxLevelPerks = {
-            counterfeiting: '🏆 MAX LEVEL PERK: +5% laundering conversion rate on all methods',
-            druglab: '🏆 MAX LEVEL PERK: Drug trade goods cost 35% less in the store',
-            chopshop: '🏆 MAX LEVEL PERK: +55% bonus on all stolen car sales'
+            counterfeiting: 'MAX LEVEL PERK: +5% laundering conversion rate on all methods',
+            druglab: 'MAX LEVEL PERK: Drug trade goods cost 35% less in the store',
+            chopshop: 'MAX LEVEL PERK: +55% bonus on all stolen car sales'
           };
           const isMaxLevel = business.level >= businessType.maxLevel;
           const maxPerkText = isMaxLevel && maxLevelPerks[business.type] 
@@ -3007,7 +3007,7 @@ async function showBusinesses() {
           
           return `
             <div style="background: rgba(44, 62, 80, 0.8); border-radius: 15px; padding: 20px; border: 2px solid ${borderColor};">
-              <h4 style="color: ${headerColor}; margin-bottom: 10px;">${business.name}${businessType.paysDirty ? ' ⚠️' : ''}</h4>
+              <h4 style="color: ${headerColor}; margin-bottom: 10px;">${business.name}${businessType.paysDirty ? ' ' : ''}</h4>
               <p style="color: #ecf0f1; margin-bottom: 15px;">${businessType.description}</p>
               
               <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
@@ -3217,7 +3217,7 @@ async function upgradeBusiness(businessIndex) {
   
   const narrations = upgradeNarrations[business.type];
   if (narrations && narrations[business.level - 1]) {
-    logAction(`🔧 ${narrations[business.level - 1]} (${business.name} Level ${business.level})`);
+    logAction(`${narrations[business.level - 1]} (${business.name} Level ${business.level})`);
   } else {
     logAction(`You invest in improvements for ${business.name}. New equipment, better staff, higher profits - the empire grows stronger (Level ${business.level}).`);
   }
@@ -3225,9 +3225,9 @@ async function upgradeBusiness(businessIndex) {
   // Max level perk activation notification
   if (business.level >= businessType.maxLevel && businessType.paysDirty) {
     const perkMessages = {
-      counterfeiting: '🏆 MAX LEVEL REACHED! Your Counterfeiting Operation now provides +5% laundering conversion rate!',
-      druglab: '🏆 MAX LEVEL REACHED! Your Drug Lab now provides a massive 35% discount on drug trade goods!',
-      chopshop: '🏆 MAX LEVEL REACHED! Your Chop Shop now gives +55% bonus on all stolen car sales!'
+      counterfeiting: 'MAX LEVEL REACHED! Your Counterfeiting Operation now provides +5% laundering conversion rate!',
+      druglab: 'MAX LEVEL REACHED! Your Drug Lab now provides a massive 35% discount on drug trade goods!',
+      chopshop: 'MAX LEVEL REACHED! Your Chop Shop now gives +55% bonus on all stolen car sales!'
     };
     if (perkMessages[business.type]) {
       logAction(perkMessages[business.type]);
@@ -3411,7 +3411,7 @@ async function showLoanShark() {
   }
   
   let loanHTML = `
-    <h2>🏦ˆ Tony's Loan Office</h2>
+    <h2>ˆ Tony's Loan Office</h2>
     <p style="color: #f39c12;">Need cash fast? Tony's got you covered... for a price.</p>
   `;
   
@@ -3495,7 +3495,7 @@ async function showLoanShark() {
     </div>
     
     <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; border: 1px solid #e74c3c; margin: 20px 0;">
-      <h4 style="color: #e74c3c;">⚠️ WARNING</h4>
+      <h4 style="color: #e74c3c;">WARNING</h4>
       <p style="color: #ecf0f1;">Failing to repay loans on time will result in serious consequences including reputation loss, health damage, and potentially losing gang members or property. Tony doesn't mess around.</p>
     </div>
     
@@ -3582,7 +3582,7 @@ async function repayLoan(loanIndex) {
     loan.amountOwed -= partialAmount;
     
     showBriefNotification(`Partial payment of $${partialAmount.toLocaleString()}. Remaining: $${loan.amountOwed.toLocaleString()}`, 'warning');
-    logAction(`🤝 You hand over what you can — $${partialAmount.toLocaleString()}. Tony nods. "It's a start." You still owe $${loan.amountOwed.toLocaleString()}.`);
+    logAction(` You hand over what you can — $${partialAmount.toLocaleString()}. Tony nods. "It's a start." You still owe $${loan.amountOwed.toLocaleString()}.`);
     
     updateUI();
     showLoanShark();
@@ -3594,7 +3594,7 @@ async function repayLoan(loanIndex) {
   player.reputation += 2;
   
   alert(`Loan repaid! You paid $${loan.amountOwed.toLocaleString()} to clear your debt. Your reputation with the underworld improves.`);
-  logAction(`🤝 You slide the money back to Tony with interest. He nods approvingly - you're good for your word. Reputation intact, debt cleared (-$${loan.amountOwed.toLocaleString()}).`);
+  logAction(` You slide the money back to Tony with interest. He nods approvingly - you're good for your word. Reputation intact, debt cleared (-$${loan.amountOwed.toLocaleString()}).`);
   
   updateUI();
   showLoanShark();
@@ -3614,7 +3614,7 @@ function showMoneyLaundering() {
   checkLaunderingCompletions();
   
   let launderHTML = `
-    <h2>💧 Money Laundering</h2>
+    <h2>Money Laundering</h2>
     <p>Clean your dirty money through various legitimate channels.</p>
     
     <div style="background: rgba(52, 73, 94, 0.6); border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid #f39c12;">
@@ -3629,7 +3629,7 @@ function showMoneyLaundering() {
   if (player.activeLaundering.length > 0) {
     launderHTML += `
       <div style="background: rgba(46, 204, 113, 0.15); border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid #2ecc71;">
-        <h3 style="color: #2ecc71;">⏳ Active Operations</h3>
+        <h3 style="color: #2ecc71;">Active Operations</h3>
         <div id="active-laundering-ops" style="display: grid; gap: 12px;">
           ${player.activeLaundering.map(op => {
             const now = Date.now();
@@ -3657,7 +3657,7 @@ function showMoneyLaundering() {
                   <span>Dirty: $${op.amount.toLocaleString()}</span>
                   <span>Expected Clean: $${op.cleanAmount.toLocaleString()}</span>
                 </div>
-                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #2ecc71; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">💰 Collect Clean Money</button>` : ''}
+                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #2ecc71; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">Collect Clean Money</button>` : ''}
               </div>
             `;
           }).join('')}
@@ -3715,12 +3715,12 @@ function showMoneyLaundering() {
   
   launderHTML += `
     <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; border: 1px solid #e74c3c; margin: 20px 0;">
-      <h4 style="color: #e74c3c;">⚠️ NOTICE</h4>
+      <h4 style="color: #e74c3c;">NOTICE</h4>
       <p style="color: #ecf0f1;">Money laundering carries risks. High suspicion levels may attract law enforcement attention. Choose your methods carefully and don't get greedy.</p>
     </div>
     
     <div style="background: rgba(46, 204, 113, 0.15); padding: 20px; border-radius: 10px; border: 1px solid #2ecc71; margin: 20px 0;">
-      <h4 style="color: #2ecc71;">💡 TIPS</h4>
+      <h4 style="color: #2ecc71;">TIPS</h4>
       <p style="color: #ecf0f1;">• The <strong>Money Laundering</strong> job (under Jobs) also converts dirty money to clean money at 80-95% rates.</p>
       <p style="color: #ecf0f1;">• Owning a <strong>Counterfeiting Operation</strong> business gives +3% conversion rate on the Money Laundering job.</p>
       <p style="color: #ecf0f1;">• Dirty money jobs (Bank Job, Counterfeiting Money) increase your suspicion level — launder regularly!</p>
@@ -3813,7 +3813,7 @@ function startLaundering(methodId) {
   // Utility item: Burner Phone reduces suspicion risk by 15%
   if (hasUtilityItem('Burner Phone')) {
     adjustedSuspicionRisk *= 0.85;
-    logAction(`📱 Your Burner Phone keeps communications untraceable — suspicion risk reduced.`);
+    logAction(`Your Burner Phone keeps communications untraceable — suspicion risk reduced.`);
   }
   
   if (suspicionRoll < adjustedSuspicionRisk) {
@@ -3827,8 +3827,8 @@ function startLaundering(methodId) {
     player.suspicionLevel = (player.suspicionLevel || 0) + suspicionGain;
     player.wantedLevel += Math.floor(suspicionGain / 2);
     
-    showToast(`🚨 Operation compromised! Lost $${lost.toLocaleString()}, $${returned.toLocaleString()} returned. +${suspicionGain} suspicion.`, 'error');
-    logAction(`🚨 The operation goes sideways! Feds intercept the cash. $${lost.toLocaleString()} seized, but $${returned.toLocaleString()} dirty money was recovered. The heat is rising (+${suspicionGain} suspicion).`);
+    showToast(`Operation compromised! Lost $${lost.toLocaleString()}, $${returned.toLocaleString()} returned. +${suspicionGain} suspicion.`, 'error');
+    logAction(`The operation goes sideways! Feds intercept the cash. $${lost.toLocaleString()} seized, but $${returned.toLocaleString()} dirty money was recovered. The heat is rising (+${suspicionGain} suspicion).`);
   } else {
     // SUCCESS — Queue the laundering operation with a real timer
     const cleanAmount = Math.floor(amount * method.cleanRate);
@@ -3853,8 +3853,8 @@ function startLaundering(methodId) {
     const secs = Math.floor((processingTimeMs % 60000) / 1000);
     const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
     
-    showToast(`💧 Laundering started! $${amount.toLocaleString()} → $${cleanAmount.toLocaleString()} clean in ${timeStr}.`, 'success');
-    logAction(`💧 ${method.name} operation initiated. $${amount.toLocaleString()} of dirty cash is being cleaned — expect $${cleanAmount.toLocaleString()} back in ${timeStr}.`);
+    showToast(`Laundering started! $${amount.toLocaleString()} → $${cleanAmount.toLocaleString()} clean in ${timeStr}.`, 'success');
+    logAction(`${method.name} operation initiated. $${amount.toLocaleString()} of dirty cash is being cleaned — expect $${cleanAmount.toLocaleString()} back in ${timeStr}.`);
   }
   
   updateUI();
@@ -3880,8 +3880,8 @@ function collectLaundering(opId) {
   player.money += op.cleanAmount;
   player.activeLaundering.splice(opIndex, 1);
   
-  showToast(`💰 Collected $${op.cleanAmount.toLocaleString()} clean money from ${op.methodName}!`, 'success');
-  logAction(`💰 The ${op.methodName} laundering operation is complete. $${op.cleanAmount.toLocaleString()} of squeaky-clean cash has been added to your wallet.`);
+  showToast(`Collected $${op.cleanAmount.toLocaleString()} clean money from ${op.methodName}!`, 'success');
+  logAction(`The ${op.methodName} laundering operation is complete. $${op.cleanAmount.toLocaleString()} of squeaky-clean cash has been added to your wallet.`);
   
   updateUI();
   showMoneyLaundering();
@@ -3947,7 +3947,7 @@ function startLaunderingCountdown() {
         if (parent && !parent.querySelector('button')) {
           parent.style.borderLeftColor = '#2ecc71';
           const btn = document.createElement('button');
-          btn.textContent = '💰 Collect Clean Money';
+          btn.textContent = 'Collect Clean Money';
           btn.style.cssText = 'background: #2ecc71; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;';
           btn.onclick = () => collectLaundering(op.id);
           parent.appendChild(btn);
@@ -4051,7 +4051,7 @@ function showGang() {
     
     <!-- Training Programs -->
     <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #1abc9c; margin: 20px 0;">
-      <h3 style="color: #1abc9c;">🎓 Training Programs</h3>
+      <h3 style="color: #1abc9c;">Training Programs</h3>
       ${generateTrainingProgramsHTML()}
     </div>
     
@@ -4079,7 +4079,7 @@ function showGangManagementScreen() {
   const maxMembers = calculateMaxGangMembers();
   
   let crewHTML = `
-    <h2>👥 Crew Details</h2>
+    <h2>Crew Details</h2>
     <p>Manage individual crew members, boost loyalty, and assign specializations.</p>
     
     <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
@@ -4108,10 +4108,13 @@ function showGangManagementScreen() {
     members.forEach((member, index) => {
       const loyaltyColor = member.loyalty > 70 ? '#2ecc71' : member.loyalty > 40 ? '#f39c12' : '#e74c3c';
       const loyaltyBar = Math.min(100, Math.max(0, member.loyalty));
-      const statusText = member.onOperation ? '⚔️ On Operation' : 
-                member.inTraining ? '🎓 In Training' : '✅ Available';
+      const statusText = member.arrested ? 'Arrested' :
+                member.onOperation ? 'On Operation' : 
+                member.inTraining ? 'In Training' : 'Available';
+      const statusColor = member.arrested ? '#e74c3c' : member.onOperation ? '#f39c12' : member.inTraining ? '#9b59b6' : '#2ecc71';
       const role = member.specialization || 'none';
-      const roleName = role !== 'none' ? role.charAt(0).toUpperCase() + role.slice(1) : 'Unassigned';
+      const expandedRoleName = member.role && GANG_MEMBER_ROLES[member.role] ? GANG_MEMBER_ROLES[member.role].name : null;
+      const roleName = expandedRoleName || (role !== 'none' ? role.charAt(0).toUpperCase() + role.slice(1) : 'Unassigned');
       const expLevel = member.experienceLevel || 1;
       const tribute = Math.floor((member.tributeMultiplier || 1) * 100);
       const daysActive = Math.floor((Date.now() - (member.joinedDate || Date.now())) / (1000 * 60 * 60 * 24));
@@ -4120,7 +4123,7 @@ function showGangManagementScreen() {
         <div style="background: rgba(44,62,80,0.8); padding: 15px; border-radius: 10px; border-left: 4px solid ${loyaltyColor};">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <h4 style="margin:0; color:#ecf0f1;">${member.name}</h4>
-            <span style="font-size:0.8em; color: #95a5a6;">${statusText}</span>
+            <span style="font-size:0.8em; color: ${statusColor};">${statusText}</span>
           </div>
           
           <div style="font-size:0.9em; color:#bdc3c7; margin-bottom:10px;">
@@ -4148,18 +4151,18 @@ function showGangManagementScreen() {
           <div style="display:flex; flex-wrap:wrap; gap:5px;">
             ${!member.onOperation && !member.inTraining ? `
               <button onclick="boostMemberLoyalty(${index})" style="background:#f39c12; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;" title="Pay to increase loyalty">
-                💰 Pay Respect
+                Pay Respect
               </button>
               <button onclick="startTraining(${index})" style="background:#1abc9c; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
-                🎓 Train
+                Train
               </button>
               <button onclick="fireGangMember(${index})" style="background:#95a5a6; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
-                🚪 Fire
+                Fire
               </button>
             ` : ''}
             ${member.loyalty < 30 ? `
               <button onclick="dealWithDisloyalty(${index})" style="background:#e74c3c; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
-                ⚠️ Discipline
+                Discipline
               </button>
             ` : ''}
           </div>
@@ -4276,6 +4279,7 @@ function getAvailableMembersForOperation(requiredRole) {
     return (matchesSpecialization || matchesExpandedRole) &&
       !member.onOperation && 
       !member.inTraining &&
+      !member.arrested &&
       member.loyalty > 20;
   });
 }
@@ -4303,9 +4307,10 @@ function generateGangMembersHTML() {
     const expandedRole = member.role ? GANG_MEMBER_ROLES[member.role] : null;
     const roleName = expandedRole ? `${expandedRole.icon || ''} ${expandedRole.name}`.trim() : (role ? role.name : 'Unassigned');
     const perkText = expandedRole && expandedRole.perk ? `<br><strong>Perk:</strong> <em>${expandedRole.perk.name}</em> — ${expandedRole.perk.effect}` : '';
-    const statusText = member.onOperation ? 'On Operation' : 
-             member.inTraining ? '🎓 In Training' : 
-             '✅ Available';
+    const statusText = member.arrested ? 'Arrested' :
+             member.onOperation ? 'On Operation' : 
+             member.inTraining ? 'In Training' : 
+             'Available';
     
     const loyaltyColor = member.loyalty > 70 ? '#2ecc71' : 
               member.loyalty > 40 ? '#f39c12' : '#e74c3c';
@@ -4643,7 +4648,7 @@ async function startTraining(memberIndex) {
     }, trainingData.duration);
     
     showBriefNotification(`${member.name} started ${program.name} training (${program.duration}h)`, 'success');
-    logAction(`🎓 ${member.name} hits the books and training grounds. Investment in your crew's skills pays dividends in the long run (-$${program.cost}).`);
+    logAction(`${member.name} hits the books and training grounds. Investment in your crew's skills pays dividends in the long run (-$${program.cost}).`);
     
     updateUI();
     showGang();
@@ -4670,7 +4675,7 @@ function completeTraining(trainingData) {
   player.gang.trainingQueue = player.gang.trainingQueue.filter(t => t !== trainingData);
   
   alert(`${member.name} has completed their training program! Their skills have improved.`);
-  logAction(`🎓 ${member.name} graduates from training with new skills and renewed dedication. Your investment in education pays off in capability and loyalty.`);
+  logAction(`${member.name} graduates from training with new skills and renewed dedication. Your investment in education pays off in capability and loyalty.`);
   
   updateUI();
 }
@@ -4714,7 +4719,7 @@ function enrollInTraining(programId) {
   }, trainingData.duration);
   
   alert(`${member.name} has enrolled in ${program.name}. Training will complete in ${program.duration} hours.`);
-  logAction(`🎓 ${member.name} begins intensive training in ${program.name}. Skilled soldiers make for a stronger organization (-$${program.cost}).`);
+  logAction(`${member.name} begins intensive training in ${program.name}. Skilled soldiers make for a stronger organization (-$${program.cost}).`);
   
   updateUI();
   showGang();
@@ -4745,7 +4750,7 @@ async function dealWithDisloyalty(memberIndex) {
         player.money -= 500;
         member.loyalty = Math.min(100, member.loyalty + 10);
         showBriefNotification(`Heart-to-heart with ${member.name}: +10 loyalty`, 'success');
-        logAction(`💬 A heart-to-heart with ${member.name} over drinks and cigars. Sometimes the personal touch works better than intimidation (+10 loyalty, -$500).`);
+        logAction(`A heart-to-heart with ${member.name} over drinks and cigars. Sometimes the personal touch works better than intimidation (+10 loyalty, -$500).`);
       } else {
         showBriefNotification("Not enough money for this approach.", 'danger');
       }
@@ -4772,7 +4777,7 @@ async function dealWithDisloyalty(memberIndex) {
       } else {
         member.loyalty = Math.min(100, member.loyalty + 5);
         showBriefNotification(`${member.name} falls in line. +5 loyalty`, 'warning');
-        logAction(`👊 A firm word and steely gaze reminds ${member.name} who's in charge. Fear can be a motivator, but it's a double-edged sword (+5 loyalty).`);
+        logAction(`A firm word and steely gaze reminds ${member.name} who's in charge. Fear can be a motivator, but it's a double-edged sword (+5 loyalty).`);
       }
       break;
       
@@ -4823,7 +4828,7 @@ function shouldTriggerBetrayal(event) {
   if (conditions.minWantedLevel && player.wantedLevel < conditions.minWantedLevel) return false;
   if (conditions.minTerritory && (player.turf?.owned || []).length < conditions.minTerritory) return false;
   if (conditions.minBusinesses && player.businesses.length < conditions.minBusinesses) return false;
-  if (conditions.minGangMembers && player.gang.members < conditions.minGangMembers) return false;
+  if (conditions.minGangMembers && player.gang.gangMembers.length < conditions.minGangMembers) return false;
   
   return true;
 }
@@ -4857,19 +4862,19 @@ function triggerBetrayalEvent(event) {
   }
   
   if (consequences.gangMemberLoss) {
-    // Remove the most disloyal members
-    const sorted = player.gang.gangMembers.sort((a, b) => a.loyalty - b.loyalty);
+    // Remove the most disloyal members (copy before sorting to avoid mutating order)
+    const sorted = [...player.gang.gangMembers].sort((a, b) => a.loyalty - b.loyalty);
     for (let i = 0; i < consequences.gangMemberLoss && sorted.length > 0; i++) {
       player.gang.gangMembers = player.gang.gangMembers.filter(m => m !== sorted[i]);
-      player.gang.members = Math.max(0, player.gang.members - 1);
     }
+    player.gang.members = player.gang.gangMembers.length;
   }
   
   if (consequences.gangSplit) {
     // Lose half the gang
-    const membersToRemove = Math.floor(player.gang.members / 2);
+    const membersToRemove = Math.floor(player.gang.gangMembers.length / 2);
     player.gang.gangMembers = player.gang.gangMembers.slice(membersToRemove);
-    player.gang.members = Math.max(0, player.gang.members - membersToRemove);
+    player.gang.members = player.gang.gangMembers.length;
   }
   
   // Add to betrayal history
@@ -4900,7 +4905,7 @@ function showTerritoryControl() {
   
   let html = `
     <h2 style="color: #e74c3c; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-      🔥 Turf Control
+      Turf Control
     </h2>`;
   
   // Family info banner
@@ -4919,7 +4924,7 @@ function showTerritoryControl() {
   } else {
     html += `
     <div style="background: rgba(231,76,60,0.2); padding:20px; border-radius:10px; text-align:center; margin-bottom:20px;">
-      <div style="font-size:3em; margin-bottom:10px;">🤝</div>
+      <div style="font-size:3em; margin-bottom:10px;"></div>
       <h3 style="color:#e74c3c; margin:0 0 10px 0;">No Family Allegiance</h3>
       <p style="color:#bdc3c7; margin:0 0 15px 0;">Choose a family to pledge your loyalty. Each family offers a unique story and buff.</p>
       <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#e74c3c,#c0392b); border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">
@@ -4932,17 +4937,17 @@ function showTerritoryControl() {
   html += `
     <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
       <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
-        <div style="font-size: 1.6em; color: #3498db;">💪</div>
+        <div style="font-size: 1.6em; color: #3498db;"></div>
         <div style="font-size: 0.9em; color: #bdc3c7;">Turf Power</div>
         <div style="font-size: 1.3em; font-weight: bold; color: #ecf0f1;">${player.turf.power || 100}</div>
       </div>
       <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
-        <div style="font-size: 1.6em; color: #2ecc71;">💰</div>
+        <div style="font-size: 1.6em; color: #2ecc71;"></div>
         <div style="font-size: 0.9em; color: #bdc3c7;">Weekly Income</div>
         <div style="font-size: 1.3em; font-weight: bold; color: #ecf0f1;">$${(player.turf.income || 0).toLocaleString()}</div>
       </div>
       <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
-        <div style="font-size: 1.6em; color: #9b59b6;">🗺️</div>
+        <div style="font-size: 1.6em; color: #9b59b6;"></div>
         <div style="font-size: 0.9em; color: #bdc3c7;">Turf Zones</div>
         <div style="font-size: 1.3em; font-weight: bold; color: #ecf0f1;">${ownedZones.length} / ${zones.length}</div>
       </div>
@@ -4952,17 +4957,17 @@ function showTerritoryControl() {
       <button onclick="showTurfMap()" 
           style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #27ae60, #2ecc71); 
               border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
-        🗺️ Turf Map
+        Turf Map
       </button>
       <button onclick="showProtectionRackets()" 
           style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #f39c12); 
               border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
-        🏪 Protection Rackets
+        Protection Rackets
       </button>
       <button onclick="showCorruption()" 
           style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #8e44ad, #9b59b6); 
               border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
-        🤝 Corruption
+        Corruption
       </button>
     </div>`;
   
@@ -4985,7 +4990,7 @@ function showTerritoryControl() {
             <div style="flex: 1; min-width: 200px;">
               <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">${zone.icon} ${zone.name}</h4>
               <p style="color: #bdc3c7; margin: 0; font-size: 0.9em;">${zone.description}</p>
-              <div style="font-size:0.8em; color:#95a5a6; margin-top:4px;">🛡️ Fort Lv ${fortLevel} | 🔥 Heat: ${heatLevel.toFixed(1)}</div>
+              <div style="font-size:0.8em; color:#95a5a6; margin-top:4px;">Fort Lv ${fortLevel} | Heat: ${heatLevel.toFixed(1)}</div>
             </div>
             <div style="text-align: right; min-width: 120px;">
               <div style="color: #2ecc71; font-weight: bold;">$${income.toLocaleString()}/week</div>
@@ -5007,7 +5012,7 @@ function showTerritoryControl() {
   } else {
     html += `
       <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
-        <div style="font-size: 3em; margin-bottom: 10px;">🗺️</div>
+        <div style="font-size: 3em; margin-bottom: 10px;"></div>
         <h3 style="color: #e74c3c; margin: 0 0 10px 0;">No Turf Controlled</h3>
         <p style="color: #bdc3c7; margin: 0;">Every zone is held by a rival family. Complete missions and fight for control!</p>
       </div>`;
@@ -5017,7 +5022,7 @@ function showTerritoryControl() {
   if ((player.turf.events || []).length > 0) {
     html += `
       <div style="background: rgba(230, 126, 34, 0.2); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #e67e22; margin-bottom: 15px;">⚠️ Turf Events</h3>
+        <h3 style="color: #e67e22; margin-bottom: 15px;">Turf Events</h3>
         <div style="display: grid; gap: 10px;">`;
     player.turf.events.forEach(event => {
       html += `
@@ -5050,11 +5055,11 @@ function showTurfMap() {
   const alliedZones = fam ? (RIVAL_FAMILIES[fam]?.turfZones || []) : [];
   
   let html = `
-    <h2 style="color:#27ae60; text-align:center; margin-bottom:25px; font-size:2.2em;">🗺️ Turf Map</h2>
+    <h2 style="color:#27ae60; text-align:center; margin-bottom:25px; font-size:2.2em;">Turf Map</h2>
     <div style="background:rgba(52,152,219,0.2);padding:15px;border-radius:10px;margin-bottom:20px;">
       <h3 style="color:#3498db; margin:0 0 10px 0;">Legend</h3>
       <div style="display:flex; flex-wrap:wrap; gap:15px; font-size:0.9em; color:#bdc3c7;">
-        <span>🟢 Your Turf</span> <span>🔵 Allied Family</span> <span>🔴 Rival Held</span> <span>⚫ Contested</span> <span>🟡 Independent</span>
+        <span>Your Turf</span> <span>Allied Family</span> <span>Rival Held</span> <span>Contested</span> <span>Independent</span>
       </div>
     </div>
     <div style="display:grid; gap:15px;">`;
@@ -5067,7 +5072,7 @@ function showTurfMap() {
     const controllerFamily = (!isOwned && !isAllied && !isContested && !isIndependent) ? RIVAL_FAMILIES[zone.controlledBy] : null;
     
     let borderColor = isOwned ? '#2ecc71' : isAllied ? '#3498db' : isContested ? '#7f8c8d' : isIndependent ? '#f1c40f' : '#e74c3c';
-    let statusLabel = isOwned ? '🟢 Your Turf' : isAllied ? `🔵 ${RIVAL_FAMILIES[fam]?.name || 'Allied'}` : isContested ? '⚫ Contested' : isIndependent ? '🟡 Independent' : `🔴 ${controllerFamily?.name || zone.controlledBy}`;
+    let statusLabel = isOwned ? 'Your Turf' : isAllied ? `${RIVAL_FAMILIES[fam]?.name || 'Allied'}` : isContested ? 'Contested' : isIndependent ? 'Independent' : `${controllerFamily?.name || zone.controlledBy}`;
     
     html += `
       <div style="background:rgba(52,73,94,0.8); padding:20px; border-radius:12px; border-left:4px solid ${borderColor};">
@@ -5076,8 +5081,8 @@ function showTurfMap() {
             <h3 style="color:#ecf0f1; margin:0 0 8px 0;">${zone.icon} ${zone.name}</h3>
             <p style="color:#bdc3c7; margin:0 0 8px 0; font-size:0.95em;">${zone.description}</p>
             <div style="font-size:0.85em; color:#bdc3c7;">
-              <span style="color:#2ecc71;">💰 Income:</span> $${zone.baseIncome.toLocaleString()}/week |
-              <span style="color:${getRiskColor(zone.riskLevel)};">⚠️ ${zone.riskLevel}</span>
+              <span style="color:#2ecc71;">Income:</span> $${zone.baseIncome.toLocaleString()}/week |
+              <span style="color:${getRiskColor(zone.riskLevel)};">${zone.riskLevel}</span>
             </div>
             <div style="margin-top:5px; font-size:0.85em; color:${borderColor};">${statusLabel}</div>`;
     
@@ -5085,13 +5090,13 @@ function showTurfMap() {
     if (zone.boss && !isOwned) {
       const bossInfo = findBossById(zone.boss);
       if (bossInfo && !(player.turf.bossesDefeated || []).includes(bossInfo.id)) {
-        html += `<div style="margin-top:5px; font-size:0.85em; color:#e74c3c;">👤 Boss: ${bossInfo.name} (Power: ${bossInfo.power})</div>`;
+        html += `<div style="margin-top:5px; font-size:0.85em; color:#e74c3c;">Boss: ${bossInfo.name} (Power: ${bossInfo.power})</div>`;
       }
     }
     if (zone.don && !isOwned) {
       const donInfo = findBossById(zone.don);
       if (donInfo && !(player.turf.donsDefeated || []).includes(donInfo.id)) {
-        html += `<div style="margin-top:5px; font-size:0.85em; color:#9b59b6;">👑 Don: ${donInfo.name} (Power: ${donInfo.power})</div>`;
+        html += `<div style="margin-top:5px; font-size:0.85em; color:#9b59b6;">Don: ${donInfo.name} (Power: ${donInfo.power})</div>`;
       }
     }
     
@@ -5105,12 +5110,12 @@ function showTurfMap() {
       const canAttack = (player.turf.power || 100) >= zone.defenseRequired;
       html += `
         <div style="margin-bottom:8px;font-size:0.8em;text-align:center;">
-          <div style="color:#9b59b6;">🛡️ Defense: ${zone.defenseRequired}</div>
+          <div style="color:#9b59b6;">Defense: ${zone.defenseRequired}</div>
           <div style="font-size:0.75em;color:#bdc3c7;">(Your power: ${player.turf.power || 100})</div>
         </div>
         <button onclick="attackTurfZone('${zone.id}')" 
           style="width:100%;padding:10px;background:linear-gradient(135deg,#e74c3c,#c0392b);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;${!canAttack?'opacity:0.6;cursor:not-allowed;':''}">
-          ⚔️ Attack
+          Attack
         </button>`;
     }
     
@@ -5157,7 +5162,7 @@ async function attackTurfZone(zoneId) {
   const bossAlive = bossInfo && !(player.turf.bossesDefeated || []).includes(bossInfo.id);
   
   let confirmMsg = `Attack ${zone.name}?`;
-  if (bossAlive) confirmMsg += `\n\n⚠️ ${bossInfo.name} guards this zone! (Power: ${bossInfo.power})`;
+  if (bossAlive) confirmMsg += `\n\n${bossInfo.name} guards this zone! (Power: ${bossInfo.power})`;
   confirmMsg += `\n\nYour Power: ${playerPower} vs Defense: ${powerNeeded}`;
   
   if (await ui.confirm(confirmMsg)) {
@@ -5168,7 +5173,7 @@ async function attackTurfZone(zoneId) {
         player.health = Math.max(1, player.health - result.damageTaken);
         player.turf.power = Math.max(10, (player.turf.power || 100) - 15);
         showBriefNotification(`❌ ${bossInfo.name} defeated you! Lost 15 power and ${result.damageTaken} health.`, 'danger');
-        logAction(`💀 You attacked ${zone.name} but ${bossInfo.name} crushed your assault. Regroup and try again.`);
+        logAction(`You attacked ${zone.name} but ${bossInfo.name} crushed your assault. Regroup and try again.`);
         updateUI();
         return;
       }
@@ -5177,14 +5182,14 @@ async function attackTurfZone(zoneId) {
       player.turf.bossesDefeated.push(bossInfo.id);
       player.money += bossInfo.reward;
       player.turf.reputation = (player.turf.reputation || 0) + 25;
-      logAction(`🎯 <strong>${bossInfo.name}</strong> has been eliminated! +$${bossInfo.reward.toLocaleString()} and +25 reputation.`);
+      logAction(`<strong>${bossInfo.name}</strong> has been eliminated! +$${bossInfo.reward.toLocaleString()} and +25 reputation.`);
       
       // Check if this was a Don
       const isDon = Object.values(RIVAL_FAMILIES).some(f => f.don.id === bossInfo.id);
       if (isDon) {
         if (!player.turf.donsDefeated) player.turf.donsDefeated = [];
         player.turf.donsDefeated.push(bossInfo.id);
-        logAction(`👑 A <strong>Don</strong> has fallen! The balance of power shifts dramatically.`);
+        logAction(`A <strong>Don</strong> has fallen! The balance of power shifts dramatically.`);
       }
     }
     
@@ -5199,8 +5204,8 @@ async function attackTurfZone(zoneId) {
     recalcTurfIncome();
     checkFamilyRankUp();
     
-    showBriefNotification(`🔥 ${zone.name} is now your turf!`, 'success');
-    logAction(`🏴 You seized control of ${zone.name}. The streets know your name.`);
+    showBriefNotification(`${zone.name} is now your turf!`, 'success');
+    logAction(`You seized control of ${zone.name}. The streets know your name.`);
     updateUI();
     showTurfMap();
   }
@@ -5271,9 +5276,9 @@ function manageTurfDetails(zoneId) {
       </div>
     </div>
     <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;">
-      <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">🛡️ Fortify ($${((fort+1)*5000).toLocaleString()})</button>
-      <button onclick="reduceHeatTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#3498db,#2980b9);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">🧊 Reduce Heat ($${Math.floor(heat*10000).toLocaleString()})</button>
-      <button onclick="collectTurfTribute('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#27ae60,#229954);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">💰 Collect Tribute</button>
+      <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Fortify ($${((fort+1)*5000).toLocaleString()})</button>
+      <button onclick="reduceHeatTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#3498db,#2980b9);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Reduce Heat ($${Math.floor(heat*10000).toLocaleString()})</button>
+      <button onclick="collectTurfTribute('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#27ae60,#229954);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Collect Tribute</button>
     </div>
     <div style="text-align:center;">
       <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#95a5a6,#7f8c8d);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;">← Back to Turf</button>
@@ -5294,8 +5299,8 @@ function fortifyTurf(zoneId) {
   player.money -= cost;
   player.turf.fortifications[zoneId] = current + 1;
   recalcTurfIncome();
-  showBriefNotification(`🛡️ Fortification upgraded to Lv ${current + 1}!`, 'success');
-  logAction(`🛡️ Fortified turf zone. Defense strengthened.`);
+  showBriefNotification(`Fortification upgraded to Lv ${current + 1}!`, 'success');
+  logAction(`Fortified turf zone. Defense strengthened.`);
   updateUI();
 }
 window.fortifyTurf = fortifyTurf;
@@ -5309,7 +5314,7 @@ function reduceHeatTurf(zoneId) {
   player.money -= cost;
   player.turf.heat[zoneId] = Math.max(0, heat - 0.3);
   recalcTurfIncome();
-  showBriefNotification('🧊 Heat reduced!', 'success');
+  showBriefNotification('Heat reduced!', 'success');
   updateUI();
 }
 window.reduceHeatTurf = reduceHeatTurf;
@@ -5328,8 +5333,8 @@ function collectTurfTribute(zoneId) {
   player.dirtyMoney = (player.dirtyMoney || 0) + tribute;
   player.turf.lastTributeCollection = now;
   player.turf.heat[zoneId] = ((player.turf.heat || {})[zoneId] || 0) + 0.05;
-  showBriefNotification(`💰 Collected $${tribute.toLocaleString()} in dirty tribute!`, 'success');
-  logAction(`💰 Collected $${tribute.toLocaleString()} tribute from ${zone.name}.`);
+  showBriefNotification(`Collected $${tribute.toLocaleString()} in dirty tribute!`, 'success');
+  logAction(`Collected $${tribute.toLocaleString()} tribute from ${zone.name}.`);
   updateUI();
 }
 window.collectTurfTribute = collectTurfTribute;
@@ -5344,7 +5349,7 @@ function processTurfOperations() {
   recalcTurfIncome();
   if (player.turf.income > 0) {
     player.dirtyMoney = (player.dirtyMoney || 0) + player.turf.income;
-    logAction(`💰 Weekly turf tribute: +$${player.turf.income.toLocaleString()} (dirty money)`);
+    logAction(`Weekly turf tribute: +$${player.turf.income.toLocaleString()} (dirty money)`);
   }
   
   // Decay heat slowly
@@ -5360,9 +5365,9 @@ function processTurfOperations() {
       const attackStrength = 50 + Math.floor(Math.random() * 100);
       const result = processTurfAttack(zone, 'Rival Gang', attackStrength, player);
       if (result.lostTurf) {
-        logAction(`⚠️ Rival gang seized <strong>${zone.name}</strong>! Reinforce your turf.`);
+        logAction(`Rival gang seized <strong>${zone.name}</strong>! Reinforce your turf.`);
       } else {
-        logAction(`🛡️ Defended <strong>${zone.name}</strong> from a rival attack.`);
+        logAction(`Defended <strong>${zone.name}</strong> from a rival attack.`);
       }
     }
   });
@@ -5376,7 +5381,7 @@ function processTurfOperations() {
 function showFamilyChoice() {
   let html = `
     <h2 style="color:#f1c40f; text-align:center; margin-bottom:10px; font-size:2.2em; text-shadow:2px 2px 4px rgba(0,0,0,0.5);">
-      🤝 Choose Your Family
+      Choose Your Family
     </h2>
     <p style="color:#bdc3c7; text-align:center; margin-bottom:25px; font-size:1em;">
       Every player must pledge to a crime family. Your choice determines your allies, enemies, and unique perks.<br>
@@ -5398,16 +5403,16 @@ function showFamilyChoice() {
         <p style="color:#bdc3c7; margin:0 0 12px 0; font-size:0.95em; line-height:1.4;">${fam.storyIntro}</p>
         <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
           <div style="background:rgba(46,204,113,0.2); padding:6px 12px; border-radius:6px; font-size:0.85em; color:#2ecc71;">
-            ✨ ${fam.buff.name}: ${fam.buff.description}
+            ${fam.buff.name}: ${fam.buff.description}
           </div>
           <div style="background:rgba(52,152,219,0.2); padding:6px 12px; border-radius:6px; font-size:0.85em; color:#3498db;">
-            🗺️ Turf: ${fam.turfZones.length} zones
+            Turf: ${fam.turfZones.length} zones
           </div>
         </div>
         <div style="margin-bottom:10px;">
-          <div style="font-size:0.85em; color:#e74c3c; margin-bottom:4px;">👑 Don: ${fam.don.name} (Power: ${fam.don.power})</div>
-          <div style="font-size:0.85em; color:#9b59b6; margin-bottom:4px;">🗡️ Underboss: ${fam.underboss.name} (Power: ${fam.underboss.power})</div>
-          <div style="font-size:0.85em; color:#95a5a6;">👤 Capos: ${fam.capos.length}</div>
+          <div style="font-size:0.85em; color:#e74c3c; margin-bottom:4px;">Don: ${fam.don.name} (Power: ${fam.don.power})</div>
+          <div style="font-size:0.85em; color:#9b59b6; margin-bottom:4px;">Underboss: ${fam.underboss.name} (Power: ${fam.underboss.power})</div>
+          <div style="font-size:0.85em; color:#95a5a6;">Capos: ${fam.capos.length}</div>
         </div>
         <button onclick="pledgeToFamily('${famId}')" 
           style="width:100%;padding:12px;background:linear-gradient(135deg,${fam.color},${fam.color}cc);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;font-size:1.05em;">
@@ -5434,8 +5439,8 @@ async function pledgeToFamily(familyId) {
   
   const confirmed = await ui.confirm(
     `Pledge your loyalty to the ${fam.name}?\n\n` +
-    `🎁 Buff: ${fam.buff.name} — ${fam.buff.description}\n` +
-    `⚠️ This is permanent! The other families will become your enemies.`
+    `Buff: ${fam.buff.name} — ${fam.buff.description}\n` +
+    `This is permanent! The other families will become your enemies.`
   );
   
   if (confirmed) {
@@ -5443,8 +5448,8 @@ async function pledgeToFamily(familyId) {
     player.familyRank = 'associate';
     player.turf.reputation = (player.turf.reputation || 0) + 10;
     
-    showBriefNotification(`🤝 You've joined the ${fam.name}!`, 'success');
-    logAction(`🤝 You pledged your loyalty to <strong>the ${fam.name}</strong>. ${fam.storyIntro}`);
+    showBriefNotification(`You've joined the ${fam.name}!`, 'success');
+    logAction(`You pledged your loyalty to <strong>the ${fam.name}</strong>. ${fam.storyIntro}`);
     logAction(`Welcome to the family, Associate. The ${fam.name} expects great things from you.`);
     
     updateUI();
@@ -5460,11 +5465,11 @@ window.pledgeToFamily = pledgeToFamily;
 function showProtectionRackets() {
   let html = `
     <h2 style="color: #f39c12; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-      🏪 Protection Rackets
+      Protection Rackets
     </h2>
     
     <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-      <h3 style="color: #f39c12; margin: 0 0 10px 0;">💡 Protection Racket Tips</h3>
+      <h3 style="color: #f39c12; margin: 0 0 10px 0;">Protection Racket Tips</h3>
       <ul style="color: #bdc3c7; margin: 0; padding-left: 20px;">
         <li>Businesses in your territories pay protection money</li>
         <li>Over-extortion can cause businesses to close or call police</li>
@@ -5477,7 +5482,7 @@ function showProtectionRackets() {
   if (player.protectionRackets.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #f39c12; margin-bottom: 15px;">💰 Active Rackets</h3>
+        <h3 style="color: #f39c12; margin-bottom: 15px;">Active Rackets</h3>
         <div style="display: grid; gap: 15px;">`;
     
     player.protectionRackets.forEach(racket => {
@@ -5493,7 +5498,7 @@ function showProtectionRackets() {
             <div style="flex: 1; min-width: 200px;">
               <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">${business.name}</h4>
               <p style="color: #bdc3c7; margin: 0 0 5px 0; font-size: 0.9em;">${business.description}</p>
-              <div style="font-size: 0.8em; color: #95a5a6;">📍 ${zoneName}</div>
+              <div style="font-size: 0.8em; color: #95a5a6;">${zoneName}</div>
             </div>
             <div style="text-align: right; min-width: 120px;">
               <div style="color: #f39c12; font-weight: bold;">$${racket.weeklyPayment.toLocaleString()}/week</div>
@@ -5504,12 +5509,12 @@ function showProtectionRackets() {
             <button onclick="collectProtection('${racket.id}')" 
                 style="padding: 5px 10px; background: #27ae60; border: none; border-radius: 5px; 
                     color: white; cursor: pointer; font-size: 0.8em;">
-              💰 Collect
+              Collect
             </button>
             <button onclick="pressureBusiness('${racket.id}')" 
                 style="padding: 5px 10px; background: #e67e22; border: none; border-radius: 5px; 
                     color: white; cursor: pointer; font-size: 0.8em;">
-              👊 Pressure
+              Pressure
             </button>
             <button onclick="dropProtection('${racket.id}')" 
                 style="padding: 5px 10px; background: #e74c3c; border: none; border-radius: 5px; 
@@ -5528,7 +5533,7 @@ function showProtectionRackets() {
   if (availableBusinesses.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #27ae60; margin-bottom: 15px;">🎯 Available Businesses</h3>
+        <h3 style="color: #27ae60; margin-bottom: 15px;">Available Businesses</h3>
         <div style="display: grid; gap: 15px;">`;
     
     availableBusinesses.forEach(business => {
@@ -5551,7 +5556,7 @@ function showProtectionRackets() {
               <button onclick="approachBusiness('${business.id}', '${business.territoryId}')" 
                   style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #27ae60, #2ecc71); 
                       border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
-                🤝 Approach
+                 Approach
               </button>
             </div>
           </div>
@@ -5562,7 +5567,7 @@ function showProtectionRackets() {
   } else {
     html += `
       <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
-        <div style="font-size: 3em; margin-bottom: 10px;">🏪</div>
+        <div style="font-size: 3em; margin-bottom: 10px;"></div>
         <h3 style="color: #e74c3c; margin: 0 0 10px 0;">No Available Businesses</h3>
         <p style="color: #bdc3c7; margin: 0;">Seize more turf zones to find businesses that need "protection".</p>
       </div>`;
@@ -5617,11 +5622,11 @@ function getAvailableBusinessesForProtection() {
 function showCorruption() {
   let html = `
     <h2 style="color: #9b59b6; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-      💼 Corruption Network
+      Corruption Network
     </h2>
     
     <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-      <h3 style="color: #9b59b6; margin: 0 0 10px 0;">💡 Corruption Tips</h3>
+      <h3 style="color: #9b59b6; margin: 0 0 10px 0;">Corruption Tips</h3>
       <ul style="color: #bdc3c7; margin: 0; padding-left: 20px;">
         <li>Corrupt officials provide ongoing benefits while active</li>
         <li>Higher-ranking officials cost more but provide better protection</li>
@@ -5634,7 +5639,7 @@ function showCorruption() {
   if (player.corruptedOfficials.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #9b59b6; margin-bottom: 15px;">🤝 Active Corruption</h3>
+        <h3 style="color: #9b59b6; margin-bottom: 15px;"> Active Corruption</h3>
         <div style="display: grid; gap: 15px;">`;
     
     player.corruptedOfficials.forEach(official => {
@@ -5660,7 +5665,7 @@ function showCorruption() {
               <button onclick="renewCorruption('${official.id}')" 
                   style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #8e44ad, #9b59b6); 
                       border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
-                🔄 Renew
+                Renew
               </button>
             </div>
           </div>
@@ -5678,7 +5683,7 @@ function showCorruption() {
   if (availableTargets.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #27ae60; margin-bottom: 15px;">🎯 Available Targets</h3>
+        <h3 style="color: #27ae60; margin-bottom: 15px;">Available Targets</h3>
         <div style="display: grid; gap: 15px;">`;
     
     availableTargets.forEach(target => {
@@ -5724,7 +5729,7 @@ function showCorruption() {
                   style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #8e44ad, #9b59b6); 
                       border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;
                       ${!canAfford ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
-                💰 Bribe
+                Bribe
               </button>
               ${!canAfford ? `<div style="text-align: center; margin-top: 5px; font-size: 0.8em; color: #e74c3c;">
                 Need $${(target.baseCost - player.money).toLocaleString()} more
@@ -5792,13 +5797,13 @@ function generateTurfOverviewHTML() {
           <strong style="color:${fam.color}; font-size:1.1em;"> ${fam.name}</strong>
           <span style="color:#bdc3c7; margin-left:10px;">Rank: <strong style="color:#f1c40f;">${rankLabel}</strong></span>
         </div>
-        <div style="color:#bdc3c7; font-size:0.9em;">✨ ${fam.buff.name}: ${fam.buff.description}</div>
+        <div style="color:#bdc3c7; font-size:0.9em;">${fam.buff.name}: ${fam.buff.description}</div>
       </div>
     </div>`;
   } else {
     html += `
     <div style="background:rgba(231,76,60,0.2); padding:20px; border-radius:10px; text-align:center;">
-      <div style="font-size:3em; margin-bottom:10px;">🤝</div>
+      <div style="font-size:3em; margin-bottom:10px;"></div>
       <div style="color:#e74c3c; font-weight:bold; font-size:1.1em; margin-bottom:8px;">No Family Allegiance</div>
       <p style="color:#bdc3c7; margin:0 0 15px 0;">Choose a family to pledge your loyalty. Each family offers a unique story and buff.</p>
       <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#e74c3c,#c0392b); border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">
@@ -5811,17 +5816,17 @@ function generateTurfOverviewHTML() {
   html += `
     <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:15px;">
       <div style="flex:1; min-width:120px; background:rgba(52,152,219,0.2); padding:15px; border-radius:10px; text-align:center;">
-        <div style="font-size:1.6em; color:#3498db;">💪</div>
+        <div style="font-size:1.6em; color:#3498db;"></div>
         <div style="font-size:0.9em; color:#bdc3c7;">Turf Power</div>
         <div style="font-size:1.3em; font-weight:bold; color:#ecf0f1;">${player.turf.power || 100}</div>
       </div>
       <div style="flex:1; min-width:120px; background:rgba(46,204,113,0.2); padding:15px; border-radius:10px; text-align:center;">
-        <div style="font-size:1.6em; color:#2ecc71;">💰</div>
+        <div style="font-size:1.6em; color:#2ecc71;"></div>
         <div style="font-size:0.9em; color:#bdc3c7;">Weekly Income</div>
         <div style="font-size:1.3em; font-weight:bold; color:#ecf0f1;">$${(player.turf.income || 0).toLocaleString()}</div>
       </div>
       <div style="flex:1; min-width:120px; background:rgba(155,89,182,0.2); padding:15px; border-radius:10px; text-align:center;">
-        <div style="font-size:1.6em; color:#9b59b6;">🗺️</div>
+        <div style="font-size:1.6em; color:#9b59b6;"></div>
         <div style="font-size:0.9em; color:#bdc3c7;">Turf Zones</div>
         <div style="font-size:1.3em; font-weight:bold; color:#ecf0f1;">${ownedZones.length} / ${zones.length}</div>
       </div>
@@ -5830,9 +5835,9 @@ function generateTurfOverviewHTML() {
   // ── 3. Turf Map — grid of all zones ──
   html += `
     <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;">
-      <div style="color:#27ae60; font-weight:bold; font-size:1.1em; margin-bottom:10px;">🗺️ Turf Map</div>
+      <div style="color:#27ae60; font-weight:bold; font-size:1.1em; margin-bottom:10px;">Turf Map</div>
       <div style="display:flex; flex-wrap:wrap; gap:10px; font-size:0.85em; color:#bdc3c7; margin-bottom:15px;">
-        <span>🟢 Yours</span> <span>🔵 Allied</span> <span>🔴 Rival</span> <span>⚫ Contested</span> <span>🟡 Independent</span>
+        <span>Yours</span> <span>Allied</span> <span>Rival</span> <span>Contested</span> <span>Independent</span>
       </div>
       <div style="display:grid; gap:15px;">`;
 
@@ -5844,7 +5849,7 @@ function generateTurfOverviewHTML() {
     const controllerFamily = (!isOwned && !isAllied && !isContested && !isIndependent) ? RIVAL_FAMILIES[zone.controlledBy] : null;
 
     const borderColor = isOwned ? '#2ecc71' : isAllied ? '#3498db' : isContested ? '#7f8c8d' : isIndependent ? '#f1c40f' : '#e74c3c';
-    const statusLabel = isOwned ? '🟢 Your Turf' : isAllied ? `🔵 ${fam?.name || 'Allied'}` : isContested ? '⚫ Contested' : isIndependent ? '🟡 Independent' : `🔴 ${controllerFamily?.name || zone.controlledBy}`;
+    const statusLabel = isOwned ? 'Your Turf' : isAllied ? `${fam?.name || 'Allied'}` : isContested ? 'Contested' : isIndependent ? 'Independent' : `${controllerFamily?.name || zone.controlledBy}`;
     const zoneIncome = calculateTurfZoneIncome(zone);
 
     html += `
@@ -5854,8 +5859,8 @@ function generateTurfOverviewHTML() {
             <div style="color:#ecf0f1; font-weight:bold; font-size:1.05em; margin-bottom:6px;">${zone.icon} ${zone.name}</div>
             <p style="color:#bdc3c7; margin:0 0 8px 0; font-size:0.9em;">${zone.description}</p>
             <div style="font-size:0.85em; color:#bdc3c7;">
-              <span style="color:#2ecc71;">💰 $${zoneIncome.toLocaleString()}/wk</span> |
-              <span style="color:${getRiskColor(zone.riskLevel)};">⚠️ ${zone.riskLevel}</span>
+              <span style="color:#2ecc71;">$${zoneIncome.toLocaleString()}/wk</span> |
+              <span style="color:${getRiskColor(zone.riskLevel)};">${zone.riskLevel}</span>
             </div>
             <div style="margin-top:4px; font-size:0.85em; color:${borderColor};">${statusLabel}</div>`;
 
@@ -5863,13 +5868,13 @@ function generateTurfOverviewHTML() {
     if (zone.boss && !isOwned) {
       const bossInfo = findBossById(zone.boss);
       if (bossInfo && !(player.turf.bossesDefeated || []).includes(bossInfo.id)) {
-        html += `<div style="margin-top:4px; font-size:0.85em; color:#e74c3c;">👤 Boss: ${bossInfo.name} (Power: ${bossInfo.power})</div>`;
+        html += `<div style="margin-top:4px; font-size:0.85em; color:#e74c3c;">Boss: ${bossInfo.name} (Power: ${bossInfo.power})</div>`;
       }
     }
     if (zone.don && !isOwned) {
       const donInfo = findBossById(zone.don);
       if (donInfo && !(player.turf.donsDefeated || []).includes(donInfo.id)) {
-        html += `<div style="margin-top:4px; font-size:0.85em; color:#9b59b6;">👑 Don: ${donInfo.name} (Power: ${donInfo.power})</div>`;
+        html += `<div style="margin-top:4px; font-size:0.85em; color:#9b59b6;">Don: ${donInfo.name} (Power: ${donInfo.power})</div>`;
       }
     }
 
@@ -5883,12 +5888,12 @@ function generateTurfOverviewHTML() {
       const canAttack = (player.turf.power || 100) >= zone.defenseRequired;
       html += `
         <div style="margin-bottom:8px; font-size:0.8em; text-align:center;">
-          <div style="color:#9b59b6;">🛡️ Defense: ${zone.defenseRequired}</div>
+          <div style="color:#9b59b6;">Defense: ${zone.defenseRequired}</div>
           <div style="font-size:0.75em; color:#bdc3c7;">(Your power: ${player.turf.power || 100})</div>
         </div>
         <button onclick="attackTurfZone('${zone.id}')" 
           style="width:100%;padding:10px;background:linear-gradient(135deg,#e74c3c,#c0392b);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;${!canAttack ? 'opacity:0.6;cursor:not-allowed;' : ''}">
-          ⚔️ Attack
+          Attack
         </button>`;
     }
 
@@ -5901,7 +5906,7 @@ function generateTurfOverviewHTML() {
   if (ownedZones.length > 0) {
     html += `
     <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;">
-      <div style="color:#e74c3c; font-weight:bold; font-size:1.1em; margin-bottom:15px;">🏴 Your Turf</div>
+      <div style="color:#e74c3c; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Your Turf</div>
       <div style="display:grid; gap:15px;">`;
 
     ownedZones.forEach(zone => {
@@ -5914,7 +5919,7 @@ function generateTurfOverviewHTML() {
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
             <div style="flex:1; min-width:200px;">
               <div style="color:#ecf0f1; font-weight:bold;">${zone.icon} ${zone.name}</div>
-              <div style="font-size:0.8em; color:#95a5a6; margin-top:4px;">🛡️ Fort Lv ${fortLevel} | 🔥 Heat: ${heatLevel.toFixed(1)}</div>
+              <div style="font-size:0.8em; color:#95a5a6; margin-top:4px;">Fort Lv ${fortLevel} | Heat: ${heatLevel.toFixed(1)}</div>
             </div>
             <div style="text-align:right; min-width:120px;">
               <div style="color:#2ecc71; font-weight:bold;">$${income.toLocaleString()}/week</div>
@@ -5930,7 +5935,7 @@ function generateTurfOverviewHTML() {
   } else {
     html += `
     <div style="background:rgba(231,76,60,0.2); padding:20px; border-radius:10px; text-align:center;">
-      <div style="font-size:3em; margin-bottom:10px;">🗺️</div>
+      <div style="font-size:3em; margin-bottom:10px;"></div>
       <div style="color:#e74c3c; font-weight:bold; margin-bottom:8px;">No Turf Controlled</div>
       <p style="color:#bdc3c7; margin:0;">Every zone is held by a rival family. Complete missions and fight for control!</p>
     </div>`;
@@ -5947,13 +5952,13 @@ function generateRacketsHTML() {
   // ══════════ Protection Rackets ══════════
   html += `
   <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;">
-    <div style="color:#f39c12; font-weight:bold; font-size:1.1em; margin-bottom:15px;">🏪 Protection Rackets</div>`;
+    <div style="color:#f39c12; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Protection Rackets</div>`;
 
   // Active rackets
   if ((player.protectionRackets || []).length > 0) {
     html += `
     <div style="margin-bottom:15px;">
-      <div style="color:#f39c12; font-size:0.95em; margin-bottom:10px;">💰 Active Rackets</div>
+      <div style="color:#f39c12; font-size:0.95em; margin-bottom:10px;">Active Rackets</div>
       <div style="display:grid; gap:12px;">`;
 
     player.protectionRackets.forEach(racket => {
@@ -5969,7 +5974,7 @@ function generateRacketsHTML() {
             <div style="flex:1; min-width:200px;">
               <div style="color:#ecf0f1; font-weight:bold;">${business.name}</div>
               <p style="color:#bdc3c7; margin:4px 0; font-size:0.9em;">${business.description}</p>
-              <div style="font-size:0.8em; color:#95a5a6;">📍 ${zoneName}</div>
+              <div style="font-size:0.8em; color:#95a5a6;">${zoneName}</div>
             </div>
             <div style="text-align:right; min-width:120px;">
               <div style="color:#f39c12; font-weight:bold;">$${racket.weeklyPayment.toLocaleString()}/wk</div>
@@ -5977,8 +5982,8 @@ function generateRacketsHTML() {
             </div>
           </div>
           <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-            <button onclick="collectProtection('${racket.id}')" style="padding:5px 10px; background:#27ae60; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">💰 Collect</button>
-            <button onclick="pressureBusiness('${racket.id}')" style="padding:5px 10px; background:#e67e22; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">👊 Pressure</button>
+            <button onclick="collectProtection('${racket.id}')" style="padding:5px 10px; background:#27ae60; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Collect</button>
+            <button onclick="pressureBusiness('${racket.id}')" style="padding:5px 10px; background:#e67e22; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Pressure</button>
             <button onclick="dropProtection('${racket.id}')" style="padding:5px 10px; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">❌ Drop</button>
           </div>
         </div>`;
@@ -5991,7 +5996,7 @@ function generateRacketsHTML() {
   if (availableBusinesses.length > 0) {
     html += `
     <div>
-      <div style="color:#27ae60; font-size:0.95em; margin-bottom:10px;">🎯 Available Businesses</div>
+      <div style="color:#27ae60; font-size:0.95em; margin-bottom:10px;">Available Businesses</div>
       <div style="display:grid; gap:12px;">`;
 
     availableBusinesses.forEach(business => {
@@ -6011,7 +6016,7 @@ function generateRacketsHTML() {
               <div style="color:#bdc3c7; font-size:0.85em;">Base Rate</div>
               <button onclick="approachBusiness('${business.id}', '${business.territoryId}')" 
                 style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#27ae60,#2ecc71); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">
-                🤝 Approach
+                Approach
               </button>
             </div>
           </div>
@@ -6021,7 +6026,7 @@ function generateRacketsHTML() {
   } else if (!(player.protectionRackets || []).length) {
     html += `
     <div style="text-align:center; padding:15px; color:#bdc3c7;">
-      <div style="font-size:2.5em; margin-bottom:8px;">🏪</div>
+      <div style="font-size:2.5em; margin-bottom:8px;"></div>
       <div style="color:#e74c3c; font-weight:bold; margin-bottom:4px;">No Businesses Available</div>
       <p style="margin:0; font-size:0.9em;">Seize turf zones to find businesses that need "protection".</p>
     </div>`;
@@ -6032,13 +6037,13 @@ function generateRacketsHTML() {
   // ══════════ Corruption Network ══════════
   html += `
   <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;">
-    <div style="color:#9b59b6; font-weight:bold; font-size:1.1em; margin-bottom:15px;">💼 Corruption Network</div>`;
+    <div style="color:#9b59b6; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Corruption Network</div>`;
 
   // Active corruption
   if ((player.corruptedOfficials || []).length > 0) {
     html += `
     <div style="margin-bottom:15px;">
-      <div style="color:#9b59b6; font-size:0.95em; margin-bottom:10px;">🤝 Active Corruption</div>
+      <div style="color:#9b59b6; font-size:0.95em; margin-bottom:10px;">Active Corruption</div>
       <div style="display:grid; gap:12px;">`;
 
     player.corruptedOfficials.forEach(official => {
@@ -6061,7 +6066,7 @@ function generateRacketsHTML() {
               <div style="color:#9b59b6; font-weight:bold;">${timeLeft.toFixed(1)} days left</div>
               <button onclick="renewCorruption('${official.id}')" 
                 style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#8e44ad,#9b59b6); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">
-                🔄 Renew
+                Renew
               </button>
             </div>
           </div>
@@ -6078,7 +6083,7 @@ function generateRacketsHTML() {
   if (availableTargets.length > 0) {
     html += `
     <div>
-      <div style="color:#27ae60; font-size:0.95em; margin-bottom:10px;">🎯 Available Targets</div>
+      <div style="color:#27ae60; font-size:0.95em; margin-bottom:10px;">Available Targets</div>
       <div style="display:grid; gap:12px;">`;
 
     availableTargets.forEach(target => {
@@ -6115,7 +6120,7 @@ function generateRacketsHTML() {
               <div style="color:#bdc3c7; font-size:0.8em;">Bribe Cost</div>
               <button onclick="corruptOfficial('${target.id}')" 
                 style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#8e44ad,#9b59b6); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;${!canAfford ? 'opacity:0.6;cursor:not-allowed;' : ''}">
-                💰 Bribe
+                Bribe
               </button>
               ${!canAfford ? `<div style="margin-top:4px; font-size:0.8em; color:#e74c3c;">Need $${(target.baseCost - player.money).toLocaleString()} more</div>` : ''}
             </div>
@@ -6144,7 +6149,7 @@ function generateRelocateHTML() {
 
   const currentDistrict = getDistrict(player.currentTerritory);
   const headerNote = currentDistrict
-    ? `📍 Currently in <strong style="color:#2ecc71;">${currentDistrict.shortName}</strong> ${currentDistrict.icon}`
+    ? `Currently in <strong style="color:#2ecc71;">${currentDistrict.shortName}</strong> ${currentDistrict.icon}`
     : 'You haven\'t chosen a home district yet.';
 
   let html = `<div style="display:flex; flex-direction:column; gap:20px;">`;
@@ -6153,7 +6158,7 @@ function generateRelocateHTML() {
   html += `
     <div style="background:rgba(44,62,80,0.85); padding:15px; border-radius:10px; text-align:center;">
       <div style="color:#bdc3c7; font-size:1em;">${headerNote}</div>
-      ${onCooldown ? `<div style="color:#e67e22; font-size:0.9em; margin-top:6px;">⏳ Relocation cooldown: ${cooldownRemaining} min remaining</div>` : ''}
+      ${onCooldown ? `<div style="color:#e67e22; font-size:0.9em; margin-top:6px;">Relocation cooldown: ${cooldownRemaining} min remaining</div>` : ''}
     </div>`;
 
   // District grid
@@ -6177,18 +6182,30 @@ function generateRelocateHTML() {
     const claimCost = CLAIM_COSTS[idx] || 25000;
 
     let badge = '';
-    if (isCurrent) badge = '<span style="color:#2ecc71; font-weight:bold;">📍 Current</span>';
-    else if (onCooldown) badge = `<span style="color:#e67e22;">⏳ ${cooldownRemaining} min</span>`;
-    else if (!canAfford) badge = '<span style="color:#e74c3c;">💸 Can\'t afford</span>';
+    if (isCurrent) badge = '<span style="color:#2ecc71; font-weight:bold;">Current</span>';
+    else if (onCooldown) badge = `<span style="color:#e67e22;">${cooldownRemaining} min</span>`;
+    else if (!canAfford) badge = '<span style="color:#e74c3c;">Can\'t afford</span>';
+
+    // Check alliance membership
+    const allianceMembers = (typeof _currentAllianceData !== 'undefined' && _currentAllianceData && _currentAllianceData.myAlliance) ? (_currentAllianceData.myAlliance.members || []) : [];
 
     // Owner line
     let ownerLine = '';
     if (ownerName) {
       const isMe = ownerName === myName;
-      ownerLine = `<span style="color:${isMe ? '#ffd700' : '#e74c3c'};">👑 Owner: ${isMe ? 'YOU' : ownerName}</span><br>`;
-      ownerLine += `<span>🛡️ Def: ${defRating} | 💰 Tax: $${taxTotal.toLocaleString()}</span><br>`;
+      const isAllied = !isMe && allianceMembers.includes(ownerName);
+      if (isMe) {
+        ownerLine = `<span style="color:#ffd700; font-weight:bold;">Owned</span><br>`;
+        ownerLine += `<span>Defense: ${defRating} | Tax: $${taxTotal.toLocaleString()}</span><br>`;
+      } else if (isAllied) {
+        ownerLine = `<span style="color:#3498db; font-weight:bold;">Allied</span> <span style="color:#888;">(${ownerName})</span><br>`;
+        ownerLine += `<span>Defense: ${defRating} | Tax: $${taxTotal.toLocaleString()}</span><br>`;
+      } else {
+        ownerLine = `<span style="color:#e74c3c;">Owner: ${ownerName}</span><br>`;
+        ownerLine += `<span>Defense: ${defRating} | Tax: $${taxTotal.toLocaleString()}</span><br>`;
+      }
     } else {
-      ownerLine = '<span style="color:#888;">👑 Unclaimed</span><br>';
+      ownerLine = '<span style="color:#888;">Unclaimed</span><br>';
     }
 
     // MP action buttons
@@ -6198,12 +6215,12 @@ function generateRelocateHTML() {
         const canClaim = player.level >= MIN_CLAIM_LEVEL && player.money >= claimCost;
         actionBtns = `<button onclick="event.stopPropagation(); claimTerritory('${d.id}')" 
           style="background:${canClaim ? '#8b6914' : '#333'}; color:${canClaim ? '#fff' : '#666'}; border:1px solid ${canClaim ? '#ffd700' : '#444'}; padding:6px 14px; border-radius:6px; cursor:${canClaim ? 'pointer' : 'default'}; font-size:0.85em; margin-top:6px;"
-          ${canClaim ? '' : 'disabled'}>👑 Claim ($${claimCost.toLocaleString()})</button>`;
-      } else if (ownerName !== myName) {
+          ${canClaim ? '' : 'disabled'}>Claim ($${claimCost.toLocaleString()})</button>`;
+      } else if (ownerName !== myName && !allianceMembers.includes(ownerName)) {
         const canWar = gangSize >= MIN_WAR_GANG_SIZE && player.energy >= WAR_ENERGY_COST;
         actionBtns = `<button onclick="event.stopPropagation(); wageWar('${d.id}')" 
           style="background:${canWar ? '#8b0000' : '#333'}; color:${canWar ? '#fff' : '#666'}; border:1px solid ${canWar ? '#ff0000' : '#444'}; padding:6px 14px; border-radius:6px; cursor:${canWar ? 'pointer' : 'default'}; font-size:0.85em; margin-top:6px;"
-          ${canWar ? '' : 'disabled'}>⚔️ Wage War</button>`;
+          ${canWar ? '' : 'disabled'}>Wage War</button>`;
       }
     }
 
@@ -6219,11 +6236,11 @@ function generateRelocateHTML() {
         <p style="color:#95a5a6; font-size:0.8em; margin:0 0 8px;">${d.description}</p>
         <div style="font-size:0.8em; color:#bdc3c7; line-height:1.5;">
           ${ownerLine}
-          <span>👥 Residents: ${resCount}</span><br>
-          <span>💰 Move: $${d.moveCost.toLocaleString()}</span><br>
-          <span>💰 Base Income: $${d.baseIncome}</span><br>
-          <span>🏢 Businesses: ${d.maxBusinesses}</span><br>
-          <span>⚠️ Risk: ${d.riskLevel} | 🚔 Police: ${d.policePresence}%</span>
+          <span>Residents: ${resCount}</span><br>
+          <span>Move: $${d.moveCost.toLocaleString()}</span><br>
+          <span>Base Income: $${d.baseIncome}</span><br>
+          <span>Businesses: ${d.maxBusinesses}</span><br>
+          <span>Risk: ${d.riskLevel} | Police: ${d.policePresence}%</span>
         </div>
         <div style="margin-top:8px; text-align:center;">
           ${badge}${actionBtns}
@@ -6265,10 +6282,10 @@ async function renewCorruption(officialId) {
     if (Math.random() < 0.08) {
       player.wantedLevel += Math.floor(Math.random() * 10) + 5;
       showBriefNotification(`Bribe renewed, but someone may have noticed the exchange...`, 'warning');
-      logAction(`💼 ${target.name}'s loyalty renewed, but whispers travel fast in the shadows.`);
+      logAction(`${target.name}'s loyalty renewed, but whispers travel fast in the shadows.`);
     } else {
       showBriefNotification(`${target.name}'s corruption renewed for ${target.benefits.duration} days!`, 'success');
-      logAction(`💼 ${target.name} remains loyal — for the right price. The machine keeps turning.`);
+      logAction(`${target.name} remains loyal — for the right price. The machine keeps turning.`);
     }
 
     updateUI();
@@ -6302,10 +6319,10 @@ async function corruptOfficial(targetId) {
     if (Math.random() < (target.riskLevel === 'extreme' ? 0.3 : target.riskLevel === 'high' ? 0.2 : 0.1)) {
       player.wantedLevel += Math.floor(Math.random() * 20) + 10;
       showBriefNotification(`Bribe successful, but someone may have noticed...`, 'warning');
-      logAction(`💼 ${target.name} has been corrupted, but you sense eyes watching your every move. The price of power is constant vigilance.`);
+      logAction(`${target.name} has been corrupted, but you sense eyes watching your every move. The price of power is constant vigilance.`);
     } else {
       showBriefNotification(`${target.name} corrupted successfully!`, 'success');
-      logAction(`💼 ${target.name} is now in your pocket. Money talks, and corruption walks. Your influence grows in the shadows.`);
+      logAction(`${target.name} is now in your pocket. Money talks, and corruption walks. Your influence grows in the shadows.`);
     }
     
     updateUI();
@@ -6335,13 +6352,13 @@ function approachBusiness(businessId, territoryId) {
     player.territoryReputation += 5;
     
     showBriefNotification(`${business.name} pays $${business.basePayment.toLocaleString()}/week for protection`, 'success');
-    logAction(`🏪 ${business.name} now pays tribute. Fear is the foundation of respect, and respect is the currency of power.`);
+    logAction(`${business.name} now pays tribute. Fear is the foundation of respect, and respect is the currency of power.`);
   } else {
     // Failed approach - business calls police or refuses
     if (Math.random() < 0.3) {
       player.wantedLevel += Math.floor(Math.random() * 15) + 5;
       showBriefNotification(`${business.name} called the police! Wanted level up.`, 'danger');
-      logAction(`🚨 ${business.name} refused your offer and called the authorities. Sometimes the sheep bite back.`);
+      logAction(`${business.name} refused your offer and called the authorities. Sometimes the sheep bite back.`);
     } else {
       showBriefNotification(`${business.name} refused your offer.`, 'warning');
       logAction(`❌ ${business.name} shows no fear. Some prey require a different approach.`);
@@ -6373,7 +6390,7 @@ function collectProtection(racketId) {
   racket.fearLevel = Math.min(10, racket.fearLevel + 0.5);
   
   alert(`Collected $${totalPayment.toLocaleString()} from ${business.name} (${weeksElapsed} week${weeksElapsed > 1 ? 's' : ''})`);
-  logAction(`💰 ${business.name} pays their tribute without question. Fear keeps the money flowing like clockwork.`);
+  logAction(`${business.name} pays their tribute without question. Fear keeps the money flowing like clockwork.`);
   
   updateUI();
   showProtectionRackets();
@@ -6392,19 +6409,19 @@ function pressureBusiness(racketId) {
     racket.fearLevel = Math.min(10, racket.fearLevel + 1);
     
     alert(`${business.name} agrees to pay more! Weekly payment increased by $${increase.toLocaleString()}.`);
-    logAction(`👊 Applied pressure to ${business.name}. A reminder of consequences speaks louder than words.`);
+    logAction(`Applied pressure to ${business.name}. A reminder of consequences speaks louder than words.`);
   } else {
     // Pressure backfires
     if (Math.random() < 0.4) {
       // Business calls police
       player.wantedLevel += Math.floor(Math.random() * 20) + 10;
       alert(`Your pressure tactics backfired! ${business.name} called the police.`);
-      logAction(`🚨 ${business.name} cracked under pressure and called the cops. Sometimes intimidation cuts both ways.`);
+      logAction(`${business.name} cracked under pressure and called the cops. Sometimes intimidation cuts both ways.`);
     } else {
       // Business closes down
       player.protectionRackets = player.protectionRackets.filter(r => r.id !== racketId);
       alert(`You pushed too hard! ${business.name} closed down and left the area.`);
-      logAction(`📉 ${business.name} shuttered their doors permanently. You killed the golden goose.`);
+      logAction(`${business.name} shuttered their doors permanently. You killed the golden goose.`);
     }
   }
   
@@ -6416,7 +6433,7 @@ async function dropProtection(racketId) {
   if (await ui.confirm("Are you sure you want to drop this protection racket?")) {
     player.protectionRackets = player.protectionRackets.filter(r => r.id !== racketId);
     showBriefNotification("Protection racket dropped.", 'warning');
-    logAction("📤 Released a business from your protection. Sometimes mercy has its own rewards.");
+    logAction("Released a business from your protection. Sometimes mercy has its own rewards.");
     
     showProtectionRackets();
   }
@@ -6441,7 +6458,7 @@ function processTerritoryOperations() {
   player.corruptedOfficials = (player.corruptedOfficials || []).filter(official => {
     if (official.expirationDate <= currentTime) {
       const target = (typeof corruptionTargets !== 'undefined') ? corruptionTargets.find(t => t.id === official.targetId) : null;
-      logAction(`💼 ${target ? target.name : 'A corrupted official'} is no longer under your influence.`);
+      logAction(`${target ? target.name : 'A corrupted official'} is no longer under your influence.`);
       return false;
     }
     return true;
@@ -6480,7 +6497,7 @@ function generateTerritoryEvent() {
   // Trim old events
   if (player.turf.events.length > 5) player.turf.events = player.turf.events.slice(-5);
   
-  logAction(`📰 Turf Event in <strong>${zone?.name || 'your turf'}</strong>: ${evt.name} — ${evt.description}`);
+  logAction(`Turf Event in <strong>${zone?.name || 'your turf'}</strong>: ${evt.name} — ${evt.description}`);
 }
 function updateUI() {
   // Synchronize gang member counts to prevent drift
@@ -6623,7 +6640,7 @@ function updateUI() {
     if (player.currentTerritory) {
       const td = getDistrict(player.currentTerritory);
       if (td) {
-        curTerritoryDisplay.innerText = `📍 ${td.icon} ${td.shortName}`;
+        curTerritoryDisplay.innerText = `${td.icon} ${td.shortName}`;
         curTerritoryDisplay.style.display = 'block';
       }
     } else {
@@ -6675,7 +6692,7 @@ function updateUI() {
   const eventsDisplay = document.getElementById("active-events-display");
   if (eventsDisplay) {
     if (activeEvents && activeEvents.length > 0) {
-      const eventNames = activeEvents.map(e => `${e.icon || '📰'} ${e.name}`).join(', ');
+      const eventNames = activeEvents.map(e => `${e.icon || ''} ${e.name}`).join(', ');
       eventsDisplay.innerText = `Events: ${eventNames}`;
       eventsDisplay.style.display = 'block';
     } else {
@@ -7174,7 +7191,7 @@ function showQuickActionCustomizer() {
 
       <div style="text-align:center;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
         <button onclick="resetQuickActionPrefs()" style="background:#95a5a6;color:#fff;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1em;">←© Reset to Default</button>
-        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#1a1a2e;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">✔ Done</button>
+        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#1a1a2e;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
       </div>
     </div>`;
 
@@ -7256,7 +7273,7 @@ function showMobileNavCustomizer() {
             background:${active ? 'rgba(46,204,113,0.15)' : locked ? 'rgba(139,0,0,0.2)' : isObjective ? 'rgba(52,73,94,0.2)' : 'rgba(52,73,94,0.5)'};
             border:2px solid ${locked ? '#ff0000' : active ? '#2ecc71' : isObjective ? '#555' : '#555'};
             opacity:${isObjective ? '0.5' : '1'};">
-            <span style="font-size:1.4em;">${locked ? '🔒' : isObjective ? '🎓' : active ? '✅' : '⬜'}</span>
+            <span style="font-size:1.4em;">${locked ? '🔒' : isObjective ? '' : active ? '✅' : '⬜'}</span>
             <div>
               <span style="color:${locked ? '#ff6b6b' : '#ecf0f1'};font-weight:bold;">${def.label}</span>
               ${locked ? '<br><small style="color:#ff6b6b;">Always shown</small>' : ''}
@@ -7272,7 +7289,7 @@ function showMobileNavCustomizer() {
 
       <div style="text-align:center;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
         <button onclick="resetMobileNavTabs()" style="background:#95a5a6;color:#fff;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1em;">↺ Reset to Default</button>
-        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#1a1a2e;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">✔ Done</button>
+        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#1a1a2e;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
       </div>
 
       <!-- Live preview -->
@@ -7312,7 +7329,7 @@ function toggleMobileNavTab(id) {
   } else {
     // Max 5 tabs
     if (currentTabs.length >= 5) {
-      if (typeof logAction === 'function') logAction('⚠️ Maximum 5 tabs allowed. Remove one first.');
+      if (typeof logAction === 'function') logAction('Maximum 5 tabs allowed. Remove one first.');
       return;
     }
     currentTabs.push(id);
@@ -7484,8 +7501,8 @@ function buyEnergyDrink() {
     player.dailyCounters.energyDrinksUsed = (player.dailyCounters.energyDrinksUsed || 0) + 1;
     
     alert(`Bought Energy Drink! Restored ${energyGained} energy but ${getRandomNarration('healthLoss')}\n\nNew Energy: ${player.energy}/${player.maxEnergy}`);
-    logAction(`⚗️ ${getRandomNarration('healthLoss')} The chemical rush comes with a price, but the energy boost might be worth it.`);
-    logAction("🏥¤ You chug down the energy drink. The caffeine hits your bloodstream like liquid lightning, but your body pays the price (+30 energy, -1 health).");
+    logAction(`${getRandomNarration('healthLoss')} The chemical rush comes with a price, but the energy boost might be worth it.`);
+    logAction("¤ You chug down the energy drink. The caffeine hits your bloodstream like liquid lightning, but your body pays the price (+30 energy, -1 health).");
     
     if (player.health <= 0) {
       showDeathScreen('Overdosed on energy drinks');
@@ -7506,7 +7523,7 @@ function buyCoffee() {
     const energyGained = player.energy - energyBefore;
     
     alert(`Bought Strong Coffee! Restored ${energyGained} energy.\n\nNew Energy: ${player.energy}/${player.maxEnergy}`);
-    logAction("☕ Hot coffee burns your throat as you down it in one gulp. The warmth spreads through your chest, pushing back the exhaustion (+15 energy).");
+    logAction("Hot coffee burns your throat as you down it in one gulp. The warmth spreads through your chest, pushing back the exhaustion (+15 energy).");
     updateUI(); // This will now refresh the jobs screen if it's visible
   } else {
     alert("You don't have enough money!");
@@ -7929,7 +7946,7 @@ async function startJob(index) {
     const energySaved = actualEnergyCost - reducedCost;
     actualEnergyCost = Math.max(1, reducedCost); // Still minimum 1 energy
     if (energySaved > 0) {
-      logAction(`🌤️ Favorable conditions make the job less taxing (${energySaved} energy saved)!`);
+      logAction(`Favorable conditions make the job less taxing (${energySaved} energy saved)!`);
     }
   }
 
@@ -7975,11 +7992,11 @@ async function startJob(index) {
     if (choice === 'loud') {
       approachBonus = player.skills.violence * 3;
       approachLabel = 'Loud';
-      logAction(`💥 You gear up for a loud approach on the ${job.name}. Violence is your friend today.`);
+      logAction(`You gear up for a loud approach on the ${job.name}. Violence is your friend today.`);
     } else {
       approachBonus = player.skills.stealth * 3;
       approachLabel = 'Quiet';
-      logAction(`🤝« You plan a stealthy approach for the ${job.name}. Patience is key.`);
+      logAction(`« You plan a stealthy approach for the ${job.name}. Patience is key.`);
     }
   } else if (job.risk === 'extreme' || job.risk === 'legendary') {
     // Elite-tier: briefing panel with crew & vehicle readiness
@@ -8015,7 +8032,7 @@ async function startJob(index) {
     // Crew bonus for elite jobs
     if (gangReady) {
       approachBonus = Math.min(player.gang.members * 2, 20); // Up to +20% from crew
-      logAction(`👥 Your crew of ${player.gang.members} rolls out with you — strength in numbers.`);
+      logAction(`Your crew of ${player.gang.members} rolls out with you — strength in numbers.`);
     }
     approachLabel = 'Briefed';
   }
@@ -8037,24 +8054,24 @@ async function startJob(index) {
   // Apply event effects to job success
   if (activeEffects.jobSuccessBonus) {
     eventBonus += activeEffects.jobSuccessBonus * 100;
-    logAction(`🌟 Current events favor your operations (+${(activeEffects.jobSuccessBonus * 100).toFixed(0)}% success chance)!`);
+    logAction(`Current events favor your operations (+${(activeEffects.jobSuccessBonus * 100).toFixed(0)}% success chance)!`);
   }
   
   if (activeEffects.stealthBonus && job.name.toLowerCase().includes('stealth')) {
     eventBonus += activeEffects.stealthBonus * 100;
-    logAction(`🌫️ Weather conditions provide excellent cover for stealth operations!`);
+    logAction(`Weather conditions provide excellent cover for stealth operations!`);
   }
   
   if (activeEffects.violentJobBonus && (job.name.toLowerCase().includes('fight') || job.name.toLowerCase().includes('rob'))) {
     eventBonus += activeEffects.violentJobBonus * 100;
-    logAction(`🌡️ The current atmosphere makes people more aggressive - perfect for violent jobs!`);
+    logAction(`The current atmosphere makes people more aggressive - perfect for violent jobs!`);
   }
   
   // Utility item: Lockpick Set gives +10% success on all jobs
   let utilityBonus = 0;
   if (hasUtilityItem('Lockpick Set')) {
     utilityBonus += 10;
-    logAction(`🔓 Your Lockpick Set gives you an edge on this job (+10% success).`);
+    logAction(`Your Lockpick Set gives you an edge on this job (+10% success).`);
   }
   
   // Car bonus for jobs (if player has selected a car)
@@ -8065,10 +8082,10 @@ async function startJob(index) {
     // Apply weather effects to car usage
     if (activeEffects.carAccidents) {
       carBonus = Math.floor(carBonus * (1 - activeEffects.carAccidents));
-      logAction(`🚗⚠️ Weather conditions make driving more dangerous - car effectiveness reduced!`);
+      logAction(`Weather conditions make driving more dangerous - car effectiveness reduced!`);
     }
     
-    logAction(`🚗 You slide into your ${selectedCar.name}, its familiar rumble giving you confidence. The streets feel different with good wheels beneath you (+${carBonus}% success chance).`);
+    logAction(`You slide into your ${selectedCar.name}, its familiar rumble giving you confidence. The streets feel different with good wheels beneath you (+${carBonus}% success chance).`);
   }
   
   if (job.risk === "low") {
@@ -8090,7 +8107,7 @@ async function startJob(index) {
 
   // Mastermind perk: 25% chance for jobs to auto-succeed
   if (player.unlockedPerks.includes('mastermind') && Math.random() < 0.25) {
-    logAction(`🧠  Mastermind instinct kicks in — you see the perfect opportunity and execute flawlessly!`);
+    logAction(`  Mastermind instinct kicks in — you see the perfect opportunity and execute flawlessly!`);
     successChance = 100; // Guarantee success
   }
 
@@ -8099,7 +8116,7 @@ async function startJob(index) {
     const jn = job.name.toLowerCase();
     if (jn.includes('extortion') || jn.includes('protection') || jn.includes('shakedown') || jn.includes('intimidat')) {
       successChance = Math.min(successChance + 30, 99);
-      logAction(`😁ˆ Your fearsome reputation makes the target comply more easily (+30% success).`);
+      logAction(`ˆ Your fearsome reputation makes the target comply more easily (+30% success).`);
     }
   }
 
@@ -8111,7 +8128,7 @@ async function startJob(index) {
     
     // Check for Shadow Walker perk (25% chance to avoid consequences)
     if (player.unlockedPerks.includes('shadowWalker') && Math.random() < 0.25) {
-      logAction(`👻 Your Shadow Walker abilities activate! You slip away undetected despite the failed attempt, avoiding all consequences.`);
+      logAction(`Your Shadow Walker abilities activate! You slip away undetected despite the failed attempt, avoiding all consequences.`);
       gainExperience(4); // Bonus experience for avoiding consequences
       updateUI();
       return;
@@ -8166,7 +8183,7 @@ async function startJob(index) {
       const boostPercent = 0.08 + (drugLab.level * 0.035); // 11.5% at Lv1, up to 25.5% at Lv5
       const drugLabBonus = Math.floor(earnings * boostPercent);
       earnings += drugLabBonus;
-      logAction(`🧠ª Your Drug Lab provides better product for distribution — payout boosted by $${drugLabBonus.toLocaleString()}.`);
+      logAction(`ª Your Drug Lab provides better product for distribution — payout boosted by $${drugLabBonus.toLocaleString()}.`);
     }
   }
 
@@ -8180,7 +8197,7 @@ async function startJob(index) {
 
   if (jailChance <= adjustedJailChance) {
     sendToJail(job.wantedLevelGain);
-    logAction(`🚔 Sirens wail behind you! Cold metal cuffs bite into your wrists as the cops drag you away. The ${job.name} was a setup all along...`);
+    logAction(`Sirens wail behind you! Cold metal cuffs bite into your wrists as the cops drag you away. The ${job.name} was a setup all along...`);
     return;
   }
 
@@ -8190,7 +8207,7 @@ async function startJob(index) {
     // Dirty money jobs raise suspicion — the feds notice large illegal cash flows
     const dirtySuspicion = 5 + Math.floor(Math.random() * 11); // 5-15 suspicion
     player.suspicionLevel = Math.min(100, (player.suspicionLevel || 0) + dirtySuspicion);
-    logAction(`🔍 Handling that much dirty cash raises eyebrows... (+${dirtySuspicion} suspicion)`);
+    logAction(`Handling that much dirty cash raises eyebrows... (+${dirtySuspicion} suspicion)`);
   } else {
     player.money += earnings;
   }
@@ -8214,7 +8231,7 @@ async function startJob(index) {
   // Utility item: Police Scanner reduces wanted level gain by 20%
   if (hasUtilityItem('Police Scanner')) {
     wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * 0.8));
-    logAction(`📡 Your Police Scanner intercepts radio chatter — you dodge the heat (+20% wanted reduction).`);
+    logAction(`Your Police Scanner intercepts radio chatter — you dodge the heat (+20% wanted reduction).`);
   }
   
   // Morales Cartel passive: violent crimes generate 20% less heat
@@ -8230,7 +8247,7 @@ async function startJob(index) {
   
   // Log intimidation effect if it reduced wanted level
   if (intimidationReduction > 0 && wantedLevelGain < job.wantedLevelGain) {
-    logAction(`😁¨ Your intimidating presence makes witnesses think twice about reporting the crime!`);
+    logAction(`¨ Your intimidating presence makes witnesses think twice about reporting the crime!`);
   }
   
   // Apply forensics skill for evidence cleanup
@@ -8241,7 +8258,7 @@ async function startJob(index) {
     if (forensicsSuccess < forensicsChance) {
       let evidenceReduction = Math.min(2, Math.floor(player.skillTrees.intelligence.forensics / 3)); // 1-2 wanted level reduction
       player.wantedLevel = Math.max(0, player.wantedLevel - evidenceReduction);
-      logAction(`🧠¹ Your forensics expertise helps you clean up evidence, reducing heat by ${evidenceReduction}!`);
+      logAction(`¹ Your forensics expertise helps you clean up evidence, reducing heat by ${evidenceReduction}!`);
     }
   }
   
@@ -8261,10 +8278,10 @@ async function startJob(index) {
     const bonus = Math.floor(earnings * 0.5);
     if (job.paysDirty) {
       player.dirtyMoney = (player.dirtyMoney || 0) + bonus;
-      logAction(`⚔️ War Machine bonus: Your reputation for violence earns you an extra $${bonus.toLocaleString()} (dirty)!`);
+      logAction(`War Machine bonus: Your reputation for violence earns you an extra $${bonus.toLocaleString()} (dirty)!`);
     } else {
       player.money += bonus;
-      logAction(`⚔️ War Machine bonus: Your reputation for violence earns you an extra $${bonus.toLocaleString()}!`);
+      logAction(`War Machine bonus: Your reputation for violence earns you an extra $${bonus.toLocaleString()}!`);
     }
   }
   
@@ -8371,7 +8388,7 @@ function handleCarTheft(job, actualEnergyCost) {
 
   if (jailChance <= adjustedJailChance) {
     sendToJail(job.wantedLevelGain);
-    logAction(`🚔 Busted! You barely get the door open before the cops swarm you. The owner was watching from their window the whole time (-${actualEnergyCost} energy).`);
+    logAction(`Busted! You barely get the door open before the cops swarm you. The owner was watching from their window the whole time (-${actualEnergyCost} energy).`);
     return;
   }
 
@@ -8379,7 +8396,7 @@ function handleCarTheft(job, actualEnergyCost) {
   let findCarChance = 15 + (player.skills.luck * 2); // Luck skill helps find cars
   if (Math.random() * 100 > findCarChance) {
     alert(`${getRandomNarration('carTheftFailure')} Lost ${actualEnergyCost} energy.`);
-    logAction(`🔍 ${getRandomNarration('carTheftFailure')} The streets can be unforgiving to those seeking easy rides.`);
+    logAction(`${getRandomNarration('carTheftFailure')} The streets can be unforgiving to those seeking easy rides.`);
     player.wantedLevel += 1; // Small wanted level increase for suspicious activity
     gainExperience(2);
     updateUI();
@@ -8461,11 +8478,11 @@ function handleCarTheft(job, actualEnergyCost) {
     player.health -= healthLoss;
     flashHurtScreen();
     showCarTheftChoiceResult(stolenCar, true, healthLoss);
-    logAction(`🚗💥 You grab the ${stolenCar.name} but the owner puts up a fight! Keys in hand, blood on your knuckles - it's yours now, but the price was pain (${damagePercentage}% damaged).`);
+    logAction(`You grab the ${stolenCar.name} but the owner puts up a fight! Keys in hand, blood on your knuckles - it's yours now, but the price was pain (${damagePercentage}% damaged).`);
   } else {
     flashSuccessScreen();
     showCarTheftChoiceResult(stolenCar, false);
-    logAction(`🚗✨ Like taking candy from a baby! You slip into the ${stolenCar.name} and drive off into the night. The engine purrs under your control (${damagePercentage}% damaged).`);
+    logAction(`Like taking candy from a baby! You slip into the ${stolenCar.name} and drive off into the night. The engine purrs under your control (${damagePercentage}% damaged).`);
   }
 
   // Note: updateUI, achievement check, showJobs, and health check are now handled in handleStolenCarChoice
@@ -8525,7 +8542,7 @@ function handleLaunderMoneyJob(job, approachLabel) {
     player.dirtyMoney = Math.max(0, player.dirtyMoney - seized);
     player.suspicionLevel = Math.min(100, (player.suspicionLevel || 0) + 15);
     sendToJail(job.wantedLevelGain);
-    logAction(`🚔💰 The feds bust your laundering operation! $${seized.toLocaleString()} in dirty money seized as evidence. You're dragged away in cuffs.`);
+    logAction(`The feds bust your laundering operation! $${seized.toLocaleString()} in dirty money seized as evidence. You're dragged away in cuffs.`);
     return;
   }
 
@@ -8545,7 +8562,7 @@ function handleLaunderMoneyJob(job, approachLabel) {
   if (approachLabel === 'Loud') {
     conversionRate -= 0.03; // Loud: -3% conversion (sloppy but fast)
     player.suspicionLevel = Math.min(100, (player.suspicionLevel || 0) + 8); // +8 suspicion
-    logAction(`📢 Going loud draws attention — the feds notice the large cash movements.`);
+    logAction(`Going loud draws attention — the feds notice the large cash movements.`);
   }
   if (approachLabel === 'Stealth') {
     conversionRate += 0.02; // Stealth: +2% conversion (careful handling)
@@ -8555,7 +8572,7 @@ function handleLaunderMoneyJob(job, approachLabel) {
   // Owning a Counterfeiting Operation improves conversion (mixing fake with real bills)
   if (player.businesses && player.businesses.some(b => b.id === 'counterfeiting')) {
     conversionRate += 0.03; // +3% if you own the Counterfeiting Operation
-    logAction(`🏭 Your Counterfeiting Operation helps mix the bills — improved conversion rate.`);
+    logAction(`Your Counterfeiting Operation helps mix the bills — improved conversion rate.`);
   }
 
   // Cap at 95%
@@ -8580,7 +8597,7 @@ function handleLaunderMoneyJob(job, approachLabel) {
   }
   if (hasUtilityItem('Police Scanner')) {
     wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * 0.8));
-    logAction(`📡 Your Police Scanner intercepts radio chatter — you dodge the heat.`);
+    logAction(`Your Police Scanner intercepts radio chatter — you dodge the heat.`);
   }
   player.wantedLevel += wantedLevelGain;
 
@@ -8617,14 +8634,14 @@ function handleLaunderMoneyJob(job, approachLabel) {
     if (Math.random() * 100 < forensicsChance) {
       let evidenceReduction = Math.min(2, Math.floor(player.skillTrees.intelligence.forensics / 3));
       player.wantedLevel = Math.max(0, player.wantedLevel - evidenceReduction);
-      logAction(`🧠¹ Your forensics expertise helps you cover the paper trail, reducing heat by ${evidenceReduction}!`);
+      logAction(`¹ Your forensics expertise helps you cover the paper trail, reducing heat by ${evidenceReduction}!`);
     }
   }
 
   const ratePercent = Math.round(conversionRate * 100);
   flashSuccessScreen();
-  alert(`💰 Laundering successful! Cleaned $${cleanAmount.toLocaleString()} from $${amountToLaunder.toLocaleString()} dirty money (${ratePercent}% rate, $${fee.toLocaleString()} in fees).`);
-  logAction(`💧💰 The dirty bills flow through shell companies and emerge squeaky clean. $${amountToLaunder.toLocaleString()} dirty ←’ $${cleanAmount.toLocaleString()} clean (${ratePercent}% rate). The laundering fee of $${fee.toLocaleString()} vanishes into the ether.`);
+  alert(`Laundering successful! Cleaned $${cleanAmount.toLocaleString()} from $${amountToLaunder.toLocaleString()} dirty money (${ratePercent}% rate, $${fee.toLocaleString()} in fees).`);
+  logAction(`The dirty bills flow through shell companies and emerge squeaky clean. $${amountToLaunder.toLocaleString()} dirty ←’ $${cleanAmount.toLocaleString()} clean (${ratePercent}% rate). The laundering fee of $${fee.toLocaleString()} vanishes into the ether.`);
 
   // Refresh jobs UI if visible
   if (document.getElementById("jobs-screen").style.display === "block") {
@@ -8643,48 +8660,48 @@ function showCarTheftChoiceResult(stolenCar, wasHurt = false, healthLoss = 0) {
   const resultHTML = `
     <div class="popup-card ${wasHurt ? 'popup-danger' : 'popup-success'}" style="max-width:550px;">
         <h2 class="popup-title">
-          ${wasHurt ? '🚗💥 Stolen but Bloodied!' : '🚗✨ Successful Theft!'}
+          ${wasHurt ? 'Stolen but Bloodied!' : 'Successful Theft!'}
         </h2>
         
         <div class="popup-image-frame">
           <img src="${carImageSrc}" alt="${stolenCar.name}" 
              style="width:200px;height:150px;border-radius:10px;object-fit:cover;border:3px solid #ecf0f1;margin-bottom:15px;" 
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-          <div class="popup-image-fallback" style="display:none;width:200px;height:150px;">🚗 ${stolenCar.name}</div>
+          <div class="popup-image-fallback" style="display:none;width:200px;height:150px;">${stolenCar.name}</div>
           <h3 style="color:#ecf0f1;margin:10px 0;">${stolenCar.name}</h3>
         </div>
         
         <div class="popup-section" style="text-align:left;">
-          <p style="margin:5px 0;"><strong>💰 Current Value:</strong> $${stolenCar.currentValue.toLocaleString()}</p>
-          <p style="margin:5px 0;"><strong>🔧 Damage:</strong> ${stolenCar.damagePercentage}%</p>
-          <p style="margin:5px 0;"><strong>📈 Base Value:</strong> $${stolenCar.baseValue.toLocaleString()}</p>
-          ${wasHurt ? `<p style="margin:5px 0;color:#e74c3c;"><strong>💔 Health Lost:</strong> ${healthLoss}</p>` : ''}
+          <p style="margin:5px 0;"><strong>Current Value:</strong> $${stolenCar.currentValue.toLocaleString()}</p>
+          <p style="margin:5px 0;"><strong>Damage:</strong> ${stolenCar.damagePercentage}%</p>
+          <p style="margin:5px 0;"><strong>Base Value:</strong> $${stolenCar.baseValue.toLocaleString()}</p>
+          ${wasHurt ? `<p style="margin:5px 0;color:#e74c3c;"><strong>Health Lost:</strong> ${healthLoss}</p>` : ''}
         </div>
         
         <div class="popup-section" style="border-color:rgba(241,196,15,0.3);">
-          <h3 style="color:#f1c40f;margin-bottom:15px;">🤝 What do you want to do with this vehicle?</h3>
+          <h3 style="color:#f1c40f;margin-bottom:15px;">What do you want to do with this vehicle?</h3>
           <p class="popup-quote">
             ${wasHurt ? getRandomNarration('carTheftDamaged') : getRandomNarration('carTheftSuccess')}
           </p>
           <p style="margin:8px 0;color:#e74c3c;font-size:0.9em;">
-            ⚠️ This vehicle is hot — you can't sell it directly. Scrap it for parts or store it.
+            This vehicle is hot — you can't sell it directly. Scrap it for parts or store it.
           </p>
         </div>
         
         <div class="popup-actions" style="flex-wrap:wrap;">
           <button onclick="handleStolenCarChoice('scrap', '${stolenCar.name}', ${stolenCar.baseValue}, ${stolenCar.currentValue}, ${stolenCar.damagePercentage})" 
               class="popup-btn" style="background:linear-gradient(45deg,#e67e22,#d35400);min-width:140px;">
-            🔧 Scrap for Parts<br><small>+$${Math.floor(stolenCar.currentValue * 0.35).toLocaleString()}</small>
+            Scrap for Parts<br><small>+$${Math.floor(stolenCar.currentValue * 0.35).toLocaleString()}</small>
           </button>
           <button onclick="handleStolenCarChoice('store', '${stolenCar.name}', ${stolenCar.baseValue}, ${stolenCar.currentValue}, ${stolenCar.damagePercentage})" 
               class="popup-btn popup-btn-success" style="min-width:140px;">
-            🏠 Store in Garage<br><small>Use for jobs</small>
+            Store in Garage<br><small>Use for jobs</small>
           </button>
         </div>
         
         <div class="popup-section" style="margin-top:15px;">
           <p style="margin:0;color:#bdc3c7;font-size:0.9em;">
-            <strong>💡 Tip:</strong> Stolen vehicles can't be sold directly — scrap them for quick parts money, or store and sell later through <strong style="color:#8e44ad;">The Fence</strong> for full black market value. Owning a <strong style="color:#e67e22;">Chop Shop</strong> massively boosts scrap profits!
+            <strong>Tip:</strong> Stolen vehicles can't be sold directly — scrap them for quick parts money, or store and sell later through <strong style="color:#8e44ad;">The Fence</strong> for full black market value. Owning a <strong style="color:#e67e22;">Chop Shop</strong> massively boosts scrap profits!
           </p>
         </div>
     </div>
@@ -8740,10 +8757,10 @@ function handleStolenCarChoice(choice, carName, baseValue, currentValue, damageP
     
     if (chopShopBonus > 0) {
       showBriefNotification(`Scrapped ${carName} for $${scrapPrice.toLocaleString()}! (Chop Shop bonus: +$${chopShopBonus.toLocaleString()})`, 'success');
-      logAction(`🔧💰 Your Chop Shop crew strips the ${carName} down to the frame. Premium parts sold to underground buyers (+$${scrapPrice.toLocaleString()}, Chop Shop bonus: +$${chopShopBonus.toLocaleString()}).`);
+      logAction(`Your Chop Shop crew strips the ${carName} down to the frame. Premium parts sold to underground buyers (+$${scrapPrice.toLocaleString()}, Chop Shop bonus: +$${chopShopBonus.toLocaleString()}).`);
     } else {
       showBriefNotification(`Scrapped ${carName} for parts — $${scrapPrice.toLocaleString()}`, 'success');
-      logAction(`🔧 You strip the ${carName} for parts in a back-alley chop job. Not the best price, but it's quick and untraceable (+$${scrapPrice.toLocaleString()}).`);
+      logAction(`You strip the ${carName} for parts in a back-alley chop job. Not the best price, but it's quick and untraceable (+$${scrapPrice.toLocaleString()}).`);
     }
   } else if (choice === 'store') {
     // Store the car in garage
@@ -8753,7 +8770,7 @@ function handleStolenCarChoice(choice, carName, baseValue, currentValue, damageP
     updateStatistic('carsStolen');
     
     showBriefNotification(`${carName} stored in your garage! Sell through The Fence for black market value.`, 'success');
-    logAction(`🏠 Smart move! You drive the ${carName} to your garage. Visit The Fence to sell it at premium black market rates, or use it for jobs.`);
+    logAction(`Smart move! You drive the ${carName} to your garage. Visit The Fence to sell it at premium black market rates, or use it for jobs.`);
   }
   
   // Close the choice screen
@@ -8792,22 +8809,22 @@ function showCarTheftResult(stolenCar, wasHurt = false, healthLoss = 0) {
   const resultHTML = `
     <div class="popup-card ${wasHurt ? 'popup-danger' : 'popup-success'}" style="max-width:500px;">
         <h2 class="popup-title">
-          ${wasHurt ? '🚗💥 Stolen but Bloodied!' : '🚗✨ Successful Theft!'}
+          ${wasHurt ? 'Stolen but Bloodied!' : 'Successful Theft!'}
         </h2>
         
         <div class="popup-image-frame">
           <img src="${carImageSrc}" alt="${stolenCar.name}" 
              style="width:200px;height:150px;border-radius:10px;object-fit:cover;border:3px solid #ecf0f1;margin-bottom:15px;" 
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-          <div class="popup-image-fallback" style="display:none;width:200px;height:150px;">🚗 ${stolenCar.name}</div>
+          <div class="popup-image-fallback" style="display:none;width:200px;height:150px;">${stolenCar.name}</div>
           <h3 style="color:#ecf0f1;margin:10px 0;">${stolenCar.name}</h3>
         </div>
         
         <div class="popup-section" style="text-align:left;">
-          <p style="margin:5px 0;"><strong>💰 Current Value:</strong> $${stolenCar.currentValue.toLocaleString()}</p>
-          <p style="margin:5px 0;"><strong>🔧 Damage:</strong> ${stolenCar.damagePercentage}%</p>
-          <p style="margin:5px 0;"><strong>📈 Base Value:</strong> $${stolenCar.baseValue.toLocaleString()}</p>
-          ${wasHurt ? `<p style="margin:5px 0;color:#e74c3c;"><strong>💔 Health Lost:</strong> ${healthLoss}</p>` : ''}
+          <p style="margin:5px 0;"><strong>Current Value:</strong> $${stolenCar.currentValue.toLocaleString()}</p>
+          <p style="margin:5px 0;"><strong>Damage:</strong> ${stolenCar.damagePercentage}%</p>
+          <p style="margin:5px 0;"><strong>Base Value:</strong> $${stolenCar.baseValue.toLocaleString()}</p>
+          ${wasHurt ? `<p style="margin:5px 0;color:#e74c3c;"><strong>Health Lost:</strong> ${healthLoss}</p>` : ''}
         </div>
         
         <p class="popup-quote">
@@ -8846,23 +8863,23 @@ function showStolenCars() {
   }
 
   let carsHTML = `
-    <h2>🏠 Vehicle Garage</h2>
+    <h2>Vehicle Garage</h2>
     <p>Your collection of acquired vehicles. Scrap them for parts or sell through <strong style="color:#8e44ad;">The Fence</strong> for full black market value!</p>
     <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
       <button onclick="showFence()" style="background: linear-gradient(45deg, #8e44ad, #6c3483); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-        🤝 Sell at The Fence
+        Sell at The Fence
       </button>
-      ${(typeof showVehicleMarketplace === 'function' || window.showVehicleMarketplace) ? '<button onclick="showVehicleMarketplace()" style="background: linear-gradient(45deg, #2980b9, #1a5276); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">🏪 Player Marketplace</button>' : ''}
+      ${(typeof showVehicleMarketplace === 'function' || window.showVehicleMarketplace) ? '<button onclick="showVehicleMarketplace()" style="background: linear-gradient(45deg, #2980b9, #1a5276); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Player Marketplace</button>' : ''}
     </div>
   `;
 
   if (player.stolenCars.length === 0) {
     carsHTML += `
       <div style="text-align: center; margin: 40px 0; padding: 30px; background: rgba(52, 73, 94, 0.6); border-radius: 15px; border: 2px solid #f39c12;">
-        <h3 style="color: #f39c12; margin-bottom: 15px;">🚗 Empty Garage</h3>
+        <h3 style="color: #f39c12; margin-bottom: 15px;">Empty Garage</h3>
         <p style="color: #ecf0f1; margin-bottom: 20px;">Your garage is currently empty. Start stealing cars through jobs to build your vehicle collection!</p>
         <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 1px solid #f39c12; margin: 20px 0;">
-          <p style="color: #ecf0f1; margin: 0;"><strong>💡 Tip:</strong> Look for "Car Theft" jobs to acquire vehicles. Cars can be sold for money or used to improve job success rates!</p>
+          <p style="color: #ecf0f1; margin: 0;"><strong>Tip:</strong> Look for "Car Theft" jobs to acquire vehicles. Cars can be sold for money or used to improve job success rates!</p>
         </div>
       </div>
     `;
@@ -8889,11 +8906,11 @@ function showStolenCars() {
               <div style="text-align: center; margin: 20px 0;">
                 <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
                   <p style="margin: 8px 0; color: ${conditionColor}; font-weight: bold; font-size: 1.1em;">
-                    🔧 ${conditionText} (${car.damagePercentage}% damaged)
+                    ${conditionText} (${car.damagePercentage}% damaged)
                   </p>
-                  <p style="margin: 8px 0; color: #f39c12; font-size: 1.05em;"><strong>💰 Current Value:</strong> $${car.currentValue.toLocaleString()}</p>
-                  <p style="margin: 8px 0; color: #3498db; font-size: 1.05em;"><strong>📊 Base Value:</strong> $${car.baseValue.toLocaleString()}</p>
-                  <p style="margin: 8px 0; color: #95a5a6; font-size: 1.05em;"><strong>🔄 Times Used:</strong> ${car.usageCount}</p>
+                  <p style="margin: 8px 0; color: #f39c12; font-size: 1.05em;"><strong>Current Value:</strong> $${car.currentValue.toLocaleString()}</p>
+                  <p style="margin: 8px 0; color: #3498db; font-size: 1.05em;"><strong>Base Value:</strong> $${car.baseValue.toLocaleString()}</p>
+                  <p style="margin: 8px 0; color: #95a5a6; font-size: 1.05em;"><strong>Times Used:</strong> ${car.usageCount}</p>
                 </div>
                 
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
@@ -8901,14 +8918,14 @@ function showStolenCars() {
                       style="background: linear-gradient(45deg, #e67e22, #d35400); color: white; padding: 12px 18px; 
                           border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; 
                           transition: all 0.3s ease; min-width: 120px;">
-                    🔧 Scrap ($${Math.floor(car.currentValue * 0.35).toLocaleString()})
+                    Scrap ($${Math.floor(car.currentValue * 0.35).toLocaleString()})
                   </button>
                   <button onclick="useCar(${index}, 'job')" ${car.damagePercentage >= 90 ? 'disabled' : ''}
                       style="background: ${car.damagePercentage >= 90 ? '#7f8c8d' : 'linear-gradient(45deg, #2ecc71, #27ae60)'}; 
                           color: white; padding: 12px 18px; border: none; border-radius: 10px; 
                           font-weight: bold; cursor: ${car.damagePercentage >= 90 ? 'not-allowed' : 'pointer'}; font-size: 15px;
                           transition: all 0.3s ease; min-width: 120px;">
-                    ${car.damagePercentage >= 90 ? '🚫 Too Damaged' : '🚗 Use for Job'}
+                    ${car.damagePercentage >= 90 ? '🚫 Too Damaged' : 'Use for Job'}
                   </button>
                 </div>
               </div>
@@ -8943,7 +8960,7 @@ function useCar(index, purpose) {
     if (purpose === 'job') {
       player.selectedCar = index;
       alert(`Selected ${car.name} (${car.damagePercentage}% damaged) for your next job. It will provide bonuses but may take damage.`);
-      logAction(`🔑 You pat the hood of your ${car.name} with a grin. This beauty will be your ride for the next job. Time to put it to work.`);
+      logAction(`You pat the hood of your ${car.name} with a grin. This beauty will be your ride for the next job. Time to put it to work.`);
       showStolenCars(); // Refresh the display
     }
   }
@@ -8969,16 +8986,16 @@ function damageCar(carIndex, damageAmount) {
     if (catastrophe < 0.4) { // 40% chance - explosion
       player.health -= 30;
       alert(`Your car exploded! ${getRandomNarration('healthLoss')} The vehicle is destroyed!`, true);
-      logAction(`💥 ${getRandomNarration('healthLoss')} Sometimes taking risks with damaged equipment backfires spectacularly.`);
-      logAction(`💥🔥 BOOM! The car erupts in flames! You dive clear as metal and glass rain down around you. The explosion echoes through the streets (-30 health).`);
+      logAction(`${getRandomNarration('healthLoss')} Sometimes taking risks with damaged equipment backfires spectacularly.`);
+      logAction(`BOOM! The car erupts in flames! You dive clear as metal and glass rain down around you. The explosion echoes through the streets (-30 health).`);
       flashHurtScreen();
     } else if (catastrophe < 0.7) { // 30% chance - breakdown and caught
       sendToJail(5);
       alert("Your car broke down and you were caught by police!");
-      logAction("🚔💨 The engine dies with a pathetic wheeze. Steam rises from the hood as cop cars surround you. Should've maintained your ride better!");
+      logAction("The engine dies with a pathetic wheeze. Steam rises from the hood as cop cars surround you. Should've maintained your ride better!");
     } else { // 30% chance - just destroyed
       alert("Your car finally gave out and is completely destroyed.");
-      logAction("🔧💀 The car finally gives up the ghost. Metal grinds against metal as it dies. You walk away from the smoking wreck - time to find new wheels.");
+      logAction("The car finally gives up the ghost. Metal grinds against metal as it dies. You walk away from the smoking wreck - time to find new wheels.");
     }
     
     // Remove the destroyed car
@@ -9041,7 +9058,7 @@ function sendToJail(wantedLevelLoss) {
   // Utility item: Fake ID Kit reduces jail time by 5 seconds
   if (hasUtilityItem('Fake ID Kit')) {
     calculatedJailTime = Math.max(5, calculatedJailTime - 5);
-    logAction(`🏪ª Your Fake ID Kit confuses the booking officers — shorter sentence!`);
+    logAction(`ª Your Fake ID Kit confuses the booking officers — shorter sentence!`);
   }
   
   player.jailTime = calculatedJailTime;
@@ -9146,7 +9163,7 @@ function attemptBreakout() {
     player.jailTime += 10; // Add 10 seconds to jail time on failed breakout attempt
     updateUI();
     alert(`${getRandomNarration('jailBreakoutFailure')} Additional time has been added to your sentence.`);
-    logAction("⚡ The guard's flashlight catches you red-handed! Alarms blare as they drag you back to your cell. Some lessons are learned the hard way.");
+    logAction("The guard's flashlight catches you red-handed! Alarms blare as they drag you back to your cell. Some lessons are learned the hard way.");
     
     showJailScreen(); // Update the breakout button text
   }
@@ -9162,30 +9179,30 @@ function showSkills() {
   let skillsHTML = `
     <div style="background: linear-gradient(135deg, #2c3e50, #34495e); padding: 30px; border-radius: 15px; color: #ecf0f1;">
       <h2 style="text-align: center; color: #3498db; margin-bottom: 20px; font-size: 2.5em;">
-        🧠  Advanced Skills System
+          Advanced Skills System
       </h2>
       
       <div style="text-align: center; margin-bottom: 30px; padding: 15px; background: rgba(52, 152, 219, 0.2); border-radius: 10px;">
         <h3 style="color: #f39c12; margin: 0;">Skill Points Available: ${player.skillPoints}</h3>
         ${player.skillPoints === 0 ? 
-          '<p style="color: #e67e22; margin: 10px 0;"><strong>💡 Complete jobs and missions to earn skill points!</strong></p>' : 
-          '<p style="color: #2ecc71; margin: 10px 0;">💎 Spend your points wisely to unlock powerful abilities!</p>'
+          '<p style="color: #e67e22; margin: 10px 0;"><strong>Complete jobs and missions to earn skill points!</strong></p>' : 
+          '<p style="color: #2ecc71; margin: 10px 0;">Spend your points wisely to unlock powerful abilities!</p>'
         }
       </div>
       
       <!-- Navigation Tabs -->
       <div style="display: flex; justify-content: center; margin-bottom: 30px; gap: 10px; flex-wrap: wrap;">
         <button onclick="showSkillTab('basic')" id="tab-basic" class="skill-tab active-tab">
-          📚 Basic Skills
+          Basic Skills
         </button>
         <button onclick="showSkillTab('trees')" id="tab-trees" class="skill-tab">
-          🌳 Skill Trees
+          Skill Trees
         </button>
         <button onclick="showSkillTab('reputation')" id="tab-reputation" class="skill-tab">
-          🏆 Reputation
+          Reputation
         </button>
         <button onclick="showSkillTab('mentors')" id="tab-mentors" class="skill-tab">
-          🎓 Mentors
+          Mentors
         </button>
         <button onclick="showSkillTab('perks')" id="tab-perks" class="skill-tab">
           ⭐ Perks
@@ -9335,7 +9352,7 @@ function showSkillTab(tabName) {
 
 function generateBasicSkillsContent() {
   let content = `
-    <h3 style="color: #3498db; text-align: center; margin-bottom: 25px;">📚 Foundation Skills</h3>
+    <h3 style="color: #3498db; text-align: center; margin-bottom: 25px;">Foundation Skills</h3>
     <p style="text-align: center; color: #bdc3c7; margin-bottom: 30px;">
       Master these fundamental abilities to unlock specialized skill trees.
     </p>
@@ -9382,7 +9399,7 @@ function generateBasicSkillsContent() {
         ${level >= 5 && level % 5 === 0 ? `
           <div style="margin-top: 10px; padding: 8px; background: rgba(46, 204, 113, 0.2); border-radius: 5px; border: 1px solid #2ecc71;">
             <p style="color: #2ecc71; font-size: 0.8em; margin: 0; text-align: center;">
-              🎉 Milestone reached! Skill tree branches unlocked!
+              Milestone reached! Skill tree branches unlocked!
             </p>
           </div>
         ` : ''}
@@ -9396,7 +9413,7 @@ function generateBasicSkillsContent() {
 
 function generateSkillTreesContent() {
   let content = `
-    <h3 style="color: #3498db; text-align: center; margin-bottom: 25px;">🌳 Specialized Skill Trees</h3>
+    <h3 style="color: #3498db; text-align: center; margin-bottom: 25px;">Specialized Skill Trees</h3>
     <p style="text-align: center; color: #bdc3c7; margin-bottom: 30px;">
       Unlock and master specialized branches to become a true expert in your chosen fields.
     </p>
@@ -9473,7 +9490,7 @@ function generateSkillTreesContent() {
 
 function generateReputationContent() {
   let content = `
-    <h3 style="color: #3498db; text-align: center; margin-bottom: 25px;">🏆 Street Reputation</h3>
+    <h3 style="color: #3498db; text-align: center; margin-bottom: 25px;">Street Reputation</h3>
     <p style="text-align: center; color: #bdc3c7; margin-bottom: 30px;">
       Your standing with different factions affects prices, opportunities, and survival.
     </p>
@@ -9517,7 +9534,7 @@ function generateReputationContent() {
           ${currentEffects.length > 0 ? 
             currentEffects.map(effect => `
               <p style="color: ${color}; font-size: 0.9em; margin: 5px 0; padding: 5px; background: rgba(${isPositive ? '46, 204, 113' : '231, 76, 60'}, 0.1); border-radius: 5px;">
-                ${isPositive ? '✓' : '✗'} ${effect}
+                ${isPositive ? '✓' : ''} ${effect}
               </p>
             `).join('') : 
             '<p style="color: #95a5a6; font-style: italic;">No effects active</p>'
@@ -9549,7 +9566,7 @@ function generateReputationContent() {
 
 function generateMentorsContent() {
   let content = `
-    <h3 class="skill-tab-title">🎓 Mentorship Program</h3>
+    <h3 class="skill-tab-title">Mentorship Program</h3>
     <p class="skill-tab-subtitle">
       Learn from captured rivals and enemy specialists to unlock unique techniques.
     </p>
@@ -9558,14 +9575,14 @@ function generateMentorsContent() {
   if (player.mentors.length === 0) {
     content += `
       <div style="text-align: center; padding: 40px; background: rgba(52, 73, 94, 0.3); border-radius: 15px;">
-        <span style="font-size: 4em; opacity: 0.5;">👨‍🏫</span>
+        <span style="font-size: 4em; opacity: 0.5;">‍</span>
         <h4 style="color: #95a5a6; margin: 20px 0;">No Mentors Available</h4>
         <p style="color: #bdc3c7; margin: 0;">
           Build your skills and reputation to attract mentors, or capture rival gang members during gang wars.<br>
           Each mentor teaches specialized techniques from their faction.
         </p>
         <div style="margin-top: 20px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
-          <h5 style="color: #f39c12; margin-bottom: 10px;">🔍 Known Mentors in the Underground:</h5>
+          <h5 style="color: #f39c12; margin-bottom: 10px;">Known Mentors in the Underground:</h5>
           ${potentialMentors.map(m => {
             const reqs = m.requirements || {};
             const reqText = Object.entries(reqs).map(([k, v]) => `${k}: ${v}`).join(', ');
@@ -9635,7 +9652,7 @@ function generateMentorsContent() {
   
   content += `
     <div class="mentor-tips">
-      <h4>💡 Mentorship Tips</h4>
+      <h4>Mentorship Tips</h4>
       <ul>
         <li>Build skills to attract mentors, or capture them during gang wars</li>
         <li>Each mentor teaches 2-3 specialized skill tree branches</li>
@@ -9731,7 +9748,7 @@ function generatePerksContent() {
             
             return `
               <p style="color: ${isMet ? '#2ecc71' : '#e74c3c'}; font-size: 0.8em; margin: 2px 0;">
-                ${isMet ? '✓' : '✗'} ${reqText}
+                ${isMet ? '✓' : ''} ${reqText}
               </p>
             `;
           }).join('')}
@@ -9788,10 +9805,10 @@ function upgradeSkillTree(skillName, branchName) {
     
     // Milestone feedback at max level
     if (newLevel >= maxLevel) {
-      showBriefNotification(`🏆 MASTERED: ${branchName}! You've reached the pinnacle.`, 'success');
-      logAction(`🏆 ${branchName} MASTERED! You've reached level ${newLevel} — the absolute peak of this discipline.`);
+      showBriefNotification(`MASTERED: ${branchName}! You've reached the pinnacle.`, 'success');
+      logAction(`${branchName} MASTERED! You've reached level ${newLevel} — the absolute peak of this discipline.`);
     } else {
-      logAction(`🌟 Specialized training complete! Your ${branchName} skills have improved significantly (Level ${newLevel}).`);
+      logAction(`Specialized training complete! Your ${branchName} skills have improved significantly (Level ${newLevel}).`);
     }
     updateUI();
     showSkillTab('trees'); // Refresh the trees view
@@ -9827,11 +9844,11 @@ function startMentoring(mentorId) {
   
   if (player.skillTrees[skillName][branchName] < skillTreeDefinitions[skillName].branches[branchName].maxLevel) {
     player.skillTrees[skillName][branchName]++;
-    logAction(`🎓 ${mentor.name} shares ancient wisdom! Your ${branchName} techniques have improved through their teachings.`);
+    logAction(`${mentor.name} shares ancient wisdom! Your ${branchName} techniques have improved through their teachings.`);
   } else {
     // Give skill points if branch is maxed
     player.skillPoints += 2;
-    logAction(`🎓 ${mentor.name} is impressed by your mastery and grants you additional training points to allocate as you see fit.`);
+    logAction(`${mentor.name} is impressed by your mastery and grants you additional training points to allocate as you see fit.`);
   }
   
   // Small reputation boost with mentor's faction
@@ -9881,8 +9898,8 @@ function checkMentorDiscovery() {
     player.mentors.push(newMentor);
     existingMentorNames.push(mentorDef.name);
     
-    showBriefNotification(`🎓 New Mentor: ${mentorDef.name} has agreed to train you!`, 'success', 5000);
-    logAction(`🎓 ${mentorDef.unlockMessage || `${mentorDef.name} recognizes your skills and offers to mentor you.`}`);
+    showBriefNotification(`New Mentor: ${mentorDef.name} has agreed to train you!`, 'success', 5000);
+    logAction(`${mentorDef.unlockMessage || `${mentorDef.name} recognizes your skills and offers to mentor you.`}`);
   });
 }
 
@@ -9907,8 +9924,7 @@ function checkPerkRequirements(requirements) {
       case 'mentors':
         return (player.mentors ? player.mentors.length : 0) >= value;
       case 'count':
-      case 'level':
-        return true; // These are handled by other requirements
+        return true; // This is handled by other requirements
       default:
         return false;
     }
@@ -9940,38 +9956,38 @@ function applyPerkEffects(perkId) {
           member.loyalty = 100;
         });
       }
-      logAction("👑 Kingmaker unlocked! All gang members are now fiercely loyal.");
+      logAction("Kingmaker unlocked! All gang members are now fiercely loyal.");
       break;
     case 'legendaryStatus':
       // Unlock special content or abilities
-      logAction("🌟 Your legendary status opens doors that were previously closed to mortal criminals...");
+      logAction("Your legendary status opens doors that were previously closed to mortal criminals...");
       break;
     case 'ghostProtocol':
-      logAction("👻 Ghost Protocol active! You leave no trace — heat generation reduced by 50%.");
+      logAction("Ghost Protocol active! You leave no trace — heat generation reduced by 50%.");
       break;
     case 'fearMonger':
-      logAction("😁ˆ Fear Monger unlocked! Your reputation precedes you — intimidation +30% success.");
+      logAction("ˆ Fear Monger unlocked! Your reputation precedes you — intimidation +30% success.");
       break;
     case 'mastermind':
-      logAction("🧠  Mastermind unlocked! 25% of jobs now auto-succeed with zero risk.");
+      logAction("  Mastermind unlocked! 25% of jobs now auto-succeed with zero risk.");
       break;
     case 'masterTeacher':
-      logAction("📖 Master Teacher unlocked! All skill gains increased by 25%.");
+      logAction("Master Teacher unlocked! All skill gains increased by 25%.");
       break;
     case 'shadowWalker':
-      logAction("🌑 Shadow Walker unlocked! 25% chance to avoid consequences on failed stealth jobs.");
+      logAction("Shadow Walker unlocked! 25% chance to avoid consequences on failed stealth jobs.");
       break;
     case 'warMachine':
-      logAction("⚔️ War Machine unlocked! Combat jobs pay 50% more.");
+      logAction("War Machine unlocked! Combat jobs pay 50% more.");
       break;
     case 'silverTongue':
-      logAction("🗣️ Silver Tongue unlocked! Negotiation jobs get massive success bonus.");
+      logAction("Silver Tongue unlocked! Negotiation jobs get massive success bonus.");
       break;
     case 'digitalGod':
-      logAction("💻 Digital God unlocked! Hacking jobs get massive success bonus.");
+      logAction("Digital God unlocked! Hacking jobs get massive success bonus.");
       break;
     case 'fortuneSon':
-      logAction("🍀 Fortune's Son unlocked! Gambling odds permanently improved.");
+      logAction("Fortune's Son unlocked! Gambling odds permanently improved.");
       break;
   }
 }
@@ -9995,16 +10011,16 @@ function upgradeSkill(skillName) {
     // Master Teacher perk: 25% bonus — chance to gain an extra skill level
     if (player.unlockedPerks.includes('masterTeacher') && Math.random() < 0.25) {
       player.skills[skillName]++;
-      logAction(`📖 Master Teacher instinct! You gain an extra level in ${skillName}!`);
+      logAction(`Master Teacher instinct! You gain an extra level in ${skillName}!`);
     }
     
     // Check for milestone achievements
     const newLevel = player.skills[skillName];
     if (newLevel % 5 === 0) {
-      logAction(`🎉 Milestone reached! ${skillName} level ${newLevel} unlocks specialized skill trees and new opportunities!`);
+      logAction(`Milestone reached! ${skillName} level ${newLevel} unlocks specialized skill trees and new opportunities!`);
     }
     
-    logAction(`📚 Hours of practice pay off! Your ${skillName} skills sharpen like a blade. Every lesson learned in blood and sweat (Level ${newLevel}).`);
+    logAction(`Hours of practice pay off! Your ${skillName} skills sharpen like a blade. Every lesson learned in blood and sweat (Level ${newLevel}).`);
     updateUI();
     showSkillTab('basic'); // Refresh the current tab
     
@@ -10026,7 +10042,7 @@ function upgradeSkill(skillName) {
 
 // Gang management functions
 function collectTribute() {
-  if (player.gang.members === 0) {
+  if (!player.gang.gangMembers || player.gang.gangMembers.length === 0) {
     alert("You need gang members to collect tribute!");
     return;
   }
@@ -10063,8 +10079,9 @@ function collectTribute() {
   const territoryBonus = player.territory * 50;
   tribute += territoryBonus;
   
-  // Loyalty affects tribute amount
-  const loyaltyMultiplier = player.gang.loyalty / 100;
+  // Loyalty affects tribute amount (use average of individual member loyalties)
+  const avgLoyalty = typeof getAverageLoyalty === 'function' ? getAverageLoyalty() : (player.gang.loyalty || 100);
+  const loyaltyMultiplier = avgLoyalty / 100;
   tribute = Math.floor(tribute * loyaltyMultiplier);
   
   // Tribute is dirty cash
@@ -10083,8 +10100,8 @@ function collectTribute() {
     bonusText += ` (${Math.floor((1 - loyaltyMultiplier) * 100)}% reduced due to low loyalty)`;
   }
   
-  showBriefNotification(`💰 Collected $${tribute.toLocaleString()} in tribute (dirty)!${bonusText}`, 'success');
-  logAction(`💰 Your crew comes through! Envelopes stuffed with cash find their way to you. The family business is paying dividends (+$${tribute.toLocaleString()} dirty${bonusText}).`);
+  showBriefNotification(`Collected $${tribute.toLocaleString()} in tribute (dirty)!${bonusText}`, 'success');
+  logAction(`Your crew comes through! Envelopes stuffed with cash find their way to you. The family business is paying dividends (+$${tribute.toLocaleString()} dirty${bonusText}).`);
   updateUI();
   showGang(); // Refresh the gang screen to show new cooldown
 }
@@ -10133,7 +10150,7 @@ function expandTerritory() {
     
     showBriefNotification(`Territory expanded! +$${incomeGain.toLocaleString()}/week income.`, 'success');
     degradeEquipment('territory_expand');
-    logAction("🗺️ Your influence spreads like ink in water. New blocks fall under your protection, new corners pay tribute. The empire grows one street at a time.");
+    logAction("Your influence spreads like ink in water. New blocks fall under your protection, new corners pay tribute. The empire grows one street at a time.");
   } else {
     let losses = Math.floor(Math.random() * 3) + 1;
     player.gang.members = Math.max(0, player.gang.members - losses);
@@ -10192,14 +10209,13 @@ function gangWar() {
     captureChance += player.skillTrees.violence.intimidation * 0.025; // +2.5% per intimidation level
     
     if (Math.random() < captureChance && player.mentors.length < 4) {
-      const availableMentors = potentialMentors.filter(mentor => 
-        !player.mentors.some(existing => existing.name === mentor.name) &&
-        player.skills.violence >= (mentor.requirements.violence || 0) &&
-        player.skills.stealth >= (mentor.requirements.stealth || 0) &&
-        player.skills.charisma >= (mentor.requirements.charisma || 0) &&
-        player.skills.intelligence >= (mentor.requirements.intelligence || 0) &&
-        player.reputation >= (mentor.requirements.reputation || 0)
-      );
+      const availableMentors = potentialMentors.filter(mentor => {
+        if (player.mentors.some(existing => existing.name === mentor.name)) return false;
+        return Object.entries(mentor.requirements).every(([req, val]) => {
+          if (req === 'reputation') return player.reputation >= val;
+          return (player.skills[req] || 0) >= val;
+        });
+      });
       
       if (availableMentors.length > 0) {
         const capturedMentor = availableMentors[Math.floor(Math.random() * availableMentors.length)];
@@ -10211,13 +10227,13 @@ function gangWar() {
         };
         
         player.mentors.push(newMentor);
-        logAction(`🎓 Mentor Captured! ${capturedMentor.name} has been taken prisoner. "${capturedMentor.dialogue.first}"`);
-        alert(`🎓 Mentor Captured!\n\n${capturedMentor.name} from the ${factionEffects[capturedMentor.faction].name} has been captured!\n\n"${capturedMentor.dialogue.first}"\n\nThey can now teach you advanced techniques in the Skills menu.`);
+        logAction(`Mentor Captured! ${capturedMentor.name} has been taken prisoner. "${capturedMentor.dialogue.first}"`);
+        showBriefNotification(`Mentor Captured! ${capturedMentor.name} from the ${factionEffects[capturedMentor.faction].name} can now teach you in the Skills menu.`, 'success', 6000);
       }
     }
     
-    alert(`Gang war victory! Earned $${winnings.toLocaleString()} (dirty) and gained turf rep!`);
-    logAction(`⚔️ Victorious in gang warfare! The streets echo with your name as you claim $${winnings.toLocaleString()} (dirty) and expand your domain.`);
+    showBriefNotification(`Gang war victory! Earned $${winnings.toLocaleString()} (dirty) and gained turf rep!`, 'success');
+    logAction(`Victorious in gang warfare! The streets echo with your name as you claim $${winnings.toLocaleString()} (dirty) and expand your domain.`);
     if (player.turf) player.turf.reputation = (player.turf.reputation || 0) + 10;
     
     // Track violent playstyle
@@ -10228,15 +10244,14 @@ function gangWar() {
       let damageAmount = Math.floor(Math.random() * 25) + 15; // 15-40% damage
       let carCatastrophe = damageCar(player.selectedCar, damageAmount);
       if (!carCatastrophe) {
-        logAction(`🚗 Your ride bears the scars of war - ${damageAmount}% damage from the intense firefight.`);
+        logAction(`Your ride bears the scars of war - ${damageAmount}% damage from the intense firefight.`);
       }
       player.selectedCar = null;
     }
   } else {
     let losses = Math.floor(actualGangSize * 0.3);
-    player.gang.members = Math.max(0, player.gang.members - losses);
     
-    // Also remove from detailed gang members array
+    // Remove from detailed gang members array
     for (let i = 0; i < losses && player.gang.gangMembers.length > 0; i++) {
       const randomIndex = Math.floor(Math.random() * player.gang.gangMembers.length);
       const lostMember = player.gang.gangMembers[randomIndex];
@@ -10245,9 +10260,10 @@ function gangWar() {
       const powerLoss = Math.floor((lostMember.experienceLevel || 1) * 2) + 5;
       player.territoryPower = Math.max(50, player.territoryPower - powerLoss);
     }
+    player.gang.members = player.gang.gangMembers.length;
     
     player.gang.loyalty = Math.max(50, player.gang.loyalty - 20);
-    alert(`Gang war defeat! Lost ${losses} members and loyalty decreased.`);
+    showBriefNotification(`Gang war defeat! Lost ${losses} members and loyalty decreased.`, 'warning');
     logAction(`Lost gang war, lost ${losses} members.`);
     
     // Car takes extreme damage in defeat
@@ -10281,20 +10297,16 @@ async function fireGangMember(memberIndex) {
   // Calculate loyalty impact based on how the member is treated
   const loyaltyImpact = Math.min(15, Math.floor(member.loyalty / 10)); // Higher loyalty members cause more impact when fired
   
+  // Remove the member from the gang first
+  player.gang.gangMembers.splice(memberIndex, 1);
+  player.gang.members = player.gang.gangMembers.length;
+  
   // Recalculate power after removing member
   recalculatePower();
   
   // Reduce territory power for fired member
   const powerLoss = Math.floor((member.experienceLevel || 1) * 2) + 5;
   player.territoryPower = Math.max(50, player.territoryPower - powerLoss);
-  
-  // Remove the member from the gang
-  player.gang.gangMembers.splice(memberIndex, 1);
-  
-  // Update legacy member count if it exists
-  if (player.gang.members > 0) {
-    player.gang.members = Math.max(0, player.gang.members - 1);
-  }
   
   // Reduce loyalty due to firing someone (shows you're ruthless)
   player.gang.loyalty = Math.max(30, player.gang.loyalty - loyaltyImpact);
@@ -10310,7 +10322,7 @@ async function fireGangMember(memberIndex) {
   ];
   const reason = fireReasons[Math.floor(Math.random() * fireReasons.length)];
   
-  logAction(`🔥 ${member.name} has been terminated from your organization due to ${reason}. Word spreads quickly in the underworld - sometimes tough decisions must be made (-${member.power || 5} power, -${loyaltyImpact} loyalty).`);
+  logAction(`${member.name} has been terminated from your organization due to ${reason}. Word spreads quickly in the underworld - sometimes tough decisions must be made (-${member.power || 5} power, -${loyaltyImpact} loyalty).`);
   
   // Achievement check in case this affects any achievements
   checkAchievements();
@@ -10337,7 +10349,7 @@ function showJailScreen() {
   const bribeCostEl = document.getElementById("bribe-cost");
   if (bribeButton) {
     const bribeCost = Math.floor(1000 + player.level * 500 + player.wantedLevel * 200);
-    bribeButton.innerText = `💰 Bribe Guard ($${bribeCost.toLocaleString()})`;
+    bribeButton.innerText = `Bribe Guard ($${bribeCost.toLocaleString()})`;
     bribeButton.style.display = player.money >= bribeCost ? "inline-block" : "inline-block";
     bribeButton.style.opacity = player.money >= bribeCost ? "1" : "0.5";
     if (bribeCostEl) {
@@ -10421,18 +10433,18 @@ function updatePrisonerList() {
   
   // === SECTION 1: Online Players in Jail ===
   prisonerHTML += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(192, 160, 98, 0.15); border-radius: 8px; border: 1px solid #c0a062;">
-    <h4 style="color: #c0a062; margin: 0 0 10px 0;">🌐 Online Players in Jail</h4>`;
+    <h4 style="color: #c0a062; margin: 0 0 10px 0;">Online Players in Jail</h4>`;
   
   if (onlinePlayers.length > 0) {
     onlinePlayers.forEach(p => {
       const isMe = (typeof onlineWorldState !== 'undefined') && p.playerId === onlineWorldState.playerId;
       prisonerHTML += `
         <div style="background: rgba(139, 0, 0, 0.2); padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid #8b0000;">
-          <strong style="color: #8b0000;">👤 ${p.name}</strong> - Time Left: ${Math.max(0, Math.ceil(p.jailTime))}s
+          <strong style="color: #8b0000;">${p.name}</strong> - Time Left: ${Math.max(0, Math.ceil(p.jailTime))}s
           <br><small style="color: #e74c3c;">Online Player • Level ${p.level || 1}</small>
           ${isMe ? '<br><span style="color: #95a5a6; font-style: italic;">That\'s you!</span>' :
             (player.inJail ? '<br><span style="color: #95a5a6; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" style="margin-top: 8px; background: #f39c12; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">🔓 Break Out</button>`)}
+            `<br><button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" style="margin-top: 8px; background: #f39c12; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`)}
         </div>
       `;
     });
@@ -10444,7 +10456,7 @@ function updatePrisonerList() {
   
   // === SECTION 2: Rival Family Members (Server Bots) ===
   prisonerHTML += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(139, 0, 0, 0.15); border-radius: 8px; border: 1px solid #8b0000;">
-    <h4 style="color: #e74c3c; margin: 0 0 5px 0;">🔥 Rival Family Members</h4>
+    <h4 style="color: #e74c3c; margin: 0 0 5px 0;">Rival Family Members</h4>
     <p style="color: #95a5a6; margin-bottom: 10px; font-size: 0.85em;">Break out rival family members to earn their respect.</p>`;
   
   if (bots.length > 0) {
@@ -10456,7 +10468,7 @@ function updatePrisonerList() {
           <strong style="color: #ecf0f1;">${bot.name}</strong> - Sentence: ${bot.sentence}s
           <br><small style="color: ${difficultyColor};">Difficulty: ${difficultyText}</small>
           ${player.inJail ? '<br><span style="color: #95a5a6; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="margin-top: 8px; background: #3498db; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">🔓 Break Out (${bot.breakoutSuccess}%)</button>`}
+            `<br><button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="margin-top: 8px; background: #3498db; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out (${bot.breakoutSuccess}%)</button>`}
         </div>
       `;
     });
@@ -10491,7 +10503,7 @@ function breakoutPrisoner(prisonerIndex) {
     checkLevelUp();
     
     alert(`${getRandomNarration('prisonerBreakoutSuccess')} You helped ${prisoner.name} escape! Gained ${expReward} XP.`);
-    logAction(`🤝 You slip ${prisoner.name} the keys and watch them disappear into the night. Honor among thieves - your reputation on the streets grows (+${expReward} XP).`);
+    logAction(` You slip ${prisoner.name} the keys and watch them disappear into the night. Honor among thieves - your reputation on the streets grows (+${expReward} XP).`);
     
     // Remove prisoner from list
     jailPrisoners.splice(prisonerIndex, 1);
@@ -10503,7 +10515,7 @@ function breakoutPrisoner(prisonerIndex) {
     const caughtChance = 40 - (player.skills.stealth * 3);
     if (Math.random() * 100 < caughtChance) {
       alert(`${getRandomNarration('prisonerBreakoutFailure')} You've been caught and sent to jail!`);
-      logAction(`⚡ Busted! The guards catch you red-handed helping ${prisoner.name}. They're dragging you to a cell of your own.`);
+      logAction(`Busted! The guards catch you red-handed helping ${prisoner.name}. They're dragging you to a cell of your own.`);
       
       // Send player to jail properly
       sendToJail(2); // Lose 2 wanted levels and go to jail
@@ -10519,7 +10531,7 @@ function breakoutPrisoner(prisonerIndex) {
       return; // Exit early since player is now in jail
     } else {
       alert(`${getRandomNarration('prisonerBreakoutFailure')} But you weren't caught.`);
-      logAction(`😁” The plan falls apart. ${prisoner.name} stays locked up, but at least you kept your head down. Sometimes discretion is the better part of valor.`);
+      logAction(`” The plan falls apart. ${prisoner.name} stays locked up, but at least you kept your head down. Sometimes discretion is the better part of valor.`);
     }
     updateUI();
   }
@@ -10920,9 +10932,9 @@ function checkSuspicionConsequences() {
   if (suspicion >= 25 && suspicion < 50) {
     if (Math.random() < 0.08) { // 8% chance per check
       const events = [
-        { msg: "🔍 An unmarked car has been spotted watching your businesses. The feds are taking notice.", moneyLoss: 0, wantedGain: 2 },
-        { msg: "📱 Your burner phone intercepted a police radio call mentioning your name. Stay careful.", moneyLoss: 0, wantedGain: 1 },
-        { msg: "🕵️ A suspicious person was asking questions about you in the neighborhood. Word is getting around.", moneyLoss: 0, wantedGain: 3 }
+        { msg: "An unmarked car has been spotted watching your businesses. The feds are taking notice.", moneyLoss: 0, wantedGain: 2 },
+        { msg: "Your burner phone intercepted a police radio call mentioning your name. Stay careful.", moneyLoss: 0, wantedGain: 1 },
+        { msg: "A suspicious person was asking questions about you in the neighborhood. Word is getting around.", moneyLoss: 0, wantedGain: 3 }
       ];
       const event = events[Math.floor(Math.random() * events.length)];
       player.wantedLevel += event.wantedGain;
@@ -10944,15 +10956,15 @@ function checkSuspicionConsequences() {
         player.wantedLevel += 5;
         
         const lossMsg = dirtyLoss > 0 ? ` They seize $${dirtyLoss.toLocaleString()} in suspicious cash.` : '';
-        logAction(`🚨 POLICE RAID! Officers descend on your ${raidedBusiness.name} with a search warrant.${lossMsg} Business income reset while they investigate.`);
-        alert(`🚨 POLICE RAID!\n\nYour ${raidedBusiness.name} was raided by law enforcement!\n${dirtyLoss > 0 ? `$${dirtyLoss.toLocaleString()} in dirty money seized.\n` : ''}Business income timer has been reset.\n\nYour suspicion level is too high — lay low!`);
+        logAction(`POLICE RAID! Officers descend on your ${raidedBusiness.name} with a search warrant.${lossMsg} Business income reset while they investigate.`);
+        alert(`POLICE RAID!\n\nYour ${raidedBusiness.name} was raided by law enforcement!\n${dirtyLoss > 0 ? `$${dirtyLoss.toLocaleString()} in dirty money seized.\n` : ''}Business income timer has been reset.\n\nYour suspicion level is too high — lay low!`);
       } else {
         // No businesses to raid — just seize some dirty money
         const dirtyLoss = Math.floor((player.dirtyMoney || 0) * (0.10 + Math.random() * 0.15)); // 10-25%
         player.dirtyMoney = Math.max(0, (player.dirtyMoney || 0) - dirtyLoss);
         if (dirtyLoss > 0) {
           player.wantedLevel += 3;
-          logAction(`🚔 Police search your vehicle at a checkpoint and confiscate $${dirtyLoss.toLocaleString()} in dirty cash.`);
+          logAction(`Police search your vehicle at a checkpoint and confiscate $${dirtyLoss.toLocaleString()} in dirty cash.`);
         }
       }
     }
@@ -10975,8 +10987,8 @@ function checkSuspicionConsequences() {
         const businessName = targetBusiness.name;
         player.businesses.splice(targetIndex, 1);
         
-        logAction(`⚖️ ASSET SEIZURE! The government seizes your ${businessName} under RICO statutes! You recover $${refund.toLocaleString()} through your lawyer.`);
-        alert(`⚖️ ASSET SEIZURE!\n\nThe federal government has seized your ${businessName}!\n\nYour lawyer negotiates a partial recovery of $${refund.toLocaleString()}.\n\nSuspicion at ${suspicion}% — the feds are closing in!`);
+        logAction(`ASSET SEIZURE! The government seizes your ${businessName} under RICO statutes! You recover $${refund.toLocaleString()} through your lawyer.`);
+        alert(`ASSET SEIZURE!\n\nThe federal government has seized your ${businessName}!\n\nYour lawyer negotiates a partial recovery of $${refund.toLocaleString()}.\n\nSuspicion at ${suspicion}% — the feds are closing in!`);
         
       } else if (severity < 0.7) {
         // Major dirty money seizure (25-40%)
@@ -10985,15 +10997,15 @@ function checkSuspicionConsequences() {
         if (seized > 0) {
           player.dirtyMoney = Math.max(0, (player.dirtyMoney || 0) - seized);
           player.wantedLevel += 8;
-          logAction(`🏦 Federal agents freeze your accounts and seize $${seized.toLocaleString()} in dirty money! Your lawyer is working overtime.`);
-          alert(`🏦 ACCOUNT FREEZE!\n\n$${seized.toLocaleString()} in dirty money has been seized by federal agents!\n\nWanted level increased significantly.`);
+          logAction(`Federal agents freeze your accounts and seize $${seized.toLocaleString()} in dirty money! Your lawyer is working overtime.`);
+          alert(`ACCOUNT FREEZE!\n\n$${seized.toLocaleString()} in dirty money has been seized by federal agents!\n\nWanted level increased significantly.`);
         }
       } else {
         // Forced arrest — go directly to jail
         player.wantedLevel += 10;
         const suspicionJailTime = 15 + Math.floor(suspicion / 5); // 15-35 seconds
-        logAction(`🚔 FBI ARREST! A tactical team ambushes you — there's no escape. You're taken into federal custody.`);
-        alert(`🚔 FBI ARREST!\n\nA federal tactical team takes you down!\nYou're being held on suspicion of racketeering.\n\nJail time: ${suspicionJailTime} seconds`);
+        logAction(`FBI ARREST! A tactical team ambushes you — there's no escape. You're taken into federal custody.`);
+        alert(`FBI ARREST!\n\nA federal tactical team takes you down!\nYou're being held on suspicion of racketeering.\n\nJail time: ${suspicionJailTime} seconds`);
         sendToJail(10);
       }
       
@@ -11009,8 +11021,8 @@ function checkSuspicionConsequences() {
     player.dirtyMoney = 0;
     player.wantedLevel += 20;
     
-    logAction(`🚨🚨🚨 FULL FEDERAL CRACKDOWN! The FBI, DEA, and local police coordinate a massive operation against your empire. All $${allDirty.toLocaleString()} in dirty money is seized as evidence!`);
-    alert(`🚨 FULL FEDERAL CRACKDOWN! 🚨\n\nYour suspicion hit 100% — the feds bring the hammer down!\n\nAll dirty money ($${allDirty.toLocaleString()}) SEIZED!\nWanted level massively increased!\n\nYou're going away for a long time...`);
+    logAction(`FULL FEDERAL CRACKDOWN! The FBI, DEA, and local police coordinate a massive operation against your empire. All $${allDirty.toLocaleString()} in dirty money is seized as evidence!`);
+    alert(`FULL FEDERAL CRACKDOWN! \n\nYour suspicion hit 100% — the feds bring the hammer down!\n\nAll dirty money ($${allDirty.toLocaleString()}) SEIZED!\nWanted level massively increased!\n\nYou're going away for a long time...`);
     
     // Reduce suspicion significantly after the crackdown
     player.suspicionLevel = 30; // Reset to moderate, they'll still be watching
@@ -11046,12 +11058,12 @@ function checkFBIInvestigation() {
     fbi.lastEscalation = now;
     
     showFBIEventOverlay(
-      '🔍 FBI SURVEILLANCE DETECTED',
+      'FBI SURVEILLANCE DETECTED',
       'Your contacts in law enforcement tip you off — the FBI has opened a file on your operations. Agents have been spotted photographing your businesses and associates.',
       [
-        { label: '🕵️ Lay Low (costs $50K)', action: 'laylow', cost: 50000 },
-        { label: '🔥 Destroy Evidence (costs 15 energy)', action: 'destroy', energyCost: 15 },
-        { label: '😁¤ Ignore It', action: 'ignore' }
+        { label: 'Lay Low (costs $50K)', action: 'laylow', cost: 50000 },
+        { label: 'Destroy Evidence (costs 15 energy)', action: 'destroy', energyCost: 15 },
+        { label: '¤ Ignore It', action: 'ignore' }
       ],
       1
     );
@@ -11068,13 +11080,13 @@ function checkFBIInvestigation() {
       fbi.lastEscalation = now;
       
       showFBIEventOverlay(
-        '📋 FBI EVIDENCE GATHERING',
+        'FBI EVIDENCE GATHERING',
         'The investigation has escalated. Federal agents are interviewing your associates and subpoenaing financial records. They\'re building a RICO case against you.',
         [
-          { label: '💰 Bribe a Contact ($200K)', action: 'bribe', cost: 200000 },
-          { label: '🔥 Burn the Books (costs 25 energy)', action: 'burn', energyCost: 25 },
-          { label: '⚖️ Hire a Lawyer ($100K)', action: 'lawyer', cost: 100000 },
-          { label: '😁¤ Let Them Try', action: 'ignore' }
+          { label: 'Bribe a Contact ($200K)', action: 'bribe', cost: 200000 },
+          { label: 'Burn the Books (costs 25 energy)', action: 'burn', energyCost: 25 },
+          { label: 'Hire a Lawyer ($100K)', action: 'lawyer', cost: 100000 },
+          { label: '¤ Let Them Try', action: 'ignore' }
         ],
         2
       );
@@ -11090,13 +11102,13 @@ function checkFBIInvestigation() {
       fbi.lastEscalation = now;
       
       showFBIEventOverlay(
-        '⚖️ GRAND JURY CONVENED',
+        'GRAND JURY CONVENED',
         'A federal grand jury has been convened to hear evidence against you. Indictments are imminent. Your lawyer says you have one last chance to act before they move in.',
         [
-          { label: '✈️ Flee the Country ($500K)', action: 'flee', cost: 500000 },
-          { label: '🤝 Cut a Deal (lose 50% dirty money)', action: 'deal' },
-          { label: '💰 Bribe the Jury ($350K)', action: 'bribejury', cost: 350000 },
-          { label: '⚔️ Go to War', action: 'war' }
+          { label: 'Flee the Country ($500K)', action: 'flee', cost: 500000 },
+          { label: ' Cut a Deal (lose 50% dirty money)', action: 'deal' },
+          { label: 'Bribe the Jury ($350K)', action: 'bribejury', cost: 350000 },
+          { label: 'Go to War', action: 'war' }
         ],
         3
       );
@@ -11166,7 +11178,7 @@ function handleFBIChoice(action, cost, energyCost) {
         player.money -= cost;
         player.suspicionLevel = Math.max(0, player.suspicionLevel - 10);
         fbi.progress = Math.max(0, fbi.progress - 30);
-        logAction(`🕵️ You pay $${cost.toLocaleString()} to your contacts and lay low. The FBI loses some interest (-10 suspicion).`);
+        logAction(`You pay $${cost.toLocaleString()} to your contacts and lay low. The FBI loses some interest (-10 suspicion).`);
       }
       break;
       
@@ -11175,7 +11187,7 @@ function handleFBIChoice(action, cost, energyCost) {
         player.energy -= energyCost;
         player.suspicionLevel = Math.max(0, player.suspicionLevel - 15);
         fbi.progress = Math.max(0, fbi.progress - 50);
-        logAction(`🔥 You destroy financial records and evidence. The paper trail goes cold (-15 suspicion).`);
+        logAction(`You destroy financial records and evidence. The paper trail goes cold (-15 suspicion).`);
       }
       break;
       
@@ -11185,7 +11197,7 @@ function handleFBIChoice(action, cost, energyCost) {
         player.suspicionLevel = Math.max(0, player.suspicionLevel - 20);
         fbi.stage = Math.max(0, fbi.stage - 1);
         fbi.progress = 0;
-        logAction(`💰 Your $${cost.toLocaleString()} bribe reaches the right person. The investigation is downgraded (-20 suspicion, stage reduced).`);
+        logAction(`Your $${cost.toLocaleString()} bribe reaches the right person. The investigation is downgraded (-20 suspicion, stage reduced).`);
       }
       break;
       
@@ -11194,7 +11206,7 @@ function handleFBIChoice(action, cost, energyCost) {
         player.energy -= energyCost;
         player.suspicionLevel = Math.max(0, player.suspicionLevel - 12);
         fbi.progress = Math.max(0, fbi.progress - 40);
-        logAction(`🔥 You spend the night burning books and destroying hard drives. Key evidence disappears (-12 suspicion).`);
+        logAction(`You spend the night burning books and destroying hard drives. Key evidence disappears (-12 suspicion).`);
       }
       break;
       
@@ -11203,7 +11215,7 @@ function handleFBIChoice(action, cost, energyCost) {
         player.money -= cost;
         fbi.progress = Math.max(0, fbi.progress - 60);
         player.suspicionLevel = Math.max(0, player.suspicionLevel - 8);
-        logAction(`⚖️ Your high-powered lawyer files motions to suppress evidence and delay proceedings. It buys you time.`);
+        logAction(`Your high-powered lawyer files motions to suppress evidence and delay proceedings. It buys you time.`);
       }
       break;
       
@@ -11216,9 +11228,9 @@ function handleFBIChoice(action, cost, energyCost) {
         // Lose some businesses during absence
         if (player.businesses && player.businesses.length > 1) {
           const lostBusiness = player.businesses.pop();
-          logAction(`📦 While you were gone, your ${lostBusiness.name} was seized.`);
+          logAction(`While you were gone, your ${lostBusiness.name} was seized.`);
         }
-        logAction(`✈️ You spend $${cost.toLocaleString()} to flee the country. After weeks abroad, you return when things cool down. Investigation dropped (-40 suspicion, lost a business).`);
+        logAction(`You spend $${cost.toLocaleString()} to flee the country. After weeks abroad, you return when things cool down. Investigation dropped (-40 suspicion, lost a business).`);
       }
       break;
       
@@ -11229,7 +11241,7 @@ function handleFBIChoice(action, cost, energyCost) {
       fbi.stage = 0;
       fbi.progress = 0;
       player.suspicionLevel = Math.max(5, player.suspicionLevel - 50);
-      logAction(`🤝 You cooperate with the feds, surrendering $${dealCost.toLocaleString()} in dirty money. The investigation is closed in exchange for your "cooperation." (-50 suspicion)`);
+      logAction(` You cooperate with the feds, surrendering $${dealCost.toLocaleString()} in dirty money. The investigation is closed in exchange for your "cooperation." (-50 suspicion)`);
       break;
       
     case 'bribejury':
@@ -11239,13 +11251,13 @@ function handleFBIChoice(action, cost, energyCost) {
           fbi.stage = 1;
           fbi.progress = 0;
           player.suspicionLevel = Math.max(10, player.suspicionLevel - 25);
-          logAction(`💰 Your jury bribe works! Key jurors refuse to indict. The investigation is set back to surveillance (-25 suspicion).`);
+          logAction(`Your jury bribe works! Key jurors refuse to indict. The investigation is set back to surveillance (-25 suspicion).`);
         } else {
           // Bribe discovered — makes things worse
           player.suspicionLevel = Math.min(100, player.suspicionLevel + 15);
           fbi.progress += 30;
           player.wantedLevel += 10;
-          logAction(`💰🚨 The jury bribe is DISCOVERED! An honest juror reports the attempt. Obstruction of justice charges added (+15 suspicion, +10 wanted).`);
+          logAction(`The jury bribe is DISCOVERED! An honest juror reports the attempt. Obstruction of justice charges added (+15 suspicion, +10 wanted).`);
         }
       }
       break;
@@ -11258,7 +11270,7 @@ function handleFBIChoice(action, cost, energyCost) {
         fbi.stage = 0;
         fbi.progress = 0;
         player.suspicionLevel = Math.max(20, player.suspicionLevel - 30);
-        logAction(`⚔️ Your organization wages a shadow war against the investigation. Witnesses recant, evidence disappears, agents are reassigned. The investigation collapses — for now.`);
+        logAction(`Your organization wages a shadow war against the investigation. Witnesses recant, evidence disappears, agents are reassigned. The investigation collapses — for now.`);
       } else {
         executeFBIRaid();
         return;
@@ -11268,7 +11280,7 @@ function handleFBIChoice(action, cost, energyCost) {
     case 'ignore':
     default:
       fbi.progress += 20;
-      logAction(`😁¤ You ignore the FBI's investigation. Risky move — they're not going away.`);
+      logAction(`¤ You ignore the FBI's investigation. Risky move — they're not going away.`);
       break;
   }
   
@@ -11309,9 +11321,9 @@ function executeFBIRaid() {
   fbi.stage = 0;
   fbi.progress = 0;
   
-  const businessMsg = lostBusinessName !== 'none' ? `\n🏢 ${lostBusinessName} SEIZED by the feds!` : '';
-  logAction(`🚨🚨 FBI RAID! Tactical teams swarm your operations! $${dirtySeized.toLocaleString()} dirty money confiscated, $${cleanSeized.toLocaleString()} in assets frozen.${businessMsg}`);
-  alert(`🚨 FBI RAID! 🚨\n\nThe feds bring the full weight of the law!\n\n💰 Dirty money seized: $${dirtySeized.toLocaleString()}\n💵 Assets frozen: $${cleanSeized.toLocaleString()}${businessMsg}\n\nYou're going to federal prison...`);
+  const businessMsg = lostBusinessName !== 'none' ? `\n${lostBusinessName} SEIZED by the feds!` : '';
+  logAction(`FBI RAID! Tactical teams swarm your operations! $${dirtySeized.toLocaleString()} dirty money confiscated, $${cleanSeized.toLocaleString()} in assets frozen.${businessMsg}`);
+  alert(`FBI RAID! \n\nThe feds bring the full weight of the law!\n\nDirty money seized: $${dirtySeized.toLocaleString()}\nAssets frozen: $${cleanSeized.toLocaleString()}${businessMsg}\n\nYou're going to federal prison...`);
   
   sendToJail(25);
   updateUI();
@@ -11398,7 +11410,7 @@ function initializeEventsSystem() {
   }
   
   if (gameplayActive) {
-    logAction("🌍 The city awakens with new possibilities. Events and weather will now shape your criminal empire.");
+    logAction("The city awakens with new possibilities. Events and weather will now shape your criminal empire.");
   }
 }
 
@@ -11429,7 +11441,7 @@ function updateSeasonalBackground() {
   
   // Log the season change for player awareness (only during gameplay)
   if (gameplayActive) {
-    logAction(`🌍 The city transforms with the changing seasons - now experiencing ${currentSeason}.`);
+    logAction(`The city transforms with the changing seasons - now experiencing ${currentSeason}.`);
   }
 }
 
@@ -11454,7 +11466,7 @@ function changeWeather() {
         const weather = weatherEffects[currentWeather];
         if (gameplayActive) {
           showWeatherAlert(weather);
-          logAction(`🌤️ Weather update: ${weather.name}. ${weather.description}`);
+          logAction(`Weather update: ${weather.name}. ${weather.description}`);
         }
       }
       break;
@@ -11462,16 +11474,26 @@ function changeWeather() {
   }
 }
 
+// Apply server-authoritative weather (called from multiplayer.js)
+function applyServerWeather(weather, season) {
+  if (season && season !== currentSeason) {
+    currentSeason = season;
+  }
+  if (weather && weather !== currentWeather) {
+    currentWeather = weather;
+    const w = weatherEffects[currentWeather];
+    if (w && gameplayActive) {
+      showWeatherAlert(w);
+      logAction(`Weather update: ${w.name}. ${w.description}`);
+    }
+  }
+  updateUI();
+}
+window.applyServerWeather = applyServerWeather;
+
 // Show weather alert
 function showWeatherAlert(weather) {
-  const effects = Object.keys(weather.effects).length > 0 ? 
-    Object.keys(weather.effects).map(effect => {
-      const value = weather.effects[effect];
-      const sign = value > 0 ? '+' : '';
-      return `${effect}: ${sign}${(value * 100).toFixed(0)}%`;
-    }).join(', ') : 'No special effects';
-  
-  alert(`${weather.icon} Weather Change: ${weather.name}\n${weather.description}\n\nEffects: ${effects}`);
+  showBriefNotification(`${weather.icon} ${weather.name}: ${weather.description}`, 'info', 4000);
 }
 
 // Trigger seasonal events
@@ -11523,7 +11545,7 @@ function triggerNewsEvent() {
     player.activeEvents = activeEvents;
     
     showNewsAlert(activeEvent);
-    logAction(`📰 Breaking News: ${event.name}. ${event.description} The game changes once again.`);
+    logAction(`Breaking News: ${event.name}. ${event.description} The game changes once again.`);
   }
 }
 
@@ -11561,7 +11583,7 @@ function triggerPoliceCrackdown() {
       player.activeEvents = activeEvents;
       
       showCrackdownAlert(activeEvent);
-      logAction(`🚨 ${crackdown.name}: ${crackdown.description} The heat is rising - stay vigilant.`);
+      logAction(`${crackdown.name}: ${crackdown.description} The heat is rising - stay vigilant.`);
     }
   }
 }
@@ -11594,7 +11616,7 @@ function showCrackdownAlert(event) {
     return `${effect}: ${sign}${(value * 100).toFixed(0)}%`;
   }).join('\n');
   
-  alert(`🚨 POLICE CRACKDOWN: ${event.name}\n\n${event.description}\n\nEffects:\n${effects}\n\nDuration: ${Math.ceil(event.effects.duration / (24 * 60 * 60 * 1000))} days`);
+  alert(`POLICE CRACKDOWN: ${event.name}\n\n${event.description}\n\nEffects:\n${effects}\n\nDuration: ${Math.ceil(event.effects.duration / (24 * 60 * 60 * 1000))} days`);
 }
 
 // Check if an event is currently active
@@ -11623,7 +11645,7 @@ function cleanupExpiredEvents() {
   const expiredEvents = activeEvents.filter(event => currentTime > event.endTime);
   
   expiredEvents.forEach(event => {
-    logAction(`⏰ ${event.name} has ended. The city returns to its normal rhythm.`);
+    logAction(`${event.name} has ended. The city returns to its normal rhythm.`);
   });
   
   activeEvents = activeEvents.filter(event => currentTime <= event.endTime);
@@ -11646,11 +11668,13 @@ function startEventTimers() {
   // Clear any existing timers first to prevent stacking
   clearEventTimers();
 
-  // Weather changes every 15-45 minutes
+  // Weather changes every 30 minutes (client fallback only — server overrides when connected)
   weatherTimer = setInterval(() => {
     if (!gameplayActive) return;
+    // Skip local weather if connected to server (server handles it)
+    if (typeof onlineWorldState !== 'undefined' && onlineWorldState && onlineWorldState.isConnected) return;
     changeWeather();
-  }, (Math.random() * 30 + 15) * 60 * 1000);
+  }, 30 * 60 * 1000);
   
   // News events check every 30 minutes
   newsTimer = setInterval(() => {
@@ -11699,7 +11723,7 @@ function showEventsStatus() {
   const effects = getActiveEffects();
   
   let statusHTML = `
-    <h2>🌍 City Status & Events</h2>
+    <h2>City Status & Events</h2>
     
     <!-- Current Weather -->
     <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #3498db;">
@@ -11710,7 +11734,7 @@ function showEventsStatus() {
     
     <!-- Active Events -->
     <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #e74c3c;">
-      <h3 style="color: #e74c3c; margin-bottom: 15px;">📰 Active Events</h3>
+      <h3 style="color: #e74c3c; margin-bottom: 15px;">Active Events</h3>
   `;
   
   if (activeEvents.length === 0) {
@@ -11737,7 +11761,7 @@ function showEventsStatus() {
     
     <!-- Combined Effects Summary -->
     <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #9b59b6;">
-      <h3 style="color: #9b59b6; margin-bottom: 15px;">⚡ Current Effects Summary</h3>
+      <h3 style="color: #9b59b6; margin-bottom: 15px;">Current Effects Summary</h3>
   `;
   
   if (Object.keys(effects).length === 0 || Object.values(effects).every(value => value === 0)) {
@@ -11758,7 +11782,7 @@ function showEventsStatus() {
     
     <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
       <button onclick="triggerRandomWeatherChange()" style="background: #3498db; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
-        🌦️ Check Weather Update
+        Check Weather Update
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
     </div>
@@ -11771,10 +11795,10 @@ function triggerRandomWeatherChange() {
   // Randomly change weather with some probability
   if (Math.random() < 0.7) { // 70% chance of weather change
     changeWeather();
-    logAction(`🌦️ The weather is shifting across the city...`);
+    logAction(`The weather is shifting across the city...`);
     showEventsStatus(); // Refresh the screen
   } else {
-    logAction(`🌤️ The weather remains stable for now.`);
+    logAction(`The weather remains stable for now.`);
   }
 }
 
@@ -11873,7 +11897,7 @@ function checkForNewUnlocks() {
     
     const names = newlyUnlocked.map(i => i.label).join(', ');
     showUnlockToast(newlyUnlocked);
-    logAction(`🔓 NEW UNLOCKED in SafeHouse: ${names}! Check it out.`);
+    logAction(`NEW UNLOCKED in SafeHouse: ${names}! Check it out.`);
   }
 }
 
@@ -11896,9 +11920,9 @@ function showUnlockToast(items) {
           box-shadow:0 8px 32px rgba(0,0,0,0.6),0 0 20px rgba(212,175,55,0.2);
           animation:slideInRight 0.4s ease-out;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <h3 style="color:#d4af37;margin:0;font-size:1.1em;">🔓 New Unlocks!</h3>
+        <h3 style="color:#d4af37;margin:0;font-size:1.1em;">New Unlocks!</h3>
         <button onclick="document.getElementById('unlock-toast').remove()" 
-                style="background:none;border:none;color:#95a5a6;cursor:pointer;font-size:1.2em;padding:0 4px;">✕</button>
+                style="background:none;border:none;color:#95a5a6;cursor:pointer;font-size:1.2em;padding:0 4px;"></button>
       </div>
       ${itemList}
       <p style="color:#7f8c8d;font-size:0.8em;margin:8px 0 0;text-align:center;">Visit the SafeHouse to explore</p>
@@ -12101,21 +12125,21 @@ function showPlayerStats() {
   content.innerHTML = `
     <!-- Tab Navigation -->
     <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-      <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#1a1a2e;padding:10px 22px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">📊 Player Stats</button>
-      <button id="tab-career" onclick="showPlayerStatsTab('career')" style="background:rgba(52,152,219,0.3);color:#3498db;padding:10px 22px;border:1px solid #3498db;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">📈 Career Statistics</button>
-      <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#9b59b6;padding:10px 22px;border:1px solid #9b59b6;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">📋 Character Showcase</button>
+      <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#1a1a2e;padding:10px 22px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Player Stats</button>
+      <button id="tab-career" onclick="showPlayerStatsTab('career')" style="background:rgba(52,152,219,0.3);color:#3498db;padding:10px 22px;border:1px solid #3498db;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Career Statistics</button>
+      <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#9b59b6;padding:10px 22px;border:1px solid #9b59b6;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Character Showcase</button>
     </div>
     
     <!-- Stats Tab (default) -->
     <div id="panel-stats">
-      <h2 style="color:#d4af37;text-align:center;margin:10px 0 18px;">📊 Player Stats Overview</h2>
-      ${card('Core Stats', '🏛️', coreHTML)}
-      ${card('Base Skills', '📈', baseSkillsHTML)}
-      ${card('Skill Specializations', '🌳', treeBranchesHTML)}
-      ${card('Gang & Territory', '🏴', gangHTML)}
-      ${card('Faction Reputation', '🤝', factionHTML)}
-      ${card('Equipment', '🗡️', equipHTML)}
-      ${card('Playstyle', '🎮', playstyleHTML)}
+      <h2 style="color:#d4af37;text-align:center;margin:10px 0 18px;">Player Stats Overview</h2>
+      ${card('Core Stats', '', coreHTML)}
+      ${card('Base Skills', '', baseSkillsHTML)}
+      ${card('Skill Specializations', '', treeBranchesHTML)}
+      ${card('Gang & Territory', '', gangHTML)}
+      ${card('Faction Reputation', '', factionHTML)}
+      ${card('Equipment', '', equipHTML)}
+      ${card('Playstyle', '', playstyleHTML)}
     </div>
     
     <!-- Career Statistics Tab (hidden initially) -->
@@ -12188,12 +12212,12 @@ function buildCareerStatisticsHTML() {
     (((stats.totalMoneyEarned - stats.totalMoneySpent) / stats.totalMoneyEarned) * 100).toFixed(1) : 0;
   
   return `
-    <h2>📈 Criminal Career Statistics</h2>
+    <h2>Criminal Career Statistics</h2>
     <p style="text-align:center;color:#bdc3c7;">Detailed analysis of your rise through the criminal underworld</p>
     
     <div class="stats-grid">
       <div class="stat-category">
-        <h3>🎯 Job Performance</h3>
+        <h3>Job Performance</h3>
         <div class="stat-item"><span class="stat-label">Jobs Completed:</span><span class="stat-value">${stats.jobsCompleted}</span></div>
         <div class="stat-item"><span class="stat-label">Jobs Failed:</span><span class="stat-value">${stats.jobsFailed}</span></div>
         <div class="stat-item"><span class="stat-label">Success Rate:</span><span class="stat-highlight">${successRate}%</span></div>
@@ -12203,7 +12227,7 @@ function buildCareerStatisticsHTML() {
       </div>
       
       <div class="stat-category">
-        <h3>💰 Financial Empire</h3>
+        <h3>Financial Empire</h3>
         <div class="stat-item"><span class="stat-label">Total Money Earned:</span><span class="stat-highlight">$${stats.totalMoneyEarned.toLocaleString()}</span></div>
         <div class="stat-item"><span class="stat-label">Total Money Spent:</span><span class="stat-value">$${stats.totalMoneySpent.toLocaleString()}</span></div>
         <div class="stat-item"><span class="stat-label">Current Money:</span><span class="stat-value">$${player.money.toLocaleString()}</span></div>
@@ -12213,7 +12237,7 @@ function buildCareerStatisticsHTML() {
       </div>
       
       <div class="stat-category">
-        <h3>🚔 Law Enforcement</h3>
+        <h3>Law Enforcement</h3>
         <div class="stat-item"><span class="stat-label">Times Arrested:</span><span class="stat-value">${stats.timesArrested}</span></div>
         <div class="stat-item"><span class="stat-label">Times Escaped:</span><span class="stat-value">${stats.timesEscaped}</span></div>
         <div class="stat-item"><span class="stat-label">Escape Rate:</span><span class="stat-highlight">${escapeRate}%</span></div>
@@ -12223,7 +12247,7 @@ function buildCareerStatisticsHTML() {
       </div>
       
       <div class="stat-category">
-        <h3>🚗 Criminal Assets</h3>
+        <h3>Criminal Assets</h3>
         <div class="stat-item"><span class="stat-label">Cars Stolen:</span><span class="stat-value">${stats.carsStolen}</span></div>
         <div class="stat-item"><span class="stat-label">Cars Scrapped:</span><span class="stat-value">${stats.carsScrapped || 0}</span></div>
         <div class="stat-item"><span class="stat-label">Cars Sold (Fence):</span><span class="stat-value">${stats.carsSold}</span></div>
@@ -12234,7 +12258,7 @@ function buildCareerStatisticsHTML() {
       </div>
       
       <div class="stat-category">
-        <h3>📈 Character Development</h3>
+        <h3>Character Development</h3>
         <div class="stat-item"><span class="stat-label">Current Level:</span><span class="stat-highlight">${player.level}</span></div>
         <div class="stat-item"><span class="stat-label">Total Experience:</span><span class="stat-value">${player.experience}</span></div>
         <div class="stat-item"><span class="stat-label">Skill Points Earned:</span><span class="stat-value">${stats.skillPointsEarned}</span></div>
@@ -12244,7 +12268,7 @@ function buildCareerStatisticsHTML() {
       </div>
       
       <div class="stat-category">
-        <h3>⏰ Time & Activity</h3>
+        <h3>Time & Activity</h3>
         <div class="stat-item"><span class="stat-label">Play Time:</span><span class="stat-value">${Math.floor(playTime / 60)}h ${playTime % 60}m</span></div>
         <div class="stat-item"><span class="stat-label">Career Started:</span><span class="stat-value">${new Date(stats.startDate).toLocaleDateString()}</span></div>
         <div class="stat-item"><span class="stat-label">Luckiest Day:</span><span class="stat-value">${stats.luckiestDay}</span></div>
@@ -12256,10 +12280,10 @@ function buildCareerStatisticsHTML() {
     
     <div style="text-align: center; margin-top: 30px;">
       <button onclick="exportStatistics()" style="background: #3498db; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
-        📋 Export Stats
+        Export Stats
       </button>
       <button onclick="resetStatistics()" style="background: #e74c3c; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
-        🔄 Reset Stats
+        Reset Stats
       </button>
     </div>
   `;
@@ -12273,19 +12297,19 @@ function buildCharacterShowcaseHTML() {
   return `
     <div style="max-width: 1000px; margin: 0 auto;">
       <h2 style="text-align: center; color: #9b59b6; font-size: 2.2em; margin-bottom: 20px;">
-        📋 Character Showcase
+        Character Showcase
       </h2>
       
       <!-- Export/Import Controls -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
         <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">📤 Export</h3>
+          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">Export</h3>
           <button onclick="exportCharacterShowcase()" style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             Export My Story
           </button>
         </div>
         <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 10px 0;">📥 Import</h3>
+          <h3 style="color: #3498db; margin: 0 0 10px 0;">Import</h3>
           <button onclick="importCharacterShowcase()" style="background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             View Others' Stories
           </button>
@@ -12307,7 +12331,7 @@ function buildCharacterShowcaseHTML() {
       <!-- Stats Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
         <div style="background: rgba(46, 204, 113, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 15px 0;">💰 Financial Empire</h3>
+          <h3 style="color: #2ecc71; margin: 0 0 15px 0;">Financial Empire</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;"><span>Current Wealth:</span><span style="color: #2ecc71; font-weight: bold;">$${showcase.money.toLocaleString()}</span></div>
             <div style="display: flex; justify-content: space-between;"><span>Total Earned:</span><span style="color: #2ecc71;">$${showcase.totalEarnings.toLocaleString()}</span></div>
@@ -12316,7 +12340,7 @@ function buildCharacterShowcaseHTML() {
         </div>
         
         <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #e74c3c;">
-          <h3 style="color: #e74c3c; margin: 0 0 15px 0;">👥 Criminal Organization</h3>
+          <h3 style="color: #e74c3c; margin: 0 0 15px 0;">Criminal Organization</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;"><span>Gang Members:</span><span style="color: #e74c3c; font-weight: bold;">${showcase.gangSize}</span></div>
             <div style="display: flex; justify-content: space-between;"><span>Turf Control:</span><span style="color: #e74c3c;">${showcase.territory}</span></div>
@@ -12325,7 +12349,7 @@ function buildCharacterShowcaseHTML() {
         </div>
         
         <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 15px 0;">🎯 Criminal Record</h3>
+          <h3 style="color: #3498db; margin: 0 0 15px 0;">Criminal Record</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;"><span>Jobs Completed:</span><span style="color: #3498db; font-weight: bold;">${showcase.totalJobs}</span></div>
             <div style="display: flex; justify-content: space-between;"><span>Escape Rate:</span><span style="color: #3498db;">${showcase.escapeRate}%</span></div>
@@ -12334,7 +12358,7 @@ function buildCharacterShowcaseHTML() {
         </div>
         
         <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #9b59b6;">
-          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">⏰ Career Timeline</h3>
+          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">Career Timeline</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;"><span>Play Time:</span><span style="color: #9b59b6; font-weight: bold;">${formatPlaytime(showcase.playTime)}</span></div>
             <div style="display: flex; justify-content: space-between;"><span>Challenges:</span><span style="color: #9b59b6;">${showcase.challengesCompleted}</span></div>
@@ -12416,7 +12440,7 @@ function updateJailbreakPrisonerList() {
   // === SECTION 1: Online Players in Jail ===
   prisonerHTML += `
     <div style="margin-bottom: 20px; padding: 15px; background: rgba(192, 160, 98, 0.15); border-radius: 10px; border: 2px solid #c0a062;">
-      <h3 style="color: #c0a062; margin: 0 0 15px 0;">🌐 Online Players in Jail</h3>`;
+      <h3 style="color: #c0a062; margin: 0 0 15px 0;">Online Players in Jail</h3>`;
   
   if (onlinePlayers.length > 0) {
     onlinePlayers.forEach(p => {
@@ -12425,7 +12449,7 @@ function updateJailbreakPrisonerList() {
         <div style="background: rgba(139, 0, 0, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border: 2px solid #8b0000;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 250px;">
-              <h3 style="color: #8b0000; margin: 0 0 8px 0;">👤 ${p.name}</h3>
+              <h3 style="color: #8b0000; margin: 0 0 8px 0;">${p.name}</h3>
               <p><strong>Status:</strong> <span style="color: #e74c3c;">Online Player</span></p>
               <p><strong>Time Left:</strong> ${Math.max(0, Math.ceil(p.jailTime))}s</p>
               <p><strong>Level:</strong> ${p.level || 1}</p>
@@ -12434,7 +12458,7 @@ function updateJailbreakPrisonerList() {
             <div style="text-align: center; min-width: 180px;">
               <button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" ${energyCheck ? '' : 'disabled'} 
                       style="margin-top: 10px; width: 100%; background: ${energyCheck ? '#f39c12' : '#555'}; color: white; border: none; padding: 10px; border-radius: 4px; cursor: ${energyCheck ? 'pointer' : 'not-allowed'};">
-                ${energyCheck ? '🔓 Break Out Player' : 'Not Enough Energy'}
+                ${energyCheck ? 'Break Out Player' : 'Not Enough Energy'}
               </button>
             </div>
           </div>
@@ -12450,7 +12474,7 @@ function updateJailbreakPrisonerList() {
   // === SECTION 2: Rival Family Members (Server Bots) ===
   prisonerHTML += `
     <div style="margin-bottom: 20px; padding: 15px; background: rgba(139, 0, 0, 0.15); border-radius: 10px; border: 2px solid #8b0000;">
-      <h3 style="color: #e74c3c; margin: 0 0 5px 0;">🔥 Rival Family Members</h3>
+      <h3 style="color: #e74c3c; margin: 0 0 5px 0;">Rival Family Members</h3>
       <p style="color: #95a5a6; margin-bottom: 15px; font-size: 0.9em;">Break out members of rival families to earn their respect and loyalty.</p>`;
   
   if (serverBots.length > 0) {
@@ -12471,7 +12495,7 @@ function updateJailbreakPrisonerList() {
               <p><strong>Success Rate:</strong> <span style="color: #3498db">${bot.breakoutSuccess}%</span></p>
               <button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" ${energyCheck ? '' : 'disabled'}
                       style="margin-top: 10px; width: 100%; background: ${energyCheck ? '#3498db' : '#555'}; color: white; border: none; padding: 10px; border-radius: 4px; cursor: ${energyCheck ? 'pointer' : 'not-allowed'};">
-                ${energyCheck ? '🔓 Attempt Breakout' : 'Not Enough Energy'}
+                ${energyCheck ? 'Attempt Breakout' : 'Not Enough Energy'}
               </button>
             </div>
           </div>
@@ -12514,7 +12538,7 @@ function attemptJailbreak(prisonerIndex) {
     // Check for level up
     checkLevelUp();
     
-    logAction(`🗝️ Mission accomplished! You freed ${prisoner.name} from ${prisoner.securityLevel} security. Your reputation on the streets grows (+${prisoner.expReward} XP, +$${prisoner.cashReward}).`);
+    logAction(`Mission accomplished! You freed ${prisoner.name} from ${prisoner.securityLevel} security. Your reputation on the streets grows (+${prisoner.expReward} XP, +$${prisoner.cashReward}).`);
     alert(`${getRandomNarration('prisonerBreakoutSuccess')} You helped ${prisoner.name} escape from ${prisoner.securityLevel} security. Gained ${prisoner.expReward} XP and $${prisoner.cashReward}!`);
     
     // Remove prisoner from list
@@ -12526,13 +12550,13 @@ function attemptJailbreak(prisonerIndex) {
     
     if (Math.random() * 100 < arrestChance) {
       // Got caught - go to jail
-      logAction(`🚔 Busted during the ${prisoner.name} jailbreak! Guards swarm you as alarms blare. The operation was blown from the start.`);
+      logAction(`Busted during the ${prisoner.name} jailbreak! Guards swarm you as alarms blare. The operation was blown from the start.`);
       alert(`${getRandomNarration('prisonerBreakoutFailure')} You're being arrested.`);
       sendToJail(prisoner.difficulty + 2);
       return;
     } else {
       // Failed but escaped
-      logAction(`💨 The plan falls apart! You slip away in the chaos as ${prisoner.name} stays locked up. Sometimes you live to fight another day.`);
+      logAction(`The plan falls apart! You slip away in the chaos as ${prisoner.name} stays locked up. Sometimes you live to fight another day.`);
       alert(`${getRandomNarration('prisonerBreakoutFailure')} But you managed to escape without being caught.`);
     }
   }
@@ -12553,7 +12577,7 @@ function refreshPrisoners() {
   updateJailbreakPrisonerList();
   updateUI();
   
-  logAction("🔍 You spend time casing the local detention facilities. Fresh intelligence reveals new opportunities for liberation.");
+  logAction("You spend time casing the local detention facilities. Fresh intelligence reveals new opportunities for liberation.");
   alert("You've gathered intel on new prisoners. The list has been updated!");
 }
 
@@ -12570,16 +12594,16 @@ function showRecruitment() {
   }
 
   let recruitsHTML = `
-    <h2 style="color: #c0a062; font-family: 'Georgia', serif; letter-spacing: 1px;">🕴️ Street Recruitment</h2>
+    <h2 style="color: #c0a062; font-family: 'Georgia', serif; letter-spacing: 1px;">Street Recruitment</h2>
     <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: rgba(192, 160, 98, 0.15); border-radius: 8px; border: 1px solid rgba(192, 160, 98, 0.4);">
-      <h3 style="color: #c0a062; margin: 0; font-family: 'Georgia', serif;">📍 Talent Scouting Active</h3>
+      <h3 style="color: #c0a062; margin: 0; font-family: 'Georgia', serif;">Talent Scouting Active</h3>
       <p style="margin: 10px 0 0 0; font-size: 1.1em; color: #ccc;">You're on the hunt for fresh blood to join your criminal organization</p>
     </div>
     
     <p style="font-size: 1.05em; text-align: center; margin-bottom: 25px; color: #ccc;">Find new talent willing to join your criminal organization. Higher level recruits generate more tribute but cost significantly more.</p>
     
     <div style="margin-bottom: 25px; padding: 20px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(192, 160, 98, 0.3);">
-      <h4 style="color: #c0a062; margin-top: 0; font-family: 'Georgia', serif;">📊 Experience Level Guide:</h4>
+      <h4 style="color: #c0a062; margin-top: 0; font-family: 'Georgia', serif;">Experience Level Guide:</h4>
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
         <div style="padding: 10px; background: rgba(149, 165, 166, 0.2); border: 1px solid #95a5a6; border-radius: 5px;">
           <strong style="color: #95a5a6;">Levels 1-3: Rookies</strong><br>
@@ -12596,7 +12620,7 @@ function showRecruitment() {
       </div>
     </div>
     
-    <h3 style="text-align: center; color: #c0a062; margin-bottom: 20px; font-family: 'Georgia', serif;">🎯 Available Recruits (${availableRecruits.length} found):</h3>
+    <h3 style="text-align: center; color: #c0a062; margin-bottom: 20px; font-family: 'Georgia', serif;">Available Recruits (${availableRecruits.length} found):</h3>
     <ul style="list-style: none; padding: 0; margin: 0;">
       ${availableRecruits.map((recruit, index) => {
         const canAfford = player.money >= recruit.cost;
@@ -12619,8 +12643,8 @@ function showRecruitment() {
                   </span>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.95em;">
-                  <div><strong>💎 Loyalty:</strong> ${recruit.loyalty}%</div>
-                  <div><strong>💰 Tribute:</strong> ${(recruit.tributeMultiplier * 100).toFixed(0)}%</div>
+                  <div><strong>Loyalty:</strong> ${recruit.loyalty}%</div>
+                  <div><strong>Tribute:</strong> ${(recruit.tributeMultiplier * 100).toFixed(0)}%</div>
                 </div>
               </div>
               <div style="text-align: right; margin-left: 15px;">
@@ -12633,7 +12657,7 @@ function showRecruitment() {
                         color: white; padding: 12px 20px; border: none; border-radius: 8px; 
                         font-weight: bold; cursor: ${canAfford ? 'pointer' : 'not-allowed'}; 
                         font-size: 15px; font-family: 'Georgia', serif; transition: all 0.3s ease;">
-                  ${canAfford ? '🤝 Recruit' : '💸 Too Expensive'}
+                  ${canAfford ? ' Recruit' : 'Too Expensive'}
                 </button>
               </div>
             </div>
@@ -12647,7 +12671,7 @@ function showRecruitment() {
           style="background: linear-gradient(180deg, #c0a062, #8b7340); color: #1a1a1a; padding: 14px 25px; 
               border: none; border-radius: 8px; font-weight: bold; cursor: pointer; 
               font-size: 15px; font-family: 'Georgia', serif; transition: all 0.3s ease;">
-        🔍 Look for New Recruits ($500)
+        Look for New Recruits ($500)
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
     </div>
@@ -12729,8 +12753,8 @@ function recruitMember(index) {
     availableRecruits.splice(index, 1);
 
     const roleInfo = newMember.roleData ? ` as a ${newMember.roleData.icon} ${newMember.roleData.name}` : '';
-    showBriefNotification(`🤝 ${recruit.name}${roleInfo} recruited! They'll generate tribute next collection.`, 'success', 4000);
-    logAction(`🤝 ${recruit.name} joins your crew! The ${recruit.specialization} brings level ${recruit.experienceLevel} skills to your organization. Your empire grows stronger.`);
+    showBriefNotification(`${recruit.name}${roleInfo} recruited! They'll generate tribute next collection.`, 'success', 4000);
+    logAction(` ${recruit.name} joins your crew! The ${recruit.specialization} brings level ${recruit.experienceLevel} skills to your organization. Your empire grows stronger.`);
     
     // Update mission progress
     updateMissionProgress('gang_member_recruited', 1);
@@ -12751,10 +12775,10 @@ function refreshRecruits() {
     generateAvailableRecruits();
     updateUI();
     showRecruitment();
-    logAction("🔍 You hit the streets looking for fresh talent. Word spreads that you're hiring - new faces emerge from the shadows.");
-    showBriefNotification('🔍 New recruits found! Fresh talent is available.', 'success', 3000);
+    logAction("You hit the streets looking for fresh talent. Word spreads that you're hiring - new faces emerge from the shadows.");
+    showBriefNotification('New recruits found! Fresh talent is available.', 'success', 3000);
   } else {
-    showBriefNotification('💸 You need $500 to scout for new recruits!', 'error', 3000);
+    showBriefNotification('You need $500 to scout for new recruits!', 'error', 3000);
   }
 }
 
@@ -13048,7 +13072,7 @@ async function buyItem(index) {
     const discount = 0.10 + (drugLab.level * 0.04); // 14% at Lv1, up to 30% at Lv5
     const savings = Math.floor(finalPrice * discount);
     finalPrice = Math.floor(finalPrice * (1 - discount));
-    logAction(`🧠ª Your Drug Lab provides a supply chain discount — saved $${savings.toLocaleString()} on ${item.name}.`);
+    logAction(`ª Your Drug Lab provides a supply chain discount — saved $${savings.toLocaleString()} on ${item.name}.`);
   }
   
   if (player.money >= finalPrice) {
@@ -13085,7 +13109,7 @@ async function buyItem(index) {
         player.energyRegenTimer = 0;
       }
       alert(`You consumed ${item.name} and restored ${item.energyRestore} energy! The rush comes with a cost (-1 health).`);
-      logAction(`⚡ You down the ${item.name} in one gulp. The caffeine and chemicals surge through your veins - energy restored but your body pays the price (+${item.energyRestore} energy, -1 health).`);
+      logAction(`You down the ${item.name} in one gulp. The caffeine and chemicals surge through your veins - energy restored but your body pays the price (+${item.energyRestore} energy, -1 health).`);
     } else if (item.type === "utility") {
       // Utility items go to inventory and provide passive bonuses
       const itemCopy = Object.assign({}, item);
@@ -13093,7 +13117,7 @@ async function buyItem(index) {
       // Utility power recalculated (not equipped-based, always active)
       recalculatePower();
       alert(`You bought a ${item.name} for $${finalPrice.toLocaleString()}.`);
-      logAction(`🔧 You acquired a ${item.name} — a useful tool for any serious criminal enterprise.`);
+      logAction(`You acquired a ${item.name} — a useful tool for any serious criminal enterprise.`);
     } else {
       // Deep-copy item so each instance tracks its own durability
       const itemCopy = Object.assign({}, item);
@@ -13108,7 +13132,7 @@ async function buyItem(index) {
     
     if (item.type !== "energy" && item.type !== "vehicle" && item.type !== "utility") {
       alert(`You bought a ${item.name} for $${finalPrice.toLocaleString()}.`);
-      logAction(`🏛’ Deal sealed with a firm handshake. The ${item.name} is yours now - power on the streets costs $${finalPrice.toLocaleString()}, but respect is priceless.`);
+      logAction(`’ Deal sealed with a firm handshake. The ${item.name} is yours now - power on the streets costs $${finalPrice.toLocaleString()}, but respect is priceless.`);
     }
     
     updateUI();
@@ -13171,7 +13195,7 @@ function showVehiclePurchaseResult(item, finalPrice) {
   
   const resultHTML = `
     <div class="popup-card popup-success" style="max-width:500px;">
-        <h2 class="popup-title">💰 Vehicle Purchased!</h2>
+        <h2 class="popup-title">Vehicle Purchased!</h2>
         
         <div class="popup-image-frame">
           <img src="${vehicleImageSrc}" alt="${item.name}" 
@@ -13184,9 +13208,9 @@ function showVehiclePurchaseResult(item, finalPrice) {
         </div>
         
         <div class="popup-section" style="text-align:left;">
-          <p style="margin:5px 0;"><strong>💰 Purchase Price:</strong> $${finalPrice.toLocaleString()}</p>
-          <p style="margin:5px 0;"><strong>⚡ Power Bonus:</strong> +${item.power}</p>
-          <p style="margin:5px 0;"><strong>📊 Type:</strong> ${item.type === "vehicle" ? "Aircraft" : "Automobile"}</p>
+          <p style="margin:5px 0;"><strong>Purchase Price:</strong> $${finalPrice.toLocaleString()}</p>
+          <p style="margin:5px 0;"><strong>Power Bonus:</strong> +${item.power}</p>
+          <p style="margin:5px 0;"><strong>Type:</strong> ${item.type === "vehicle" ? "Aircraft" : "Automobile"}</p>
         </div>
         
         <p class="popup-quote">
@@ -13209,7 +13233,7 @@ function showVehiclePurchaseResult(item, finalPrice) {
   document.body.appendChild(resultScreen);
   
   // Log the purchase
-  logAction(`🏛️✨ Transaction complete! The ${item.name} is now yours. The keys feel heavy in your hand - this machine will serve you well on the streets (+${item.power} power).`);
+  logAction(`Transaction complete! The ${item.name} is now yours. The keys feel heavy in your hand - this machine will serve you well on the streets (+${item.power} power).`);
 }
 
 // Function to close vehicle purchase result screen
@@ -13242,12 +13266,12 @@ function showLevelUpEffects() {
     player.money += milestone.bonus;
     milestoneHTML = `
       <div style="margin: 15px 0; padding: 15px 25px; background: rgba(241, 196, 15, 0.15); border: 2px solid #f1c40f; border-radius: 10px;">
-        <div style="font-size: 1.6em; color: #f1c40f; font-weight: bold;">🏆 ${milestone.title}</div>
+        <div style="font-size: 1.6em; color: #f1c40f; font-weight: bold;">${milestone.title}</div>
         <div style="font-size: 1.1em; color: #ecf0f1; margin-top: 8px; font-style: italic;">${milestone.msg}</div>
-        <div style="font-size: 1.3em; color: #2ecc71; margin-top: 8px;">💰 +$${milestone.bonus.toLocaleString()} Bonus</div>
+        <div style="font-size: 1.3em; color: #2ecc71; margin-top: 8px;">+$${milestone.bonus.toLocaleString()} Bonus</div>
       </div>
     `;
-    logAction(`🏆 Milestone reached: ${milestone.title}! Earned $${milestone.bonus.toLocaleString()} bonus.`);
+    logAction(`Milestone reached: ${milestone.title}! Earned $${milestone.bonus.toLocaleString()} bonus.`);
   }
   
   // Create level up overlay
@@ -13278,7 +13302,7 @@ function showLevelUpEffects() {
         Level ${player.level}
       </div>
       <div style="font-size: 1.5em; margin: 15px 0; color: #ecf0f1;">
-        🌟 +2 Skill Points Earned!
+        +2 Skill Points Earned!
       </div>
       ${milestoneHTML}
       <div style="font-size: 1.2em; color: #95a5a6; margin-top: ${milestone ? '15px' : '30px'};">
@@ -13290,7 +13314,7 @@ function showLevelUpEffects() {
               color: white; border: none; border-radius: 10px; cursor: pointer;
               box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
               transition: all 0.3s ease;">
-        Continue Your Rise 🚀
+        Continue Your Rise 
       </button>
     </div>
   `;
@@ -13426,7 +13450,7 @@ function showNarrativeOverlay(title, message, buttonText = "Continue", callback 
               color: white; border: none; border-radius: 10px; cursor: pointer;
               box-shadow: 0 5px 15px rgba(52, 73, 94, 0.5);
               transition: all 0.3s ease;">
-        ${buttonText} ➤
+        ${buttonText} 
       </button>
     </div>
   `;
@@ -13492,8 +13516,8 @@ function unlockAchievement(achievementId) {
   if (achievement && !achievement.unlocked) {
     achievement.unlocked = true;
     // Achievements are for fun — no money or XP rewards
-    showBriefNotification(`🏆 ${achievement.name}: ${achievement.description}`, 4000);
-    logAction(`🏆 Achievement Unlocked: "${achievement.name}" — ${achievement.description}.`);
+    showBriefNotification(`${achievement.name}: ${achievement.description}`, 4000);
+    logAction(`Achievement Unlocked: "${achievement.name}" — ${achievement.description}.`);
   }
 }
 
@@ -13881,7 +13905,7 @@ function createCharacter() {
   }
   
   // Log character creation
-  logAction(`🎭 ${player.name} emerges from the shadows - ready to conquer the criminal underworld.`);
+  logAction(`${player.name} emerges from the shadows - ready to conquer the criminal underworld.`);
   
   // Show intro narrative
   showIntroNarrative();
@@ -13997,7 +14021,7 @@ function selectPortrait(portraitFile, portraitLabel) {
   }
   
   // Log character creation
-  logAction(`🎭 ${player.name} emerges from the shadows - ready to conquer the criminal underworld.`);
+  logAction(`${player.name} emerges from the shadows - ready to conquer the criminal underworld.`);
   
   // Show territory spawn selection (Phase 1 territory system)
   showTerritorySpawn();
@@ -14028,10 +14052,10 @@ function showTerritorySpawn() {
       <h3 style="color: #e74c3c; margin: 0 0 4px;">${d.shortName}</h3>
       <p style="color: #95a5a6; font-size: 0.85em; margin: 0 0 10px;">${d.description}</p>
       <div style="font-size: 0.8em; color: #bdc3c7; line-height: 1.6;">
-        <span>💰 Base Income: $${d.baseIncome}</span><br>
-        <span>🏢 Max Businesses: ${d.maxBusinesses}</span><br>
-        <span>⚠️ Risk: ${d.riskLevel}</span><br>
-        <span>🚔 Police: ${d.policePresence}%</span>
+        <span>Base Income: $${d.baseIncome}</span><br>
+        <span>Max Businesses: ${d.maxBusinesses}</span><br>
+        <span>Risk: ${d.riskLevel}</span><br>
+        <span>Police: ${d.policePresence}%</span>
       </div>
     </div>
   `).join('');
@@ -14041,7 +14065,7 @@ function showTerritorySpawn() {
                 background: rgba(0,0,0,0.95); display: flex; align-items: center;
                 justify-content: center; z-index: 1000; overflow-y: auto;">
       <div style="max-width: 1000px; width: 95%; padding: 30px; text-align: center; color: white;">
-        <h2 style="color: #e74c3c; font-size: 2em; margin-bottom: 8px;">🏙️ Choose Your Turf</h2>
+        <h2 style="color: #e74c3c; font-size: 2em; margin-bottom: 8px;">Choose Your Turf</h2>
         <p style="color: #bdc3c7; margin-bottom: 24px; font-size: 1.1em;">
           Where will <strong style="color:#f39c12;">${player.name}</strong> set up shop?
           Pick a district to call home — you can always relocate later.
@@ -14075,7 +14099,7 @@ function selectSpawnTerritory(districtId) {
   const screen = document.getElementById('territory-spawn-screen');
   if (screen) screen.remove();
 
-  logAction(`🏙️ ${player.name} moved into ${district.shortName} (${district.icon}).`);
+  logAction(`${player.name} moved into ${district.shortName} (${district.icon}).`);
 
   // Continue to intro narrative
   showIntroNarrative();
@@ -14129,11 +14153,11 @@ function renderTerritoriesScreen() {
           <h3 style="color: #e74c3c; margin: 0 0 4px;">${zone.name}</h3>
           <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${zone.description}</p>
           <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
-            <span>💰 Income: $${income.toLocaleString()}/cycle</span><br>
-            <span>🏗️ Fortification: Lv ${fort}</span><br>
-            <span>🛡️ Defense Req: ${zone.defenseRequired}</span><br>
-            <span>👥 Defenders: ${defenders}</span><br>
-            <span>⚠️ Risk: ${zone.riskLevel}</span>
+            <span>Income: $${income.toLocaleString()}/cycle</span><br>
+            <span>Fortification: Lv ${fort}</span><br>
+            <span>Defense Req: ${zone.defenseRequired}</span><br>
+            <span>Defenders: ${defenders}</span><br>
+            <span>Risk: ${zone.riskLevel}</span>
           </div>
           <div style="margin-top: 10px; text-align: center;">
             <span style="color: #2ecc71; font-weight: bold; font-size: 0.85em;">✅ Controlled</span>
@@ -14166,7 +14190,7 @@ function renderTerritoriesScreen() {
         const shown = residents.slice(0, 10);
         residentsHTML = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">';
         residentsHTML += '<span style="color: #d4af37; font-size: 0.8em; font-weight: bold;">Residents:</span><br>';
-        residentsHTML += shown.map(r => `<span style="color: #bdc3c7; font-size: 0.8em;">🤵 ${typeof r === 'string' ? r : (r.name || 'Unknown')}</span>`).join('<br>');
+        residentsHTML += shown.map(r => `<span style="color: #bdc3c7; font-size: 0.8em;">${typeof r === 'string' ? r : (r.name || 'Unknown')}</span>`).join('<br>');
         if (residents.length > 10) {
           residentsHTML += `<br><span style="color: #888; font-size: 0.75em;">...and ${residents.length - 10} more</span>`;
         }
@@ -14182,17 +14206,17 @@ function renderTerritoriesScreen() {
           <h3 style="color: #d4af37; margin: 0 0 4px;">${d.shortName}</h3>
           <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
           <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
-            <span>👑 Owner: <strong style="color: #ffd700;">YOU</strong></span><br>
-            <span>👥 Residents: ${resCount}</span><br>
-            <span>🛡️ Defense Rating: ${defRating}</span><br>
-            <span>💰 Tax Collected: $${taxTotal.toLocaleString()}</span><br>
-            <span>💰 Base Income: $${d.baseIncome.toLocaleString()}/cycle</span><br>
-            <span>🏢 Max Businesses: ${d.maxBusinesses}</span><br>
-            <span>⚠️ Risk: ${d.riskLevel} | 🚔 Police: ${d.policePresence}%</span>
+            <span>Owner: <strong style="color: #ffd700;">YOU</strong></span><br>
+            <span>Residents: ${resCount}</span><br>
+            <span>Defense Rating: ${defRating}</span><br>
+            <span>Tax Collected: $${taxTotal.toLocaleString()}</span><br>
+            <span>Base Income: $${d.baseIncome.toLocaleString()}/cycle</span><br>
+            <span>Max Businesses: ${d.maxBusinesses}</span><br>
+            <span>Risk: ${d.riskLevel} | Police: ${d.policePresence}%</span>
           </div>
           ${residentsHTML}
           <div style="margin-top: 10px; text-align: center;">
-            <span style="color: #d4af37; font-weight: bold; font-size: 0.85em;">👑 Your Territory</span>
+            <span style="color: #d4af37; font-weight: bold; font-size: 0.85em;">Your Territory</span>
           </div>
         </div>
       `;
@@ -14214,7 +14238,7 @@ function renderTerritoriesScreen() {
     <div style="padding: 20px; color: white; max-width: 1100px; margin: 0 auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
         <div>
-          <h2 style="color: #d4af37; margin: 0;">🏰 Your Territories</h2>
+          <h2 style="color: #d4af37; margin: 0;">Your Territories</h2>
           <p style="color: #bdc3c7; margin: 4px 0 0;">Manage your turf zones and district holdings</p>
         </div>
         <button class="nav-btn-back" onclick="goBackToMainMenu();">← Back</button>
@@ -14246,7 +14270,7 @@ function renderTerritoriesScreen() {
 
       <!-- SP Turf Zones Section -->
       <div style="margin-bottom: 30px;">
-        <h3 style="color: #e74c3c; margin: 0 0 12px; font-family: Georgia, serif;">⚔️ Turf Zones <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Single-Player)</span></h3>
+        <h3 style="color: #e74c3c; margin: 0 0 12px; font-family: Georgia, serif;">Turf Zones <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Single-Player)</span></h3>
         <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
           ${spCards}
         </div>
@@ -14254,7 +14278,7 @@ function renderTerritoriesScreen() {
 
       <!-- MP Districts Section -->
       <div style="margin-bottom: 30px;">
-        <h3 style="color: #3498db; margin: 0 0 12px; font-family: Georgia, serif;">🏙️ Online Districts <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Multiplayer)</span></h3>
+        <h3 style="color: #3498db; margin: 0 0 12px; font-family: Georgia, serif;">Online Districts <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Multiplayer)</span></h3>
         <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
           ${mpCards}
         </div>
@@ -14289,9 +14313,9 @@ function showTerritoryRelocation() {
     const onclick = disabled ? '' : `onclick="confirmRelocation('${d.id}')"`;
 
     let badge = '';
-    if (isCurrent) badge = '<span style="color:#2ecc71; font-weight:bold;">📍 Current</span>';
-    else if (onCooldown) badge = `<span style="color:#e67e22;">⏳ ${cooldownRemaining} min</span>`;
-    else if (!canAfford) badge = '<span style="color:#e74c3c;">💸 Can\'t afford</span>';
+    if (isCurrent) badge = '<span style="color:#2ecc71; font-weight:bold;">Current</span>';
+    else if (onCooldown) badge = `<span style="color:#e67e22;">${cooldownRemaining} min</span>`;
+    else if (!canAfford) badge = '<span style="color:#e74c3c;">Can\'t afford</span>';
 
     // Ownership info
     const terrData = tState[d.id] || {};
@@ -14303,14 +14327,26 @@ function showTerritoryRelocation() {
     const isOnline = typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected;
     const myName = (typeof onlineWorldState !== 'undefined' && onlineWorldState.username) || '';
 
+    // Check alliance membership
+    const allianceMembers2 = (typeof _currentAllianceData !== 'undefined' && _currentAllianceData && _currentAllianceData.myAlliance) ? (_currentAllianceData.myAlliance.members || []) : [];
+
     // Owner line
     let ownerLine = '';
     if (ownerName) {
       const isMe = ownerName === myName;
-      ownerLine = `<span style="color: ${isMe ? '#ffd700' : '#e74c3c'};">👑 Owner: ${isMe ? 'YOU' : ownerName}</span><br>`;
-      ownerLine += `<span>🛡️ Defense: ${defRating} | 💰 Tax Collected: $${taxTotal.toLocaleString()}</span><br>`;
+      const isAllied = !isMe && allianceMembers2.includes(ownerName);
+      if (isMe) {
+        ownerLine = `<span style="color:#ffd700; font-weight:bold;">Owned</span><br>`;
+        ownerLine += `<span>Defense: ${defRating} | Tax Collected: $${taxTotal.toLocaleString()}</span><br>`;
+      } else if (isAllied) {
+        ownerLine = `<span style="color:#3498db; font-weight:bold;">Allied</span> <span style="color:#888;">(${ownerName})</span><br>`;
+        ownerLine += `<span>Defense: ${defRating} | Tax Collected: $${taxTotal.toLocaleString()}</span><br>`;
+      } else {
+        ownerLine = `<span style="color:#e74c3c;">Owner: ${ownerName}</span><br>`;
+        ownerLine += `<span>Defense: ${defRating} | Tax Collected: $${taxTotal.toLocaleString()}</span><br>`;
+      }
     } else {
-      ownerLine = '<span style="color: #888;">👑 Unclaimed</span><br>';
+      ownerLine = '<span style="color: #888;">Unclaimed</span><br>';
     }
 
     // Action buttons (claim / wage war)
@@ -14324,8 +14360,8 @@ function showTerritoryRelocation() {
           : `Claim for $${claimCost.toLocaleString()}`;
         actionBtns = `<button onclick="event.stopPropagation(); claimTerritory('${d.id}')" 
           style="background: ${canClaim ? '#8b6914' : '#333'}; color: ${canClaim ? '#fff' : '#666'}; border: 1px solid ${canClaim ? '#ffd700' : '#444'}; padding: 6px 14px; border-radius: 6px; cursor: ${canClaim ? 'pointer' : 'default'}; font-family: 'Georgia', serif; font-size: 0.85em; margin-top: 8px;"
-          ${canClaim ? '' : 'disabled'} title="${claimTitle}">👑 Claim ($${claimCost.toLocaleString()})</button>`;
-      } else if (ownerName !== myName) {
+          ${canClaim ? '' : 'disabled'} title="${claimTitle}">Claim ($${claimCost.toLocaleString()})</button>`;
+      } else if (ownerName !== myName && !allianceMembers2.includes(ownerName)) {
         // Can wage war if enough gang members and energy
         const canWar = gangSize >= MIN_WAR_GANG_SIZE && player.energy >= WAR_ENERGY_COST;
         const warTitle = !canWar
@@ -14333,7 +14369,7 @@ function showTerritoryRelocation() {
           : 'Wage war to conquer this territory';
         actionBtns = `<button onclick="event.stopPropagation(); wageWar('${d.id}')" 
           style="background: ${canWar ? '#8b0000' : '#333'}; color: ${canWar ? '#fff' : '#666'}; border: 1px solid ${canWar ? '#ff0000' : '#444'}; padding: 6px 14px; border-radius: 6px; cursor: ${canWar ? 'pointer' : 'default'}; font-family: 'Georgia', serif; font-size: 0.85em; margin-top: 8px;"
-          ${canWar ? '' : 'disabled'} title="${warTitle}">⚔️ Wage War</button>`;
+          ${canWar ? '' : 'disabled'} title="${warTitle}">Wage War</button>`;
       }
     }
 
@@ -14349,11 +14385,11 @@ function showTerritoryRelocation() {
         <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
         <div style="font-size: 0.8em; color: #bdc3c7; line-height: 1.5;">
           ${ownerLine}
-          <span>👥 Residents: ${resCount}</span><br>
-          <span>💰 Move Cost: $${d.moveCost.toLocaleString()}</span><br>
-          <span>💰 Base Income: $${d.baseIncome}</span><br>
-          <span>🏢 Businesses: ${d.maxBusinesses}</span><br>
-          <span>⚠️ Risk: ${d.riskLevel} | 🚔 Police: ${d.policePresence}%</span>
+          <span>Residents: ${resCount}</span><br>
+          <span>Move Cost: $${d.moveCost.toLocaleString()}</span><br>
+          <span>Base Income: $${d.baseIncome}</span><br>
+          <span>Businesses: ${d.maxBusinesses}</span><br>
+          <span>Risk: ${d.riskLevel} | Police: ${d.policePresence}%</span>
         </div>
         <div style="margin-top: 8px; text-align: center;">${badge}${actionBtns}</div>
       </div>
@@ -14370,7 +14406,7 @@ function showTerritoryRelocation() {
     <div style="padding: 20px; color: white; max-width: 1000px; margin: 0 auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
-          <h2 style="color: #e74c3c; margin: 0;">🏙️ Relocate</h2>
+          <h2 style="color: #e74c3c; margin: 0;">Relocate</h2>
           <p style="color: #bdc3c7; margin: 4px 0 0;">${headerNote}</p>
         </div>
         <button class="nav-btn-back" onclick="goBackToMainMenu();">← Back</button>
@@ -14409,8 +14445,8 @@ function confirmRelocation(districtId) {
     }));
   }
 
-  logAction(`🏙️ ${player.name} relocated from ${getDistrict(oldTerritory)?.shortName || 'unknown'} to ${d.shortName} (${d.icon}) for $${d.moveCost.toLocaleString()}.`);
-  alert(`Moved to ${d.shortName}! 🏙️`);
+  logAction(`${player.name} relocated from ${getDistrict(oldTerritory)?.shortName || 'unknown'} to ${d.shortName} (${d.icon}) for $${d.moveCost.toLocaleString()}.`);
+  alert(`Moved to ${d.shortName}! `);
   updateUI();
   showTerritoryRelocation(); // Refresh the screen
 }
@@ -14474,7 +14510,7 @@ function wageWar(districtId) {
   const terrData = tState[districtId] || {};
   const ownerName = terrData.owner || 'Unknown';
 
-  const confirmed = confirm(`⚔️ Wage war against ${ownerName} for control of ${d.shortName}?\n\nThis will cost ${WAR_ENERGY_COST} energy and risks gang casualties.\nYou need ${MIN_WAR_GANG_SIZE}+ gang members (you have ${gangSize}).`);
+  const confirmed = confirm(`Wage war against ${ownerName} for control of ${d.shortName}?\n\nThis will cost ${WAR_ENERGY_COST} energy and risks gang casualties.\nYou need ${MIN_WAR_GANG_SIZE}+ gang members (you have ${gangSize}).`);
   if (!confirmed) return;
 
   if (typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected && onlineWorldState.socket) {
@@ -14494,7 +14530,7 @@ function wageWar(districtId) {
 function showIntroNarrative() {
   const introText = `
     <div style="text-align: center; padding: 30px; background: rgba(44, 62, 80, 0.9); color: white; border-radius: 15px; margin: 20px; border: 2px solid #e74c3c;">
-      <h2 style="color: #e74c3c; margin-bottom: 20px;">🌃 Welcome to the Streets, ${player.name}</h2>
+      <h2 style="color: #e74c3c; margin-bottom: 20px;">Welcome to the Streets, ${player.name}</h2>
       
       <div style="text-align: left; max-width: 600px; margin: 0 auto; line-height: 1.6; font-size: 16px;">
         <p style="margin-bottom: 15px;">
@@ -14577,7 +14613,7 @@ function startGameAfterIntro() {
   applyStatBarPrefs();
   
   // Log the beginning of the journey
-  logAction(`🌆 ${player.name} steps into the shadows of the city. The streets whisper promises of power and wealth, but first... survival.`);
+  logAction(`${player.name} steps into the shadows of the city. The streets whisper promises of power and wealth, but first... survival.`);
   
   // Show version update notification
   checkAndShowVersionUpdate();
@@ -15061,7 +15097,7 @@ function updateRealEstateDisplay() {
   
   let html = `
     <div style="margin-bottom: 20px; padding: 15px; background: rgba(52, 73, 94, 0.6); border-radius: 10px;">
-      <h3 style="color: #ecf0f1;">📊 Property Overview</h3>
+      <h3 style="color: #ecf0f1;">Property Overview</h3>
       <p><strong>Current Gang Capacity:</strong> ${currentCapacity} members</p>
       <p><strong>Current Gang Size:</strong> ${player.gang.gangMembers.length} members</p>
       <p><strong>Properties Owned:</strong> ${player.realEstate.ownedProperties.length}</p>
@@ -15072,7 +15108,7 @@ function updateRealEstateDisplay() {
   if (player.realEstate.ownedProperties.length > 0) {
     html += `
       <div style="margin-bottom: 20px; padding: 15px; background: rgba(39, 174, 96, 0.3); border-radius: 10px;">
-        <h3 style="color: #2ecc71;">🏠 Your Properties</h3>
+        <h3 style="color: #2ecc71;">Your Properties</h3>
         ${player.realEstate.ownedProperties.map(property => `
           <div style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px;">
             <strong>${property.name}</strong><br>
@@ -15088,7 +15124,7 @@ function updateRealEstateDisplay() {
   
   html += `
     <div style="margin-bottom: 20px;">
-      <h3 style="color: #ecf0f1;">🏢 Available Properties</h3>
+      <h3 style="color: #ecf0f1;">Available Properties</h3>
       <div style="display: grid; gap: 15px;">
         ${realEstateProperties.map((property, index) => {
           const isOwned = player.realEstate.ownedProperties.some(owned => owned.name === property.name);
@@ -15161,7 +15197,7 @@ function buyProperty(index) {
   updateRealEstateDisplay();
   
   alert(`Congratulations! You now own ${property.name}. Your gang capacity has increased by ${property.gangCapacity} members!`);
-  logAction(`🏢 Real estate empire grows! You've acquired ${property.name} for $${property.price.toLocaleString()}. Your criminal organization now has more room to expand.`);
+  logAction(`Real estate empire grows! You've acquired ${property.name} for $${property.price.toLocaleString()}. Your criminal organization now has more room to expand.`);
   
   // Track mission progress for property ownership
   updateMissionProgress('property_acquired');
@@ -15177,7 +15213,7 @@ function forceReleaseFromJail() {
   stopJailTimer();
   updateUI();
   
-  logAction("🚨 Emergency release from jail executed!");
+  logAction("Emergency release from jail executed!");
   alert("You have been released from jail (emergency override).");
   goBackToMainMenu();
 }
@@ -15240,7 +15276,7 @@ function updateJailTimer() {
         } else {
           prisoner.sentence--;
           if (prisoner.sentence <= 0) {
-            logAction(`🚪 ${prisoner.name} walks out the front door, sentence served. They nod at you with respect - you might see them on the streets again.`);
+            logAction(`${prisoner.name} walks out the front door, sentence served. They nod at you with respect - you might see them on the streets again.`);
             return false;
           }
           return true;
@@ -15289,13 +15325,13 @@ function resetWantedLevelCourtHouse() {
     
     // Show narrative message with callback to send to jail
     showNarrativeOverlay(
-      "⚖️ Fine Paid Successfully! ⚖️",
-      "💰 You've successfully paid your fine to the court and your wanted level has been cleared.<br><br>🏛️ However, as part of your sentence, you must still serve jail time to pay your debt to society.<br><br>🚔 You'll be transferred to your cell immediately to begin serving your sentence.",
+      "Fine Paid Successfully! ",
+      "You've successfully paid your fine to the court and your wanted level has been cleared.<br><br>However, as part of your sentence, you must still serve jail time to pay your debt to society.<br><br>You'll be transferred to your cell immediately to begin serving your sentence.",
       "Report to Jail",
       function() {
         // This callback executes after player clicks the button
         sendToJail(1); // Serve a base jail time since fine was paid
-        logAction("⚖️ You walk into the courthouse with cash in hand. Justice may be blind, but it's not deaf to the sound of money. Fine paid, but time must still be served.");
+        logAction("You walk into the courthouse with cash in hand. Justice may be blind, but it's not deaf to the sound of money. Fine paid, but time must still be served.");
       }
     );
   } else {
@@ -15318,7 +15354,7 @@ function showInventory() {
   const equippedPower = player.power || 0;
   
   let html = `
-    <h2>🎒 Inventory</h2>
+    <h2>Inventory</h2>
     <div style="padding: 10px; background: rgba(52,73,94,0.6); border-radius: 10px; margin-bottom: 15px;">
       <strong>Total Items:</strong> ${player.inventory.length} | 
       <strong>Equipped Power:</strong> <span style="color:#2ecc71;">${equippedPower}</span> | 
@@ -15358,25 +15394,25 @@ function showInventory() {
     return s;
   }
   
-  html += renderCategory('Weapons', '🔫', weapons);
-  html += renderCategory('Armor', '🏛¡️', armor);
-  html += renderCategory('Vehicles', '🚗', vehicles);
-  html += renderCategory('Other Items', '📦', other);
+  html += renderCategory('Weapons', '', weapons);
+  html += renderCategory('Armor', '¡️', armor);
+  html += renderCategory('Vehicles', '', vehicles);
+  html += renderCategory('Other Items', '', other);
   
   if (player.stolenCars && player.stolenCars.length > 0) {
-    html += `<div style="margin-bottom:15px;"><h3 style="color:#e67e22;">🏎️ Stolen Cars (${player.stolenCars.length})</h3>
-      <p style="color:#bdc3c7;font-size:0.85em;margin:4px 0 10px;">⚠️ Hot vehicles can't be sold directly. Scrap for parts or sell through <a href="#" onclick="showFence();return false;" style="color:#8e44ad;font-weight:bold;">The Fence</a>.</p>
+    html += `<div style="margin-bottom:15px;"><h3 style="color:#e67e22;">Stolen Cars (${player.stolenCars.length})</h3>
+      <p style="color:#bdc3c7;font-size:0.85em;margin:4px 0 10px;">Hot vehicles can't be sold directly. Scrap for parts or sell through <a href="#" onclick="showFence();return false;" style="color:#8e44ad;font-weight:bold;">The Fence</a>.</p>
       <div style="display:grid;gap:8px;">`;
     player.stolenCars.forEach((car, idx) => {
       const selected = player.selectedCar === idx;
       html += `<div style="padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:2px solid ${selected ? '#2ecc71' : '#34495e'};display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <strong style="color:${selected ? '#2ecc71' : '#ecf0f1'};">${car.name} ${selected ? '🚗 SELECTED' : ''}</strong><br>
+          <strong style="color:${selected ? '#2ecc71' : '#ecf0f1'};">${car.name} ${selected ? 'SELECTED' : ''}</strong><br>
           <small style="color:#bdc3c7;">Value: $${car.baseValue.toLocaleString()} | ${car.damagePercentage}% damaged</small>
         </div>
         <div style="display:flex;gap:8px;">
           ${!selected ? `<button onclick="selectCar(${idx})" style="background:#3498db;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Select</button>` : ''}
-          <button onclick="scrapStolenCar(${idx})" style="background:#e67e22;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">🔧 Scrap</button>
+          <button onclick="scrapStolenCar(${idx})" style="background:#e67e22;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Scrap</button>
         </div>
       </div>`;
     });
@@ -15436,7 +15472,7 @@ function sellItem(index) {
   player.money += sellPrice;
   player.inventory.splice(index, 1);
   recalculatePower();
-  logAction(`💰 Sold ${item.name} for $${sellPrice.toLocaleString()}.`);
+  logAction(`Sold ${item.name} for $${sellPrice.toLocaleString()}.`);
   updateUI();
   showInventory();
 }
@@ -15473,10 +15509,10 @@ function scrapStolenCar(index) {
   player.stolenCars.splice(index, 1);
   
   if (chopShopBonus > 0) {
-    logAction(`🔧💰 Scrapped ${car.name} for $${scrapPrice.toLocaleString()} (Chop Shop bonus: +$${chopShopBonus.toLocaleString()}).`);
+    logAction(`Scrapped ${car.name} for $${scrapPrice.toLocaleString()} (Chop Shop bonus: +$${chopShopBonus.toLocaleString()}).`);
     showBriefNotification(`Scrapped ${car.name} — $${scrapPrice.toLocaleString()} (Chop Shop +$${chopShopBonus.toLocaleString()})`, 'success');
   } else {
-    logAction(`🔧 Scrapped ${car.name} for parts — $${scrapPrice.toLocaleString()}.`);
+    logAction(`Scrapped ${car.name} for parts — $${scrapPrice.toLocaleString()}.`);
     showBriefNotification(`Scrapped ${car.name} for $${scrapPrice.toLocaleString()}`, 'success');
   }
   
@@ -15539,7 +15575,7 @@ function showFence() {
   
   let html = `
     <div style="background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.9)); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #8e44ad;">
-      <h3 style="color: #8e44ad; margin-bottom: 10px;">📊 Today's Fence Rates</h3>
+      <h3 style="color: #8e44ad; margin-bottom: 10px;">Today's Fence Rates</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
         <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
           <div style="color: #bdc3c7; font-size: 0.8em;">Items</div>
@@ -15558,15 +15594,15 @@ function showFence() {
           <div style="color: ${condColor}; font-size: 1.2em; font-weight: bold;">${rates.marketCondition}</div>
         </div>
       </div>
-      ${rates.heatPenalty > 0.03 ? `<p style="color: #e74c3c; font-size: 0.85em; margin-top: 8px;">⚠️ Your heat is bringing down prices. Lay low to get better deals.</p>` : ''}
-      ${rates.chopBonus > 0 ? `<p style="color: #2ecc71; font-size: 0.85em; margin-top: 4px;">🔧 Chop Shop connection: +${Math.round(rates.chopBonus * 100)}% on vehicle sales</p>` : ''}
+      ${rates.heatPenalty > 0.03 ? `<p style="color: #e74c3c; font-size: 0.85em; margin-top: 8px;">Your heat is bringing down prices. Lay low to get better deals.</p>` : ''}
+      ${rates.chopBonus > 0 ? `<p style="color: #2ecc71; font-size: 0.85em; margin-top: 4px;">Chop Shop connection: +${Math.round(rates.chopBonus * 100)}% on vehicle sales</p>` : ''}
     </div>`;
   
   // === STOLEN CARS SECTION — BLACK MARKET VEHICLE SALES ===
   const stolenCars = player.stolenCars || [];
   html += `<div style="margin-bottom: 20px;">
-    <h3 style="color: #e67e22; margin-bottom: 10px;">🏎️ Black Market Vehicles (${stolenCars.length})</h3>
-    <p style="color: #bdc3c7; font-size: 0.85em; margin: 0 0 10px;">💰 The only way to properly sell stolen cars — full black market value through The Fence's underground network.</p>`;
+    <h3 style="color: #e67e22; margin-bottom: 10px;">Black Market Vehicles (${stolenCars.length})</h3>
+    <p style="color: #bdc3c7; font-size: 0.85em; margin: 0 0 10px;">The only way to properly sell stolen cars — full black market value through The Fence's underground network.</p>`;
   
   if (stolenCars.length === 0) {
     html += `<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #7f8c8d;">
@@ -15597,7 +15633,7 @@ function showFence() {
     html += `</div>`;
     if (stolenCars.length > 1) {
       html += `<button onclick="fenceSellAllCars()" style="background: #c0392b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold;">
-        🏎️ Sell All Vehicles ($${stolenCars.reduce((sum, car) => sum + Math.floor(car.baseValue * ((100 - car.damagePercentage) / 100) * rates.cars), 0).toLocaleString()})
+        Sell All Vehicles ($${stolenCars.reduce((sum, car) => sum + Math.floor(car.baseValue * ((100 - car.damagePercentage) / 100) * rates.cars), 0).toLocaleString()})
       </button>`;
     }
   }
@@ -15614,7 +15650,7 @@ function showFence() {
   
   // Drug contraband section
   html += `<div style="margin-bottom: 20px;">
-    <h3 style="color: #e74c3c; margin-bottom: 10px;">💊 Contraband (${drugItems.length})</h3>`;
+    <h3 style="color: #e74c3c; margin-bottom: 10px;">Contraband (${drugItems.length})</h3>`;
   if (drugItems.length === 0) {
     html += `<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #7f8c8d;">
       <p>No contraband to move. Buy from the Black Market or cook in your Drug Lab.</p>
@@ -15643,7 +15679,7 @@ function showFence() {
   
   // Regular items section
   html += `<div style="margin-bottom: 20px;">
-    <h3 style="color: #3498db; margin-bottom: 10px;">📦 Merchandise (${regularItems.length})</h3>`;
+    <h3 style="color: #3498db; margin-bottom: 10px;">Merchandise (${regularItems.length})</h3>`;
   if (regularItems.length === 0) {
     html += `<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #7f8c8d;">
       <p>No merchandise to fence. Equipped items can't be sold here — unequip first.</p>
@@ -15673,7 +15709,7 @@ function showFence() {
   
   // Suspicion warning
   html += `<div style="padding: 12px; background: rgba(142, 68, 173, 0.15); border-radius: 10px; border: 1px solid #8e44ad40; margin-bottom: 15px; text-align: center;">
-    <small style="color: #bdc3c7;">⚠️ Selling through the fence adds +1 suspicion per transaction. Move product carefully.</small>
+    <small style="color: #bdc3c7;">Selling through the fence adds +1 suspicion per transaction. Move product carefully.</small>
   </div>`;
   
   container.innerHTML = html;
@@ -15701,7 +15737,7 @@ function fenceSellItem(index, type) {
     player.statistics.totalEarnings = (player.statistics.totalEarnings || 0) + fencePrice;
   }
   
-  logAction(`🤝« Fenced ${item.name} for $${fencePrice.toLocaleString()} (${Math.round(rate * 100)}% rate). +1 suspicion.`);
+  logAction(`« Fenced ${item.name} for $${fencePrice.toLocaleString()} (${Math.round(rate * 100)}% rate). +1 suspicion.`);
   updateUI();
   showFence();
 }
@@ -15725,7 +15761,7 @@ function fenceSellCar(index) {
     player.statistics.carsStolen = (player.statistics.carsStolen || 0); // Already tracked
   }
   
-  logAction(`🤝« Fenced ${car.name} for $${fencePrice.toLocaleString()} through the Fence. +1 suspicion.`);
+  logAction(`« Fenced ${car.name} for $${fencePrice.toLocaleString()} through the Fence. +1 suspicion.`);
   updateUI();
   showFence();
 }
@@ -15749,7 +15785,7 @@ function fenceSellAllCars() {
     player.statistics.totalEarnings = (player.statistics.totalEarnings || 0) + totalEarned;
   }
   
-  logAction(`🤝« Bulk fenced ${count} vehicles for $${totalEarned.toLocaleString()} through the Fence. +${Math.ceil(count * 0.5)} suspicion.`);
+  logAction(`« Bulk fenced ${count} vehicles for $${totalEarned.toLocaleString()} through the Fence. +${Math.ceil(count * 0.5)} suspicion.`);
   updateUI();
   showFence();
 }
@@ -15790,7 +15826,7 @@ function renderHospitalContent() {
     // Full heal
     html += `<div class="hospital-option">
       <div class="hospital-option-header">
-        <span class="hospital-icon">💉</span>
+        <span class="hospital-icon"></span>
         <div>
           <strong>Full Treatment</strong>
           <p>The doc patches you up completely. No questions asked.</p>
@@ -15808,7 +15844,7 @@ function renderHospitalContent() {
     if (missingHealth > 10) {
       html += `<div class="hospital-option">
         <div class="hospital-option-header">
-          <span class="hospital-icon">🩹</span>
+          <span class="hospital-icon"></span>
           <div>
             <strong>Quick Patch-Up</strong>
             <p>A hasty job — bandages and painkillers. Gets you back on the street fast.</p>
@@ -15826,14 +15862,14 @@ function renderHospitalContent() {
     // Rest option (free but costs energy)
     html += `<div class="hospital-option">
       <div class="hospital-option-header">
-        <span class="hospital-icon">🏛️</span>
+        <span class="hospital-icon">️</span>
         <div>
           <strong>Rest & Recover</strong>
           <p>Lay low for a while. Free, but drains your energy.</p>
         </div>
       </div>
       <div class="hospital-option-footer">
-        <span class="hospital-cost" style="color: #3498db;">⚡ ${restEnergyCost} Energy</span>
+        <span class="hospital-cost" style="color: #3498db;">${restEnergyCost} Energy</span>
         <button onclick="healAtHospital('rest')" ${player.energy < restEnergyCost || restHealAmount <= 0 ? 'disabled' : ''}>
           ${player.energy < restEnergyCost ? 'Not Enough Energy' : restHealAmount <= 0 ? 'Too Healthy to Rest' : `Rest (+${restHealAmount} HP)`}
         </button>
@@ -15860,7 +15896,7 @@ function healAtHospital(healType) {
     player.money -= cost;
     player.health = 100;
     alert("You have been healed to full health.");
-    logAction("🏥 Clean white sheets and the smell of antiseptic. The doc patches you up with no questions asked — some debts are paid in silence (Full health restored).");
+    logAction("Clean white sheets and the smell of antiseptic. The doc patches you up with no questions asked — some debts are paid in silence (Full health restored).");
   } else if (healType === 'partial') {
     const healAmount = Math.min(missingHealth, 25);
     const cost = healAmount * 8;
@@ -15871,7 +15907,7 @@ function healAtHospital(healType) {
     player.money -= cost;
     player.health = Math.min(100, player.health + healAmount);
     alert(`Quick patch-up done. Restored ${healAmount} health.`);
-    logAction(`🩹 A quick patch job — bandages, painkillers and a shot of whiskey. Good enough to get back on the streets (+${healAmount} HP).`);
+    logAction(`A quick patch job — bandages, painkillers and a shot of whiskey. Good enough to get back on the streets (+${healAmount} HP).`);
   } else if (healType === 'rest') {
     if (player.energy < 20) {
       alert("You're too exhausted to rest effectively.");
@@ -15881,7 +15917,7 @@ function healAtHospital(healType) {
     player.energy -= 20;
     player.health = Math.min(100, player.health + healAmount);
     alert(`You rested and recovered ${healAmount} health.`);
-    logAction(`🏛️ You find a quiet corner and lay low for a while. Sleep does its work slowly but surely (+${healAmount} HP, -20 energy).`);
+    logAction(`️ You find a quiet corner and lay low for a while. Sleep does its work slowly but surely (+${healAmount} HP, -20 energy).`);
   }
   
   updateUI();
@@ -15941,22 +15977,22 @@ function showDeathScreen(causeOfDeath) {
     obituaryEl.innerHTML = `
       <div class="obituary-card">
         <div class="obituary-header">
-          <div class="obituary-portrait">${player.portrait ? `<img src="${player.portrait}" alt="${player.name || 'Portrait'}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">` : '💀'}</div>
+          <div class="obituary-portrait">${player.portrait ? `<img src="${player.portrait}" alt="${player.name || 'Portrait'}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">` : ''}</div>
           <div class="obituary-name-block">
             <h3>${player.name || 'Unknown'}</h3>
             <span class="obituary-title">${legacyTitle} — Level ${player.level}</span>
           </div>
         </div>
-        <div class="obituary-cause">☠️ ${cause}</div>
+        <div class="obituary-cause">${cause}</div>
         <div class="obituary-stats">
-          <div class="obit-stat"><span class="obit-label">💰 Net Worth</span><span class="obit-value">$${(player.money || 0).toLocaleString()}</span></div>
-          <div class="obit-stat"><span class="obit-label">⚔️ Crimes Committed</span><span class="obit-value">${totalCrimes}</span></div>
-          <div class="obit-stat"><span class="obit-label">👥 Gang Size</span><span class="obit-value">${gangSize}</span></div>
-          <div class="obit-stat"><span class="obit-label">🏘️ Territories</span><span class="obit-value">${territoriesOwned}</span></div>
-          <div class="obit-stat"><span class="obit-label">🏢 Businesses</span><span class="obit-value">${businessCount}</span></div>
-          <div class="obit-stat"><span class="obit-label">🏠 Properties</span><span class="obit-value">${propertiesOwned}</span></div>
+          <div class="obit-stat"><span class="obit-label">Net Worth</span><span class="obit-value">$${(player.money || 0).toLocaleString()}</span></div>
+          <div class="obit-stat"><span class="obit-label">Crimes Committed</span><span class="obit-value">${totalCrimes}</span></div>
+          <div class="obit-stat"><span class="obit-label">Gang Size</span><span class="obit-value">${gangSize}</span></div>
+          <div class="obit-stat"><span class="obit-label">Territories</span><span class="obit-value">${territoriesOwned}</span></div>
+          <div class="obit-stat"><span class="obit-label">Businesses</span><span class="obit-value">${businessCount}</span></div>
+          <div class="obit-stat"><span class="obit-label">Properties</span><span class="obit-value">${propertiesOwned}</span></div>
           <div class="obit-stat"><span class="obit-label">⭐ Best Skill</span><span class="obit-value">${highestSkill[0]} (${highestSkill[1]})</span></div>
-          <div class="obit-stat"><span class="obit-label">🎰 Gambling Wins</span><span class="obit-value">${player.playstyleStats.gamblingWins || 0}</span></div>
+          <div class="obit-stat"><span class="obit-label">Gambling Wins</span><span class="obit-value">${player.playstyleStats.gamblingWins || 0}</span></div>
         </div>
       </div>
     `;
@@ -15971,7 +16007,7 @@ function showDeathScreen(causeOfDeath) {
           "Every empire falls. Will you build another?"
         </p>
         <button onclick="restartGame()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: #ecf0f1; padding: 18px 40px; border: none; border-radius: 12px; font-size: 1.3em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
-          🔄 Start a New Life
+          Start a New Life
         </button>
       </div>
     `;
@@ -15999,7 +16035,7 @@ function restartGame() {
   }
   
   updateUI();
-  logAction("🔄 The slate is wiped clean. Back to the bottom of the food chain, but every kingpin started somewhere. Time to climb again.");
+  logAction("The slate is wiped clean. Back to the bottom of the food chain, but every kingpin started somewhere. Time to climb again.");
   
   // Start fresh character creation
   document.getElementById("death-screen").style.display = "none";
@@ -16029,7 +16065,7 @@ function showAchievements() {
   ];
   
   let achievementsHTML = `
-    <h2>🏆 Achievements</h2>
+    <h2>Achievements</h2>
     
     <!-- Progress bar -->
     <div style="margin: 15px 0 25px; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px;">
@@ -16085,16 +16121,12 @@ function showAchievements() {
 
 // Function to trigger random events
 function triggerRandomEvent() {
-  // Weighted events: higher weight = more likely. Balanced mix of positive/negative/neutral.
+  // Weighted events: higher weight = more likely. Only positive/neutral events.
   const events = [
-    { name: "Police Raid", action: policeRaid, message: null, weight: 10 },
     { name: "Black Market Sale", action: randomSale, message: null, weight: 8 },
     { name: "Lucky Find", action: luckyFind, message: null, weight: 12 },
     { name: "Gang Recruitment", action: gangRecruitment, message: null, weight: 10 },
-    { name: "Territory Dispute", action: territoryDispute, message: null, weight: 8 },
-    { name: "Police Informant", action: policeInformant, message: null, weight: 6 },
     { name: "Mysterious Tip", action: mysteriousTip, message: null, weight: 10 },
-    { name: "Health Scare", action: healthScare, message: null, weight: 7 },
     { name: "Rival Offer", action: rivalOffer, message: null, weight: 6 },
     { name: "Street Cred", action: streetCredEvent, message: null, weight: 8 },
     { name: "Equipment Bonus", action: equipmentBonus, message: null, weight: 5 }
@@ -16122,8 +16154,8 @@ function policeRaid() {
   // Stealth skill can reduce the impact
   wantedIncrease = Math.max(1, wantedIncrease - player.skills.stealth);
   player.wantedLevel += wantedIncrease;
-  showBriefNotification(`🚨 Police Raid! Wanted +${wantedIncrease}`, 3000);
-  logAction(`🚨 A police raid sweeps through your area! Wanted level increased by ${wantedIncrease}. ${player.skills.stealth > 0 ? 'Your stealth skills minimized the damage.' : ''}`);
+  showBriefNotification(`Police Raid! Wanted +${wantedIncrease}`, 3000);
+  logAction(`A police raid sweeps through your area! Wanted level increased by ${wantedIncrease}. ${player.skills.stealth > 0 ? 'Your stealth skills minimized the damage.' : ''}`);
   updateUI();
 }
 
@@ -16139,8 +16171,8 @@ function randomSale() {
   storeItems.forEach(item => {
     item.price = Math.floor(item.price * 0.7); // Reduce prices by 30%
   });
-  showBriefNotification('💰 Black Market Flash Sale! Store prices reduced 30% for 2 minutes!', 4000);
-  logAction('💰 A Black Market Flash Sale has started! Store prices are reduced by 30% for the next 2 minutes.');
+  showBriefNotification('Black Market Flash Sale! Store prices reduced 30% for 2 minutes!', 4000);
+  logAction('A Black Market Flash Sale has started! Store prices are reduced by 30% for the next 2 minutes.');
   setTimeout(() => {
     // Restore exact original prices
     if (_originalStorePrices) {
@@ -16150,7 +16182,7 @@ function randomSale() {
       _originalStorePrices = null;
     }
     _saleActive = false;
-    showBriefNotification('💰 Flash Sale has ended. Prices are back to normal.', 2000);
+    showBriefNotification('Flash Sale has ended. Prices are back to normal.', 2000);
   }, 120000);
 }
 
@@ -16160,8 +16192,8 @@ function luckyFind() {
   let found = Math.floor(Math.random() * base) + base;
   found += Math.floor(found * (player.skills.luck * 0.05));
   player.money += found;
-  showBriefNotification(`💵 Lucky find! +$${found.toLocaleString()}`, 3000);
-  logAction(`💵 You stumble upon a hidden stash on the street. $${found.toLocaleString()} richer!`);
+  showBriefNotification(`Lucky find! +$${found.toLocaleString()}`, 3000);
+  logAction(`You stumble upon a hidden stash on the street. $${found.toLocaleString()} richer!`);
   updateUI();
 }
 
@@ -16173,8 +16205,8 @@ function mysteriousTip() {
   const repGain = Math.floor(Math.random() * 2) + 1;
   gainExperience(xpGain);
   player.reputation += repGain;
-  showBriefNotification(`💬 Mysterious tip! +${xpGain} XP, +${repGain} Rep`, 3000);
-  logAction(`💬 An informant slips you a useful tip about the city's operations. You gain insight (+${xpGain} XP) and your name spreads further (+${repGain} reputation).`);
+  showBriefNotification(`Mysterious tip! +${xpGain} XP, +${repGain} Rep`, 3000);
+  logAction(`An informant slips you a useful tip about the city's operations. You gain insight (+${xpGain} XP) and your name spreads further (+${repGain} reputation).`);
   updateUI();
 }
 
@@ -16184,8 +16216,8 @@ function healthScare() {
   const reduction = Math.min(baseLoss - 1, player.skills.endurance * 2);
   const actualLoss = Math.max(1, baseLoss - reduction);
   player.health = Math.max(1, player.health - actualLoss);
-  showBriefNotification(`🩸 Health scare! -${actualLoss} HP`, 3000);
-  logAction(`🩸 A rough night takes its toll. You lose ${actualLoss} health. ${reduction > 0 ? 'Your endurance training softened the blow.' : 'Take it easy.'}`);
+  showBriefNotification(`Health scare! -${actualLoss} HP`, 3000);
+  logAction(`A rough night takes its toll. You lose ${actualLoss} health. ${reduction > 0 ? 'Your endurance training softened the blow.' : 'Take it easy.'}`);
   updateUI();
 }
 
@@ -16195,8 +16227,8 @@ function rivalOffer() {
   const repCost = Math.floor(Math.random() * 3) + 2;
   player.money += cashOffer;
   player.reputation = Math.max(0, player.reputation - repCost);
-  showBriefNotification(`🤝 Rival offer: +$${cashOffer.toLocaleString()}, -${repCost} rep`, 3000);
-  logAction(`🤝 A rival gang approaches with a cash offer you can't refuse. You pocket $${cashOffer.toLocaleString()}, but it costs you ${repCost} reputation on the streets.`);
+  showBriefNotification(` Rival offer: +$${cashOffer.toLocaleString()}, -${repCost} rep`, 3000);
+  logAction(` A rival gang approaches with a cash offer you can't refuse. You pocket $${cashOffer.toLocaleString()}, but it costs you ${repCost} reputation on the streets.`);
   updateUI();
 }
 
@@ -16215,13 +16247,13 @@ function equipmentBonus() {
   if (roll < 0.5) {
     const ammoGain = Math.floor(Math.random() * 5) + 2;
     player.ammo += ammoGain;
-    showBriefNotification(`📦 Supply drop! +${ammoGain} ammo`, 3000);
-    logAction(`📦 One of your contacts leaves a package at the dead drop. Inside: ${ammoGain} rounds of ammunition.`);
+    showBriefNotification(`Supply drop! +${ammoGain} ammo`, 3000);
+    logAction(`One of your contacts leaves a package at the dead drop. Inside: ${ammoGain} rounds of ammunition.`);
   } else {
     const gasGain = Math.floor(Math.random() * 3) + 1;
     player.gas += gasGain;
-    showBriefNotification(`⛽ Supply drop! +${gasGain} gas`, 3000);
-    logAction(`⛽ A friendly mechanic tops off your fuel reserves. +${gasGain} gasoline.`);
+    showBriefNotification(`Supply drop! +${gasGain} gas`, 3000);
+    logAction(`A friendly mechanic tops off your fuel reserves. +${gasGain} gasoline.`);
   }
   updateUI();
 }
@@ -16255,7 +16287,7 @@ function gangRecruitment() {
     
     // Create clickable action log entry
     const recruitmentId = 'recruitment-' + Date.now();
-    logAction(`🤝 <strong>${recruit.name}</strong> approaches you in the shadows. They've heard about your reputation and want to join your crew for <strong>$${recruit.cost.toLocaleString()}</strong>. 
+    logAction(` <strong>${recruit.name}</strong> approaches you in the shadows. They've heard about your reputation and want to join your crew for <strong>$${recruit.cost.toLocaleString()}</strong>. 
           Specializes in <em>${recruit.skill}</em> (+${recruit.power} power, ${recruit.loyalty}% loyalty). 
           <button id="${recruitmentId}" onclick="hireRandomRecruit('${recruitmentId}')" style="background: #27ae60; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; font-weight: bold;">
             Hire for $${recruit.cost.toLocaleString()}
@@ -16298,7 +16330,7 @@ function gangRecruitment() {
           timerElement.style.color = '#7f8c8d';
         }
         
-        logAction(`💨 ${recruit.name} grows impatient and disappears into the night. The opportunity has passed.`);
+        logAction(`${recruit.name} grows impatient and disappears into the night. The opportunity has passed.`);
       }
     }, 1000);
   }
@@ -16365,7 +16397,7 @@ async function hireRandomRecruit(buttonId) {
   }
   
   updateUI();
-  logAction(`🎉 ${recruit.name} joins your crew! Their expertise in ${recruit.skill} will serve you well. (+${recruit.power} power, ${recruit.loyalty}% loyalty)`);
+  logAction(`${recruit.name} joins your crew! Their expertise in ${recruit.skill} will serve you well. (+${recruit.power} power, ${recruit.loyalty}% loyalty)`);
   
   // Check achievements
   checkAchievements();
@@ -16375,16 +16407,16 @@ function territoryDispute() {
   if ((player.turf?.owned || []).length > 0 && Math.random() < 0.4) {
     if (player.power + (player.gang.members * 10) > Math.random() * 500) {
       player.reputation += 3;
-      showBriefNotification('⚔️ Territory defended! +3 rep', 3000);
-      logAction('⚔️ A rival gang tried to move in on your turf, but your crew held the line. +3 reputation.');
+      showBriefNotification('Territory defended! +3 rep', 3000);
+      logAction('A rival gang tried to move in on your turf, but your crew held the line. +3 reputation.');
     } else {
       // Reduce turf power instead of decrementing territory counter
       if (player.turf) player.turf.power = Math.max(0, (player.turf.power || 100) - 15);
       // gangRespect (from TikTakToe) cushions loyalty loss
       const respectBuffer = Math.min(5, (player.gangRespect || 0));
       player.gang.loyalty = Math.max(50, player.gang.loyalty - Math.max(2, 10 - respectBuffer));
-      showBriefNotification('⚔️ Lost territory to rivals!', 3000);
-      logAction('⚔️ A rival gang overwhelmed your defenses! You lost turf power and gang loyalty dropped.');
+      showBriefNotification('Lost territory to rivals!', 3000);
+      logAction('A rival gang overwhelmed your defenses! You lost turf power and gang loyalty dropped.');
     }
     updateUI();
   }
@@ -16394,8 +16426,8 @@ function policeInformant() {
   const wantedGain = Math.floor(Math.random() * 10) + 5;
   player.wantedLevel += wantedGain;
   player.reputation = Math.max(0, player.reputation - 2);
-  showBriefNotification(`🐀 Informant! Wanted +${wantedGain}, Rep -2`, 3000);
-  logAction(`🐀 Someone snitched to the Feds! Your wanted level spiked by ${wantedGain} and you lost 2 reputation. Find the rat.`);
+  showBriefNotification(`Informant! Wanted +${wantedGain}, Rep -2`, 3000);
+  logAction(`Someone snitched to the Feds! Your wanted level spiked by ${wantedGain} and you lost 2 reputation. Find the rat.`);
   updateUI();
 }
 
@@ -16443,6 +16475,7 @@ function startPassiveIncomeGenerator() {
     generatePassiveIncome();
     processTerritoryOperations(); // Process territory income and events
     applyDailyPassives(); // Apply faction passives (interest, ammo regen, etc.)
+    releaseArrestedGangMembers(); // Check if any arrested members should be released
     
     // Auto-collect helpers when Bookie is hired
     if (!player.services) player.services = {};
@@ -16455,17 +16488,31 @@ function startPassiveIncomeGenerator() {
   }, 300000); // Every 5 minutes
 }
 
+// Release arrested gang members whose sentence has expired
+function releaseArrestedGangMembers() {
+  if (!player.gang || !player.gang.gangMembers) return;
+  const now = Date.now();
+  player.gang.gangMembers.forEach(member => {
+    if (member.arrested && member.arrestTime && now >= member.arrestTime) {
+      member.arrested = false;
+      member.arrestTime = null;
+      member.onOperation = false;
+      logAction(`${member.name} has been released from custody and is available again.`);
+    }
+  });
+}
+
 // Hire/Dismiss Bookie
 function toggleBookieHire() {
   if (!player.services) player.services = {};
   if (player.services.bookieHired) {
     player.services.bookieHired = false;
-    logAction('📉 You dismiss the bookie. You will need to collect income and tribute manually.');
+    logAction('You dismiss the bookie. You will need to collect income and tribute manually.');
     if (typeof showBriefNotification === 'function') showBriefNotification('Bookie dismissed', 1200);
   } else {
     player.services.bookieHired = true;
     player.services.bookieLastPaid = Date.now();
-    logAction('📈 You hire a trusted bookie to keep the cash flowing. Income and tribute will be auto-collected.');
+    logAction('You hire a trusted bookie to keep the cash flowing. Income and tribute will be auto-collected.');
     if (typeof showBriefNotification === 'function') showBriefNotification('Bookie hired', 1200);
   }
   // Refresh businesses screen if open
@@ -16565,7 +16612,7 @@ function chargeBookieFeeHourly() {
     } else {
       // Can't pay fee -> dismiss
       player.services.bookieHired = false;
-      logAction('💸 Your bookie quits – no funds to cover fees.');
+      logAction('Your bookie quits – no funds to cover fees.');
       if (typeof showBriefNotification === 'function') showBriefNotification('Bookie dismissed (unpaid)', 1500);
     }
   }
@@ -16712,7 +16759,7 @@ function renderLoadSlotCards(saves, onClickFn) {
       <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
         <div>
           <h3 style="color: #3498db; margin: 0; font-size: 1.1em;">
-            ${save.slotNumber === 0 ? '🔄 Auto-Save' : `💾 Slot ${save.slotNumber}`}
+            ${save.slotNumber === 0 ? 'Auto-Save' : `Slot ${save.slotNumber}`}
           </h3>
         </div>
         <div>
@@ -16743,7 +16790,7 @@ function showSaveSelectionInterface(saves) {
   const content = `
     <div style="max-width: 1000px; margin: 0 auto;">
       <h2 style="text-align: center; color: #3498db; font-size: 2.5em; margin-bottom: 30px;">
-        📂 Load Game
+        Load Game
       </h2>
       
       <p style="text-align: center; color: #ecf0f1; font-size: 1.2em; margin-bottom: 30px;">
@@ -16811,7 +16858,7 @@ function showSaveSelectionFromIntro(saves) {
     <div style="max-width: 1000px; width: 100%; background: linear-gradient(135deg, rgba(44, 62, 80, 0.98) 0%, rgba(52, 73, 94, 0.98) 100%); 
           padding: 40px; border-radius: 20px; border: 2px solid #e74c3c; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; color: white;">
       <h2 style="color: #3498db; font-size: 2.5em; margin-bottom: 30px;">
-        📂 Load Game
+        Load Game
       </h2>
       
       <p style="color: #ecf0f1; font-size: 1.2em; margin-bottom: 30px;">
@@ -16877,7 +16924,7 @@ function loadGameFromIntroSlot(slotNumber) {
     
     // Show welcome back message with player name
     const playerName = player.name || "Criminal";
-    logAction(`🎮 Welcome back, ${playerName}! Your criminal empire has been restored.`);
+    logAction(`Welcome back, ${playerName}! Your criminal empire has been restored.`);
     
     // Show brief notification
     showBriefNotification(`✅ Loaded: ${playerName}'s saved game`, 2000);
@@ -16991,9 +17038,9 @@ function checkForUpdates() {
   if (!btn) return;
   btn.disabled = true;
   btn.style.cursor = 'wait';
-  btn.innerHTML = '⏳ Checking for updates...';
+  btn.innerHTML = 'Checking for updates...';
 
-  const frames = ['⏳ Checking...', '🔄 Scanning files...', '📡 Contacting server...', '📦 Verifying version...'];
+  const frames = ['Checking...', 'Scanning files...', 'Contacting server...', 'Verifying version...'];
   let frameIdx = 0;
   const animInterval = setInterval(() => {
     frameIdx = (frameIdx + 1) % frames.length;
@@ -17034,14 +17081,14 @@ function checkForUpdates() {
 
         // Offer a force-refresh option in case assets are still cached
         setTimeout(() => {
-          btn.innerHTML = '🔄 Force Refresh';
+          btn.innerHTML = 'Force Refresh';
           btn.title = 'Click to force-reload all game files from server';
           btn.style.borderColor = '#3498db';
           btn.style.color = '#3498db';
           btn.disabled = false;
           btn.style.cursor = 'pointer';
           btn.onclick = () => {
-            btn.innerHTML = '⏳ Clearing cache...';
+            btn.innerHTML = 'Clearing cache...';
             btn.disabled = true;
             forceHardReload();
           };
@@ -17049,18 +17096,18 @@ function checkForUpdates() {
       }
     } catch (err) {
       console.error('Version check failed:', err);
-      btn.innerHTML = '⚠️ Server offline — try Force Refresh';
+      btn.innerHTML = 'Server offline — try Force Refresh';
       btn.style.borderColor = '#e74c3c';
       btn.style.color = '#e74c3c';
       setTimeout(() => {
-        btn.innerHTML = '🔄 Force Refresh';
+        btn.innerHTML = 'Force Refresh';
         btn.title = 'Click to force-reload all game files';
         btn.style.borderColor = '#3498db';
         btn.style.color = '#3498db';
         btn.disabled = false;
         btn.style.cursor = 'pointer';
         btn.onclick = () => {
-          btn.innerHTML = '⏳ Clearing cache...';
+          btn.innerHTML = 'Clearing cache...';
           btn.disabled = true;
           forceHardReload();
         };
@@ -17117,11 +17164,11 @@ function showDeleteSelectionInterface(saves) {
     <div style="max-width: 1000px; width: 100%; background: linear-gradient(135deg, rgba(44, 62, 80, 0.98) 0%, rgba(52, 73, 94, 0.98) 100%); 
           padding: 40px; border-radius: 20px; border: 2px solid #e74c3c; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; color: white;">
       <h2 style="color: #e74c3c; font-size: 2.5em; margin-bottom: 30px;">
-        🗑️ Delete Save Game
+        Delete Save Game
       </h2>
       
       <p style="color: #ecf0f1; font-size: 1.2em; margin-bottom: 30px;">
-        ⚠️ <strong>WARNING:</strong> This action cannot be undone! Select a saved game to permanently delete:
+        <strong>WARNING:</strong> This action cannot be undone! Select a saved game to permanently delete:
       </p>
       
       <div style="display: grid; gap: 15px; margin-bottom: 30px;">
@@ -17134,7 +17181,7 @@ function showDeleteSelectionInterface(saves) {
             <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
               <div>
                 <h3 style="color: #e74c3c; margin: 0; font-size: 1.1em;">
-                  ${save.slotNumber === 0 ? '🔄 Auto-Save' : `💾 Slot ${save.slotNumber}`}
+                  ${save.slotNumber === 0 ? 'Auto-Save' : `Slot ${save.slotNumber}`}
                 </h3>
               </div>
               
@@ -17160,7 +17207,7 @@ function showDeleteSelectionInterface(saves) {
             </div>
             
             <div style="margin-top: 15px; text-align: center;">
-              <span style="color: #e74c3c; font-weight: bold; font-size: 0.9em;">🗑️ Click to DELETE this save</span>
+              <span style="color: #e74c3c; font-weight: bold; font-size: 0.9em;">Click to DELETE this save</span>
             </div>
           </div>
         `).join('')}
@@ -17191,7 +17238,7 @@ async function confirmDeleteSave(slotNumber) {
   if (await ui.confirm(confirmMessage)) {
     try {
       deleteSaveSlot(slotNumber);
-      logAction(`🗑️ Deleted save: ${slotName} (${slot.saveName})`);
+      logAction(`Deleted save: ${slotName} (${slot.saveName})`);
     } catch (e) {
       console.error('Error during save deletion:', e);
     }
@@ -17452,7 +17499,7 @@ function initializeInterfaceImprovements() {
   }
   
   if (gameplayActive) {
-    logAction("🎮 Interface improvements activated - hotkeys available!");
+    logAction("Interface improvements activated - hotkeys available!");
   }
 }
 
@@ -17501,15 +17548,15 @@ function showMap() {
   const ownedIds = (player.turf?.owned || []).map(o => o.id || o);
   
   let mapHTML = `
-    <h2>🗺️ Turf Map</h2>
+    <h2>Turf Map</h2>
     <p>Visual overview of the city's turf zones and your criminal empire</p>
     
     <div style="margin: 20px 0; padding: 15px; background: rgba(52, 152, 219, 0.2); border-radius: 10px;">
-      <h3 style="color: #3498db; margin: 0 0 10px 0;">💡 Map Legend</h3>
+      <h3 style="color: #3498db; margin: 0 0 10px 0;">Map Legend</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
         <div style="color: #2ecc71;">✅ Your Turf</div>
-        <div style="color: #e74c3c;">⚔️ Rival Controlled</div>
-        <div style="color: #f39c12;">🏴 Contested</div>
+        <div style="color: #e74c3c;">Rival Controlled</div>
+        <div style="color: #f39c12;">Contested</div>
       </div>
     </div>
     
@@ -17559,7 +17606,7 @@ function showMap() {
     
     <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
       <button onclick="showTerritoryControl();" style="background: #3498db; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
-        🏛️ Turf Management
+        Turf Management
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
     </div>
@@ -17587,7 +17634,7 @@ function showCalendar() {
     "July", "August", "September", "October", "November", "December"];
   
   let calendarHTML = `
-    <h2>📅 Criminal Calendar</h2>
+    <h2>Criminal Calendar</h2>
     <p>Track your tribute collections, events, and important dates</p>
     
     <div style="text-align: center; margin: 20px 0;">
@@ -17623,27 +17670,27 @@ function showCalendar() {
     
     // Territory tribute collection (every 7 days)
     if ((player.turf?.owned || []).length > 0 && day % 7 === 0) {
-      events.push('<div class="calendar-event">💰 Tribute Collection</div>');
+      events.push('<div class="calendar-event">Tribute Collection</div>');
     }
     
     // Gang operations on days matching gang size pattern (deterministic)
     if (player.gang && player.gang.gangMembers && player.gang.gangMembers.length > 0 && day % Math.max(2, 8 - player.gang.gangMembers.length) === 0) {
-      events.push('<div class="calendar-event">👥 Gang Operation</div>');
+      events.push('<div class="calendar-event">Gang Operation</div>');
     }
     
     // Business income day (every 5 days if player has businesses)
     if (player.businesses && player.businesses.length > 0 && day % 5 === 0) {
-      events.push('<div class="calendar-event">🏭 Business Income</div>');
+      events.push('<div class="calendar-event">Business Income</div>');
     }
     
     // Real estate collection (1st and 15th if player owns properties)
     if (player.realEstate && player.realEstate.ownedProperties && player.realEstate.ownedProperties.length > 0 && (day === 1 || day === 15)) {
-      events.push('<div class="calendar-event">🏠 Rent Collection</div>');
+      events.push('<div class="calendar-event">Rent Collection</div>');
     }
     
     // Special events
     if (day === 15) {
-      events.push('<div class="calendar-event">🌟 Monthly Review</div>');
+      events.push('<div class="calendar-event">Monthly Review</div>');
     }
     
     calendarHTML += `
@@ -17658,7 +17705,7 @@ function showCalendar() {
     </div>
     
     <div style="margin: 30px 0; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px;">
-      <h3 style="color: #f39c12; margin-bottom: 15px;">📋 Upcoming Events</h3>
+      <h3 style="color: #f39c12; margin-bottom: 15px;">Upcoming Events</h3>
       <div style="display: grid; gap: 10px;">
   `;
   
@@ -17668,19 +17715,19 @@ function showCalendar() {
   if ((player.turf?.owned || []).length > 0) {
     const nextTribute = Math.ceil(currentDay / 7) * 7;
     if (nextTribute <= daysInMonth) {
-      upcomingEvents.push(`💰 Next tribute collection: ${monthNames[currentMonth]} ${nextTribute}`);
+      upcomingEvents.push(`Next tribute collection: ${monthNames[currentMonth]} ${nextTribute}`);
     }
   }
   
   if (activeEvents && activeEvents.length > 0) {
     activeEvents.forEach(event => {
       const endDate = new Date(event.endTime);
-      upcomingEvents.push(`${event.icon || '📰'} ${event.name} ends: ${endDate.toLocaleDateString()}`);
+      upcomingEvents.push(`${event.icon || ''} ${event.name} ends: ${endDate.toLocaleDateString()}`);
     });
   }
   
   if (upcomingEvents.length === 0) {
-    upcomingEvents.push("📅 No scheduled events - perfect time to plan your next move");
+    upcomingEvents.push("No scheduled events - perfect time to plan your next move");
   }
   
   upcomingEvents.forEach(event => {
@@ -17707,11 +17754,11 @@ function showDayDetails(day, month, year) {
   
   // Add any special events for this day
   if ((player.turf?.owned || []).length > 0 && day % 7 === 0) {
-    details += "💰 Territory tribute collection day\n";
+    details += "Territory tribute collection day\n";
   }
   
   if (day === 15) {
-    details += "🌟 Monthly criminal empire review\n";
+    details += "Monthly criminal empire review\n";
   }
   
   details += "\nClick on other days to see their events.";
@@ -17773,12 +17820,12 @@ function showStatistics() {
     (((stats.totalMoneyEarned - stats.totalMoneySpent) / stats.totalMoneyEarned) * 100).toFixed(1) : 0;
   
   let statisticsHTML = `
-    <h2>📊 Criminal Career Statistics</h2>
+    <h2>Criminal Career Statistics</h2>
     <p>Detailed analysis of your rise through the criminal underworld</p>
     
     <div class="stats-grid">
       <div class="stat-category">
-        <h3>🎯 Job Performance</h3>
+        <h3>Job Performance</h3>
         <div class="stat-item">
           <span class="stat-label">Jobs Completed:</span>
           <span class="stat-value">${stats.jobsCompleted}</span>
@@ -17806,7 +17853,7 @@ function showStatistics() {
       </div>
       
       <div class="stat-category">
-        <h3>💰 Financial Empire</h3>
+        <h3>Financial Empire</h3>
         <div class="stat-item">
           <span class="stat-label">Total Money Earned:</span>
           <span class="stat-highlight">$${stats.totalMoneyEarned.toLocaleString()}</span>
@@ -17834,7 +17881,7 @@ function showStatistics() {
       </div>
       
       <div class="stat-category">
-        <h3>🚔 Law Enforcement</h3>
+        <h3>Law Enforcement</h3>
         <div class="stat-item">
           <span class="stat-label">Times Arrested:</span>
           <span class="stat-value">${stats.timesArrested}</span>
@@ -17862,7 +17909,7 @@ function showStatistics() {
       </div>
       
       <div class="stat-category">
-        <h3>🚗 Criminal Assets</h3>
+        <h3>Criminal Assets</h3>
         <div class="stat-item">
           <span class="stat-label">Cars Stolen:</span>
           <span class="stat-value">${stats.carsStolen}</span>
@@ -17894,7 +17941,7 @@ function showStatistics() {
       </div>
       
       <div class="stat-category">
-        <h3>📈 Character Development</h3>
+        <h3>Character Development</h3>
         <div class="stat-item">
           <span class="stat-label">Current Level:</span>
           <span class="stat-highlight">${player.level}</span>
@@ -17922,7 +17969,7 @@ function showStatistics() {
       </div>
       
       <div class="stat-category">
-        <h3>⏰ Time & Activity</h3>
+        <h3>Time & Activity</h3>
         <div class="stat-item">
           <span class="stat-label">Play Time:</span>
           <span class="stat-value">${Math.floor(playTime / 60)}h ${playTime % 60}m</span>
@@ -17952,10 +17999,10 @@ function showStatistics() {
     
     <div style="text-align: center; margin-top: 30px;">
       <button onclick="exportStatistics()" style="background: #3498db; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
-        📋 Export Stats
+        Export Stats
       </button>
       <button onclick="resetStatistics()" style="background: #e74c3c; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
-        🔄 Reset Stats
+        Reset Stats
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
     </div>
@@ -17986,14 +18033,14 @@ function exportStatistics() {
   
   URL.revokeObjectURL(url);
   
-  logAction("📊 Statistics exported successfully!");
+  logAction("Statistics exported successfully!");
 }
 
 async function resetStatistics() {
   if (await ui.confirm("Are you sure you want to reset all statistics? This action cannot be undone.")) {
     player.statistics = initializePlayerStatistics();
     showStatistics(); // Refresh the display
-    logAction("📊 Statistics reset successfully!");
+    logAction("Statistics reset successfully!");
   }
 }
 
@@ -18143,7 +18190,7 @@ function showEmpireRating() {
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
         <div class="rating-category">
-          <h3 style="color: #2ecc71;">💰 Money Power</h3>
+          <h3 style="color: #2ecc71;">Money Power</h3>
           <div class="progress-bar">
             <div style="width: ${(rating.moneyPower/2000)*100}%; background: #2ecc71;"></div>
           </div>
@@ -18151,7 +18198,7 @@ function showEmpireRating() {
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #e74c3c;">👥 Gang Power</h3>
+          <h3 style="color: #e74c3c;">Gang Power</h3>
           <div class="progress-bar">
             <div style="width: ${(rating.gangPower/1500)*100}%; background: #e74c3c;"></div>
           </div>
@@ -18159,7 +18206,7 @@ function showEmpireRating() {
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #f39c12;">🏛️ Territory Power</h3>
+          <h3 style="color: #f39c12;">Territory Power</h3>
           <div class="progress-bar">
             <div style="width: ${(rating.territoryPower/1500)*100}%; background: #f39c12;"></div>
           </div>
@@ -18167,7 +18214,7 @@ function showEmpireRating() {
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #9b59b6;">🏭 Business Power</h3>
+          <h3 style="color: #9b59b6;">Business Power</h3>
           <div class="progress-bar">
             <div style="width: ${(rating.businessPower/1500)*100}%; background: #9b59b6;"></div>
           </div>
@@ -18183,7 +18230,7 @@ function showEmpireRating() {
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #1abc9c;">🧠  Skill Power</h3>
+          <h3 style="color: #1abc9c;">  Skill Power</h3>
           <div class="progress-bar">
             <div style="width: ${(rating.skillPower/1500)*100}%; background: #1abc9c;"></div>
           </div>
@@ -18193,7 +18240,7 @@ function showEmpireRating() {
       
       <div style="text-align: center; margin-top: 30px;">
         <button onclick="showAchievements()" style="background: linear-gradient(45deg, #f39c12, #e67e22); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
-          🏆 Achievements
+          Achievements
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
       </div>
@@ -18261,7 +18308,7 @@ function autoSave() {
     SAVE_SYSTEM.lastAutoSave = currentTime;
     
     // Show brief auto-save notification
-    showBriefNotification(`💾 Auto-saved to Slot ${targetSlot}`, 1000);
+    showBriefNotification(`Auto-saved to Slot ${targetSlot}`, 1000);
     
   } catch (error) {
     console.error("Auto-save failed:", error);
@@ -18321,7 +18368,7 @@ function saveGameToSlot(slotNumber, customName = null, isAutoSave = false) {
     if (!isAutoSave) {
       SAVE_SYSTEM.currentSlot = slotNumber;
       saveSaveSystemPrefs();
-      logAction(`💾 Game saved to slot ${slotNumber}: ${saveName}`);
+      logAction(`Game saved to slot ${slotNumber}: ${saveName}`);
     }
     
     // Auto cloud save (fire-and-forget, won't block)
@@ -18370,7 +18417,7 @@ function loadGameFromSlot(slotNumber) {
     // Don't automatically navigate to any screen - let the caller handle that
     // Note: If player is in jail, applySaveData() already showed the jail screen
     
-    logAction(`💾 Game loaded from slot ${slotNumber}: ${saveEntry.saveName}`);
+    logAction(`Game loaded from slot ${slotNumber}: ${saveEntry.saveName}`);
     showBriefNotification(`✅ Loaded: ${saveEntry.saveName}`, 2000);
     
     return true;
@@ -18396,8 +18443,8 @@ async function deleteGameSlot(slotNumber) {
   if (await ui.confirm(`Delete save "${saveEntry.saveName}"?<br><br>This action cannot be undone!`)) {
     localStorage.removeItem(`gameSlot_${slotNumber}`);
     updateSaveSlotsList();
-    logAction(`🗑️ Deleted save from slot ${slotNumber}`);
-    showBriefNotification("🗑️ Save deleted", 1500);
+    logAction(`Deleted save from slot ${slotNumber}`);
+    showBriefNotification("Save deleted", 1500);
   }
 }
 
@@ -18423,7 +18470,7 @@ function exportSaveData() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    showBriefNotification('📦 Save data exported successfully!', 'success');
+    showBriefNotification('Save data exported successfully!', 'success');
   } catch (error) {
     console.error('Export failed:', error);
     showBriefNotification('Export failed: ' + error.message, 'danger');
@@ -18464,8 +18511,8 @@ function importSaveData() {
           }
         });
         
-        showBriefNotification('📦 Save data imported! Refreshing...', 'success');
-        logAction('📦 Imported save backup file.');
+        showBriefNotification('Save data imported! Refreshing...', 'success');
+        logAction('Imported save backup file.');
         
         // Refresh save system display
         setTimeout(() => showSaveSystem(), 500);
@@ -18571,7 +18618,7 @@ function applySaveData(saveData) {
     } else {
       // Jail time expired, release player
       player.inJail = false;
-      logAction("🚪 Jail sentence completed while away.");
+      logAction("Jail sentence completed while away.");
     }
   } else {
     stopJailTimer();
@@ -18778,13 +18825,13 @@ function showSaveSystem() {
   const content = `
     <div style="max-width: 1200px; margin: 0 auto;">
       <h2 style="text-align: center; color: #3498db; font-size: 2.5em; margin-bottom: 20px;">
-        💾 Save System
+        Save System
       </h2>
       
       <!-- Save System Controls -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
         <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 10px 0;">🔄 Auto-Save</h3>
+          <h3 style="color: #3498db; margin: 0 0 10px 0;">Auto-Save</h3>
           <label style="display: flex; align-items: center; color: #ecf0f1;">
             <input type="checkbox" ${SAVE_SYSTEM.autoSaveEnabled ? 'checked' : ''} onchange="toggleAutoSave(this.checked)" style="margin-right: 8px;">
             Auto-save every ${SAVE_SYSTEM.autoSaveInterval/1000}s
@@ -18794,7 +18841,7 @@ function showSaveSystem() {
           </p>
         </div>
         <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">📦 Backup</h3>
+          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">Backup</h3>
           <button onclick="exportSaveData()" style="background:#2ecc71; color:white; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:3px; width:100%;">
             Export Save
           </button>
@@ -18807,7 +18854,7 @@ function showSaveSystem() {
       <!-- Save Slots -->
       <div id="save-slots-container">
         <h3 style="color: #ecf0f1; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px;">
-          💾 Save Slots
+          Save Slots
         </h3>
         
         <div style="display: grid; gap: 15px;">
@@ -18833,14 +18880,14 @@ function showSaveSystem() {
                 <div style="padding: 20px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 2px solid ${borderColor}; display: grid; grid-template-columns: 1fr auto auto auto; gap: 15px; align-items: center;">
                   <div>
                     <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">
-                      ${isAutoSave ? '🔄 ' : ''}${slot.saveName}
+                      ${isAutoSave ? '' : ''}${slot.saveName}
                       ${isCurrent ? ' (Current)' : ''}
                     </h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 10px 0;">
-                      <div><span style="color: #2ecc71;">💰</span> $${slot.money.toLocaleString()}</div>
-                      <div><span style="color: #3498db;">📈</span> Level ${slot.level}</div>
+                      <div><span style="color: #2ecc71;"></span> $${slot.money.toLocaleString()}</div>
+                      <div><span style="color: #3498db;"></span> Level ${slot.level}</div>
                       <div><span style="color: #e74c3c;">⭐</span> ${slot.reputation}</div>
-                      <div><span style="color: #f39c12;">🏆</span> ${slot.empireRating.toLocaleString()}</div>
+                      <div><span style="color: #f39c12;"></span> ${slot.empireRating.toLocaleString()}</div>
                     </div>
                     <p style="color: #95a5a6; margin: 5px 0 0 0; font-size: 0.9em;">
                       ${formatTimestamp(new Date(slot.saveDate).getTime())} • ${slot.playtime || 'Unknown'}
@@ -18984,9 +19031,9 @@ function toggleAutoSave(enabled) {
   
   if (enabled) {
     startAutoSave();
-    logAction("🔄 Auto-save enabled");
+    logAction("Auto-save enabled");
   } else {
-    logAction("⏸️ Auto-save disabled");
+    logAction("Auto-save disabled");
   }
 }
 
@@ -19227,7 +19274,7 @@ function saveCompetitionData() {
 function submitToLeaderboards() {
   const now = Date.now();
   if (now - COMPETITION_SYSTEM.lastSubmission < COMPETITION_SYSTEM.submissionCooldown) {
-    showBriefNotification("⏰ Please wait before submitting again", 3000);
+    showBriefNotification("Please wait before submitting again", 3000);
     return;
   }
   
@@ -19276,8 +19323,8 @@ function submitToLeaderboards() {
   saveCompetitionData();
   
   const message = isConnected 
-    ? "🏆 Successfully submitted to GLOBAL leaderboards!" 
-    : "💾 Rankings saved locally";
+    ? "Successfully submitted to GLOBAL leaderboards!" 
+    : "Rankings saved locally";
   showBriefNotification(message, 3000);
 }
 
@@ -19371,7 +19418,7 @@ function generateWeeklyChallenges() {
   };
   
   localStorage.setItem('currentWeeklyChallenge', JSON.stringify(WEEKLY_CHALLENGES.currentWeek));
-  showBriefNotification("🎯 New weekly challenges available!", 4000);
+  showBriefNotification("New weekly challenges available!", 4000);
 }
 
 function checkWeeklyChallenges() {
@@ -19411,8 +19458,8 @@ function checkWeeklyChallenges() {
       });
       
       newCompletions++;
-      showBriefNotification(`🎯 Challenge Complete: ${challenge.name}!`, 4000);
-      logAction(`🏆 Completed weekly challenge: ${challenge.name}. Earned $${challenge.reward.money.toLocaleString()}, ${challenge.reward.experience} XP, and ${challenge.reward.reputation} reputation!`);
+      showBriefNotification(`Challenge Complete: ${challenge.name}!`, 4000);
+      logAction(`Completed weekly challenge: ${challenge.name}. Earned $${challenge.reward.money.toLocaleString()}, ${challenge.reward.experience} XP, and ${challenge.reward.reputation} reputation!`);
     }
   });
   
@@ -19493,8 +19540,8 @@ function exportCharacterShowcase() {
     link.click();
     
     URL.revokeObjectURL(url);
-    showBriefNotification("📋 Character showcase exported successfully!", 3000);
-    logAction("📋 Character showcase exported for sharing!");
+    showBriefNotification("Character showcase exported successfully!", 3000);
+    logAction("Character showcase exported for sharing!");
     
   } catch (error) {
     console.error('Export showcase error:', error);
@@ -19542,7 +19589,7 @@ function displayImportedShowcase(showcase) {
   const content = `
     <div style="max-width: 1000px; margin: 0 auto;">
       <h2 style="text-align: center; color: #3498db; font-size: 2.5em; margin-bottom: 20px;">
-        📋 Character Showcase
+        Character Showcase
       </h2>
       
       <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, rgba(44, 62, 80, 0.8) 0%, rgba(52, 73, 94, 0.8) 100%); border-radius: 15px; border: 3px solid ${gradeColor};">
@@ -19558,7 +19605,7 @@ function displayImportedShowcase(showcase) {
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
         <div style="background: rgba(46, 204, 113, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 15px 0;">💰 Financial Empire</h3>
+          <h3 style="color: #2ecc71; margin: 0 0 15px 0;">Financial Empire</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;">
               <span>Current Wealth:</span>
@@ -19576,7 +19623,7 @@ function displayImportedShowcase(showcase) {
         </div>
         
         <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #e74c3c;">
-          <h3 style="color: #e74c3c; margin: 0 0 15px 0;">👥 Criminal Organization</h3>
+          <h3 style="color: #e74c3c; margin: 0 0 15px 0;">Criminal Organization</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;">
               <span>Gang Members:</span>
@@ -19594,7 +19641,7 @@ function displayImportedShowcase(showcase) {
         </div>
         
         <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 15px 0;">🎯 Criminal Record</h3>
+          <h3 style="color: #3498db; margin: 0 0 15px 0;">Criminal Record</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;">
               <span>Jobs Completed:</span>
@@ -19612,7 +19659,7 @@ function displayImportedShowcase(showcase) {
         </div>
         
         <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #9b59b6;">
-          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">⏰ Career Timeline</h3>
+          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">Career Timeline</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;">
               <span>Play Time:</span>
@@ -19649,7 +19696,7 @@ function showRivalsScreen() {
   const content = `
     <div style="max-width: 1200px; margin: 0 auto;">
       <h2 style="text-align: center; color: #e74c3c; font-size: 2.5em; margin-bottom: 20px;">
-        🏆 Rivals & Competition
+        Rivals & Competition
       </h2>
       
       <!-- Local Rankings -->
@@ -19657,7 +19704,7 @@ function showRivalsScreen() {
                   padding: 15px; border-radius: 10px; margin-bottom: 20px; 
                   border: 2px solid #2ecc71; text-align: center;">
         <h3 style="color: #2ecc71; margin: 0 0 5px 0;">
-          🏆 Local Rankings
+          Local Rankings
         </h3>
         <p style="margin: 0; color: #ecf0f1; font-size: 0.9em;">
           Compete against AI rivals and climb the leaderboards
@@ -19667,10 +19714,10 @@ function showRivalsScreen() {
       <!-- Navigation Tabs -->
       <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #34495e; padding-bottom: 10px;">
         <button onclick="showRivalsTab()" id="rivals-tab-btn" style="flex: 1; background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 12px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold;">
-          🎯 AI Rivals
+          AI Rivals
         </button>
         <button onclick="showCompetitionTab()" id="competition-tab-btn" style="flex: 1; background: rgba(52, 73, 94, 0.6); color: #95a5a6; padding: 12px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold;">
-          🏆 Leaderboards
+          Leaderboards
         </button>
       </div>
       
@@ -19713,20 +19760,20 @@ function showRivalsTab() {
               <div style="color: #95a5a6; font-size: 0.9em; margin-bottom: 15px;">${rival.faction.toUpperCase()}</div>
               
               <div style="display: grid; gap: 8px; margin-bottom: 15px;">
-                <div style="color: #ecf0f1;">💪 Power: ${rival.powerRating}</div>
-                <div style="color: #ecf0f1;">👥 Gang Size: ${rival.gangSize}</div>
-                <div style="color: #ecf0f1;">💰 Wealth: $${rival.wealth.toLocaleString()}</div>
-                <div style="color: #ecf0f1;">🗺️ Territories: ${rival.territories.length}</div>
+                <div style="color: #ecf0f1;">Power: ${rival.powerRating}</div>
+                <div style="color: #ecf0f1;">Gang Size: ${rival.gangSize}</div>
+                <div style="color: #ecf0f1;">Wealth: $${rival.wealth.toLocaleString()}</div>
+                <div style="color: #ecf0f1;">Territories: ${rival.territories.length}</div>
                 <div style="color: ${respectColor};">⭐ Respect: ${playerRespect > 0 ? '+' : ''}${playerRespect}</div>
               </div>
               
               <div style="background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
                 <div style="color: #95a5a6; font-size: 0.9em; margin-bottom: 5px;"><strong>Personality:</strong> ${rival.personality}</div>
-                <div style="color: #f39c12;">⚔️ Aggressiveness: ${Math.floor(rival.aggressiveness * 100)}%</div>
+                <div style="color: #f39c12;">Aggressiveness: ${Math.floor(rival.aggressiveness * 100)}%</div>
               </div>
               
               <div style="background: rgba(155, 89, 182, 0.3); padding: 10px; border-radius: 8px; border: 1px solid #9b59b6;">
-                <div style="color: #ecf0f1; font-size: 0.9em;"><strong>🌟 Special:</strong> ${formatSpecialAbility(rival.specialAbility)}</div>
+                <div style="color: #ecf0f1; font-size: 0.9em;"><strong>Special:</strong> ${formatSpecialAbility(rival.specialAbility)}</div>
               </div>
             </div>
           `;
@@ -19758,7 +19805,7 @@ function showCompetitionTab() {
       <!-- Competition Overview -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
         <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 10px 0;">🏆 Leaderboards</h3>
+          <h3 style="color: #3498db; margin: 0 0 10px 0;">Leaderboards</h3>
           <p style="margin: 0 0 10px 0; color: #ecf0f1; font-size: 0.9em;">Compare your criminal empire with others worldwide</p>
           <button onclick="showLeaderboards()" style="background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             View Rankings
@@ -19766,7 +19813,7 @@ function showCompetitionTab() {
         </div>
         
         <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #f39c12;">
-          <h3 style="color: #f39c12; margin: 0 0 10px 0;">🎯 Weekly Challenges</h3>
+          <h3 style="color: #f39c12; margin: 0 0 10px 0;">Weekly Challenges</h3>
           <p style="margin: 0 0 10px 0; color: #ecf0f1; font-size: 0.9em;">Complete special objectives for unique rewards</p>
           <button onclick="showWeeklyChallenges()" style="background: #f39c12; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             View Challenges
@@ -19774,7 +19821,7 @@ function showCompetitionTab() {
         </div>
         
         <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #9b59b6;">
-          <h3 style="color: #9b59b6; margin: 0 0 10px 0;">📋 Character Showcase</h3>
+          <h3 style="color: #9b59b6; margin: 0 0 10px 0;">Character Showcase</h3>
           <p style="margin: 0 0 10px 0; color: #ecf0f1; font-size: 0.9em;">Share your criminal's story and achievements</p>
           <button onclick="showCharacterShowcase()" style="background: #9b59b6; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             My Showcase
@@ -19782,7 +19829,7 @@ function showCompetitionTab() {
         </div>
         
         <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">📤 Submit Rankings</h3>
+          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">Submit Rankings</h3>
           <p style="margin: 0 0 10px 0; color: #ecf0f1; font-size: 0.9em;">Update your position on the leaderboards</p>
           <button onclick="submitToLeaderboards()" ${canSubmit ? '' : 'disabled'} 
               style="background: ${canSubmit ? '#2ecc71' : '#7f8c8d'}; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: ${canSubmit ? 'pointer' : 'not-allowed'}; width: 100%;">
@@ -19793,7 +19840,7 @@ function showCompetitionTab() {
       
       <!-- Quick Stats -->
       <div style="background: rgba(44, 62, 80, 0.6); padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-        <h3 style="color: #ecf0f1; margin: 0 0 15px 0;">📊 Your Competition Stats</h3>
+        <h3 style="color: #ecf0f1; margin: 0 0 15px 0;">Your Competition Stats</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
           ${COMPETITION_SYSTEM.leaderboardCategories.map(category => `
             <div style="text-align: center; padding: 10px;">
@@ -19810,7 +19857,7 @@ function showCompetitionTab() {
       <!-- Current Weekly Challenges Preview -->
       ${currentChallenges.length > 0 ? `
         <div style="background: rgba(243, 156, 18, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #f39c12; margin-bottom: 30px;">
-          <h3 style="color: #f39c12; margin: 0 0 15px 0;">🎯 This Week's Challenges</h3>
+          <h3 style="color: #f39c12; margin: 0 0 15px 0;">This Week's Challenges</h3>
           <div style="display: grid; gap: 10px;">
             ${currentChallenges.map(challenge => `
               <div style="display: flex; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; ${challenge.completed ? 'border: 2px solid #2ecc71;' : ''}">
@@ -19862,7 +19909,7 @@ function showLeaderboards() {
   const content = `
     <div style="max-width: 1200px; margin: 0 auto;">
       <h2 style="text-align: center; color: #3498db; font-size: 2.5em; margin-bottom: 20px;">
-        🏆 Criminal Leaderboards
+        Criminal Leaderboards
       </h2>
       
       <div style="margin-bottom: 20px;">
@@ -19872,7 +19919,7 @@ function showLeaderboards() {
           `).join('')}
         </select>
         <button onclick="submitToLeaderboards()" style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;">
-          📤 Update My Rankings
+          Update My Rankings
         </button>
       </div>
       
@@ -19882,7 +19929,7 @@ function showLeaderboards() {
       
       <div style="text-align: center; margin-top: 30px;">
         <button onclick="showCompetition()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
-          🏆 Back to Competition
+          Back to Competition
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
       </div>
@@ -19915,7 +19962,7 @@ function updateLeaderboardDisplay() {
           ${leaderboard.map((entry, index) => {
             const isPlayer = entry.name === playerName;
             const rankColor = index === 0 ? '#f1c40f' : index === 1 ? '#95a5a6' : index === 2 ? '#cd7f32' : '#ecf0f1';
-            const rankIcon = index === 0 ? '🏥‡' : index === 1 ? '🏥ˆ' : index === 2 ? '🏥‰' : `#${index + 1}`;
+            const rankIcon = index === 0 ? '‡' : index === 1 ? 'ˆ' : index === 2 ? '‰' : `#${index + 1}`;
             
             return `
               <div style="display: flex; align-items: center; padding: 12px; background: ${isPlayer ? 'rgba(46, 204, 113, 0.2)' : 'rgba(0,0,0,0.3)'}; border-radius: 8px; ${isPlayer ? 'border: 2px solid #2ecc71;' : ''}">
@@ -19955,13 +20002,13 @@ function showWeeklyChallenges() {
   const content = `
     <div style="max-width: 1000px; margin: 0 auto;">
       <h2 style="text-align: center; color: #f39c12; font-size: 2.5em; margin-bottom: 20px;">
-        🎯 Weekly Challenges
+        Weekly Challenges
       </h2>
       
       <!-- Challenge Overview -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
         <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #f39c12; text-align: center;">
-          <h3 style="color: #f39c12; margin: 0 0 10px 0;">📅 Current Week</h3>
+          <h3 style="color: #f39c12; margin: 0 0 10px 0;">Current Week</h3>
           <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">
             ${WEEKLY_CHALLENGES.currentWeek ? WEEKLY_CHALLENGES.currentWeek.weekKey : 'No challenges'}
           </div>
@@ -19975,7 +20022,7 @@ function showWeeklyChallenges() {
         </div>
         
         <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #9b59b6; text-align: center;">
-          <h3 style="color: #9b59b6; margin: 0 0 10px 0;">🏆 Total Completed</h3>
+          <h3 style="color: #9b59b6; margin: 0 0 10px 0;">Total Completed</h3>
           <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">
             ${WEEKLY_CHALLENGES.completedChallenges.length}
           </div>
@@ -19985,7 +20032,7 @@ function showWeeklyChallenges() {
       <!-- Current Week's Challenges -->
       ${currentChallenges.length > 0 ? `
         <div style="background: rgba(44, 62, 80, 0.6); padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-          <h3 style="color: #f39c12; margin: 0 0 20px 0;">🎯 This Week's Challenges</h3>
+          <h3 style="color: #f39c12; margin: 0 0 20px 0;">This Week's Challenges</h3>
           <div style="display: grid; gap: 15px;">
             ${currentChallenges.map(challenge => {
               const progress = challenge.checkProgress ? challenge.checkProgress(challenge.target) : false;
@@ -20009,16 +20056,16 @@ function showWeeklyChallenges() {
                         ${challenge.difficulty}
                       </div>
                       <div style="color: ${challenge.completed ? '#2ecc71' : '#bdc3c7'}; font-size: 0.9em;">
-                        ${challenge.completed ? '✅ Complete' : (progress ? '⚡ Ready!' : '⏳ In Progress')}
+                        ${challenge.completed ? '✅ Complete' : (progress ? 'Ready!' : 'In Progress')}
                       </div>
                     </div>
                   </div>
                   
                   <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
-                    <h5 style="color: #f39c12; margin: 0 0 10px 0;">🎁 Rewards</h5>
+                    <h5 style="color: #f39c12; margin: 0 0 10px 0;">Rewards</h5>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
                       <div style="text-align: center;">
-                        <div style="color: #2ecc71; font-weight: bold;">💰 Money</div>
+                        <div style="color: #2ecc71; font-weight: bold;">Money</div>
                         <div style="color: #ecf0f1;">$${challenge.reward.money.toLocaleString()}</div>
                       </div>
                       <div style="text-align: center;">
@@ -20026,7 +20073,7 @@ function showWeeklyChallenges() {
                         <div style="color: #ecf0f1;">${challenge.reward.experience.toLocaleString()} XP</div>
                       </div>
                       <div style="text-align: center;">
-                        <div style="color: #e74c3c; font-weight: bold;">👑 Reputation</div>
+                        <div style="color: #e74c3c; font-weight: bold;">Reputation</div>
                         <div style="color: #ecf0f1;">+${challenge.reward.reputation}</div>
                       </div>
                     </div>
@@ -20052,7 +20099,7 @@ function showWeeklyChallenges() {
       <!-- Recent Completions -->
       ${recentCompletions.length > 0 ? `
         <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #9b59b6;">
-          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">🏆 Recent Completions</h3>
+          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">Recent Completions</h3>
           <div style="display: grid; gap: 8px;">
             ${recentCompletions.map(completion => `
               <div style="display: flex; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
@@ -20073,7 +20120,7 @@ function showWeeklyChallenges() {
       
       <div style="text-align: center; margin-top: 30px;">
         <button onclick="showRivalsScreen()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
-          🏆 Back to Rivals
+          Back to Rivals
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
       </div>
@@ -20092,7 +20139,7 @@ function showCharacterShowcase() {
   const navButtons = `
       <div style="text-align: center; margin-top: 30px;">
         <button onclick="showRivalsScreen()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
-          🏆 Back to Rivals
+          Back to Rivals
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
       </div>

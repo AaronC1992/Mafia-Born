@@ -457,6 +457,9 @@ const gameState = {
         endsAt: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
         ratings: new Map()  // playerId -> { elo, tier, wins, losses }
     },
+    // Weather system — server-authoritative, synced to all players every 30 minutes
+    currentWeather: 'clear',
+    currentSeason: 'spring',
     serverStats: {
         startTime: Date.now(),
         totalConnections: 0,
@@ -920,7 +923,9 @@ function handlePlayerConnect(clientId, message, ws) {
         activeHeists: gameState.activeHeists,
         cityEvents: gameState.cityEvents,
         globalChat: gameState.globalChat.slice(-10), // Last 10 messages
-        playerStates: Object.fromEntries(gameState.playerStates)
+        playerStates: Object.fromEntries(gameState.playerStates),
+        weather: gameState.currentWeather,
+        season: gameState.currentSeason
     }));
     
     // Send jail roster immediately
@@ -2646,6 +2651,47 @@ function broadcastToAll(message, excludeClientId = null) {
         }
     });
 }
+
+// ── Server-Authoritative Weather System ──
+// Weather types per season with probability weights (mirrors game.js definitions)
+const SERVER_WEATHER_WEIGHTS = {
+    spring: { clear: 20, overcast: 15, rain: 25, drizzle: 20, fog: 12, storm: 8 },
+    summer: { clear: 35, overcast: 10, rain: 10, drizzle: 5, storm: 12, heatwave: 18, humid: 10 },
+    autumn: { clear: 12, overcast: 20, rain: 22, drizzle: 15, fog: 18, storm: 8, sleet: 5 },
+    winter: { clear: 10, overcast: 18, snow: 25, blizzard: 8, sleet: 15, fog: 14, storm: 10 }
+};
+
+function serverChangeWeather() {
+    const weights = SERVER_WEATHER_WEIGHTS[gameState.currentSeason] || SERVER_WEATHER_WEIGHTS.spring;
+    const types = Object.keys(weights);
+    const total = types.reduce((s, t) => s + weights[t], 0);
+    let roll = Math.random() * total;
+    let chosen = types[0];
+    for (const t of types) {
+        roll -= weights[t];
+        if (roll <= 0) { chosen = t; break; }
+    }
+    if (chosen !== gameState.currentWeather) {
+        gameState.currentWeather = chosen;
+        broadcastToAll({ type: 'weather_update', weather: chosen, season: gameState.currentSeason });
+        console.log(`🌤️ Weather changed to: ${chosen}`);
+    }
+}
+
+// Update season based on real-world month
+function serverUpdateSeason() {
+    const month = new Date().getMonth(); // 0-11
+    const seasons = ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'];
+    gameState.currentSeason = seasons[month];
+}
+
+// Start weather timer — changes every 30 minutes
+serverUpdateSeason();
+serverChangeWeather(); // Set initial weather
+setInterval(() => {
+    serverUpdateSeason();
+    serverChangeWeather();
+}, 30 * 60 * 1000); // 30 minutes
 
 // Helper to add global chat message
 function addGlobalChatMessage(sender, message, color = '#ffffff') {

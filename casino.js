@@ -73,7 +73,7 @@ export function showCasino() {
 // BLACKJACK
 // ═══════════════════════════════════════════════════════════════════════
 
-const CARD_SUITS = ['♠', '♥', '♦', '♣'];
+const CARD_SUITS = ['', '', '', ''];
 const CARD_NAMES = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 
 function bjNewDeck() {
@@ -100,7 +100,7 @@ function bjHandValue(hand) {
 
 function bjCardHTML(card, hidden) {
   if (hidden) return `<div style="display:inline-block;width:70px;height:100px;background:#2c3e50;border:2px solid #7f8c8d;border-radius:8px;margin:3px;text-align:center;line-height:100px;font-size:1.5em;color:#95a5a6;">?</div>`;
-  const color = (card.suit === '♥' || card.suit === '♦') ? '#e74c3c' : '#1a1a2e';
+  const color = (card.suit === '' || card.suit === '') ? '#e74c3c' : '#1a1a2e';
   return `<div style="display:inline-block;width:70px;height:100px;background:linear-gradient(135deg,#fff,#f5f5f5);border:2px solid #444;border-radius:8px;margin:3px;padding:4px;text-align:center;position:relative;box-sizing:border-box;">
     <div style="position:absolute;top:4px;left:6px;font-size:0.9em;color:${color};font-weight:bold;line-height:1;">${card.name}<br>${card.suit}</div>
     <div style="font-size:2em;color:${color};line-height:100px;">${card.suit}</div>
@@ -188,8 +188,8 @@ function bjRender() {
   if (!s.done && pVal < 21) {
     html += `<div style="text-align:center;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
       <button onclick="bjHit()" style="background:#e67e22;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">🃏 Hit</button>
-      <button onclick="bjStand()" style="background:#2980b9;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">✋ Stand</button>
-      ${canDouble ? `<button onclick="bjDouble()" style="background:#8e44ad;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">💰 Double Down</button>` : ''}
+      <button onclick="bjStand()" style="background:#2980b9;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">Stand</button>
+      ${canDouble ? `<button onclick="bjDouble()" style="background:#8e44ad;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">Double Down</button>` : ''}
     </div>`;
   }
 
@@ -261,7 +261,7 @@ function bjResolve() {
   let resultColor = '';
 
   if (pVal > 21) {
-    resultMsg = `💔 Busted! Lost $${totalBet.toLocaleString()}`;
+    resultMsg = `Busted! Lost $${totalBet.toLocaleString()}`;
     resultColor = '#e74c3c';
     _logAction(`🃏 Busted at ${pVal}. Lost $${totalBet.toLocaleString()} at the blackjack table.`);
   } else if (pVal === 21 && s.pHand.length === 2) {
@@ -269,25 +269,25 @@ function bjResolve() {
     let winnings = Math.floor(totalBet * 2.5);
     winnings += Math.floor(winnings * luckBonus);
     casinoWin(winnings);
-    resultMsg = `🎉 BLACKJACK! Won $${winnings.toLocaleString()}!`;
+    resultMsg = `BLACKJACK! Won $${winnings.toLocaleString()}!`;
     resultColor = '#f1c40f';
     _logAction(`🃏 Natural Blackjack! Won $${winnings.toLocaleString()}!`);
   } else if (dVal > 21 || pVal > dVal) {
     let winnings = Math.floor(totalBet * 2);
     winnings += Math.floor(winnings * luckBonus);
     casinoWin(winnings);
-    resultMsg = `🎉 You win $${winnings.toLocaleString()}!`;
+    resultMsg = `You win $${winnings.toLocaleString()}!`;
     resultColor = '#2ecc71';
     _logAction(`🃏 Blackjack win! ${pVal} vs dealer ${dVal}. Won $${winnings.toLocaleString()}!`);
   } else if (pVal === dVal) {
     player.money += totalBet;
     _updateUI();
     updateCasinoWallet();
-    resultMsg = `🤝 Push! Bet returned.`;
+    resultMsg = `Push! Bet returned.`;
     resultColor = '#f39c12';
     _logAction(`🃏 Blackjack push. ${pVal} tied with dealer.`);
   } else {
-    resultMsg = `💔 Dealer wins. Lost $${totalBet.toLocaleString()}`;
+    resultMsg = `Dealer wins. Lost $${totalBet.toLocaleString()}`;
     resultColor = '#e74c3c';
     _logAction("🃏 The dealer's hand beats yours. Better luck next time.");
   }
@@ -306,7 +306,7 @@ function bjResolve() {
 // ═══════════════════════════════════════════════════════════════════════
 
 const SLOT_SYMBOLS = ['🍒','🍋','🍊','🍇','💎','7️⃣','🔔','⭐'];
-const SLOT_PAYOUTS = { '7️⃣': 10, '💎': 7, '⭐': 5, '🔔': 4, '🍇': 3, '🍊': 2, '🍋': 1.5, '🍒': 1 };
+const SLOT_PAYOUTS = { '7️⃣': 10, '': 7, '⭐': 5, '': 4, '': 3, '': 2, '': 1.5, '': 1 };
 
 export function startSlots() {
   const { defaultBet } = getCasinoBetRange();
@@ -316,11 +316,11 @@ export function startSlots() {
   const gameArea = document.getElementById('casino-game-area');
   gameArea.innerHTML = `
     <div style="background: linear-gradient(135deg, rgba(40,20,60,0.8), rgba(80,30,60,0.8)); padding: 25px; border-radius: 15px; border: 2px solid #e67e22; text-align: center;">
-      <h3 style="color: #f1c40f; margin-bottom: 15px;">🎰 Slot Machine</h3>
+      <h3 style="color: #f1c40f; margin-bottom: 15px;">Slot Machine</h3>
       <div id="slot-reels" style="display:flex;justify-content:center;gap:8px;margin:20px 0;padding:20px;background:rgba(0,0,0,0.4);border-radius:12px;border:3px solid #d4af37;">
-        <div class="slot-reel" style="font-size:3em;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;">❓</div>
-        <div class="slot-reel" style="font-size:3em;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;">❓</div>
-        <div class="slot-reel" style="font-size:3em;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;">❓</div>
+        <div class="slot-reel" style="font-size:3em;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;"></div>
+        <div class="slot-reel" style="font-size:3em;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;"></div>
+        <div class="slot-reel" style="font-size:3em;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;"></div>
       </div>
       <div id="slot-result" style="min-height:30px;margin:10px 0;color:#f1c40f;font-size:1.2em;font-weight:bold;"></div>
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:15px 0;">
@@ -328,10 +328,10 @@ export function startSlots() {
         <input id="slot-bet-input" type="number" min="1" value="${defaultBet}" style="width:120px;text-align:center;font-size:1.2em;padding:8px;border-radius:5px;border:2px solid #f1c40f;background:#1a1a1a;color:#f1c40f;" />
         <button onclick="document.getElementById('slot-bet-input').value=parseInt(document.getElementById('slot-bet-input').value||0)+100" style="background:#27ae60;color:white;border:none;border-radius:5px;padding:8px 14px;cursor:pointer;">+</button>
       </div>
-      <button id="slot-spin-btn" onclick="slotSpin()" style="background:linear-gradient(135deg,#e67e22,#f39c12);color:white;padding:14px 40px;border:none;border-radius:10px;cursor:pointer;font-size:1.3em;font-weight:bold;">🎰 SPIN!</button>
+      <button id="slot-spin-btn" onclick="slotSpin()" style="background:linear-gradient(135deg,#e67e22,#f39c12);color:white;padding:14px 40px;border:none;border-radius:10px;cursor:pointer;font-size:1.3em;font-weight:bold;">SPIN!</button>
       <button onclick="showCasino()" style="background:#7f8c8d;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;margin-left:10px;">Back</button>
       <div style="margin-top:15px;color:#7f8c8d;font-size:0.8em;">
-        Payouts: 7️⃣=10x | 💎=7x | ⭐=5x | 🔔=4x | 🍇=3x | 2-match=1.5x
+        Payouts: 7️⃣=10x | =7x | ⭐=5x | =4x | =3x | 2-match=1.5x
       </div>
     </div>`;
 }
@@ -415,18 +415,18 @@ function slotResolve(symbols, bet) {
     let winnings = Math.floor(bet * multiplier);
     winnings += Math.floor(winnings * luckBonus);
     casinoWin(winnings);
-    resultEl.innerHTML = `<span style="color:#f1c40f;font-size:1.4em;">🎉 JACKPOT! ${symbols[0]}${symbols[0]}${symbols[0]} — Won $${winnings.toLocaleString()}!</span>`;
-    _logAction(`🎰 JACKPOT! Triple ${symbols[0]} on the slots — $${winnings.toLocaleString()} in your pocket!`);
+    resultEl.innerHTML = `<span style="color:#f1c40f;font-size:1.4em;">JACKPOT! ${symbols[0]}${symbols[0]}${symbols[0]} — Won $${winnings.toLocaleString()}!</span>`;
+    _logAction(`JACKPOT! Triple ${symbols[0]} on the slots — $${winnings.toLocaleString()} in your pocket!`);
   } else if (symbols[0] === symbols[1] || symbols[1] === symbols[2] || symbols[0] === symbols[2]) {
     // Two match
     let winnings = Math.floor(bet * 1.5);
     winnings += Math.floor(winnings * luckBonus);
     casinoWin(winnings);
     resultEl.innerHTML = `<span style="color:#2ecc71;">Nice! Two match — Won $${winnings.toLocaleString()}</span>`;
-    _logAction(`🎰 Two matching symbols! Small win of $${winnings.toLocaleString()} on the slots.`);
+    _logAction(`Two matching symbols! Small win of $${winnings.toLocaleString()} on the slots.`);
   } else {
     resultEl.innerHTML = `<span style="color:#e74c3c;">No match. Lost $${bet.toLocaleString()}</span>`;
-    _logAction("🎰 The slots mock you with their silence. Your money disappears into the machine's hungry maw.");
+    _logAction("The slots mock you with their silence. Your money disappears into the machine's hungry maw.");
   }
   _updateUI();
   updateCasinoWallet();
@@ -448,7 +448,7 @@ export function startRoulette() {
   const gameArea = document.getElementById('casino-game-area');
   gameArea.innerHTML = `
     <div style="background: linear-gradient(135deg, rgba(100,0,0,0.6), rgba(40,0,0,0.8)); padding: 25px; border-radius: 15px; border: 2px solid #e74c3c;">
-      <h3 style="color: #f1c40f; text-align:center; margin-bottom: 15px;">🎡 Roulette</h3>
+      <h3 style="color: #f1c40f; text-align:center; margin-bottom: 15px;">Roulette</h3>
       <p style="color:#bdc3c7;text-align:center;margin-bottom:10px;">Choose your bet type, set amount, then spin!</p>
 
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:10px 0;">
@@ -459,8 +459,8 @@ export function startRoulette() {
       <div style="margin:15px 0;">
         <div style="color:#d4af37;font-weight:bold;margin-bottom:8px;text-align:center;">Quick Bets (2x payout):</div>
         <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
-          <button onclick="rouletteAddBet('red')" style="background:#c0392b;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">🔴 Red</button>
-          <button onclick="rouletteAddBet('black')" style="background:#2c3e50;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">⚫ Black</button>
+          <button onclick="rouletteAddBet('red')" style="background:#c0392b;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Red</button>
+          <button onclick="rouletteAddBet('black')" style="background:#2c3e50;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Black</button>
           <button onclick="rouletteAddBet('odd')" style="background:#8e44ad;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Odd</button>
           <button onclick="rouletteAddBet('even')" style="background:#2980b9;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Even</button>
           <button onclick="rouletteAddBet('low')" style="background:#27ae60;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">1-18</button>
@@ -485,7 +485,7 @@ export function startRoulette() {
       </div>
 
       <div style="text-align:center;display:flex;justify-content:center;gap:10px;">
-        <button onclick="rouletteSpin()" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:white;padding:14px 35px;border:none;border-radius:10px;cursor:pointer;font-size:1.2em;font-weight:bold;">🎡 SPIN!</button>
+        <button onclick="rouletteSpin()" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:white;padding:14px 35px;border:none;border-radius:10px;cursor:pointer;font-size:1.2em;font-weight:bold;">SPIN!</button>
         <button onclick="rouletteClear()" style="background:#7f8c8d;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;">Clear Bets</button>
         <button onclick="showCasino()" style="background:#555;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;">Back</button>
       </div>
@@ -581,7 +581,7 @@ export function rouletteSpin() {
 
   const gameArea = document.getElementById('casino-game-area');
   let html = `<div style="background: linear-gradient(135deg, rgba(100,0,0,0.6), rgba(40,0,0,0.8)); padding: 25px; border-radius: 15px; border: 2px solid #e74c3c; text-align:center;">`;
-  html += `<h3 style="color: #f1c40f;">🎡 Roulette Result</h3>`;
+  html += `<h3 style="color: #f1c40f;">Roulette Result</h3>`;
   html += `<div style="font-size:3em;margin:20px 0;"><span style="background:${result === 0 ? '#27ae60' : isRed ? '#c0392b' : '#2c3e50'};padding:15px 30px;border-radius:50%;border:4px solid #d4af37;color:white;">${result}</span></div>`;
   html += `<p style="color:${resultColor};font-size:1.3em;font-weight:bold;">${resultLabel}</p>`;
 
@@ -596,12 +596,12 @@ export function rouletteSpin() {
   const netResult = totalWinnings - s.totalBet;
   if (netResult > 0) {
     html += `<p style="color:#2ecc71;font-size:1.4em;font-weight:bold;">Net Win: +$${netResult.toLocaleString()}</p>`;
-    _logAction(`🎡 Roulette lands on ${result}! Net win of $${netResult.toLocaleString()}!`);
+    _logAction(`Roulette lands on ${result}! Net win of $${netResult.toLocaleString()}!`);
   } else if (netResult === 0) {
     html += `<p style="color:#f39c12;font-size:1.3em;">Break even!</p>`;
   } else {
     html += `<p style="color:#e74c3c;font-size:1.3em;">Net Loss: -$${Math.abs(netResult).toLocaleString()}</p>`;
-    _logAction(`🎡 Roulette lands on ${result}. Lost $${Math.abs(netResult).toLocaleString()}.`);
+    _logAction(`Roulette lands on ${result}. Lost $${Math.abs(netResult).toLocaleString()}.`);
   }
 
   html += `<div style="margin-top:15px;display:flex;justify-content:center;gap:10px;">
@@ -629,7 +629,7 @@ export function startDiceGame() {
   const gameArea = document.getElementById('casino-game-area');
   gameArea.innerHTML = `
     <div style="background: linear-gradient(135deg, rgba(0,0,60,0.6), rgba(0,0,100,0.4)); padding: 25px; border-radius: 15px; border: 2px solid #3498db; text-align: center;">
-      <h3 style="color: #f1c40f; margin-bottom: 15px;">🎲 Dice Game</h3>
+      <h3 style="color: #f1c40f; margin-bottom: 15px;">Dice Game</h3>
       <p style="color:#bdc3c7;">Roll higher than the dealer to win. Doubles beat everything!</p>
 
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:15px 0;">
@@ -642,22 +642,22 @@ export function startDiceGame() {
         <div>
           <div style="color:#2ecc71;margin-bottom:8px;font-weight:bold;">Your Dice</div>
           <div style="display:flex;gap:5px;">
-            <span id="p-die-1" style="font-size:3em;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;">🎲</span>
-            <span id="p-die-2" style="font-size:3em;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;">🎲</span>
+            <span id="p-die-1" style="font-size:3em;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;"></span>
+            <span id="p-die-2" style="font-size:3em;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;"></span>
           </div>
         </div>
         <div style="display:flex;align-items:center;font-size:1.5em;color:#f1c40f;font-weight:bold;">VS</div>
         <div>
           <div style="color:#e74c3c;margin-bottom:8px;font-weight:bold;">Dealer Dice</div>
           <div style="display:flex;gap:5px;">
-            <span id="d-die-1" style="font-size:3em;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;">🎲</span>
-            <span id="d-die-2" style="font-size:3em;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;">🎲</span>
+            <span id="d-die-1" style="font-size:3em;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;"></span>
+            <span id="d-die-2" style="font-size:3em;background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;"></span>
           </div>
         </div>
       </div>
       <div id="dice-result" style="min-height:30px;margin:10px 0;color:#f1c40f;font-size:1.2em;font-weight:bold;"></div>
 
-      <button id="dice-roll-btn" onclick="diceRoll()" style="background:linear-gradient(135deg,#2980b9,#3498db);color:white;padding:14px 35px;border:none;border-radius:10px;cursor:pointer;font-size:1.3em;font-weight:bold;">🎲 ROLL!</button>
+      <button id="dice-roll-btn" onclick="diceRoll()" style="background:linear-gradient(135deg,#2980b9,#3498db);color:white;padding:14px 35px;border:none;border-radius:10px;cursor:pointer;font-size:1.3em;font-weight:bold;">ROLL!</button>
       <button onclick="showCasino()" style="background:#7f8c8d;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;margin-left:10px;">Back</button>
     </div>`;
 }
@@ -681,7 +681,7 @@ export function diceRoll() {
   const resultEl = document.getElementById('dice-result');
   resultEl.textContent = '';
 
-  const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  const DICE_FACES = ['','','','','',''];
   const roll = () => Math.floor(Math.random() * 6) + 1;
 
   let pDice = [roll(), roll()];
@@ -735,24 +735,24 @@ function diceResolve(pDice, dDice, bet) {
     winnings += Math.floor(winnings * luckBonus);
     casinoWin(winnings);
     won = true;
-    resultEl.innerHTML = `<span style="color:#f1c40f;font-size:1.3em;">🎯 DOUBLES! (${pTotal} vs ${dTotal}) Won $${winnings.toLocaleString()}!</span>`;
-    _logAction(`🎲 Rolled doubles (${pDice[0]}+${pDice[1]})! Won $${winnings.toLocaleString()}!`);
+    resultEl.innerHTML = `<span style="color:#f1c40f;font-size:1.3em;">DOUBLES! (${pTotal} vs ${dTotal}) Won $${winnings.toLocaleString()}!</span>`;
+    _logAction(`Rolled doubles (${pDice[0]}+${pDice[1]})! Won $${winnings.toLocaleString()}!`);
   } else if (pTotal > dTotal && !(dDoubles && !pDoubles)) {
     let winnings = Math.floor(bet * 2);
     winnings += Math.floor(winnings * luckBonus);
     casinoWin(winnings);
     won = true;
-    resultEl.innerHTML = `<span style="color:#2ecc71;font-size:1.3em;">🎉 You win! (${pTotal} vs ${dTotal}) +$${winnings.toLocaleString()}</span>`;
-    _logAction(`🎲 Your dice beat the dealer! ${pTotal} vs ${dTotal}. Won $${winnings.toLocaleString()}!`);
+    resultEl.innerHTML = `<span style="color:#2ecc71;font-size:1.3em;">You win! (${pTotal} vs ${dTotal}) +$${winnings.toLocaleString()}</span>`;
+    _logAction(`Your dice beat the dealer! ${pTotal} vs ${dTotal}. Won $${winnings.toLocaleString()}!`);
   } else if (pTotal === dTotal && pDoubles === dDoubles) {
     player.money += bet;
     _updateUI();
     updateCasinoWallet();
-    resultEl.innerHTML = `<span style="color:#f39c12;font-size:1.2em;">🤝 Tie! (${pTotal} vs ${dTotal}) Bet returned.</span>`;
-    _logAction("🎲 Dice tied. Bet returned.");
+    resultEl.innerHTML = `<span style="color:#f39c12;font-size:1.2em;">Tie! (${pTotal} vs ${dTotal}) Bet returned.</span>`;
+    _logAction("Dice tied. Bet returned.");
   } else {
-    resultEl.innerHTML = `<span style="color:#e74c3c;font-size:1.2em;">💔 Dealer wins! (${dTotal}${dDoubles ? ' DOUBLES' : ''} vs ${pTotal}) Lost $${bet.toLocaleString()}</span>`;
-    _logAction("🎲 The dice betray you. Dealer's roll wins.");
+    resultEl.innerHTML = `<span style="color:#e74c3c;font-size:1.2em;">Dealer wins! (${dTotal}${dDoubles ? ' DOUBLES' : ''} vs ${pTotal}) Lost $${bet.toLocaleString()}</span>`;
+    _logAction("The dice betray you. Dealer's roll wins.");
   }
 }
 
@@ -761,12 +761,12 @@ function diceResolve(pDice, dDice, bet) {
 // ═══════════════════════════════════════════════════════════════════════
 
 const HORSES = [
-  { name: 'Midnight Runner',  emoji: '🐴', color: '#e74c3c', odds: 2.0 },
-  { name: 'Golden Thunder',   emoji: '🐴', color: '#f1c40f', odds: 3.0 },
-  { name: 'Shadow Dancer',    emoji: '🐴', color: '#9b59b6', odds: 4.5 },
-  { name: 'Iron Hoof',        emoji: '🐴', color: '#3498db', odds: 5.0 },
-  { name: 'Crimson Fury',     emoji: '🐴', color: '#e67e22', odds: 7.0 },
-  { name: 'Lucky Longshot',   emoji: '🐴', color: '#2ecc71', odds: 12.0 }
+  { name: 'Midnight Runner',  emoji: '', color: '#e74c3c', odds: 2.0 },
+  { name: 'Golden Thunder',   emoji: '', color: '#f1c40f', odds: 3.0 },
+  { name: 'Shadow Dancer',    emoji: '', color: '#9b59b6', odds: 4.5 },
+  { name: 'Iron Hoof',        emoji: '', color: '#3498db', odds: 5.0 },
+  { name: 'Crimson Fury',     emoji: '', color: '#e67e22', odds: 7.0 },
+  { name: 'Lucky Longshot',   emoji: '', color: '#2ecc71', odds: 12.0 }
 ];
 
 let _horseRaceState = null;
@@ -795,7 +795,7 @@ export function startHorseRacing() {
 
   gameArea.innerHTML = `
     <div style="background:rgba(0,0,0,0.6); padding:20px; border-radius:12px; border:2px solid #c0a062;">
-      <h2 style="text-align:center; color:#c0a062; font-family:Georgia,serif; margin-bottom:5px;">🏇 Horse Racing</h2>
+      <h2 style="text-align:center; color:#c0a062; font-family:Georgia,serif; margin-bottom:5px;">Horse Racing</h2>
       <p style="text-align:center; color:#999; margin-bottom:15px; font-size:0.9em;">Pick your horse and place a bet</p>
       
       <div style="margin-bottom:15px;">
@@ -813,7 +813,7 @@ export function startHorseRacing() {
         </div>
         <button id="horse-race-btn" onclick="horseStartRace()" disabled
                 style="background:linear-gradient(180deg,#8b6914,#5a4400); color:#ffd700; padding:12px 30px; border:2px solid #c0a062; border-radius:8px; font-size:1.1em; font-weight:bold; cursor:pointer; font-family:Georgia,serif; opacity:0.5;">
-          🏁 Start Race
+          Start Race
         </button>
       </div>
 
@@ -874,7 +874,7 @@ export function horseStartRace() {
   _horseRaceState.racing = true;
 
   const btn = document.getElementById('horse-race-btn');
-  if (btn) { btn.disabled = true; btn.textContent = '🏇 Racing...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Racing...'; }
 
   // Build track
   const track = document.getElementById('horse-track');
@@ -962,20 +962,20 @@ export function horseStartRace() {
           casinoWin(winnings);
           resultEl.style.border = '2px solid #2ecc71';
           resultEl.style.background = 'rgba(46,204,113,0.15)';
-          resultEl.innerHTML = `<span style="color:#2ecc71; font-size:1.3em; font-weight:bold;">🏆 ${winner.name} wins! +$${winnings.toLocaleString()}</span><br><span style="color:#ccc; font-size:0.9em;">${HORSES[playerPick].odds}x payout on your $${bet.toLocaleString()} bet!</span>`;
-          _logAction(`🏇 ${winner.name} won the race! Payout $${winnings.toLocaleString()} (${HORSES[playerPick].odds}x).`);
+          resultEl.innerHTML = `<span style="color:#2ecc71; font-size:1.3em; font-weight:bold;">${winner.name} wins! +$${winnings.toLocaleString()}</span><br><span style="color:#ccc; font-size:0.9em;">${HORSES[playerPick].odds}x payout on your $${bet.toLocaleString()} bet!</span>`;
+          _logAction(`${winner.name} won the race! Payout $${winnings.toLocaleString()} (${HORSES[playerPick].odds}x).`);
         } else {
           resultEl.style.border = '2px solid #e74c3c';
           resultEl.style.background = 'rgba(231,76,60,0.15)';
-          resultEl.innerHTML = `<span style="color:#e74c3c; font-size:1.3em; font-weight:bold;">💨 ${winner.name} wins!</span><br><span style="color:#999; font-size:0.9em;">Your pick ${HORSES[playerPick].name} didn't make it. Lost $${bet.toLocaleString()}</span>`;
-          _logAction(`🏇 Lost $${bet.toLocaleString()} — ${winner.name} beat ${HORSES[playerPick].name}.`);
+          resultEl.innerHTML = `<span style="color:#e74c3c; font-size:1.3em; font-weight:bold;">${winner.name} wins!</span><br><span style="color:#999; font-size:0.9em;">Your pick ${HORSES[playerPick].name} didn't make it. Lost $${bet.toLocaleString()}</span>`;
+          _logAction(`Lost $${bet.toLocaleString()} — ${winner.name} beat ${HORSES[playerPick].name}.`);
         }
       }
 
       // Allow betting again
       _horseRaceState.racing = false;
       _horseRaceState.selectedHorse = null;
-      if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.textContent = '🏁 Start Race'; }
+      if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.textContent = 'Start Race'; }
       const nameEl = document.getElementById('horse-selected-name');
       if (nameEl) { nameEl.textContent = 'None'; nameEl.style.color = '#c0a062'; }
       HORSES.forEach((_, i) => {

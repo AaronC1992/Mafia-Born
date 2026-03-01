@@ -67,7 +67,7 @@
                 <p id="loading-percentage" style="margin: 5px 0; color: #8b0000; font-size: 18px; font-weight: bold;">0%</p>
                 <p style="margin: 5px 0; color: #555; font-size: 12px;">Establishing connections...</p>
                 <p style="margin: 15px 0; color: #d4af37; font-size: 13px; font-weight: bold;">
-                    💡 The code: Silence is golden.
+                    The code: Silence is golden.
                 </p>
             </div>
             
@@ -108,11 +108,11 @@
                     <p id="suspicion-display">Suspicion: 0%</p>
                     <p id="power-display">Influence: 0</p>
                     <p id="territory-display" style="display: none;">Turf: 0 | Tribute: $0/week</p>
-                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">📍 District: —</p>
+                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: —</p>
                     <p id="experience-display">XP: 0/100</p>
                     <p id="skill-points-display">Skill Points: 0</p>
                     <p id="season-display">Season: Spring</p>
-                    <p id="weather-display">Weather: ☀️ Clear</p>
+                    <p id="weather-display">Weather: Clear</p>
                     <p id="active-events-display" style="display: none;">Events: None</p>
                     <p id="ammo-display" style="display: none;">Bullets: 0</p>
                     <p id="gas-display" style="display: none;">Gas: 0</p>
@@ -169,7 +169,7 @@
         <!-- Character Creation Screen -->
         <div id="character-creation-screen" style="display: none;">
             <div id="character-creation-content">
-                <h1>🎭 Establish Your Identity</h1>
+                <h1>Establish Your Identity</h1>
                 <p>Who are you in this world? Choose wisely.</p>
                 
                 <div class="character-form">
@@ -197,7 +197,7 @@
                     
                     <div class="creation-buttons">
                         <button id="create-character-btn" onclick="createCharacter()" disabled>
-                            🎯 Enter the Underworld
+                            Enter the Underworld
                         </button>
                         <button onclick="goBackToIntro()" style="background: #333; margin-left: 10px; border-color: #555; color: #aaa;">
                             ← Back
@@ -256,7 +256,7 @@
         <!-- Fence Screen -->
         <div id="fence-screen" class="game-screen" style="display:none;">
             <div class="page-header">
-                <h1><span class="icon">🤫</span> The Fence</h1>
+                <h1><span class="icon"></span> The Fence</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
                     <span class="separator">›</span>
@@ -323,7 +323,7 @@
             </div>
             <p id="jail-timer">You're doing time for <span id="jail-time">10</span> seconds.</p>
             <button id="breakout-button" onclick="attemptBreakout()">Attempt Escape</button>
-            <button id="bribe-button" onclick="bribeGuard()" style="margin-left: 10px; background: linear-gradient(135deg, #27ae60, #2ecc71); border: none; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">💰 Bribe Guard</button>
+            <button id="bribe-button" onclick="bribeGuard()" style="margin-left: 10px; background: linear-gradient(135deg, #27ae60, #2ecc71); border: none; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Bribe Guard</button>
             <p id="bribe-cost" style="color: #95a5a6; font-size: 0.85em; margin-top: 5px;"></p>
             
             <h3>Other Inmates</h3>
@@ -448,16 +448,16 @@
             </div>
             <div class="section-header">Test Your Luck</div>
             <div id="casino-balance" style="text-align: center; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid #d4af37;">
-                <span style="color: #f1c40f; font-size: 1.2em; font-weight: bold;">💰 Wallet: $<span id="casino-wallet">0</span></span>
+                <span style="color: #f1c40f; font-size: 1.2em; font-weight: bold;">Wallet: $<span id="casino-wallet">0</span></span>
             </div>
             <div class="content-card" id="casino-game-select">
                 <p style="text-align:center; color:#bdc3c7;">Choose your game:</p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 10px;">
                     <button id="btn-blackjack" onclick="startBlackjack()" style="padding: 15px; border-radius: 10px; border: 2px solid #27ae60; background: rgba(39,174,96,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">🃏 Blackjack</button>
-                    <button id="btn-slots" onclick="startSlots()" style="padding: 15px; border-radius: 10px; border: 2px solid #e67e22; background: rgba(230,126,34,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">🎰 Slots</button>
-                    <button id="btn-roulette" onclick="startRoulette()" style="padding: 15px; border-radius: 10px; border: 2px solid #e74c3c; background: rgba(231,76,60,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">🎡 Roulette</button>
-                    <button id="btn-dice" onclick="startDiceGame()" style="padding: 15px; border-radius: 10px; border: 2px solid #3498db; background: rgba(52,152,219,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">🎲 Dice</button>
-                    <button id="btn-horses" onclick="startHorseRacing()" style="padding: 15px; border-radius: 10px; border: 2px solid #c0a062; background: rgba(192,160,98,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">🏇 Horse Racing</button>
+                    <button id="btn-slots" onclick="startSlots()" style="padding: 15px; border-radius: 10px; border: 2px solid #e67e22; background: rgba(230,126,34,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Slots</button>
+                    <button id="btn-roulette" onclick="startRoulette()" style="padding: 15px; border-radius: 10px; border: 2px solid #e74c3c; background: rgba(231,76,60,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Roulette</button>
+                    <button id="btn-dice" onclick="startDiceGame()" style="padding: 15px; border-radius: 10px; border: 2px solid #3498db; background: rgba(52,152,219,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Dice</button>
+                    <button id="btn-horses" onclick="startHorseRacing()" style="padding: 15px; border-radius: 10px; border: 2px solid #c0a062; background: rgba(192,160,98,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Horse Racing</button>
                 </div>
             </div>
             <div id="casino-game-area" style="margin-top: 15px;"></div>
@@ -478,7 +478,7 @@
             </div>
             <div class="section-header">Game Management</div>
             <div class="content-card">
-                <button onclick="saveGame()">💾 Save Game</button>
+                <button onclick="saveGame()">Save Game</button>
                 <button onclick="showSaveSystem()">Records</button>
                 <button onclick="loadGame()">Resume</button>
                 <button onclick="deleteSavedGame()">Burn Records</button>
@@ -487,13 +487,13 @@
             <div class="section-header">Cloud Account</div>
             <div class="content-card">
                 <button onclick="showAuthModal()" style="border-color: #4a9eff; color: #4a9eff;">Cloud Save / Sign In</button>
-                <button onclick="showAuthModal()" style="border-color: #ff2222; color: #ff6b6b; font-size: 12px; margin-left: 10px;">🗑️ Delete Account</button>
+                <button onclick="showAuthModal()" style="border-color: #ff2222; color: #ff6b6b; font-size: 12px; margin-left: 10px;">Delete Account</button>
                 <p class="auth-status-indicator" style="margin: 10px 0 0;"></p>
             </div>
             <div class="section-header">Personalization</div>
             <div class="content-card">
-                <button onclick="showQuickActionCustomizer()">⚡ Customize Quick Actions</button>
-                <button onclick="showMobileNavCustomizer()">📱 Customize Mobile Nav Bar</button>
+                <button onclick="showQuickActionCustomizer()">Customize Quick Actions</button>
+                <button onclick="showMobileNavCustomizer()">Customize Mobile Nav Bar</button>
             </div>
             <div class="section-header">UI Toggles</div>
             <div class="content-card" style="display:flex; flex-direction:column; gap:10px;">
@@ -583,7 +583,7 @@
             <div id="admin-settings-section" style="display:none;">
                 <div class="section-header" style="color: #e74c3c;">Administration</div>
                 <div class="content-card">
-                    <button onclick="showAdminPanel()" style="border-color: #e74c3c; color: #e74c3c;">🛡️ Admin Panel</button>
+                    <button onclick="showAdminPanel()" style="border-color: #e74c3c; color: #e74c3c;">Admin Panel</button>
                 </div>
             </div>
             <div class="page-nav">
@@ -676,7 +676,7 @@
             </div>
             
             <div style="margin-top: 20px; padding: 15px; background: #1a0000; border-radius: 4px; border: 1px solid #ff0000;">
-                <h4>⚠️ Risks</h4>
+                <h4>Risks</h4>
                 <p>• Failure means you join them</p>
                 <p>• Stealth helps you stay unseen</p>
                 <p>• Takes energy</p>
@@ -992,11 +992,11 @@
                     <div id="energy-fill"></div>
                     <span id="energy-text">100/100</span>
                 </div>
-                <button id="quick-buy-energydrink" onclick="buyEnergyDrink()" class="quick-btn energy-btn">
-                    Energy Drink
-                </button>
                 <button id="quick-buy-coffee" onclick="buyCoffee()" class="quick-btn energy-btn">
                     Strong Coffee
+                </button>
+                <button id="quick-buy-energydrink" onclick="buyEnergyDrink()" class="quick-btn energy-btn">
+                    Energy Drink
                 </button>
                 <button id="quick-buy-steroids" onclick="buySteroids()" class="quick-btn energy-btn">
                     Steroids

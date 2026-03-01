@@ -260,7 +260,7 @@ export const potentialMentors = [
             teaching: "Code is like water - it flows around obstacles, finds every weakness.",
             mastered: "You have transcended the physical realm. The digital world bows to you."
         },
-        requirements: { intelligence: 15, technology: 5 },
+        requirements: { intelligence: 15, endurance: 5 },
         unlockMessage: "Jin recognizes your intellectual potential and offers to expand your mind"
     },
     {
