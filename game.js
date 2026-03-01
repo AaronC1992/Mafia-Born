@@ -13417,37 +13417,51 @@ function updateCharacterPreview() {
   }
 }
 
-// Function to load portrait grid in character creation
+// Function to load portrait grid in character creation — organized by gender
 function loadPortraitGrid() {
   const portraitGrid = document.getElementById('portrait-grid');
   if (!portraitGrid) return;
   
-  const portraitOptions = [
+  const malePortraits = [
     "profile_pics/White male.png",
-    "profile_pics/White female.png",
     "profile_pics/Black male.png",
-    "profile_pics/Black female.png",
     "profile_pics/Asian male.png",
-    "profile_pics/Asian female.png",
     "profile_pics/Mexican male.png",
-    "profile_pics/Mexican female.png",
     "profile_pics/Old Male.png",
-    "profile_pics/Old Female.png",
     "profile_pics/Stylized White Male.png",
-    "profile_pics/Stylized White Female.png",
     "profile_pics/Stylized Black Male.png",
-    "profile_pics/Stylized Black Female.png",
     "profile_pics/Stylized Asian Male.png",
+    "profile_pics/Stylized Hispanic Male.png"
+  ];
+  
+  const femalePortraits = [
+    "profile_pics/White female.png",
+    "profile_pics/Black female.png",
+    "profile_pics/Asian female.png",
+    "profile_pics/Mexican female.png",
+    "profile_pics/Old Female.png",
+    "profile_pics/Stylized White Female.png",
+    "profile_pics/Stylized Black Female.png",
     "profile_pics/Stylized Asian Female.png",
-    "profile_pics/Stylized Hispanic Male.png",
     "profile_pics/Stylized Hispanic Female.png"
   ];
   
-  portraitGrid.innerHTML = portraitOptions.map(portrait => `
+  const renderGroup = (portraits) => portraits.map(portrait => `
     <button class="portrait-option" data-portrait="${portrait}" onclick="selectPortraitForCreation('${portrait}')">
       <img src="${portrait}" alt="Portrait" />
     </button>
   `).join('');
+  
+  portraitGrid.innerHTML = `
+    <div class="portrait-gender-section">
+      <h3 style="grid-column: 1 / -1; color: #3498db; font-size: 1.3em; margin: 10px 0 5px; border-bottom: 2px solid #3498db; padding-bottom: 8px;">\uD83D\uDC68 Male</h3>
+      ${renderGroup(malePortraits)}
+    </div>
+    <div class="portrait-gender-section">
+      <h3 style="grid-column: 1 / -1; color: #e84393; font-size: 1.3em; margin: 20px 0 5px; border-bottom: 2px solid #e84393; padding-bottom: 8px;">\uD83D\uDC69 Female</h3>
+      ${renderGroup(femalePortraits)}
+    </div>
+  `;
 }
 
 // Function to create character after all selections made
@@ -13515,27 +13529,43 @@ function showPortraitSelection() {
   document.getElementById("intro-screen").style.display = "none";
   document.getElementById("character-creation-screen").style.display = "none";
   
-  // Create portrait selection HTML
-  const portraitOptions = [
+  // Create portrait selection HTML — organized by Male / Female
+  const maleOptions = [
     { file: "profile_pics/White male.png", label: "White Male" },
-    { file: "profile_pics/White female.png", label: "White Female" },
     { file: "profile_pics/Black male.png", label: "Black Male" },
-    { file: "profile_pics/Black female.png", label: "Black Female" },
     { file: "profile_pics/Asian male.png", label: "Asian Male" },
-    { file: "profile_pics/Asian female.png", label: "Asian Female" },
     { file: "profile_pics/Mexican male.png", label: "Hispanic Male" },
-    { file: "profile_pics/Mexican female.png", label: "Hispanic Female" },
     { file: "profile_pics/Old Male.png", label: "Old Male" },
-    { file: "profile_pics/Old Female.png", label: "Old Female" },
     { file: "profile_pics/Stylized White Male.png", label: "Stylized White Male" },
-    { file: "profile_pics/Stylized White Female.png", label: "Stylized White Female" },
     { file: "profile_pics/Stylized Black Male.png", label: "Stylized Black Male" },
-    { file: "profile_pics/Stylized Black Female.png", label: "Stylized Black Female" },
     { file: "profile_pics/Stylized Asian Male.png", label: "Stylized Asian Male" },
+    { file: "profile_pics/Stylized Hispanic Male.png", label: "Stylized Hispanic Male" }
+  ];
+  
+  const femaleOptions = [
+    { file: "profile_pics/White female.png", label: "White Female" },
+    { file: "profile_pics/Black female.png", label: "Black Female" },
+    { file: "profile_pics/Asian female.png", label: "Asian Female" },
+    { file: "profile_pics/Mexican female.png", label: "Hispanic Female" },
+    { file: "profile_pics/Old Female.png", label: "Old Female" },
+    { file: "profile_pics/Stylized White Female.png", label: "Stylized White Female" },
+    { file: "profile_pics/Stylized Black Female.png", label: "Stylized Black Female" },
     { file: "profile_pics/Stylized Asian Female.png", label: "Stylized Asian Female" },
-    { file: "profile_pics/Stylized Hispanic Male.png", label: "Stylized Hispanic Male" },
     { file: "profile_pics/Stylized Hispanic Female.png", label: "Stylized Hispanic Female" }
   ];
+  
+  const renderPortraitBtn = (option) => `
+    <button onclick="selectPortrait('${option.file}', '${option.label}')" 
+        style="padding: 10px; border: 3px solid #7f8c8d; border-radius: 15px; 
+            background: rgba(52, 73, 94, 0.6); color: white; cursor: pointer; 
+            transition: all 0.3s ease; min-height: 180px; display: flex; 
+            flex-direction: column; align-items: center; justify-content: center;
+            box-sizing: border-box;">
+      <img src="${option.file}" alt="${option.label}" 
+         style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover; 
+            border: 3px solid #ecf0f1;" />
+    </button>
+  `;
   
   let portraitHTML = `
     <div class="portrait-selection-overlay">
@@ -13545,19 +13575,14 @@ function showPortraitSelection() {
         </h1>
         <p style="font-size: 1.2em; margin-bottom: 30px;">Select your appearance for the criminal underworld</p>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin: 30px 0;">
-          ${portraitOptions.map((option, index) => `
-            <button onclick="selectPortrait('${option.file}', '${option.label}')" 
-                style="padding: 10px; border: 3px solid #7f8c8d; border-radius: 15px; 
-                    background: rgba(52, 73, 94, 0.6); color: white; cursor: pointer; 
-                    transition: all 0.3s ease; min-height: 180px; display: flex; 
-                    flex-direction: column; align-items: center; justify-content: center;
-                    box-sizing: border-box;">
-              <img src="${option.file}" alt="${option.label}" 
-                 style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover; 
-                    border: 3px solid #ecf0f1;" />
-            </button>
-          `).join('')}
+        <h2 style="color: #3498db; font-size: 1.5em; margin: 20px 0 10px; border-bottom: 2px solid #3498db; padding-bottom: 8px; text-align: left;">👨 Male</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin: 0 0 30px 0;">
+          ${maleOptions.map(renderPortraitBtn).join('')}
+        </div>
+        
+        <h2 style="color: #e84393; font-size: 1.5em; margin: 20px 0 10px; border-bottom: 2px solid #e84393; padding-bottom: 8px; text-align: left;">👩 Female</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin: 0 0 30px 0;">
+          ${femaleOptions.map(renderPortraitBtn).join('')}
         </div>
         
         <button onclick="goBackToIntro()" 
