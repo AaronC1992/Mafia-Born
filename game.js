@@ -11664,21 +11664,11 @@ function showCommandCenter() {
     safehouse.classList.add(`safehouse-${theme}`);
   }
   
-  // Build the theme switcher into the breadcrumb row
-  const header = safehouse.querySelector('.page-header');
-  const breadcrumb = header.querySelector('.breadcrumb');
-  let switcher = breadcrumb.querySelector('.theme-switcher');
-  if (!switcher) {
-    switcher = document.createElement('div');
-    switcher.className = 'theme-switcher';
-    breadcrumb.appendChild(switcher);
-  }
-  switcher.innerHTML = `
-    <span class="theme-switcher-label">Theme:</span>
-    <button class="theme-cycle-btn" onclick="cycleSafehouseTheme()">
-      ${SAFEHOUSE_THEME_LABELS[theme]} &#9654;
-    </button>
-  `;
+  // Show and update the theme bar
+  const themeBar = document.getElementById('safehouse-theme-bar');
+  const themeBtn = document.getElementById('safehouse-theme-btn');
+  if (themeBar) themeBar.style.display = 'flex';
+  if (themeBtn) themeBtn.innerHTML = `${SAFEHOUSE_THEME_LABELS[theme]} &#9654;`;
   
   let html = '';
   
