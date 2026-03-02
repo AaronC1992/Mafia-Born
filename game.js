@@ -2348,8 +2348,11 @@ function showSideQuestScreen() {
       const obj = step.objective;
       let currentVal = 0;
       if (obj.type === 'money') currentVal = player.money;
-      if (obj.type === 'level') currentVal = player.level;
-      if (obj.type === 'jobs') currentVal = player.missions?.missionStats?.jobsCompleted || 0;
+      else if (obj.type === 'level') currentVal = player.level;
+      else if (obj.type === 'jobs') currentVal = player.missions?.missionStats?.jobsCompleted || 0;
+      else if (obj.type === 'gang') currentVal = player.gang?.members || 0;
+      else if (obj.type === 'properties') currentVal = (player.realEstate?.ownedProperties || []).length;
+      else if (obj.type === 'reputation') currentVal = Math.floor(player.reputation || 0);
       const objMet = currentVal >= obj.target;
       const timerDone = isStepTimerComplete(quest.id);
       const remaining = getStepTimeRemaining(quest.id);
@@ -7226,6 +7229,15 @@ function refreshJobsButtons() {
       buttonColor = "orange";
       buttonText = `Need ${actualEnergyCost} Energy`;
       isDisabled = true;
+    } else if (job.risk === "legendary") {
+      buttonColor = "#8b6a4a";
+      buttonText = "Legendary Hit";
+    } else if (job.risk === "extreme") {
+      buttonColor = "#7a2a2a";
+      buttonText = "Go All In";
+    } else if (job.risk === "very high") {
+      buttonColor = "#e67e22";
+      buttonText = "High Stakes";
     } else if (job.risk === "high") {
       buttonColor = "gold";
       buttonText = "Execute";
@@ -7278,6 +7290,15 @@ function refreshJobsList() {
       buttonColor = "orange";
       buttonText = `Need ${actualEnergyCost} Energy`;
       isDisabled = true;
+    } else if (job.risk === "legendary") {
+      buttonColor = "#8b6a4a";
+      buttonText = "Legendary Hit";
+    } else if (job.risk === "extreme") {
+      buttonColor = "#7a2a2a";
+      buttonText = "Go All In";
+    } else if (job.risk === "very high") {
+      buttonColor = "#e67e22";
+      buttonText = "High Stakes";
     } else if (job.risk === "high") {
       buttonColor = "gold";
       buttonText = "Execute";
@@ -9137,7 +9158,15 @@ async function startJob(index) {
 
   // Handle special money laundering job — converts dirty money to clean money
   if (job.special === "launder_money") {
-    handleLaunderMoneyJob(job, approachLabel);
+    // Check dirty money BEFORE deducting energy (already deducted above)
+    if (!player.dirtyMoney || player.dirtyMoney <= 0) {
+      // Refund energy since we already deducted it
+      player.energy += actualEnergyCost;
+      showBriefNotification("You don't have any dirty money to launder! Earn dirty money from Bank Jobs or Counterfeiting first.", 'danger');
+      updateUI();
+      return;
+    }
+    handleLaunderMoneyJob(job, approachLabel, actualEnergyCost);
     updateUI();
     return;
   }
@@ -9480,16 +9509,9 @@ function handleCarTheft(job, actualEnergyCost) {
 }
 
 // Function to handle money laundering job — converts dirty money to clean money
-function handleLaunderMoneyJob(job, approachLabel) {
-  // Check if player actually has dirty money to launder
-  if (!player.dirtyMoney || player.dirtyMoney <= 0) {
-    showBriefNotification("You don't have any dirty money to launder! Earn dirty money from Bank Jobs or Counterfeiting first.", 'danger');
-    return;
-  }
-
-  // Deduct energy
-  let actualEnergyCost = job.energyCost;
-  player.energy -= actualEnergyCost;
+function handleLaunderMoneyJob(job, approachLabel, actualEnergyCost) {
+  // Energy was already deducted and dirty-money check done in startJob()
+  // actualEnergyCost is passed in with all skill/perk reductions already applied
 
   // Calculate how much dirty money we can launder this run (based on job payout range + luck)
   let launderCapacity;
@@ -9501,12 +9523,12 @@ function handleLaunderMoneyJob(job, approachLabel) {
   }
 
   // Approach modifies launder capacity BEFORE capping
+  // Note: startJob() passes 'Loud' or 'Quiet' for high-risk jobs
   if (approachLabel === 'Loud') {
     launderCapacity = Math.floor(launderCapacity * 1.40); // Loud: +40% capacity (bulk laundering)
-  } else if (approachLabel === 'Stealth') {
-    launderCapacity = Math.floor(launderCapacity * 0.75); // Stealth: -25% capacity (smaller batches, less risky)
+  } else if (approachLabel === 'Quiet') {
+    launderCapacity = Math.floor(launderCapacity * 0.75); // Quiet/Stealth: -25% capacity (smaller batches, less risky)
   }
-  // Smart: no capacity change (balanced)
 
   // Can't launder more than you have
   const amountToLaunder = Math.min(launderCapacity, player.dirtyMoney);
@@ -9518,8 +9540,8 @@ function handleLaunderMoneyJob(job, approachLabel) {
   let adjustedJailChance = Math.max(1, job.jailChance - stealthBonus);
   
   // Approach modifies jail chance
-  if (approachLabel === 'Stealth') {
-    adjustedJailChance = Math.max(1, Math.floor(adjustedJailChance * 0.5)); // Stealth: 50% less jail chance
+  if (approachLabel === 'Quiet') {
+    adjustedJailChance = Math.max(1, Math.floor(adjustedJailChance * 0.5)); // Quiet/Stealth: 50% less jail chance
   } else if (approachLabel === 'Loud') {
     adjustedJailChance = Math.floor(adjustedJailChance * 1.3); // Loud: 30% more jail chance
   }
@@ -9543,18 +9565,13 @@ function handleLaunderMoneyJob(job, approachLabel) {
   conversionRate += (player.skillTree.intelligence.forensics || 0) * 0.01; // +1% per forensics level
 
   // Approach bonus: each approach has distinct trade-offs
-  if (approachLabel === 'Smart') {
-    conversionRate += 0.07; // Smart: +7% conversion rate (expert financial maneuvers)
-    // Smart approach also reduces heat gain
-  }
   if (approachLabel === 'Loud') {
     conversionRate -= 0.03; // Loud: -3% conversion (sloppy but fast)
     player.wantedLevel = Math.min(100, player.wantedLevel + 4); // +4 heat
     logAction(`Going loud draws attention — the feds notice the large cash movements.`);
-  }
-  if (approachLabel === 'Stealth') {
-    conversionRate += 0.02; // Stealth: +2% conversion (careful handling)
-    // Stealth approach reduces heat gain later
+  } else if (approachLabel === 'Quiet') {
+    conversionRate += 0.05; // Quiet: +5% conversion (careful, stealthy handling)
+    // Quiet approach also reduces heat gain later
   }
 
   // Owning a Counterfeiting Operation improves conversion (mixing fake with real bills)
@@ -9588,10 +9605,8 @@ function handleLaunderMoneyJob(job, approachLabel) {
 
   // Small heat gain even on success (modified by approach)
   let baseHeatGain = 1 + Math.floor(Math.random() * 3); // 1-3 heat
-  if (approachLabel === 'Smart') {
-    baseHeatGain = Math.max(0, baseHeatGain - 1); // Smart: reduced heat
-  } else if (approachLabel === 'Stealth') {
-    baseHeatGain = Math.max(0, Math.floor(baseHeatGain * 0.3)); // Stealth: minimal heat
+  if (approachLabel === 'Quiet') {
+    baseHeatGain = Math.max(0, Math.floor(baseHeatGain * 0.3)); // Quiet: minimal heat
   }
   // Loud heat already added above
   player.wantedLevel = Math.min(100, player.wantedLevel + baseHeatGain);

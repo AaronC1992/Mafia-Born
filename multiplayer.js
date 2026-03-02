@@ -1754,6 +1754,17 @@ async function handleServerMessage(message) {
             handleMarketplaceMessage(message);
             break;
 
+        // -- Player connect / disconnect notifications --
+        case 'player_connect':
+            console.log(`[multiplayer] Player connected: ${message.playerName}`);
+            // Player list will be refreshed by the subsequent player_states broadcast
+            break;
+
+        case 'player_disconnect':
+            console.log(`[multiplayer] Player disconnected: ${message.playerName}`);
+            // Player list will be refreshed by the subsequent player_states broadcast
+            break;
+
         // -- Server-synced weather --
         case 'weather_update':
             if (typeof window.applyServerWeather === 'function') {
