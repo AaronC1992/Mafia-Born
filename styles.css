@@ -982,7 +982,7 @@ button:disabled::after {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(242, 230, 201, 0.72);
+    background: rgba(242, 230, 201, 0.55);
     pointer-events: none;
     z-index: 0;
 }
@@ -1008,7 +1008,7 @@ button:disabled::after {
 
 #newspaper-content {
     padding: 40px 36px 30px;
-    color: #1a1008;
+    color: #0a0804;
     font-family: var(--font-body);
     min-height: 400px;
     position: relative;
@@ -1034,7 +1034,7 @@ button:disabled::after {
     font-family: var(--font-typewriter);
     font-size: 0.75em;
     letter-spacing: 3px;
-    color: #5a4a3a;
+    color: #2a1a0a;
     margin: 2px 0 0;
 }
 .newspaper-dateline {
@@ -1042,9 +1042,9 @@ button:disabled::after {
     justify-content: space-between;
     font-family: var(--font-typewriter);
     font-size: 0.7em;
-    color: #5a4a3a;
+    color: #2a1a0a;
     padding: 4px 0;
-    border-bottom: 1px solid #8a7a5a;
+    border-bottom: 1px solid #5a4a2a;
     margin-bottom: 14px;
 }
 
@@ -1062,7 +1062,7 @@ button:disabled::after {
     font-size: 1em;
     text-align: center;
     font-style: italic;
-    color: #4a3a2a;
+    color: #1a0e04;
     margin: 0 0 14px;
 }
 
@@ -1097,7 +1097,7 @@ button:disabled::after {
     text-align: center;
     font-family: var(--font-typewriter);
     font-size: 0.6em;
-    color: #5a4a3a;
+    color: #1a0e04;
     margin-top: 2px;
 }
 
@@ -1105,11 +1105,11 @@ button:disabled::after {
     font-family: var(--font-body);
     font-size: 0.88em;
     line-height: 1.55;
-    color: #1a1008;
+    color: #0a0804;
     text-align: justify;
     column-count: 2;
     column-gap: 20px;
-    column-rule: 1px solid #7a6a4a;
+    column-rule: 1px solid #5a4a2a;
 }
 .newspaper-body p {
     margin: 0 0 8px;
@@ -1151,14 +1151,14 @@ button:disabled::after {
     font-family: var(--font-typewriter);
     font-size: 0.78em;
     padding: 2px 0;
-    color: #3a2a1a;
+    color: #0e0804;
 }
 
 .newspaper-footer {
     text-align: center;
     font-family: var(--font-typewriter);
     font-size: 0.7em;
-    color: #5a4a3a;
+    color: #2a1a0a;
     margin-top: 14px;
     padding-top: 8px;
     border-top: 3px double #3a2a1a;
