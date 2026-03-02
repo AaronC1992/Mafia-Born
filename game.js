@@ -6974,6 +6974,16 @@ function showAdminPanel() {
       <button onclick="adminSetAllSkills(25)" style="border-color:#8b3a3a;">Set All Skills to 25</button>
       <button onclick="adminSetAllSkills(0)" style="border-color:#8b3a3a;">Reset All Skills to 0</button>
     </div>
+
+    <div class="section-header" style="color: #8b3a3a;">&#9760; Kill Player (Online)</div>
+    <div class="content-card">
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <button onclick="adminRefreshPlayerList()" style="border-color:#8b3a3a;">Refresh Player List</button>
+      </div>
+      <div id="admin-kill-player-list" style="max-height:300px; overflow-y:auto;">
+        ${buildAdminKillPlayerList()}
+      </div>
+    </div>
   `;
 }
 
@@ -7087,6 +7097,74 @@ function adminSetAllSkills(level) {
   logAction(`[Admin] All skills set to ${level}`);
   updateUI();
   showAdminPanel();
+}
+
+// ── Admin Kill Player ──────────────────────────────────────────
+function buildAdminKillPlayerList() {
+  const isOnline = typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected;
+  if (!isOnline) {
+    return '<div style="color: #8a7a5a; font-style: italic; text-align: center;">Not connected to online world.</div>';
+  }
+  const players = Object.values(onlineWorldState.playerStates || {});
+  if (players.length === 0) {
+    return '<div style="color: #8a7a5a; font-style: italic; text-align: center;">No players online.</div>';
+  }
+  let html = '';
+  players.forEach(p => {
+    const isMe = p.playerId === onlineWorldState.playerId;
+    html += `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; margin:4px 0; background:rgba(20,18,10,0.3); border-radius:4px; border-left:3px solid ${isMe ? '#c0a062' : '#8b3a3a'};">
+        <div>
+          <strong style="color:${isMe ? '#c0a062' : '#f5e6c8'};">${escapeHTML(p.name)}${isMe ? ' (You)' : ''}</strong>
+          <br><small style="color:#8a7a5a;">Level ${p.level || 1} &bull; ${p.reputation || 0} rep</small>
+        </div>
+        ${isMe ? '' : `<button onclick="adminKillPlayer('${p.playerId}', '${escapeHTML(p.name)}')" style="background:#4a0e0e; color:#ff6b6b; border:1px solid #8b3a3a; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;">&#9760; Kill</button>`}
+      </div>
+    `;
+  });
+  return html;
+}
+
+function adminRefreshPlayerList() {
+  const container = document.getElementById('admin-kill-player-list');
+  if (container) {
+    container.innerHTML = buildAdminKillPlayerList();
+  }
+  showBriefNotification('Player list refreshed', 'success');
+}
+
+function adminKillPlayer(targetPlayerId, targetName) {
+  if (window.ui && window.ui.confirm) {
+    window.ui.confirm('Confirm Kill', `Execute ${targetName}? This will trigger permadeath for their character.`, () => {
+      executeAdminKill(targetPlayerId, targetName);
+    });
+  } else {
+    if (confirm(`Execute ${targetName}? This will trigger permadeath for their character.`)) {
+      executeAdminKill(targetPlayerId, targetName);
+    }
+  }
+}
+
+function executeAdminKill(targetPlayerId, targetName) {
+  const authState = getAuthState();
+  if (!authState.isAdmin || !authState.token) {
+    showBriefNotification('Admin: Not authorized!', 'error');
+    return;
+  }
+  const isOnline = typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected && onlineWorldState.socket;
+  if (!isOnline) {
+    showBriefNotification('Admin: Not connected to server!', 'error');
+    return;
+  }
+  // Send admin kill command to the server with auth token for verification
+  onlineWorldState.socket.send(JSON.stringify({
+    type: 'admin_kill_player',
+    targetPlayerId: targetPlayerId,
+    authToken: authState.token,
+    causeOfDeath: `Executed by order of the Don`
+  }));
+  showBriefNotification(`Admin: Kill order sent for ${targetName}`, 'warning');
+  logAction(`[Admin] Sent kill order for ${targetName}`);
 }
 
 // Function to refresh the currently active screen
@@ -21126,6 +21204,9 @@ window.adminJailRelease = adminJailRelease;
 window.adminClearWanted = adminClearWanted;
 window.adminFullHeal = adminFullHeal;
 window.adminSetAllSkills = adminSetAllSkills;
+window.adminKillPlayer = adminKillPlayer;
+window.adminRefreshPlayerList = adminRefreshPlayerList;
+window.executeAdminKill = executeAdminKill;
 window.refreshCurrentScreen = refreshCurrentScreen;
 window.hideAllScreens = hideAllScreens;
 window.goBackToMainMenu = goBackToMainMenu;

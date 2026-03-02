@@ -1169,6 +1169,14 @@ async function handleServerMessage(message) {
                 }
             }
             break;
+
+        case 'admin_killed':
+            // Admin has executed this player — trigger death
+            console.log('☠️ You have been killed by admin:', message.causeOfDeath);
+            if (typeof showDeathScreen === 'function') {
+                showDeathScreen(message.causeOfDeath || 'Executed by order of the Don');
+            }
+            break;
         
         case 'player_jail_update':
             // Handle jail status updates for other players

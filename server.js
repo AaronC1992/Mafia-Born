@@ -897,6 +897,10 @@ function handleClientMessage(clientId, message, ws) {
             handlePlayerDeath(clientId, message);
             break;
 
+        case 'admin_kill_player':
+            handleAdminKillPlayer(clientId, message);
+            break;
+
         default:
             console.log(`⚠️ Unknown message type: ${message.type}`);
     }
@@ -2805,6 +2809,69 @@ function handlePlayerDeath(clientId, message) {
         type: 'player_death_newspaper',
         newspaperData: sanitized
     });
+}
+
+// ==================== ADMIN KILL PLAYER ====================
+function handleAdminKillPlayer(clientId, message) {
+    // Validate the auth token to confirm this is an admin
+    const authToken = message.authToken;
+    if (!authToken) {
+        console.log(`⚠️ Admin kill rejected: no auth token from ${clientId}`);
+        return;
+    }
+    const username = userDB.validateToken(authToken);
+    if (!username || !isAdmin(username)) {
+        console.log(`⚠️ Admin kill rejected: ${username || 'unknown'} is not admin`);
+        const ws = clients.get(clientId);
+        if (ws && ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: 'system_message', message: 'You do not have admin privileges.', color: '#e74c3c' }));
+        }
+        return;
+    }
+
+    const targetPlayerId = message.targetPlayerId;
+    const causeOfDeath = String(message.causeOfDeath || 'Executed by order of the Don').slice(0, 100);
+
+    // Find the target player
+    const targetPlayer = gameState.players.get(targetPlayerId);
+    const targetState = gameState.playerStates.get(targetPlayerId);
+    const targetWs = clients.get(targetPlayerId);
+
+    if (!targetPlayer || !targetWs || targetWs.readyState !== 1) {
+        const ws = clients.get(clientId);
+        if (ws && ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: 'system_message', message: 'Target player not found or disconnected.', color: '#e74c3c' }));
+        }
+        return;
+    }
+
+    console.log(`☠️ ADMIN KILL: ${username} executed ${targetPlayer.name} (${targetPlayerId}) — "${causeOfDeath}"`);
+
+    // Send kill command to the target client
+    targetWs.send(JSON.stringify({
+        type: 'admin_killed',
+        causeOfDeath: causeOfDeath,
+        killedBy: 'The Don'
+    }));
+
+    // Announce in world chat
+    addGlobalChatMessage('System', `☠️ ${targetPlayer.name} has been executed by order of the Don!`, '#8b0000');
+
+    // Broadcast chat update to all clients
+    broadcastToAll({
+        type: 'global_chat',
+        playerId: 'SYSTEM',
+        playerName: 'System',
+        message: `☠️ ${targetPlayer.name} has been executed by order of the Don!`,
+        timestamp: Date.now(),
+        color: '#8b0000'
+    });
+
+    // Confirm to admin
+    const adminWs = clients.get(clientId);
+    if (adminWs && adminWs.readyState === 1) {
+        adminWs.send(JSON.stringify({ type: 'system_message', message: `Kill order executed: ${targetPlayer.name} is dead.`, color: '#c0a040' }));
+    }
 }
 
 // Helper to generate leaderboard
