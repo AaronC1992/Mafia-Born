@@ -649,12 +649,12 @@ function renderStoryEpilogue(famKey, fam) {
   if (availableArcs.length > 0 || lockedArcs.length > 0) {
     arcsHTML = `
       <div style="margin:20px 0;">
-        <h3 style="color:#f1c40f;margin-bottom:12px;">Endgame Story Arcs</h3>
+        <h3 style="color:#c0a040;margin-bottom:12px;">Endgame Story Arcs</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
           ${availableArcs.map(arc => `
-            <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #f1c40f55;border-radius:12px;padding:15px;cursor:pointer;" onclick="showPostDonArc('${arc.id}')">
+            <div style="background:linear-gradient(135deg,#14120a,#0d0b07);border:1px solid #c0a04055;border-radius:12px;padding:15px;cursor:pointer;" onclick="showPostDonArc('${arc.id}')">
               <div style="font-size:2em;text-align:center;">${arc.icon}</div>
-              <h4 style="color:#f1c40f;text-align:center;margin:8px 0 4px;">${arc.title}</h4>
+              <h4 style="color:#c0a040;text-align:center;margin:8px 0 4px;">${arc.title}</h4>
               <p style="color:#aaa;font-size:0.85em;line-height:1.4;text-align:center;">${arc.description}</p>
             </div>
           `).join('')}
@@ -2314,13 +2314,13 @@ function startQuestTimerTick() {
       const remaining = getStepTimeRemaining(qid);
       if (remaining <= 0) {
         el.textContent = '✅ Ready!';
-        el.style.color = '#2ecc71';
+        el.style.color = '#8a9a6a';
         // Also show/enable the complete button if objective met
         const btn = document.querySelector(`[data-complete-btn="${qid}"]`);
         if (btn) btn.style.display = '';
       } else {
         el.textContent = '⏳ ' + formatTimeRemaining(remaining);
-        el.style.color = '#f39c12';
+        el.style.color = '#c0a040';
       }
     });
   }, 1000);
@@ -2341,7 +2341,7 @@ function showSideQuestScreen() {
   // Active quests first
   const activeQuests = SIDE_QUESTS.filter(q => sq.active.includes(q.id));
   if (activeQuests.length > 0) {
-    html += `<h2 style="color:#f1c40f;margin:20px 0 10px;">Active Operations</h2>`;
+    html += `<h2 style="color:#c0a040;margin:20px 0 10px;">Active Operations</h2>`;
     activeQuests.forEach(quest => {
       const { step, index } = getActiveQuestStep(quest);
       if (!step) return;
@@ -2356,7 +2356,7 @@ function showSideQuestScreen() {
       const canComplete = objMet && timerDone;
 
       html += `
-        <div class="story-family-card" style="--fam-color:#f1c40f;margin-bottom:15px;">
+        <div class="story-family-card" style="--fam-color:#c0a040;margin-bottom:15px;">
           <div class="story-family-icon">${quest.icon}</div>
           <h2 class="story-family-name">${quest.title}</h2>
           <div style="color:#aaa;margin-bottom:8px;">Step ${index + 1} of ${quest.steps.length}</div>
@@ -2369,8 +2369,8 @@ function showSideQuestScreen() {
               <span class="obj-label">${obj.text}</span>
               <span class="obj-val">${currentVal.toLocaleString()} / ${obj.target.toLocaleString()}</span>
             </div>
-            <div style="background:#1a1a2e;border:1px solid #f39c1244;border-radius:8px;padding:8px 14px;font-size:0.95em;">
-              <span data-quest-timer="${quest.id}" style="color:${timerDone ? '#2ecc71' : '#f39c12'};">${timerDone ? '✅ Ready!' : '⏳ ' + formatTimeRemaining(remaining)}</span>
+            <div style="background:#14120a;border:1px solid #c0a04044;border-radius:8px;padding:8px 14px;font-size:0.95em;">
+              <span data-quest-timer="${quest.id}" style="color:${timerDone ? '#8a9a6a' : '#c0a040'};">${timerDone ? '✅ Ready!' : '⏳ ' + formatTimeRemaining(remaining)}</span>
               <span style="color:#888;margin-left:6px;font-size:0.85em;">(${step.timerMinutes || '?'}m operation)</span>
             </div>
           </div>
@@ -2386,19 +2386,19 @@ function showSideQuestScreen() {
   // Available quests
   const availableQuests = SIDE_QUESTS.filter(q => getSideQuestState(q.id) === 'available' && canStartSideQuest(q));
   if (availableQuests.length > 0) {
-    html += `<h2 style="color:#3498db;margin:20px 0 10px;">Available Operations</h2>`;
+    html += `<h2 style="color:#c0a062;margin:20px 0 10px;">Available Operations</h2>`;
     availableQuests.forEach(quest => {
       const totalTime = quest.steps.reduce((sum, s) => sum + (s.timerMinutes || 0), 0);
       html += `
-        <div class="story-family-card" style="--fam-color:#3498db;margin-bottom:15px;">
+        <div class="story-family-card" style="--fam-color:#c0a062;margin-bottom:15px;">
           <div class="story-family-icon">${quest.icon}</div>
           <h2 class="story-family-name">${quest.title}</h2>
           <p style="color:#ccc;line-height:1.5;">${quest.description}</p>
           <div style="color:#888;font-size:0.9em;">Min Level: ${quest.minLevel} &middot; ${quest.steps.length} Steps &middot; ~${totalTime}min total</div>
-          <div style="color:#f1c40f;font-size:0.9em;margin-top:5px;">
+          <div style="color:#c0a040;font-size:0.9em;margin-top:5px;">
             Completion Reward: ${quest.completionReward.money ? '$' + quest.completionReward.money.toLocaleString() + ' ' : ''}${quest.completionReward.respect ? '+' + quest.completionReward.respect + ' Respect ' : ''}${quest.completionReward.reputation ? '+' + quest.completionReward.reputation + ' Rep' : ''}
           </div>
-          <button class="story-pledge-btn" style="background:linear-gradient(135deg,#3498db,#2980b9);" onclick="startSideQuest('${quest.id}')">Accept Operation</button>
+          <button class="story-pledge-btn" style="background:linear-gradient(135deg,#c0a062,#a08850);" onclick="startSideQuest('${quest.id}')">Accept Operation</button>
         </div>`;
     });
   }
@@ -2413,7 +2413,7 @@ function showSideQuestScreen() {
           <div class="story-family-icon">${quest.icon}</div>
           <h2 class="story-family-name">${quest.title}</h2>
           <p style="color:#888;">${quest.description}</p>
-          <div style="color:#e74c3c;font-size:0.9em;">🔒 Requires Level ${quest.minLevel}</div>
+          <div style="color:#8b3a3a;font-size:0.9em;">🔒 Requires Level ${quest.minLevel}</div>
         </div>`;
     });
   }
@@ -2421,10 +2421,10 @@ function showSideQuestScreen() {
   // Completed quests
   const completedQuests = SIDE_QUESTS.filter(q => sq.completed.includes(q.id));
   if (completedQuests.length > 0) {
-    html += `<h2 style="color:#2ecc71;margin:20px 0 10px;">Completed</h2>`;
+    html += `<h2 style="color:#8a9a6a;margin:20px 0 10px;">Completed</h2>`;
     completedQuests.forEach(quest => {
       html += `
-        <div class="story-family-card" style="--fam-color:#2ecc71;margin-bottom:15px;opacity:0.7;">
+        <div class="story-family-card" style="--fam-color:#8a9a6a;margin-bottom:15px;opacity:0.7;">
           <div class="story-family-icon">${quest.icon}</div>
           <h2 class="story-family-name">${quest.title}</h2>
           <p style="color:#888;font-style:italic;">${quest.completionNarrative.substring(0, 120)}...</p>
@@ -2465,17 +2465,17 @@ function showPostDonArc(arcId) {
   if (arc.candidates) {
     candidatesHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin:20px 0;">` +
       arc.candidates.map(c => `
-        <div style="background:#1a1a2e;border:1px solid #f1c40f33;border-radius:12px;padding:15px;">
-          <h3 style="color:#f1c40f;margin:0 0 8px;">${c.name}</h3>
+        <div style="background:#14120a;border:1px solid #c0a04033;border-radius:12px;padding:15px;">
+          <h3 style="color:#c0a040;margin:0 0 8px;">${c.name}</h3>
           <p style="color:#ccc;font-size:0.9em;line-height:1.4;">${c.desc}</p>
-          <div style="color:#e74c3c;font-size:0.8em;margin-top:8px;">Risk: ${c.risk}</div>
+          <div style="color:#8b3a3a;font-size:0.8em;margin-top:8px;">Risk: ${c.risk}</div>
         </div>`).join('') +
       `</div>`;
   }
 
   let html = `
     <div class="story-screen">
-      <div class="story-act-banner" style="border-color:#f1c40f;">
+      <div class="story-act-banner" style="border-color:#c0a040;">
         <span class="story-act-label">Endgame</span>
         <h2 class="story-chapter-title">${arc.icon} ${arc.title}</h2>
       </div>
@@ -2688,7 +2688,7 @@ function showInteractiveEvent(event) {
         }).join('')}
       </div>
       
-      <button onclick="closeScreenAndContinueQueue(); updateUI();" style="margin-top: 20px; padding: 12px 25px; background: #95a5a6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">Close</button>
+      <button onclick="closeScreenAndContinueQueue(); updateUI();" style="margin-top: 20px; padding: 12px 25px; background: #8a7a5a; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">Close</button>
     </div>
   `;
   
@@ -3404,13 +3404,13 @@ function buildBusinessesHTML() {
   let businessHTML = `
     <h2>Business Empire</h2>
     <p>Manage your legitimate business fronts and expand your economic influence.</p>
-    <div style="margin: 15px 0; padding: 12px; border: 1px solid #7f8c8d; border-radius: 8px; background: rgba(0,0,0,0.25); display: flex; gap: 12px; align-items: center;">
-      <div style="flex:1; color:#ecf0f1;">
+    <div style="margin: 15px 0; padding: 12px; border: 1px solid #6a5a3a; border-radius: 8px; background: rgba(0,0,0,0.25); display: flex; gap: 12px; align-items: center;">
+      <div style="flex:1; color:#f5e6c8;">
         <strong>Bookie Service</strong><br>
         Automatically collects business income and gang tribute. Service fee applies hourly.
       </div>
       <div>
-        <button onclick="toggleBookieHire()" style="background:${player.services && player.services.bookieHired ? '#e74c3c' : '#2ecc71'}; color:white; padding:10px 14px; border:none; border-radius:6px; cursor:pointer;">
+        <button onclick="toggleBookieHire()" style="background:${player.services && player.services.bookieHired ? '#8b3a3a' : '#8a9a6a'}; color:white; padding:10px 14px; border:none; border-radius:6px; cursor:pointer;">
           ${player.services && player.services.bookieHired ? 'Dismiss Bookie' : 'Hire Bookie ($5,000/day)'}
         </button>
       </div>
@@ -3423,7 +3423,7 @@ function buildBusinessesHTML() {
       <h3>Your Businesses</h3>
       <div style="margin: 10px 0;">
         <button onclick="collectAllBusinessIncome()" 
-            style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 3px 10px rgba(46,204,113,0.3);">
+            style="background: linear-gradient(135deg, #7a8a5a, #8a9a6a); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 3px 10px rgba(138, 154, 106,0.3);">
           Collect All Income
         </button>
       </div>
@@ -3448,7 +3448,7 @@ function buildBusinessesHTML() {
           };
           const flavorTexts = upgradeFlavorText[business.type] || [];
           const nextUpgradeText = business.level < businessType.maxLevel && flavorTexts[business.level - 1] 
-            ? `<p style="margin: 5px 0; color: #f39c12; font-style: italic;">Next: ${flavorTexts[business.level - 1]}</p>` : '';
+            ? `<p style="margin: 5px 0; color: #c0a040; font-style: italic;">Next: ${flavorTexts[business.level - 1]}</p>` : '';
           
           // Max level perk display for illegal businesses
           const maxLevelPerks = {
@@ -3458,21 +3458,21 @@ function buildBusinessesHTML() {
           };
           const isMaxLevel = business.level >= businessType.maxLevel;
           const maxPerkText = isMaxLevel && maxLevelPerks[business.type] 
-            ? `<p style="margin: 8px 0; padding: 8px; background: rgba(241, 196, 15, 0.2); border: 1px solid #f1c40f; border-radius: 5px; color: #f1c40f; font-weight: bold;">${maxLevelPerks[business.type]}</p>` : '';
+            ? `<p style="margin: 8px 0; padding: 8px; background: rgba(241, 196, 15, 0.2); border: 1px solid #c0a040; border-radius: 5px; color: #c0a040; font-weight: bold;">${maxLevelPerks[business.type]}</p>` : '';
           
           // Color coding for illegal vs legitimate businesses
-          const borderColor = businessType.paysDirty ? '#e74c3c' : '#3498db';
-          const headerColor = businessType.paysDirty ? '#e74c3c' : '#3498db';
+          const borderColor = businessType.paysDirty ? '#8b3a3a' : '#c0a062';
+          const headerColor = businessType.paysDirty ? '#8b3a3a' : '#c0a062';
           
           return `
-            <div style="background: rgba(44, 62, 80, 0.8); border-radius: 15px; padding: 20px; border: 2px solid ${borderColor};">
+            <div style="background: rgba(20, 18, 10, 0.8); border-radius: 15px; padding: 20px; border: 2px solid ${borderColor};">
               <h4 style="color: ${headerColor}; margin-bottom: 10px;">${business.name}${businessType.paysDirty ? ' ' : ''}</h4>
-              <p style="color: #ecf0f1; margin-bottom: 15px;">${businessType.description}</p>
+              <p style="color: #f5e6c8; margin-bottom: 15px;">${businessType.description}</p>
               
               <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                 <p style="margin: 5px 0;"><strong>Level:</strong> ${business.level}/${businessType.maxLevel}</p>
-                <p style="margin: 5px 0;"><strong>Daily Income:</strong> $${currentIncome.toLocaleString()}${businessType.paysDirty ? ' <span style="color:#e74c3c;">(DIRTY MONEY)</span>' : ''}</p>
-                <p style="margin: 5px 0;"><strong>District:</strong> ${bizDistrict ? bizDistrict.name : 'Unassigned'}${bonusPct > 0 ? ` <span style="color:#2ecc71;">(+${bonusPct}% income bonus)</span>` : ''}</p>
+                <p style="margin: 5px 0;"><strong>Daily Income:</strong> $${currentIncome.toLocaleString()}${businessType.paysDirty ? ' <span style="color:#8b3a3a;">(DIRTY MONEY)</span>' : ''}</p>
+                <p style="margin: 5px 0;"><strong>District:</strong> ${bizDistrict ? bizDistrict.name : 'Unassigned'}${bonusPct > 0 ? ` <span style="color:#8a9a6a;">(+${bonusPct}% income bonus)</span>` : ''}</p>
                 <p style="margin: 5px 0;"><strong>Laundering Capacity:</strong> $${(businessType.launderingCapacity * business.level).toLocaleString()}</p>
                 <p style="margin: 5px 0;"><strong>Legitimacy:</strong> ${businessType.legitimacy}%</p>
                 ${businessType.paysDirty ? `<p style="margin: 5px 0; color: #e67e22;"><strong>Synergy:</strong> ${business.type === 'counterfeiting' ? '+3% laundering rate' : business.type === 'druglab' ? 'Drug trade goods discount + payout boost' : 'Stolen car sale bonus'}</p>` : ''}
@@ -3482,19 +3482,19 @@ function buildBusinessesHTML() {
               
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button onclick="collectBusinessIncome(${index})" 
-                    style="background: #2ecc71; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                    style="background: #8a9a6a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
                   Collect Income
                 </button>
                 ${business.level < businessType.maxLevel ? 
                   `<button onclick="upgradeBusiness(${index})" 
-                      style="background: #f39c12; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;"
+                      style="background: #c0a040; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;"
                       ${player.money < upgradePrice ? 'disabled title="Not enough money"' : ''}>
                     Upgrade ($${upgradePrice.toLocaleString()})
                   </button>` : 
-                  '<span style="color: #95a5a6; font-style: italic;">Max Level</span>'
+                  '<span style="color: #8a7a5a; font-style: italic;">Max Level</span>'
                 }
                 <button onclick="sellBusiness(${index})" 
-                    style="background: #e74c3c; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                    style="background: #8b3a3a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
                   Sell Business
                 </button>
               </div>
@@ -3505,9 +3505,9 @@ function buildBusinessesHTML() {
     `;
   } else {
     businessHTML += `
-      <div style="text-align: center; margin: 40px 0; padding: 30px; background: rgba(52, 73, 94, 0.6); border-radius: 15px; border: 2px solid #f39c12;">
-        <h3 style="color: #f39c12; margin-bottom: 15px;">No Businesses Owned</h3>
-        <p style="color: #ecf0f1; margin-bottom: 20px;">Start building your business empire! Legitimate fronts provide steady income and money laundering opportunities.</p>
+      <div style="text-align: center; margin: 40px 0; padding: 30px; background: rgba(20, 18, 10, 0.6); border-radius: 15px; border: 2px solid #c0a040;">
+        <h3 style="color: #c0a040; margin-bottom: 15px;">No Businesses Owned</h3>
+        <p style="color: #f5e6c8; margin-bottom: 20px;">Start building your business empire! Legitimate fronts provide steady income and money laundering opportunities.</p>
       </div>
     `;
   }
@@ -3524,11 +3524,11 @@ function buildBusinessesHTML() {
   businessHTML += `
     <h3>Available Businesses</h3>
     ${curDistrict ? `
-    <div style="margin: 10px 0 15px 0; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid #3498db; border-radius: 8px; color: #ecf0f1;">
+    <div style="margin: 10px 0 15px 0; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid #c0a062; border-radius: 8px; color: #f5e6c8;">
       <strong>Your District:</strong> ${curDistrict.name} &mdash; 
-      Slots: ${usedSlots}/${curSlots} used${curBonusPct > 0 ? ` | <span style="color:#2ecc71;">+${curBonusPct}% business income bonus</span>` : ''}
+      Slots: ${usedSlots}/${curSlots} used${curBonusPct > 0 ? ` | <span style="color:#8a9a6a;">+${curBonusPct}% business income bonus</span>` : ''}
     </div>` : `
-    <div style="margin: 10px 0 15px 0; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid #e74c3c; border-radius: 8px; color: #e67e22;">
+    <div style="margin: 10px 0 15px 0; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid #8b3a3a; border-radius: 8px; color: #e67e22;">
       You must live in a district to purchase businesses. Use the Turf HUD to relocate.
     </div>`}
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin: 20px 0;">
@@ -3536,23 +3536,23 @@ function buildBusinessesHTML() {
         const owned = player.businesses && player.businesses.some(b => b.type === businessType.id);
         const slotsFull = curSlots > 0 && usedSlots >= curSlots;
         return `
-          <div style="background: rgba(52, 73, 94, 0.6); border-radius: 15px; padding: 20px; border: 2px solid ${owned ? '#95a5a6' : '#2ecc71'};">
-            <h4 style="color: ${owned ? '#95a5a6' : '#2ecc71'}; margin-bottom: 10px;">${businessType.name}</h4>
-            <p style="color: #ecf0f1; margin-bottom: 15px;">${businessType.description}</p>
+          <div style="background: rgba(20, 18, 10, 0.6); border-radius: 15px; padding: 20px; border: 2px solid ${owned ? '#8a7a5a' : '#8a9a6a'};">
+            <h4 style="color: ${owned ? '#8a7a5a' : '#8a9a6a'}; margin-bottom: 10px;">${businessType.name}</h4>
+            <p style="color: #f5e6c8; margin-bottom: 15px;">${businessType.description}</p>
             
             <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
               <p style="margin: 5px 0;"><strong>Price:</strong> $${businessType.basePrice.toLocaleString()}</p>
-              <p style="margin: 5px 0;"><strong>Base Income:</strong> $${businessType.baseIncome.toLocaleString()}/day${businessType.paysDirty ? ' <span style="color:#e74c3c;">(DIRTY MONEY)</span>' : ''}</p>
+              <p style="margin: 5px 0;"><strong>Base Income:</strong> $${businessType.baseIncome.toLocaleString()}/day${businessType.paysDirty ? ' <span style="color:#8b3a3a;">(DIRTY MONEY)</span>' : ''}</p>
               <p style="margin: 5px 0;"><strong>Category:</strong> ${businessType.category}</p>
               <p style="margin: 5px 0;"><strong>Max Level:</strong> ${businessType.maxLevel}</p>
             </div>
             
             ${owned ? 
-              '<span style="color: #95a5a6; font-style: italic;">Already Owned</span>' :
+              '<span style="color: #8a7a5a; font-style: italic;">Already Owned</span>' :
               slotsFull ? '<span style="color: #e67e22; font-style: italic;">District slots full</span>' :
               !curDistrict ? '<span style="color: #e67e22; font-style: italic;">No district selected</span>' :
               `<button onclick="purchaseBusiness('${businessType.id}')" 
-                  style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%;"
+                  style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%;"
                   ${player.money < businessType.basePrice ? 'disabled title="Not enough money"' : ''}>
                 Purchase Business
               </button>`
@@ -3899,7 +3899,7 @@ function showMoneyLaundering() {
     <h2>Money Laundering</h2>
     <p>Clean your dirty money through various legitimate channels.</p>
     
-    <div style="background: rgba(52, 73, 94, 0.6); border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid #f39c12;">
+    <div style="background: rgba(20, 18, 10, 0.6); border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid #c0a040;">
       <h3>Current Status</h3>
       <p><strong>Dirty Money:</strong> $${player.dirtyMoney.toLocaleString()}</p>
       <p><strong>Clean Money:</strong> $${player.money.toLocaleString()}</p>
@@ -3910,8 +3910,8 @@ function showMoneyLaundering() {
   // ── Active Laundering Operations ──
   if (player.activeLaundering.length > 0) {
     launderHTML += `
-      <div style="background: rgba(46, 204, 113, 0.15); border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid #2ecc71;">
-        <h3 style="color: #2ecc71;">Active Operations</h3>
+      <div style="background: rgba(138, 154, 106, 0.15); border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid #8a9a6a;">
+        <h3 style="color: #8a9a6a;">Active Operations</h3>
         <div id="active-laundering-ops" style="display: grid; gap: 12px;">
           ${player.activeLaundering.map(op => {
             const now = Date.now();
@@ -3923,23 +3923,23 @@ function showMoneyLaundering() {
             const isDone = remaining <= 0;
             
             return `
-              <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid ${isDone ? '#2ecc71' : '#f39c12'};">
+              <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 4px solid ${isDone ? '#8a9a6a' : '#c0a040'};">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <strong style="color: #ecf0f1;">${op.methodName}</strong>
-                  <span style="color: ${isDone ? '#2ecc71' : '#f39c12'}; font-weight: bold;" data-launder-timer="${op.id}">
+                  <strong style="color: #f5e6c8;">${op.methodName}</strong>
+                  <span style="color: ${isDone ? '#8a9a6a' : '#c0a040'}; font-weight: bold;" data-launder-timer="${op.id}">
                     ${isDone ? '✅ READY TO COLLECT' : `${mins}m ${secs}s remaining`}
                   </span>
                 </div>
                 <div style="margin: 8px 0;">
                   <div style="background: rgba(0,0,0,0.5); border-radius: 4px; height: 8px; overflow: hidden;">
-                    <div data-launder-bar="${op.id}" style="height: 100%; background: ${isDone ? '#2ecc71' : 'linear-gradient(90deg, #f39c12, #e67e22)'}; width: ${progress}%; transition: width 1s linear;"></div>
+                    <div data-launder-bar="${op.id}" style="height: 100%; background: ${isDone ? '#8a9a6a' : 'linear-gradient(90deg, #c0a040, #e67e22)'}; width: ${progress}%; transition: width 1s linear;"></div>
                   </div>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #aaa;">
                   <span>Dirty: $${op.amount.toLocaleString()}</span>
                   <span>Expected Clean: $${op.cleanAmount.toLocaleString()}</span>
                 </div>
-                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #2ecc71; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">Collect Clean Money</button>` : ''}
+                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #8a9a6a; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">Collect Clean Money</button>` : ''}
               </div>
             `;
           }).join('')}
@@ -3950,9 +3950,9 @@ function showMoneyLaundering() {
   
   if (player.dirtyMoney <= 0 && player.activeLaundering.length === 0) {
     launderHTML += `
-      <div style="text-align: center; margin: 40px 0; padding: 30px; background: rgba(52, 73, 94, 0.6); border-radius: 15px; border: 2px solid #2ecc71;">
-        <h3 style="color: #2ecc71; margin-bottom: 15px;">All Money Clean</h3>
-        <p style="color: #ecf0f1;">You currently have no dirty money to launder. Earn some through illegal activities first!</p>
+      <div style="text-align: center; margin: 40px 0; padding: 30px; background: rgba(20, 18, 10, 0.6); border-radius: 15px; border: 2px solid #8a9a6a;">
+        <h3 style="color: #8a9a6a; margin-bottom: 15px;">All Money Clean</h3>
+        <p style="color: #f5e6c8;">You currently have no dirty money to launder. Earn some through illegal activities first!</p>
       </div>
     `;
   } else if (player.dirtyMoney > 0) {
@@ -3964,9 +3964,9 @@ function showMoneyLaundering() {
           const estimatedClean = Math.floor(Math.min(player.dirtyMoney, method.maxAmount) * method.cleanRate);
           
           return `
-            <div style="background: rgba(52, 73, 94, 0.6); border-radius: 15px; padding: 20px; border: 2px solid ${canUse ? '#2ecc71' : '#95a5a6'};">
-              <h4 style="color: ${canUse ? '#2ecc71' : '#95a5a6'};">${method.name}</h4>
-              <p style="color: #ecf0f1; margin-bottom: 15px;">${method.description}</p>
+            <div style="background: rgba(20, 18, 10, 0.6); border-radius: 15px; padding: 20px; border: 2px solid ${canUse ? '#8a9a6a' : '#8a7a5a'};">
+              <h4 style="color: ${canUse ? '#8a9a6a' : '#8a7a5a'};">${method.name}</h4>
+              <p style="color: #f5e6c8; margin-bottom: 15px;">${method.description}</p>
               
               <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                 <p style="margin: 5px 0;"><strong>Clean Rate:</strong> ${(method.cleanRate * 100).toFixed(0)}%</p>
@@ -3974,19 +3974,19 @@ function showMoneyLaundering() {
                 <p style="margin: 5px 0;"><strong>Interception Risk:</strong> ${method.suspicionRisk}%</p>
                 <p style="margin: 5px 0;"><strong>Range:</strong> $${method.minAmount.toLocaleString()} - $${method.maxAmount.toLocaleString()}</p>
                 <p style="margin: 5px 0;"><strong>Energy Cost:</strong> ${method.energyCost}</p>
-                ${method.businessRequired ? `<p style="margin: 5px 0; color: #f39c12;"><strong>Requires:</strong> ${businessTypes.find(bt => bt.id === method.businessRequired)?.name || 'Business'}</p>` : ''}
+                ${method.businessRequired ? `<p style="margin: 5px 0; color: #c0a040;"><strong>Requires:</strong> ${businessTypes.find(bt => bt.id === method.businessRequired)?.name || 'Business'}</p>` : ''}
               </div>
               
               ${canUse ? 
                 `<input type="number" id="launder-amount-${method.id}" placeholder="Amount to launder" 
                     min="${method.minAmount}" max="${Math.min(player.dirtyMoney, method.maxAmount)}" 
-                    style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
-                <p style="margin: 5px 0; color: #2ecc71;"><strong>Estimated Clean:</strong> Up to $${estimatedClean.toLocaleString()}</p>
+                    style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #d4c4a0;">
+                <p style="margin: 5px 0; color: #8a9a6a;"><strong>Estimated Clean:</strong> Up to $${estimatedClean.toLocaleString()}</p>
                 <button onclick="startLaundering('${method.id}')" 
-                    style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
+                    style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
                   Start Laundering
                 </button>` :
-                '<span style="color: #e74c3c; font-style: italic;">Requirements not met</span>'
+                '<span style="color: #8b3a3a; font-style: italic;">Requirements not met</span>'
               }
             </div>
           `;
@@ -3996,16 +3996,16 @@ function showMoneyLaundering() {
   }
   
   launderHTML += `
-    <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; border: 1px solid #e74c3c; margin: 20px 0;">
-      <h4 style="color: #e74c3c;">NOTICE</h4>
-      <p style="color: #ecf0f1;">Money laundering carries risks. High heat levels may attract law enforcement attention. Choose your methods carefully and don't get greedy.</p>
+    <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; border: 1px solid #8b3a3a; margin: 20px 0;">
+      <h4 style="color: #8b3a3a;">NOTICE</h4>
+      <p style="color: #f5e6c8;">Money laundering carries risks. High heat levels may attract law enforcement attention. Choose your methods carefully and don't get greedy.</p>
     </div>
     
-    <div style="background: rgba(46, 204, 113, 0.15); padding: 20px; border-radius: 10px; border: 1px solid #2ecc71; margin: 20px 0;">
-      <h4 style="color: #2ecc71;">TIPS</h4>
-      <p style="color: #ecf0f1;">• The <strong>Money Laundering</strong> job (under Jobs) also converts dirty money to clean money at 80-95% rates.</p>
-      <p style="color: #ecf0f1;">• Owning a <strong>Counterfeiting Operation</strong> business gives +3% conversion rate on the Money Laundering job.</p>
-      <p style="color: #ecf0f1;">• Dirty money jobs (Bank Job, Counterfeiting Money) increase your heat level — launder regularly!</p>
+    <div style="background: rgba(138, 154, 106, 0.15); padding: 20px; border-radius: 10px; border: 1px solid #8a9a6a; margin: 20px 0;">
+      <h4 style="color: #8a9a6a;">TIPS</h4>
+      <p style="color: #f5e6c8;">• The <strong>Money Laundering</strong> job (under Jobs) also converts dirty money to clean money at 80-95% rates.</p>
+      <p style="color: #f5e6c8;">• Owning a <strong>Counterfeiting Operation</strong> business gives +3% conversion rate on the Money Laundering job.</p>
+      <p style="color: #f5e6c8;">• Dirty money jobs (Bank Job, Counterfeiting Money) increase your heat level — launder regularly!</p>
     </div>
     
     <div class="page-nav" style="justify-content: center;">
@@ -4218,18 +4218,18 @@ function startLaunderingCountdown() {
       
       if (remaining <= 0) {
         timerEl.textContent = '✅ READY TO COLLECT';
-        timerEl.style.color = '#2ecc71';
+        timerEl.style.color = '#8a9a6a';
         if (barEl) {
           barEl.style.width = '100%';
-          barEl.style.background = '#2ecc71';
+          barEl.style.background = '#8a9a6a';
         }
         // Add collect button if not already there
         const parent = timerEl.closest('div[style*="background: rgba(0,0,0,0.4)"]');
         if (parent && !parent.querySelector('button')) {
-          parent.style.borderLeftColor = '#2ecc71';
+          parent.style.borderLeftColor = '#8a9a6a';
           const btn = document.createElement('button');
           btn.textContent = 'Collect Clean Money';
-          btn.style.cssText = 'background: #2ecc71; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;';
+          btn.style.cssText = 'background: #8a9a6a; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;';
           btn.onclick = () => collectLaundering(op.id);
           parent.appendChild(btn);
           anyChanged = true;
@@ -4260,7 +4260,7 @@ function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   toast.className = 'game-toast';
   const bgColor = type === 'error' ? 'rgba(231, 76, 60, 0.95)' 
-                 : type === 'success' ? 'rgba(46, 204, 113, 0.95)' 
+                 : type === 'success' ? 'rgba(138, 154, 106, 0.95)' 
                  : 'rgba(52, 152, 219, 0.95)';
   toast.style.cssText = `
     position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
@@ -4294,8 +4294,8 @@ function showGang() {
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
       
       <!-- Gang Overview -->
-      <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #3498db;">
-        <h3 style="color: #3498db;">Gang Overview</h3>
+      <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #c0a062;">
+        <h3 style="color: #c0a062;">Gang Overview</h3>
         <div style="margin: 10px 0;">
           <strong>Total Members:</strong> ${player.gang.gangMembers.length} / ${calculateMaxGangMembers()}<br>
           <strong>Gang Power:</strong> ${calculateGangPower()}<br>
@@ -4304,33 +4304,33 @@ function showGang() {
         </div>
         
         <div style="margin: 15px 0;">
-          <button onclick="showRecruitment()" style="background: #2ecc71; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">
+          <button onclick="showRecruitment()" style="background: #8a9a6a; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">
             Recruit Members
           </button>
-          <button onclick="collectTribute()" style="background: #f39c12; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">
+          <button onclick="collectTribute()" style="background: #c0a040; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">
             Collect Tribute
           </button>
         </div>
       </div>
       
       <!-- Gang Operations -->
-      <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #e74c3c;">
-        <h3 style="color: #e74c3c;">Gang Operations</h3>
+      <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #8b3a3a;">
+        <h3 style="color: #8b3a3a;">Gang Operations</h3>
         ${generateGangOperationsHTML()}
       </div>
     </div>
     
     <!-- Gang Members List -->
-    <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #9b59b6; margin: 20px 0;">
+    <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #8b6a4a; margin: 20px 0;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="color: #9b59b6; margin: 0;">Gang Members</h3>
+        <h3 style="color: #8b6a4a; margin: 0;">Gang Members</h3>
         ${player.gang.gangMembers.length > 0 ? `<button onclick="showGangManagementScreen()" style="background: #1a1a1a; color: #c0a062; padding: 8px 16px; border: 1px solid #c0a062; border-radius: 3px; cursor: pointer; font-weight: bold;">Manage Crew</button>` : ''}
       </div>
       ${generateGangMembersHTML()}
     </div>
     
     <!-- Training Programs -->
-    <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #1abc9c; margin: 20px 0;">
+    <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #1abc9c; margin: 20px 0;">
       <h3 style="color: #1abc9c;">Training Programs</h3>
       ${generateTrainingProgramsHTML()}
     </div>
@@ -4363,19 +4363,19 @@ function showGangManagementScreen() {
     <p>Manage individual crew members and assign specializations.</p>
     
     <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-      <div style="background: rgba(52,73,94,0.8); padding: 12px 20px; border-radius: 8px; border: 1px solid #3498db;">
-        <strong style="color: #3498db;">Roster:</strong> ${members.length} / ${maxMembers}
+      <div style="background: rgba(20, 18, 10,0.8); padding: 12px 20px; border-radius: 8px; border: 1px solid #c0a062;">
+        <strong style="color: #c0a062;">Roster:</strong> ${members.length} / ${maxMembers}
       </div>
-      <div style="background: rgba(52,73,94,0.8); padding: 12px 20px; border-radius: 8px; border: 1px solid #9b59b6;">
-        <strong style="color: #9b59b6;">Total Power:</strong> ${calculateGangPower()}
+      <div style="background: rgba(20, 18, 10,0.8); padding: 12px 20px; border-radius: 8px; border: 1px solid #8b6a4a;">
+        <strong style="color: #8b6a4a;">Total Power:</strong> ${calculateGangPower()}
       </div>
     </div>
   `;
   
   if (members.length === 0) {
-    crewHTML += `<div style="text-align:center; padding:40px; background:rgba(44,62,80,0.6); border-radius:10px;">
+    crewHTML += `<div style="text-align:center; padding:40px; background:rgba(20, 18, 10,0.6); border-radius:10px;">
       <p style="font-size:1.2em;">No crew members yet.</p>
-      <button onclick="showRecruitment()" style="background:#2ecc71; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer; font-size:1.1em; margin-top:10px;">
+      <button onclick="showRecruitment()" style="background:#8a9a6a; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer; font-size:1.1em; margin-top:10px;">
         Recruit Your First Member
       </button>
     </div>`;
@@ -4386,7 +4386,7 @@ function showGangManagementScreen() {
       const statusText = member.arrested ? 'Arrested' :
                 member.onOperation ? 'On Operation' : 
                 member.inTraining ? 'In Training' : 'Available';
-      const statusColor = member.arrested ? '#e74c3c' : member.onOperation ? '#f39c12' : member.inTraining ? '#9b59b6' : '#2ecc71';
+      const statusColor = member.arrested ? '#8b3a3a' : member.onOperation ? '#c0a040' : member.inTraining ? '#8b6a4a' : '#8a9a6a';
       const role = member.specialization || 'none';
       const expandedRoleName = member.role && GANG_MEMBER_ROLES[member.role] ? GANG_MEMBER_ROLES[member.role].name : null;
       const roleName = expandedRoleName || (role !== 'none' ? role.charAt(0).toUpperCase() + role.slice(1) : 'Unassigned');
@@ -4395,13 +4395,13 @@ function showGangManagementScreen() {
       const daysActive = Math.floor((Date.now() - (member.joinedDate || Date.now())) / (1000 * 60 * 60 * 24));
       
       crewHTML += `
-        <div style="background: rgba(44,62,80,0.8); padding: 15px; border-radius: 10px; border-left: 4px solid #3498db;">
+        <div style="background: rgba(20, 18, 10,0.8); padding: 15px; border-radius: 10px; border-left: 4px solid #c0a062;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <h4 style="margin:0; color:#ecf0f1;">${member.name}</h4>
+            <h4 style="margin:0; color:#f5e6c8;">${member.name}</h4>
             <span style="font-size:0.8em; color: ${statusColor};">${statusText}</span>
           </div>
           
-          <div style="font-size:0.9em; color:#bdc3c7; margin-bottom:10px;">
+          <div style="font-size:0.9em; color:#d4c4a0; margin-bottom:10px;">
             <div style="display:flex; justify-content:space-between;">
               <span>Role: <strong>${roleName}</strong></span>
               <span>Lv. ${expLevel}</span>
@@ -4410,7 +4410,7 @@ function showGangManagementScreen() {
               <span>Power: ${member.power || 5}</span>
               <span>Tribute: $${tribute}/cycle</span>
             </div>
-            <div style="font-size:0.85em; color:#7f8c8d;">${daysActive > 0 ? daysActive + ' day' + (daysActive > 1 ? 's' : '') + ' in crew' : 'Just joined'}</div>
+            <div style="font-size:0.85em; color:#6a5a3a;">${daysActive > 0 ? daysActive + ' day' + (daysActive > 1 ? 's' : '') + ' in crew' : 'Just joined'}</div>
           </div>
           
           <div style="display:flex; flex-wrap:wrap; gap:5px;">
@@ -4418,7 +4418,7 @@ function showGangManagementScreen() {
               <button onclick="startTraining(${index})" style="background:#1abc9c; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
                 Train
               </button>
-              <button onclick="fireGangMember(${index})" style="background:#95a5a6; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
+              <button onclick="fireGangMember(${index})" style="background:#8a7a5a; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
                 Fire
               </button>
             ` : ''}
@@ -4480,7 +4480,7 @@ function generateGangOperationsHTML() {
     const isOnCooldown = isOperationOnCooldown(operation.id);
     
     html += `
-      <div style="margin: 10px 0; padding: 10px; background: rgba(52, 73, 94, 0.4); border-radius: 5px;">
+      <div style="margin: 10px 0; padding: 10px; background: rgba(20, 18, 10, 0.4); border-radius: 5px;">
         <h5>${operation.name}</h5>
         <p><small>${operation.description}</small></p>
         <div style="margin: 5px 0;">
@@ -4496,7 +4496,7 @@ function generateGangOperationsHTML() {
           }).join('')}
         </select>
         <button onclick="startGangOperation('${operation.id}')" 
-            style="background: #e74c3c; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%;"
+            style="background: #8b3a3a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%;"
             ${availableMembers.length === 0 || isOnCooldown ? 'disabled' : ''}>
           ${isOnCooldown ? 'On Cooldown' : (availableMembers.length === 0 ? 'No Available Members' : 'Start Operation')}
         </button>
@@ -4549,10 +4549,10 @@ function generateGangMembersHTML() {
              member.inTraining ? 'In Training' : 
              'Available';
     
-    const loyaltyColor = '#3498db';
+    const loyaltyColor = '#c0a062';
     
     html += `
-      <div style="background: rgba(52, 73, 94, 0.6); padding: 15px; border-radius: 8px; border-left: 4px solid ${loyaltyColor};">
+      <div style="background: rgba(20, 18, 10, 0.6); padding: 15px; border-radius: 8px; border-left: 4px solid ${loyaltyColor};">
         <h5 style="margin: 0 0 10px 0;">${member.name}</h5>
         <div style="font-size: 0.9em;">
           <strong>Role:</strong> ${roleName}${perkText}<br>
@@ -4563,7 +4563,7 @@ function generateGangMembersHTML() {
         
         <div style="margin-top: 10px;">
           ${!member.onOperation && !member.inTraining ? `
-            <button onclick="assignRole(${index})" style="background: #3498db; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
+            <button onclick="assignRole(${index})" style="background: #c0a062; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
               Assign Role
             </button>
             <button onclick="startTraining(${index})" style="background: #1abc9c; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
@@ -4587,7 +4587,7 @@ function generateTrainingProgramsHTML() {
     const availableMembers = getAvailableMembersForTraining(program.availableFor);
     
     html += `
-      <div style="background: rgba(52, 73, 94, 0.6); padding: 15px; border-radius: 8px;">
+      <div style="background: rgba(20, 18, 10, 0.6); padding: 15px; border-radius: 8px;">
         <h5>${program.name}</h5>
         <p style="font-size: 0.9em; margin: 5px 0;">${program.description}</p>
         <div style="font-size: 0.8em; margin: 10px 0;">
@@ -5063,7 +5063,7 @@ function showTerritoryControl() {
   const rankLabel = (player.familyRank || 'associate').charAt(0).toUpperCase() + (player.familyRank || 'associate').slice(1);
   
   let html = `
-    <h2 style="color: #e74c3c; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+    <h2 style="color: #8b3a3a; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
       Turf Control
     </h2>`;
   
@@ -5074,18 +5074,18 @@ function showTerritoryControl() {
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
           <strong style="color:${fam.color}; font-size:1.1em;">${fam.icon}</strong>
-          <span style="color:#bdc3c7; margin-left:10px;">Rank: <strong style="color:#f1c40f;">${rankLabel}</strong></span>
+          <span style="color:#d4c4a0; margin-left:10px;">Rank: <strong style="color:#c0a040;">${rankLabel}</strong></span>
         </div>
-        <div style="color:#bdc3c7; font-size:0.9em;">${fam.buff.name}: ${fam.buff.description}</div>
+        <div style="color:#d4c4a0; font-size:0.9em;">${fam.buff.name}: ${fam.buff.description}</div>
       </div>
     </div>`;
   } else {
     html += `
     <div style="background: rgba(231,76,60,0.2); padding:20px; border-radius:10px; text-align:center; margin-bottom:20px;">
       <div style="font-size:3em; margin-bottom:10px;"></div>
-      <h3 style="color:#e74c3c; margin:0 0 10px 0;">No Family Allegiance</h3>
-      <p style="color:#bdc3c7; margin:0 0 15px 0;">Choose a family to pledge your loyalty. Each family offers a unique story and buff.</p>
-      <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#e74c3c,#c0392b); border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">
+      <h3 style="color:#8b3a3a; margin:0 0 10px 0;">No Family Allegiance</h3>
+      <p style="color:#d4c4a0; margin:0 0 15px 0;">Choose a family to pledge your loyalty. Each family offers a unique story and buff.</p>
+      <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#8b3a3a,#7a2a2a); border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">
         Choose Your Family
       </button>
     </div>`;
@@ -5095,35 +5095,35 @@ function showTerritoryControl() {
   html += `
     <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
       <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
-        <div style="font-size: 1.6em; color: #3498db;"></div>
-        <div style="font-size: 0.9em; color: #bdc3c7;">Turf Power</div>
-        <div style="font-size: 1.3em; font-weight: bold; color: #ecf0f1;">${player.turf.power || 100}</div>
+        <div style="font-size: 1.6em; color: #c0a062;"></div>
+        <div style="font-size: 0.9em; color: #d4c4a0;">Turf Power</div>
+        <div style="font-size: 1.3em; font-weight: bold; color: #f5e6c8;">${player.turf.power || 100}</div>
       </div>
-      <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
-        <div style="font-size: 1.6em; color: #2ecc71;"></div>
-        <div style="font-size: 0.9em; color: #bdc3c7;">Weekly Income</div>
-        <div style="font-size: 1.3em; font-weight: bold; color: #ecf0f1;">$${(player.turf.income || 0).toLocaleString()}</div>
+      <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
+        <div style="font-size: 1.6em; color: #8a9a6a;"></div>
+        <div style="font-size: 0.9em; color: #d4c4a0;">Weekly Income</div>
+        <div style="font-size: 1.3em; font-weight: bold; color: #f5e6c8;">$${(player.turf.income || 0).toLocaleString()}</div>
       </div>
       <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
-        <div style="font-size: 1.6em; color: #9b59b6;"></div>
-        <div style="font-size: 0.9em; color: #bdc3c7;">Turf Zones</div>
-        <div style="font-size: 1.3em; font-weight: bold; color: #ecf0f1;">${ownedZones.length} / ${zones.length}</div>
+        <div style="font-size: 1.6em; color: #8b6a4a;"></div>
+        <div style="font-size: 0.9em; color: #d4c4a0;">Turf Zones</div>
+        <div style="font-size: 1.3em; font-weight: bold; color: #f5e6c8;">${ownedZones.length} / ${zones.length}</div>
       </div>
     </div>
     
     <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
       <button onclick="showTurfMap()" 
-          style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #27ae60, #2ecc71); 
+          style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a); 
               border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
         Turf Map
       </button>
       <button onclick="showProtectionRackets()" 
-          style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #f39c12); 
+          style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #c0a040); 
               border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
         Protection Rackets
       </button>
       <button onclick="showCorruption()" 
-          style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #8e44ad, #9b59b6); 
+          style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #7a5a3a, #8b6a4a); 
               border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
         Corruption
       </button>
@@ -5133,7 +5133,7 @@ function showTerritoryControl() {
   if (ownedZones.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #e74c3c; margin-bottom: 15px;">Your Turf</h3>
+        <h3 style="color: #8b3a3a; margin-bottom: 15px;">Your Turf</h3>
         <div style="display: grid; gap: 15px;">`;
     
     ownedZones.forEach(zone => {
@@ -5142,21 +5142,21 @@ function showTerritoryControl() {
       const fortLevel = (player.turf.fortifications || {})[zone.id] || 0;
       
       html += `
-        <div style="background: rgba(52, 73, 94, 0.8); padding: 15px; border-radius: 10px; 
+        <div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px; 
               border-left: 4px solid ${getHeatColor(heatLevel)};">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
-              <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">${zone.icon} ${zone.name}</h4>
-              <p style="color: #bdc3c7; margin: 0; font-size: 0.9em;">${zone.description}</p>
-              <div style="font-size:0.8em; color:#95a5a6; margin-top:4px;">Fort Lv ${fortLevel} | Heat: ${heatLevel.toFixed(1)}</div>
+              <h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${zone.icon} ${zone.name}</h4>
+              <p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${zone.description}</p>
+              <div style="font-size:0.8em; color:#8a7a5a; margin-top:4px;">Fort Lv ${fortLevel} | Heat: ${heatLevel.toFixed(1)}</div>
             </div>
             <div style="text-align: right; min-width: 120px;">
-              <div style="color: #2ecc71; font-weight: bold;">$${income.toLocaleString()}/week</div>
+              <div style="color: #8a9a6a; font-weight: bold;">$${income.toLocaleString()}/week</div>
             </div>
           </div>
           <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
             <button onclick="manageTurfDetails('${zone.id}')" 
-                style="padding: 5px 10px; background: #3498db; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">
+                style="padding: 5px 10px; background: #c0a062; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">
               Manage
             </button>
             <button onclick="fortifyTurf('${zone.id}')" 
@@ -5171,8 +5171,8 @@ function showTerritoryControl() {
     html += `
       <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
         <div style="font-size: 3em; margin-bottom: 10px;"></div>
-        <h3 style="color: #e74c3c; margin: 0 0 10px 0;">No Turf Controlled</h3>
-        <p style="color: #bdc3c7; margin: 0;">Every zone is held by a rival family. Complete missions and fight for control!</p>
+        <h3 style="color: #8b3a3a; margin: 0 0 10px 0;">No Turf Controlled</h3>
+        <p style="color: #d4c4a0; margin: 0;">Every zone is held by a rival family. Complete missions and fight for control!</p>
       </div>`;
   }
   
@@ -5184,9 +5184,9 @@ function showTerritoryControl() {
         <div style="display: grid; gap: 10px;">`;
     player.turf.events.forEach(event => {
       html += `
-        <div style="background: rgba(52, 73, 94, 0.8); padding: 12px; border-radius: 8px;">
+        <div style="background: rgba(20, 18, 10, 0.8); padding: 12px; border-radius: 8px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div><h4 style="color: #ecf0f1; margin: 0 0 5px 0;">${event.name}</h4><p style="color: #bdc3c7; margin: 0; font-size: 0.9em;">${event.description}</p></div>
+            <div><h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${event.name}</h4><p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${event.description}</p></div>
             <div style="text-align: right; color: #e67e22; font-weight: bold;">${Math.ceil(event.duration)} days</div>
           </div>
         </div>`;
@@ -5213,10 +5213,10 @@ function showTurfMap() {
   const alliedZones = fam ? (RIVAL_FAMILIES[fam]?.turfZones || []) : [];
   
   let html = `
-    <h2 style="color:#27ae60; text-align:center; margin-bottom:25px; font-size:2.2em;">Turf Map</h2>
+    <h2 style="color:#7a8a5a; text-align:center; margin-bottom:25px; font-size:2.2em;">Turf Map</h2>
     <div style="background:rgba(52,152,219,0.2);padding:15px;border-radius:10px;margin-bottom:20px;">
-      <h3 style="color:#3498db; margin:0 0 10px 0;">Legend</h3>
-      <div style="display:flex; flex-wrap:wrap; gap:15px; font-size:0.9em; color:#bdc3c7;">
+      <h3 style="color:#c0a062; margin:0 0 10px 0;">Legend</h3>
+      <div style="display:flex; flex-wrap:wrap; gap:15px; font-size:0.9em; color:#d4c4a0;">
         <span>Your Turf</span> <span>Allied Family</span> <span>Rival Held</span> <span>Contested</span> <span>Independent</span>
       </div>
     </div>
@@ -5229,17 +5229,17 @@ function showTurfMap() {
     const isIndependent = zone.controlledBy === 'independent';
     const controllerFamily = (!isOwned && !isAllied && !isContested && !isIndependent) ? RIVAL_FAMILIES[zone.controlledBy] : null;
     
-    let borderColor = isOwned ? '#2ecc71' : isAllied ? '#3498db' : isContested ? '#7f8c8d' : isIndependent ? '#f1c40f' : '#e74c3c';
+    let borderColor = isOwned ? '#8a9a6a' : isAllied ? '#c0a062' : isContested ? '#6a5a3a' : isIndependent ? '#c0a040' : '#8b3a3a';
     let statusLabel = isOwned ? 'Your Turf' : isAllied ? `${RIVAL_FAMILIES[fam]?.name || 'Allied'}` : isContested ? 'Contested' : isIndependent ? 'Independent' : `${controllerFamily?.name || zone.controlledBy}`;
     
     html += `
-      <div style="background:rgba(52,73,94,0.8); padding:20px; border-radius:12px; border-left:4px solid ${borderColor};">
+      <div style="background:rgba(20, 18, 10,0.8); padding:20px; border-radius:12px; border-left:4px solid ${borderColor};">
         <div style="display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:15px;">
           <div style="flex:1; min-width:250px;">
-            <h3 style="color:#ecf0f1; margin:0 0 8px 0;">${zone.icon} ${zone.name}</h3>
-            <p style="color:#bdc3c7; margin:0 0 8px 0; font-size:0.95em;">${zone.description}</p>
-            <div style="font-size:0.85em; color:#bdc3c7;">
-              <span style="color:#2ecc71;">Income:</span> $${zone.baseIncome.toLocaleString()}/week |
+            <h3 style="color:#f5e6c8; margin:0 0 8px 0;">${zone.icon} ${zone.name}</h3>
+            <p style="color:#d4c4a0; margin:0 0 8px 0; font-size:0.95em;">${zone.description}</p>
+            <div style="font-size:0.85em; color:#d4c4a0;">
+              <span style="color:#8a9a6a;">Income:</span> $${zone.baseIncome.toLocaleString()}/week |
               <span style="color:${getRiskColor(zone.riskLevel)};">${zone.riskLevel}</span>
             </div>
             <div style="margin-top:5px; font-size:0.85em; color:${borderColor};">${statusLabel}</div>`;
@@ -5248,31 +5248,31 @@ function showTurfMap() {
     if (zone.boss && !isOwned) {
       const bossInfo = findBossById(zone.boss);
       if (bossInfo && !(player.turf.bossesDefeated || []).includes(bossInfo.id)) {
-        html += `<div style="margin-top:5px; font-size:0.85em; color:#e74c3c;">Boss: ${bossInfo.name} (Power: ${bossInfo.power})</div>`;
+        html += `<div style="margin-top:5px; font-size:0.85em; color:#8b3a3a;">Boss: ${bossInfo.name} (Power: ${bossInfo.power})</div>`;
       }
     }
     if (zone.don && !isOwned) {
       const donInfo = findBossById(zone.don);
       if (donInfo && !(player.turf.donsDefeated || []).includes(donInfo.id)) {
-        html += `<div style="margin-top:5px; font-size:0.85em; color:#9b59b6;">Don: ${donInfo.name} (Power: ${donInfo.power})</div>`;
+        html += `<div style="margin-top:5px; font-size:0.85em; color:#8b6a4a;">Don: ${donInfo.name} (Power: ${donInfo.power})</div>`;
       }
     }
     
     html += `</div><div style="text-align:right; min-width:150px;">`;
     
     if (isOwned) {
-      html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#3498db,#2980b9);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
+      html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#c0a062,#a08850);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
     } else if (isAllied) {
-      html += `<div style="color:#3498db;font-size:0.9em;padding:10px;">Allied territory</div>`;
+      html += `<div style="color:#c0a062;font-size:0.9em;padding:10px;">Allied territory</div>`;
     } else {
       const canAttack = (player.turf.power || 100) >= zone.defenseRequired;
       html += `
         <div style="margin-bottom:8px;font-size:0.8em;text-align:center;">
-          <div style="color:#9b59b6;">Defense: ${zone.defenseRequired}</div>
-          <div style="font-size:0.75em;color:#bdc3c7;">(Your power: ${player.turf.power || 100})</div>
+          <div style="color:#8b6a4a;">Defense: ${zone.defenseRequired}</div>
+          <div style="font-size:0.75em;color:#d4c4a0;">(Your power: ${player.turf.power || 100})</div>
         </div>
         <button onclick="attackTurfZone('${zone.id}')" 
-          style="width:100%;padding:10px;background:linear-gradient(135deg,#e74c3c,#c0392b);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;${!canAttack?'opacity:0.6;cursor:not-allowed;':''}">
+          style="width:100%;padding:10px;background:linear-gradient(135deg,#8b3a3a,#7a2a2a);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;${!canAttack?'opacity:0.6;cursor:not-allowed;':''}">
           Attack
         </button>`;
     }
@@ -5282,7 +5282,7 @@ function showTurfMap() {
   
   html += `</div>
     <div style="text-align:center; margin-top:25px;">
-      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#95a5a6,#7f8c8d);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;">← Back to Turf</button>
+      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;">← Back to Turf</button>
     </div>`;
   
   document.getElementById("territory-control-content").innerHTML = html;
@@ -5418,28 +5418,28 @@ function manageTurfDetails(zoneId) {
   const fort = (player.turf.fortifications || {})[zone.id] || 0;
   
   let html = `
-    <h2 style="color:#ecf0f1; text-align:center; margin-bottom:25px;">${zone.icon} ${zone.name}</h2>
+    <h2 style="color:#f5e6c8; text-align:center; margin-bottom:25px;">${zone.icon} ${zone.name}</h2>
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:20px;">
-      <div style="background:rgba(46,204,113,0.2);padding:12px;border-radius:10px;text-align:center;">
-        <div style="font-size:0.85em;color:#bdc3c7;">Income</div>
-        <div style="font-size:1.2em;font-weight:bold;color:#2ecc71;">$${income.toLocaleString()}/wk</div>
+      <div style="background:rgba(138, 154, 106,0.2);padding:12px;border-radius:10px;text-align:center;">
+        <div style="font-size:0.85em;color:#d4c4a0;">Income</div>
+        <div style="font-size:1.2em;font-weight:bold;color:#8a9a6a;">$${income.toLocaleString()}/wk</div>
       </div>
       <div style="background:rgba(231,76,60,0.2);padding:12px;border-radius:10px;text-align:center;">
-        <div style="font-size:0.85em;color:#bdc3c7;">Heat</div>
+        <div style="font-size:0.85em;color:#d4c4a0;">Heat</div>
         <div style="font-size:1.2em;font-weight:bold;color:${getHeatColor(heat)};">${heat.toFixed(1)}</div>
       </div>
       <div style="background:rgba(52,152,219,0.2);padding:12px;border-radius:10px;text-align:center;">
-        <div style="font-size:0.85em;color:#bdc3c7;">Fortification</div>
-        <div style="font-size:1.2em;font-weight:bold;color:#3498db;">Lv ${fort}</div>
+        <div style="font-size:0.85em;color:#d4c4a0;">Fortification</div>
+        <div style="font-size:1.2em;font-weight:bold;color:#c0a062;">Lv ${fort}</div>
       </div>
     </div>
     <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;">
       <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Fortify ($${((fort+1)*5000).toLocaleString()})</button>
-      <button onclick="reduceHeatTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#3498db,#2980b9);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Reduce Heat ($${Math.floor(heat*10000).toLocaleString()})</button>
-      <button onclick="collectTurfTribute('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#27ae60,#229954);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Collect Tribute</button>
+      <button onclick="reduceHeatTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#c0a062,#a08850);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Reduce Heat ($${Math.floor(heat*10000).toLocaleString()})</button>
+      <button onclick="collectTurfTribute('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#7a8a5a,#229954);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Collect Tribute</button>
     </div>
     <div style="text-align:center;">
-      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#95a5a6,#7f8c8d);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;">← Back to Turf</button>
+      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;">← Back to Turf</button>
     </div>`;
   
   document.getElementById("territory-control-content").innerHTML = html;
@@ -5538,39 +5538,39 @@ function processTurfOperations() {
 // Show family selection screen
 function showFamilyChoice() {
   let html = `
-    <h2 style="color:#f1c40f; text-align:center; margin-bottom:10px; font-size:2.2em; text-shadow:2px 2px 4px rgba(0,0,0,0.5);">
+    <h2 style="color:#c0a040; text-align:center; margin-bottom:10px; font-size:2.2em; text-shadow:2px 2px 4px rgba(0,0,0,0.5);">
       Choose Your Family
     </h2>
-    <p style="color:#bdc3c7; text-align:center; margin-bottom:25px; font-size:1em;">
+    <p style="color:#d4c4a0; text-align:center; margin-bottom:25px; font-size:1em;">
       Every player must pledge to a crime family. Your choice determines your allies, enemies, and unique advantages.<br>
-      <strong style="color:#e74c3c;">This decision is permanent.</strong>
+      <strong style="color:#8b3a3a;">This decision is permanent.</strong>
     </p>
     <div style="display:grid; gap:20px;">`;
   
   Object.entries(RIVAL_FAMILIES).forEach(([famId, fam]) => {
     html += `
-      <div style="background:linear-gradient(135deg, ${fam.color}22, rgba(52,73,94,0.9)); padding:25px; border-radius:14px; border-left:5px solid ${fam.color}; cursor:pointer; transition:transform 0.2s;"
+      <div style="background:linear-gradient(135deg, ${fam.color}22, rgba(20, 18, 10,0.9)); padding:25px; border-radius:14px; border-left:5px solid ${fam.color}; cursor:pointer; transition:transform 0.2s;"
            onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
         <div style="display:flex; align-items:center; gap:15px; margin-bottom:12px;">
           <span style="font-size:1.4em; font-weight:bold; color:${fam.color};">${fam.icon}</span>
           <div>
             <h3 style="color:${fam.color}; margin:0; font-size:1.3em;">${fam.name}</h3>
-            <div style="color:#95a5a6; font-size:0.85em;">${fam.ethnicity} crime family</div>
+            <div style="color:#8a7a5a; font-size:0.85em;">${fam.ethnicity} crime family</div>
           </div>
         </div>
-        <p style="color:#bdc3c7; margin:0 0 12px 0; font-size:0.95em; line-height:1.4;">${fam.storyIntro}</p>
+        <p style="color:#d4c4a0; margin:0 0 12px 0; font-size:0.95em; line-height:1.4;">${fam.storyIntro}</p>
         <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
-          <div style="background:rgba(46,204,113,0.2); padding:6px 12px; border-radius:6px; font-size:0.85em; color:#2ecc71;">
+          <div style="background:rgba(138, 154, 106,0.2); padding:6px 12px; border-radius:6px; font-size:0.85em; color:#8a9a6a;">
             ${fam.buff.name}: ${fam.buff.description}
           </div>
-          <div style="background:rgba(52,152,219,0.2); padding:6px 12px; border-radius:6px; font-size:0.85em; color:#3498db;">
+          <div style="background:rgba(52,152,219,0.2); padding:6px 12px; border-radius:6px; font-size:0.85em; color:#c0a062;">
             Turf: ${fam.turfZones.length} zones
           </div>
         </div>
         <div style="margin-bottom:10px;">
-          <div style="font-size:0.85em; color:#e74c3c; margin-bottom:4px;">Don: ${fam.don.name} (Power: ${fam.don.power})</div>
-          <div style="font-size:0.85em; color:#9b59b6; margin-bottom:4px;">Underboss: ${fam.underboss.name} (Power: ${fam.underboss.power})</div>
-          <div style="font-size:0.85em; color:#95a5a6;">Capos: ${fam.capos.length}</div>
+          <div style="font-size:0.85em; color:#8b3a3a; margin-bottom:4px;">Don: ${fam.don.name} (Power: ${fam.don.power})</div>
+          <div style="font-size:0.85em; color:#8b6a4a; margin-bottom:4px;">Underboss: ${fam.underboss.name} (Power: ${fam.underboss.power})</div>
+          <div style="font-size:0.85em; color:#8a7a5a;">Capos: ${fam.capos.length}</div>
         </div>
         <button onclick="pledgeToFamily('${famId}')" 
           style="width:100%;padding:12px;background:linear-gradient(135deg,${fam.color},${fam.color}cc);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;font-size:1.05em;">
@@ -5581,7 +5581,7 @@ function showFamilyChoice() {
   
   html += `</div>
     <div style="text-align:center; margin-top:25px;">
-      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#95a5a6,#7f8c8d);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;">← Back to Turf</button>
+      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;">← Back to Turf</button>
     </div>`;
   
   document.getElementById("territory-control-content").innerHTML = html;
@@ -5622,13 +5622,13 @@ window.pledgeToFamily = pledgeToFamily;
 // Show Protection Rackets
 function showProtectionRackets() {
   let html = `
-    <h2 style="color: #f39c12; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+    <h2 style="color: #c0a040; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
       Protection Rackets
     </h2>
     
     <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-      <h3 style="color: #f39c12; margin: 0 0 10px 0;">Protection Racket Tips</h3>
-      <ul style="color: #bdc3c7; margin: 0; padding-left: 20px;">
+      <h3 style="color: #c0a040; margin: 0 0 10px 0;">Protection Racket Tips</h3>
+      <ul style="color: #d4c4a0; margin: 0; padding-left: 20px;">
         <li>Businesses in your territories pay protection money</li>
         <li>Over-extortion can cause businesses to close or call police</li>
         <li>Regular collections maintain fear and respect</li>
@@ -5640,7 +5640,7 @@ function showProtectionRackets() {
   if (player.protectionRackets.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #f39c12; margin-bottom: 15px;">Active Rackets</h3>
+        <h3 style="color: #c0a040; margin-bottom: 15px;">Active Rackets</h3>
         <div style="display: grid; gap: 15px;">`;
     
     player.protectionRackets.forEach(racket => {
@@ -5651,21 +5651,21 @@ function showProtectionRackets() {
       const zoneName = turfZone ? turfZone.name : 'Unknown Turf';
       
       html += `
-        <div style="background: rgba(52, 73, 94, 0.8); padding: 15px; border-radius: 10px;">
+        <div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px;">
           <div style="display: flex; justify-content: between; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
-              <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">${business.name}</h4>
-              <p style="color: #bdc3c7; margin: 0 0 5px 0; font-size: 0.9em;">${business.description}</p>
-              <div style="font-size: 0.8em; color: #95a5a6;">${zoneName}</div>
+              <h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${business.name}</h4>
+              <p style="color: #d4c4a0; margin: 0 0 5px 0; font-size: 0.9em;">${business.description}</p>
+              <div style="font-size: 0.8em; color: #8a7a5a;">${zoneName}</div>
             </div>
             <div style="text-align: right; min-width: 120px;">
-              <div style="color: #f39c12; font-weight: bold;">$${racket.weeklyPayment.toLocaleString()}/week</div>
-              <div style="color: #bdc3c7; font-size: 0.9em;">Fear: ${racket.fearLevel.toFixed(1)}</div>
+              <div style="color: #c0a040; font-weight: bold;">$${racket.weeklyPayment.toLocaleString()}/week</div>
+              <div style="color: #d4c4a0; font-size: 0.9em;">Fear: ${racket.fearLevel.toFixed(1)}</div>
             </div>
           </div>
           <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
             <button onclick="collectProtection('${racket.id}')" 
-                style="padding: 5px 10px; background: #27ae60; border: none; border-radius: 5px; 
+                style="padding: 5px 10px; background: #7a8a5a; border: none; border-radius: 5px; 
                     color: white; cursor: pointer; font-size: 0.8em;">
               Collect
             </button>
@@ -5675,7 +5675,7 @@ function showProtectionRackets() {
               Pressure
             </button>
             <button onclick="dropProtection('${racket.id}')" 
-                style="padding: 5px 10px; background: #e74c3c; border: none; border-radius: 5px; 
+                style="padding: 5px 10px; background: #8b3a3a; border: none; border-radius: 5px; 
                     color: white; cursor: pointer; font-size: 0.8em;">
               Drop
             </button>
@@ -5691,28 +5691,28 @@ function showProtectionRackets() {
   if (availableBusinesses.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #27ae60; margin-bottom: 15px;">Available Businesses</h3>
+        <h3 style="color: #7a8a5a; margin-bottom: 15px;">Available Businesses</h3>
         <div style="display: grid; gap: 15px;">`;
     
     availableBusinesses.forEach(business => {
       html += `
-        <div style="background: rgba(52, 73, 94, 0.8); padding: 15px; border-radius: 10px;">
+        <div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px;">
           <div style="display: flex; justify-content: between; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
-              <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">${business.name}</h4>
-              <p style="color: #bdc3c7; margin: 0 0 10px 0; font-size: 0.9em;">${business.description}</p>
+              <h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${business.name}</h4>
+              <p style="color: #d4c4a0; margin: 0 0 10px 0; font-size: 0.9em;">${business.description}</p>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <span style="background: rgba(231, 76, 60, 0.3); padding: 2px 6px; border-radius: 4px; 
-                      font-size: 0.8em; color: #e74c3c;">Risk: ${business.riskLevel}</span>
+                      font-size: 0.8em; color: #8b3a3a;">Risk: ${business.riskLevel}</span>
                 <span style="background: rgba(52, 152, 219, 0.3); padding: 2px 6px; border-radius: 4px; 
-                      font-size: 0.8em; color: #3498db;">Type: ${business.type}</span>
+                      font-size: 0.8em; color: #c0a062;">Type: ${business.type}</span>
               </div>
             </div>
             <div style="text-align: right; min-width: 120px;">
-              <div style="color: #f39c12; font-weight: bold;">$${business.basePayment.toLocaleString()}/week</div>
-              <div style="color: #bdc3c7; font-size: 0.9em;">Base Rate</div>
+              <div style="color: #c0a040; font-weight: bold;">$${business.basePayment.toLocaleString()}/week</div>
+              <div style="color: #d4c4a0; font-size: 0.9em;">Base Rate</div>
               <button onclick="approachBusiness('${business.id}', '${business.territoryId}')" 
-                  style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #27ae60, #2ecc71); 
+                  style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a); 
                       border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
                  Approach
               </button>
@@ -5726,15 +5726,15 @@ function showProtectionRackets() {
     html += `
       <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
         <div style="font-size: 3em; margin-bottom: 10px;"></div>
-        <h3 style="color: #e74c3c; margin: 0 0 10px 0;">No Available Businesses</h3>
-        <p style="color: #bdc3c7; margin: 0;">Seize more turf zones to find businesses that need "protection".</p>
+        <h3 style="color: #8b3a3a; margin: 0 0 10px 0;">No Available Businesses</h3>
+        <p style="color: #d4c4a0; margin: 0;">Seize more turf zones to find businesses that need "protection".</p>
       </div>`;
   }
   
   html += `
     <div style="text-align: center; margin-top: 25px;">
       <button onclick="window._opsActiveTab='rackets'; showMissions();" 
-          style="padding: 12px 30px; background: linear-gradient(135deg, #95a5a6, #7f8c8d); 
+          style="padding: 12px 30px; background: linear-gradient(135deg, #8a7a5a, #6a5a3a); 
               border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
         ← Back to Operations
       </button>
@@ -5779,13 +5779,13 @@ function getAvailableBusinessesForProtection() {
 // Show Corruption System
 function showCorruption() {
   let html = `
-    <h2 style="color: #9b59b6; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+    <h2 style="color: #8b6a4a; text-align: center; margin-bottom: 25px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
       Corruption Network
     </h2>
     
     <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-      <h3 style="color: #9b59b6; margin: 0 0 10px 0;">Corruption Tips</h3>
-      <ul style="color: #bdc3c7; margin: 0; padding-left: 20px;">
+      <h3 style="color: #8b6a4a; margin: 0 0 10px 0;">Corruption Tips</h3>
+      <ul style="color: #d4c4a0; margin: 0; padding-left: 20px;">
         <li>Corrupt officials provide ongoing benefits while active</li>
         <li>Higher-ranking officials cost more but provide better protection</li>
         <li>Corruption has risks - some officials may betray you</li>
@@ -5797,7 +5797,7 @@ function showCorruption() {
   if (player.corruptedOfficials.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #9b59b6; margin-bottom: 15px;"> Active Corruption</h3>
+        <h3 style="color: #8b6a4a; margin-bottom: 15px;"> Active Corruption</h3>
         <div style="display: grid; gap: 15px;">`;
     
     player.corruptedOfficials.forEach(official => {
@@ -5805,23 +5805,23 @@ function showCorruption() {
       const timeLeft = Math.max(0, (official.expirationDate - Date.now()) / (24 * 60 * 60 * 1000));
       
       html += `
-        <div style="background: rgba(52, 73, 94, 0.8); padding: 15px; border-radius: 10px;">
+        <div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px;">
           <div style="display: flex; justify-content: between; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
-              <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">${target.name}</h4>
-              <p style="color: #bdc3c7; margin: 0 0 10px 0; font-size: 0.9em;">${target.description}</p>
+              <h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${target.name}</h4>
+              <p style="color: #d4c4a0; margin: 0 0 10px 0; font-size: 0.9em;">${target.description}</p>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <span style="background: rgba(155, 89, 182, 0.3); padding: 2px 6px; border-radius: 4px; 
-                      font-size: 0.8em; color: #9b59b6;">Influence: ${target.influence}</span>
+                      font-size: 0.8em; color: #8b6a4a;">Influence: ${target.influence}</span>
                 <span style="background: rgba(231, 76, 60, 0.3); padding: 2px 6px; border-radius: 4px; 
-                      font-size: 0.8em; color: #e74c3c;">Risk: ${target.riskLevel}</span>
+                      font-size: 0.8em; color: #8b3a3a;">Risk: ${target.riskLevel}</span>
               </div>
             </div>
             <div style="text-align: right; min-width: 120px;">
-              <div style="color: #9b59b6; font-weight: bold;">${timeLeft.toFixed(1)} days left</div>
-              <div style="color: #bdc3c7; font-size: 0.9em;">Protection Active</div>
+              <div style="color: #8b6a4a; font-weight: bold;">${timeLeft.toFixed(1)} days left</div>
+              <div style="color: #d4c4a0; font-size: 0.9em;">Protection Active</div>
               <button onclick="renewCorruption('${official.id}')" 
-                  style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #8e44ad, #9b59b6); 
+                  style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #7a5a3a, #8b6a4a); 
                       border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
                 Renew
               </button>
@@ -5841,55 +5841,55 @@ function showCorruption() {
   if (availableTargets.length > 0) {
     html += `
       <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #27ae60; margin-bottom: 15px;">Available Targets</h3>
+        <h3 style="color: #7a8a5a; margin-bottom: 15px;">Available Targets</h3>
         <div style="display: grid; gap: 15px;">`;
     
     availableTargets.forEach(target => {
       const canAfford = player.money >= target.baseCost;
       
       html += `
-        <div style="background: rgba(52, 73, 94, 0.8); padding: 15px; border-radius: 10px;">
+        <div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px;">
           <div style="display: flex; justify-content: between; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
-              <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">${target.name}</h4>
-              <p style="color: #bdc3c7; margin: 0 0 10px 0; font-size: 0.9em;">${target.description}</p>
+              <h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${target.name}</h4>
+              <p style="color: #d4c4a0; margin: 0 0 10px 0; font-size: 0.9em;">${target.description}</p>
               
               <div style="background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 6px; margin-bottom: 10px;">
-                <div style="font-size: 0.85em; color: #ecf0f1; margin-bottom: 5px; font-weight: bold;">Benefits:</div>
+                <div style="font-size: 0.85em; color: #f5e6c8; margin-bottom: 5px; font-weight: bold;">Benefits:</div>
                 <div style="display: flex; flex-wrap: wrap; gap: 5px;">`;
       
       Object.entries(target.benefits).forEach(([key, value]) => {
         if (key !== 'duration') {
           const bonus = typeof value === 'number' ? Math.round(value * 100) : value;
-          html += `<span style="background: rgba(46, 204, 113, 0.3); padding: 1px 4px; border-radius: 3px; 
-                  font-size: 0.75em; color: #2ecc71;">${bonus}% ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}</span>`;
+          html += `<span style="background: rgba(138, 154, 106, 0.3); padding: 1px 4px; border-radius: 3px; 
+                  font-size: 0.75em; color: #8a9a6a;">${bonus}% ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}</span>`;
         }
       });
       
       html += `
                 </div>
-                <div style="margin-top: 5px; font-size: 0.8em; color: #f39c12;">
+                <div style="margin-top: 5px; font-size: 0.8em; color: #c0a040;">
                   Duration: ${target.benefits.duration} days
                 </div>
               </div>
               
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <span style="background: rgba(155, 89, 182, 0.3); padding: 2px 6px; border-radius: 4px; 
-                      font-size: 0.8em; color: #9b59b6;">Influence: ${target.influence}</span>
+                      font-size: 0.8em; color: #8b6a4a;">Influence: ${target.influence}</span>
                 <span style="background: rgba(231, 76, 60, 0.3); padding: 2px 6px; border-radius: 4px; 
-                      font-size: 0.8em; color: #e74c3c;">Risk: ${target.riskLevel}</span>
+                      font-size: 0.8em; color: #8b3a3a;">Risk: ${target.riskLevel}</span>
               </div>
             </div>
             <div style="text-align: right; min-width: 120px;">
-              <div style="color: #f39c12; font-weight: bold; font-size: 1.1em;">$${target.baseCost.toLocaleString()}</div>
-              <div style="color: #bdc3c7; font-size: 0.8em;">Bribe Cost</div>
+              <div style="color: #c0a040; font-weight: bold; font-size: 1.1em;">$${target.baseCost.toLocaleString()}</div>
+              <div style="color: #d4c4a0; font-size: 0.8em;">Bribe Cost</div>
               <button onclick="corruptOfficial('${target.id}')" 
-                  style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #8e44ad, #9b59b6); 
+                  style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #7a5a3a, #8b6a4a); 
                       border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;
                       ${!canAfford ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
                 Bribe
               </button>
-              ${!canAfford ? `<div style="text-align: center; margin-top: 5px; font-size: 0.8em; color: #e74c3c;">
+              ${!canAfford ? `<div style="text-align: center; margin-top: 5px; font-size: 0.8em; color: #8b3a3a;">
                 Need $${(target.baseCost - player.money).toLocaleString()} more
               </div>` : ''}
             </div>
@@ -5903,7 +5903,7 @@ function showCorruption() {
   html += `
     <div style="text-align: center; margin-top: 25px;">
       <button onclick="window._opsActiveTab='rackets'; showMissions();" 
-          style="padding: 12px 30px; background: linear-gradient(135deg, #95a5a6, #7f8c8d); 
+          style="padding: 12px 30px; background: linear-gradient(135deg, #8a7a5a, #6a5a3a); 
               border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
         ← Back to Operations
       </button>
@@ -5916,19 +5916,19 @@ function showCorruption() {
 
 // Helper Functions for Territory Control
 function getHeatColor(heat) {
-  if (heat < 0.3) return '#2ecc71';
-  if (heat < 0.6) return '#f39c12';
-  return '#e74c3c';
+  if (heat < 0.3) return '#8a9a6a';
+  if (heat < 0.6) return '#c0a040';
+  return '#8b3a3a';
 }
 
 function getRiskColor(riskLevel) {
   switch(riskLevel) {
-    case 'low': return '#2ecc71';
-    case 'medium': return '#f39c12';
-    case 'high': return '#e74c3c';
-    case 'very high': return '#e74c3c';
-    case 'extreme': return '#9b59b6';
-    default: return '#bdc3c7';
+    case 'low': return '#8a9a6a';
+    case 'medium': return '#c0a040';
+    case 'high': return '#8b3a3a';
+    case 'very high': return '#8b3a3a';
+    case 'extreme': return '#8b6a4a';
+    default: return '#d4c4a0';
   }
 }
 
@@ -5952,18 +5952,18 @@ function generateTurfOverviewHTML() {
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
           <strong style="color:${fam.color}; font-size:1.1em;">${fam.icon}</strong>
-          <span style="color:#bdc3c7; margin-left:10px;">Rank: <strong style="color:#f1c40f;">${rankLabel}</strong></span>
+          <span style="color:#d4c4a0; margin-left:10px;">Rank: <strong style="color:#c0a040;">${rankLabel}</strong></span>
         </div>
-        <div style="color:#bdc3c7; font-size:0.9em;">${fam.buff.name}: ${fam.buff.description}</div>
+        <div style="color:#d4c4a0; font-size:0.9em;">${fam.buff.name}: ${fam.buff.description}</div>
       </div>
     </div>`;
   } else {
     html += `
     <div style="background:rgba(231,76,60,0.2); padding:20px; border-radius:10px; text-align:center;">
       <div style="font-size:3em; margin-bottom:10px;"></div>
-      <div style="color:#e74c3c; font-weight:bold; font-size:1.1em; margin-bottom:8px;">No Family Allegiance</div>
-      <p style="color:#bdc3c7; margin:0 0 15px 0;">Choose a family to pledge your loyalty. Each family offers a unique story and buff.</p>
-      <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#e74c3c,#c0392b); border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">
+      <div style="color:#8b3a3a; font-weight:bold; font-size:1.1em; margin-bottom:8px;">No Family Allegiance</div>
+      <p style="color:#d4c4a0; margin:0 0 15px 0;">Choose a family to pledge your loyalty. Each family offers a unique story and buff.</p>
+      <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#8b3a3a,#7a2a2a); border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">
         Choose Your Family
       </button>
     </div>`;
@@ -5973,27 +5973,27 @@ function generateTurfOverviewHTML() {
   html += `
     <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:15px;">
       <div style="flex:1; min-width:120px; background:rgba(52,152,219,0.2); padding:15px; border-radius:10px; text-align:center;">
-        <div style="font-size:1.6em; color:#3498db;"></div>
-        <div style="font-size:0.9em; color:#bdc3c7;">Turf Power</div>
-        <div style="font-size:1.3em; font-weight:bold; color:#ecf0f1;">${player.turf.power || 100}</div>
+        <div style="font-size:1.6em; color:#c0a062;"></div>
+        <div style="font-size:0.9em; color:#d4c4a0;">Turf Power</div>
+        <div style="font-size:1.3em; font-weight:bold; color:#f5e6c8;">${player.turf.power || 100}</div>
       </div>
-      <div style="flex:1; min-width:120px; background:rgba(46,204,113,0.2); padding:15px; border-radius:10px; text-align:center;">
-        <div style="font-size:1.6em; color:#2ecc71;"></div>
-        <div style="font-size:0.9em; color:#bdc3c7;">Weekly Income</div>
-        <div style="font-size:1.3em; font-weight:bold; color:#ecf0f1;">$${(player.turf.income || 0).toLocaleString()}</div>
+      <div style="flex:1; min-width:120px; background:rgba(138, 154, 106,0.2); padding:15px; border-radius:10px; text-align:center;">
+        <div style="font-size:1.6em; color:#8a9a6a;"></div>
+        <div style="font-size:0.9em; color:#d4c4a0;">Weekly Income</div>
+        <div style="font-size:1.3em; font-weight:bold; color:#f5e6c8;">$${(player.turf.income || 0).toLocaleString()}</div>
       </div>
       <div style="flex:1; min-width:120px; background:rgba(155,89,182,0.2); padding:15px; border-radius:10px; text-align:center;">
-        <div style="font-size:1.6em; color:#9b59b6;"></div>
-        <div style="font-size:0.9em; color:#bdc3c7;">Turf Zones</div>
-        <div style="font-size:1.3em; font-weight:bold; color:#ecf0f1;">${ownedZones.length} / ${zones.length}</div>
+        <div style="font-size:1.6em; color:#8b6a4a;"></div>
+        <div style="font-size:0.9em; color:#d4c4a0;">Turf Zones</div>
+        <div style="font-size:1.3em; font-weight:bold; color:#f5e6c8;">${ownedZones.length} / ${zones.length}</div>
       </div>
     </div>`;
 
   // ── 3. Turf Map — grid of all zones ──
   html += `
     <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;">
-      <div style="color:#27ae60; font-weight:bold; font-size:1.1em; margin-bottom:10px;">Turf Map</div>
-      <div style="display:flex; flex-wrap:wrap; gap:10px; font-size:0.85em; color:#bdc3c7; margin-bottom:15px;">
+      <div style="color:#7a8a5a; font-weight:bold; font-size:1.1em; margin-bottom:10px;">Turf Map</div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; font-size:0.85em; color:#d4c4a0; margin-bottom:15px;">
         <span>Yours</span> <span>Allied</span> <span>Rival</span> <span>Contested</span> <span>Independent</span>
       </div>
       <div style="display:grid; gap:15px;">`;
@@ -6005,18 +6005,18 @@ function generateTurfOverviewHTML() {
     const isIndependent = zone.controlledBy === 'independent';
     const controllerFamily = (!isOwned && !isAllied && !isContested && !isIndependent) ? RIVAL_FAMILIES[zone.controlledBy] : null;
 
-    const borderColor = isOwned ? '#2ecc71' : isAllied ? '#3498db' : isContested ? '#7f8c8d' : isIndependent ? '#f1c40f' : '#e74c3c';
+    const borderColor = isOwned ? '#8a9a6a' : isAllied ? '#c0a062' : isContested ? '#6a5a3a' : isIndependent ? '#c0a040' : '#8b3a3a';
     const statusLabel = isOwned ? 'Your Turf' : isAllied ? `${fam?.name || 'Allied'}` : isContested ? 'Contested' : isIndependent ? 'Independent' : `${controllerFamily?.name || zone.controlledBy}`;
     const zoneIncome = calculateTurfZoneIncome(zone);
 
     html += `
-      <div style="background:rgba(52,73,94,0.8); padding:18px; border-radius:12px; border-left:4px solid ${borderColor};">
+      <div style="background:rgba(20, 18, 10,0.8); padding:18px; border-radius:12px; border-left:4px solid ${borderColor};">
         <div style="display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:12px;">
           <div style="flex:1; min-width:220px;">
-            <div style="color:#ecf0f1; font-weight:bold; font-size:1.05em; margin-bottom:6px;">${zone.icon} ${zone.name}</div>
-            <p style="color:#bdc3c7; margin:0 0 8px 0; font-size:0.9em;">${zone.description}</p>
-            <div style="font-size:0.85em; color:#bdc3c7;">
-              <span style="color:#2ecc71;">$${zoneIncome.toLocaleString()}/wk</span> |
+            <div style="color:#f5e6c8; font-weight:bold; font-size:1.05em; margin-bottom:6px;">${zone.icon} ${zone.name}</div>
+            <p style="color:#d4c4a0; margin:0 0 8px 0; font-size:0.9em;">${zone.description}</p>
+            <div style="font-size:0.85em; color:#d4c4a0;">
+              <span style="color:#8a9a6a;">$${zoneIncome.toLocaleString()}/wk</span> |
               <span style="color:${getRiskColor(zone.riskLevel)};">${zone.riskLevel}</span>
             </div>
             <div style="margin-top:4px; font-size:0.85em; color:${borderColor};">${statusLabel}</div>`;
@@ -6025,31 +6025,31 @@ function generateTurfOverviewHTML() {
     if (zone.boss && !isOwned) {
       const bossInfo = findBossById(zone.boss);
       if (bossInfo && !(player.turf.bossesDefeated || []).includes(bossInfo.id)) {
-        html += `<div style="margin-top:4px; font-size:0.85em; color:#e74c3c;">Boss: ${bossInfo.name} (Power: ${bossInfo.power})</div>`;
+        html += `<div style="margin-top:4px; font-size:0.85em; color:#8b3a3a;">Boss: ${bossInfo.name} (Power: ${bossInfo.power})</div>`;
       }
     }
     if (zone.don && !isOwned) {
       const donInfo = findBossById(zone.don);
       if (donInfo && !(player.turf.donsDefeated || []).includes(donInfo.id)) {
-        html += `<div style="margin-top:4px; font-size:0.85em; color:#9b59b6;">Don: ${donInfo.name} (Power: ${donInfo.power})</div>`;
+        html += `<div style="margin-top:4px; font-size:0.85em; color:#8b6a4a;">Don: ${donInfo.name} (Power: ${donInfo.power})</div>`;
       }
     }
 
     html += `</div><div style="text-align:right; min-width:140px;">`;
 
     if (isOwned) {
-      html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#3498db,#2980b9);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
+      html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#c0a062,#a08850);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
     } else if (isAllied) {
-      html += `<div style="color:#3498db; font-size:0.9em; padding:10px;">Allied territory</div>`;
+      html += `<div style="color:#c0a062; font-size:0.9em; padding:10px;">Allied territory</div>`;
     } else {
       const canAttack = (player.turf.power || 100) >= zone.defenseRequired;
       html += `
         <div style="margin-bottom:8px; font-size:0.8em; text-align:center;">
-          <div style="color:#9b59b6;">Defense: ${zone.defenseRequired}</div>
-          <div style="font-size:0.75em; color:#bdc3c7;">(Your power: ${player.turf.power || 100})</div>
+          <div style="color:#8b6a4a;">Defense: ${zone.defenseRequired}</div>
+          <div style="font-size:0.75em; color:#d4c4a0;">(Your power: ${player.turf.power || 100})</div>
         </div>
         <button onclick="attackTurfZone('${zone.id}')" 
-          style="width:100%;padding:10px;background:linear-gradient(135deg,#e74c3c,#c0392b);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;${!canAttack ? 'opacity:0.6;cursor:not-allowed;' : ''}">
+          style="width:100%;padding:10px;background:linear-gradient(135deg,#8b3a3a,#7a2a2a);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;${!canAttack ? 'opacity:0.6;cursor:not-allowed;' : ''}">
           Attack
         </button>`;
     }
@@ -6063,7 +6063,7 @@ function generateTurfOverviewHTML() {
   if (ownedZones.length > 0) {
     html += `
     <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;">
-      <div style="color:#e74c3c; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Your Turf</div>
+      <div style="color:#8b3a3a; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Your Turf</div>
       <div style="display:grid; gap:15px;">`;
 
     ownedZones.forEach(zone => {
@@ -6072,18 +6072,18 @@ function generateTurfOverviewHTML() {
       const fortLevel = (player.turf.fortifications || {})[zone.id] || 0;
 
       html += `
-        <div style="background:rgba(52,73,94,0.8); padding:15px; border-radius:10px; border-left:4px solid ${getHeatColor(heatLevel)};">
+        <div style="background:rgba(20, 18, 10,0.8); padding:15px; border-radius:10px; border-left:4px solid ${getHeatColor(heatLevel)};">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
             <div style="flex:1; min-width:200px;">
-              <div style="color:#ecf0f1; font-weight:bold;">${zone.icon} ${zone.name}</div>
-              <div style="font-size:0.8em; color:#95a5a6; margin-top:4px;">Fort Lv ${fortLevel} | Heat: ${heatLevel.toFixed(1)}</div>
+              <div style="color:#f5e6c8; font-weight:bold;">${zone.icon} ${zone.name}</div>
+              <div style="font-size:0.8em; color:#8a7a5a; margin-top:4px;">Fort Lv ${fortLevel} | Heat: ${heatLevel.toFixed(1)}</div>
             </div>
             <div style="text-align:right; min-width:120px;">
-              <div style="color:#2ecc71; font-weight:bold;">$${income.toLocaleString()}/week</div>
+              <div style="color:#8a9a6a; font-weight:bold;">$${income.toLocaleString()}/week</div>
             </div>
           </div>
           <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-            <button onclick="manageTurfDetails('${zone.id}')" style="padding:5px 10px; background:#3498db; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Manage</button>
+            <button onclick="manageTurfDetails('${zone.id}')" style="padding:5px 10px; background:#c0a062; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Manage</button>
             <button onclick="fortifyTurf('${zone.id}')" style="padding:5px 10px; background:#e67e22; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Fortify</button>
           </div>
         </div>`;
@@ -6093,8 +6093,8 @@ function generateTurfOverviewHTML() {
     html += `
     <div style="background:rgba(231,76,60,0.2); padding:20px; border-radius:10px; text-align:center;">
       <div style="font-size:3em; margin-bottom:10px;"></div>
-      <div style="color:#e74c3c; font-weight:bold; margin-bottom:8px;">No Turf Controlled</div>
-      <p style="color:#bdc3c7; margin:0;">Every zone is held by a rival family. Complete missions and fight for control!</p>
+      <div style="color:#8b3a3a; font-weight:bold; margin-bottom:8px;">No Turf Controlled</div>
+      <p style="color:#d4c4a0; margin:0;">Every zone is held by a rival family. Complete missions and fight for control!</p>
     </div>`;
   }
 
@@ -6109,13 +6109,13 @@ function generateRacketsHTML() {
   // ══════════ Protection Rackets ══════════
   html += `
   <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;">
-    <div style="color:#f39c12; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Protection Rackets</div>`;
+    <div style="color:#c0a040; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Protection Rackets</div>`;
 
   // Active rackets
   if ((player.protectionRackets || []).length > 0) {
     html += `
     <div style="margin-bottom:15px;">
-      <div style="color:#f39c12; font-size:0.95em; margin-bottom:10px;">Active Rackets</div>
+      <div style="color:#c0a040; font-size:0.95em; margin-bottom:10px;">Active Rackets</div>
       <div style="display:grid; gap:12px;">`;
 
     player.protectionRackets.forEach(racket => {
@@ -6126,22 +6126,22 @@ function generateRacketsHTML() {
       const zoneName = turfZone ? turfZone.name : 'Unknown Turf';
 
       html += `
-        <div style="background:rgba(52,73,94,0.8); padding:15px; border-radius:10px;">
+        <div style="background:rgba(20, 18, 10,0.8); padding:15px; border-radius:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
             <div style="flex:1; min-width:200px;">
-              <div style="color:#ecf0f1; font-weight:bold;">${business.name}</div>
-              <p style="color:#bdc3c7; margin:4px 0; font-size:0.9em;">${business.description}</p>
-              <div style="font-size:0.8em; color:#95a5a6;">${zoneName}</div>
+              <div style="color:#f5e6c8; font-weight:bold;">${business.name}</div>
+              <p style="color:#d4c4a0; margin:4px 0; font-size:0.9em;">${business.description}</p>
+              <div style="font-size:0.8em; color:#8a7a5a;">${zoneName}</div>
             </div>
             <div style="text-align:right; min-width:120px;">
-              <div style="color:#f39c12; font-weight:bold;">$${racket.weeklyPayment.toLocaleString()}/wk</div>
-              <div style="color:#bdc3c7; font-size:0.9em;">Fear: ${racket.fearLevel.toFixed(1)}</div>
+              <div style="color:#c0a040; font-weight:bold;">$${racket.weeklyPayment.toLocaleString()}/wk</div>
+              <div style="color:#d4c4a0; font-size:0.9em;">Fear: ${racket.fearLevel.toFixed(1)}</div>
             </div>
           </div>
           <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-            <button onclick="collectProtection('${racket.id}')" style="padding:5px 10px; background:#27ae60; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Collect</button>
+            <button onclick="collectProtection('${racket.id}')" style="padding:5px 10px; background:#7a8a5a; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Collect</button>
             <button onclick="pressureBusiness('${racket.id}')" style="padding:5px 10px; background:#e67e22; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Pressure</button>
-            <button onclick="dropProtection('${racket.id}')" style="padding:5px 10px; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Drop</button>
+            <button onclick="dropProtection('${racket.id}')" style="padding:5px 10px; background:#8b3a3a; border:none; border-radius:5px; color:white; cursor:pointer; font-size:0.8em;">Drop</button>
           </div>
         </div>`;
     });
@@ -6153,26 +6153,26 @@ function generateRacketsHTML() {
   if (availableBusinesses.length > 0) {
     html += `
     <div>
-      <div style="color:#27ae60; font-size:0.95em; margin-bottom:10px;">Available Businesses</div>
+      <div style="color:#7a8a5a; font-size:0.95em; margin-bottom:10px;">Available Businesses</div>
       <div style="display:grid; gap:12px;">`;
 
     availableBusinesses.forEach(business => {
       html += `
-        <div style="background:rgba(52,73,94,0.8); padding:15px; border-radius:10px;">
+        <div style="background:rgba(20, 18, 10,0.8); padding:15px; border-radius:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
             <div style="flex:1; min-width:200px;">
-              <div style="color:#ecf0f1; font-weight:bold;">${business.name}</div>
-              <p style="color:#bdc3c7; margin:4px 0; font-size:0.9em;">${business.description}</p>
+              <div style="color:#f5e6c8; font-weight:bold;">${business.name}</div>
+              <p style="color:#d4c4a0; margin:4px 0; font-size:0.9em;">${business.description}</p>
               <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <span style="background:rgba(231,76,60,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#e74c3c;">Risk: ${business.riskLevel}</span>
-                <span style="background:rgba(52,152,219,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#3498db;">Type: ${business.type}</span>
+                <span style="background:rgba(231,76,60,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#8b3a3a;">Risk: ${business.riskLevel}</span>
+                <span style="background:rgba(52,152,219,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#c0a062;">Type: ${business.type}</span>
               </div>
             </div>
             <div style="text-align:right; min-width:120px;">
-              <div style="color:#f39c12; font-weight:bold;">$${business.basePayment.toLocaleString()}/wk</div>
-              <div style="color:#bdc3c7; font-size:0.85em;">Base Rate</div>
+              <div style="color:#c0a040; font-weight:bold;">$${business.basePayment.toLocaleString()}/wk</div>
+              <div style="color:#d4c4a0; font-size:0.85em;">Base Rate</div>
               <button onclick="approachBusiness('${business.id}', '${business.territoryId}')" 
-                style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#27ae60,#2ecc71); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">
+                style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#7a8a5a,#8a9a6a); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">
                 Approach
               </button>
             </div>
@@ -6182,9 +6182,9 @@ function generateRacketsHTML() {
     html += `</div></div>`;
   } else if (!(player.protectionRackets || []).length) {
     html += `
-    <div style="text-align:center; padding:15px; color:#bdc3c7;">
+    <div style="text-align:center; padding:15px; color:#d4c4a0;">
       <div style="font-size:2.5em; margin-bottom:8px;"></div>
-      <div style="color:#e74c3c; font-weight:bold; margin-bottom:4px;">No Businesses Available</div>
+      <div style="color:#8b3a3a; font-weight:bold; margin-bottom:4px;">No Businesses Available</div>
       <p style="margin:0; font-size:0.9em;">Seize turf zones to find businesses that need "protection".</p>
     </div>`;
   }
@@ -6194,13 +6194,13 @@ function generateRacketsHTML() {
   // ══════════ Corruption Network ══════════
   html += `
   <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;">
-    <div style="color:#9b59b6; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Corruption Network</div>`;
+    <div style="color:#8b6a4a; font-weight:bold; font-size:1.1em; margin-bottom:15px;">Corruption Network</div>`;
 
   // Active corruption
   if ((player.corruptedOfficials || []).length > 0) {
     html += `
     <div style="margin-bottom:15px;">
-      <div style="color:#9b59b6; font-size:0.95em; margin-bottom:10px;">Active Corruption</div>
+      <div style="color:#8b6a4a; font-size:0.95em; margin-bottom:10px;">Active Corruption</div>
       <div style="display:grid; gap:12px;">`;
 
     player.corruptedOfficials.forEach(official => {
@@ -6209,20 +6209,20 @@ function generateRacketsHTML() {
       const timeLeft = Math.max(0, (official.expirationDate - Date.now()) / (24 * 60 * 60 * 1000));
 
       html += `
-        <div style="background:rgba(52,73,94,0.8); padding:15px; border-radius:10px;">
+        <div style="background:rgba(20, 18, 10,0.8); padding:15px; border-radius:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
             <div style="flex:1; min-width:200px;">
-              <div style="color:#ecf0f1; font-weight:bold;">${target.name}</div>
-              <p style="color:#bdc3c7; margin:4px 0; font-size:0.9em;">${target.description}</p>
+              <div style="color:#f5e6c8; font-weight:bold;">${target.name}</div>
+              <p style="color:#d4c4a0; margin:4px 0; font-size:0.9em;">${target.description}</p>
               <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <span style="background:rgba(155,89,182,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#9b59b6;">Influence: ${target.influence}</span>
-                <span style="background:rgba(231,76,60,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#e74c3c;">Risk: ${target.riskLevel}</span>
+                <span style="background:rgba(155,89,182,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#8b6a4a;">Influence: ${target.influence}</span>
+                <span style="background:rgba(231,76,60,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#8b3a3a;">Risk: ${target.riskLevel}</span>
               </div>
             </div>
             <div style="text-align:right; min-width:120px;">
-              <div style="color:#9b59b6; font-weight:bold;">${timeLeft.toFixed(1)} days left</div>
+              <div style="color:#8b6a4a; font-weight:bold;">${timeLeft.toFixed(1)} days left</div>
               <button onclick="renewCorruption('${official.id}')" 
-                style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#8e44ad,#9b59b6); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">
+                style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#7a5a3a,#8b6a4a); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">
                 Renew
               </button>
             </div>
@@ -6240,46 +6240,46 @@ function generateRacketsHTML() {
   if (availableTargets.length > 0) {
     html += `
     <div>
-      <div style="color:#27ae60; font-size:0.95em; margin-bottom:10px;">Available Targets</div>
+      <div style="color:#7a8a5a; font-size:0.95em; margin-bottom:10px;">Available Targets</div>
       <div style="display:grid; gap:12px;">`;
 
     availableTargets.forEach(target => {
       const canAfford = player.money >= target.baseCost;
 
       html += `
-        <div style="background:rgba(52,73,94,0.8); padding:15px; border-radius:10px;">
+        <div style="background:rgba(20, 18, 10,0.8); padding:15px; border-radius:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
             <div style="flex:1; min-width:200px;">
-              <div style="color:#ecf0f1; font-weight:bold;">${target.name}</div>
-              <p style="color:#bdc3c7; margin:4px 0; font-size:0.9em;">${target.description}</p>
+              <div style="color:#f5e6c8; font-weight:bold;">${target.name}</div>
+              <p style="color:#d4c4a0; margin:4px 0; font-size:0.9em;">${target.description}</p>
               <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; margin:8px 0;">
-                <div style="font-size:0.85em; color:#ecf0f1; font-weight:bold; margin-bottom:4px;">Benefits:</div>
+                <div style="font-size:0.85em; color:#f5e6c8; font-weight:bold; margin-bottom:4px;">Benefits:</div>
                 <div style="display:flex; flex-wrap:wrap; gap:4px;">`;
 
       Object.entries(target.benefits).forEach(([key, value]) => {
         if (key !== 'duration') {
           const bonus = typeof value === 'number' ? Math.round(value * 100) : value;
-          html += `<span style="background:rgba(46,204,113,0.3); padding:1px 4px; border-radius:3px; font-size:0.75em; color:#2ecc71;">${bonus}% ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}</span>`;
+          html += `<span style="background:rgba(138, 154, 106,0.3); padding:1px 4px; border-radius:3px; font-size:0.75em; color:#8a9a6a;">${bonus}% ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}</span>`;
         }
       });
 
       html += `
                 </div>
-                <div style="margin-top:4px; font-size:0.8em; color:#f39c12;">Duration: ${target.benefits.duration} days</div>
+                <div style="margin-top:4px; font-size:0.8em; color:#c0a040;">Duration: ${target.benefits.duration} days</div>
               </div>
               <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <span style="background:rgba(155,89,182,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#9b59b6;">Influence: ${target.influence}</span>
-                <span style="background:rgba(231,76,60,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#e74c3c;">Risk: ${target.riskLevel}</span>
+                <span style="background:rgba(155,89,182,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#8b6a4a;">Influence: ${target.influence}</span>
+                <span style="background:rgba(231,76,60,0.3); padding:2px 6px; border-radius:4px; font-size:0.8em; color:#8b3a3a;">Risk: ${target.riskLevel}</span>
               </div>
             </div>
             <div style="text-align:right; min-width:120px;">
-              <div style="color:#f39c12; font-weight:bold; font-size:1.1em;">$${target.baseCost.toLocaleString()}</div>
-              <div style="color:#bdc3c7; font-size:0.8em;">Bribe Cost</div>
+              <div style="color:#c0a040; font-weight:bold; font-size:1.1em;">$${target.baseCost.toLocaleString()}</div>
+              <div style="color:#d4c4a0; font-size:0.8em;">Bribe Cost</div>
               <button onclick="corruptOfficial('${target.id}')" 
-                style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#8e44ad,#9b59b6); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;${!canAfford ? 'opacity:0.6;cursor:not-allowed;' : ''}">
+                style="margin-top:8px; padding:8px 15px; background:linear-gradient(135deg,#7a5a3a,#8b6a4a); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;${!canAfford ? 'opacity:0.6;cursor:not-allowed;' : ''}">
                 Bribe
               </button>
-              ${!canAfford ? `<div style="margin-top:4px; font-size:0.8em; color:#e74c3c;">Need $${(target.baseCost - player.money).toLocaleString()} more</div>` : ''}
+              ${!canAfford ? `<div style="margin-top:4px; font-size:0.8em; color:#8b3a3a;">Need $${(target.baseCost - player.money).toLocaleString()} more</div>` : ''}
             </div>
           </div>
         </div>`;
@@ -6306,15 +6306,15 @@ function generateRelocateHTML() {
 
   const currentDistrict = getDistrict(player.currentTerritory);
   const headerNote = currentDistrict
-    ? `Currently in <strong style="color:#2ecc71;">${currentDistrict.shortName}</strong> ${currentDistrict.icon}`
+    ? `Currently in <strong style="color:#8a9a6a;">${currentDistrict.shortName}</strong> ${currentDistrict.icon}`
     : 'You haven\'t chosen a home district yet.';
 
   let html = `<div style="display:flex; flex-direction:column; gap:20px;">`;
 
   // Header
   html += `
-    <div style="background:rgba(44,62,80,0.85); padding:15px; border-radius:10px; text-align:center;">
-      <div style="color:#bdc3c7; font-size:1em;">${headerNote}</div>
+    <div style="background:rgba(20, 18, 10,0.85); padding:15px; border-radius:10px; text-align:center;">
+      <div style="color:#d4c4a0; font-size:1em;">${headerNote}</div>
       ${onCooldown ? `<div style="color:#e67e22; font-size:0.9em; margin-top:6px;">Relocation cooldown: ${cooldownRemaining} min remaining</div>` : ''}
     </div>`;
 
@@ -6325,7 +6325,7 @@ function generateRelocateHTML() {
     const isCurrent = d.id === player.currentTerritory;
     const canAfford = player.money >= d.moveCost;
     const disabled = isCurrent || onCooldown || !canAfford;
-    const borderColor = isCurrent ? '#2ecc71' : disabled ? '#444' : '#555';
+    const borderColor = isCurrent ? '#8a9a6a' : disabled ? '#444' : '#555';
     const opacity = disabled && !isCurrent ? '0.5' : '1';
     const cursor = disabled ? 'default' : 'pointer';
     const onclick = disabled ? '' : `onclick="confirmRelocation('${d.id}')"`;
@@ -6337,9 +6337,9 @@ function generateRelocateHTML() {
     const defRating = terrData.defenseRating || 100;
     const taxTotal = terrData.taxCollected || 0;
     let badge = '';
-    if (isCurrent) badge = '<span style="color:#2ecc71; font-weight:bold;">Current</span>';
+    if (isCurrent) badge = '<span style="color:#8a9a6a; font-weight:bold;">Current</span>';
     else if (onCooldown) badge = `<span style="color:#e67e22;">${cooldownRemaining} min</span>`;
-    else if (!canAfford) badge = '<span style="color:#e74c3c;">Can\'t afford</span>';
+    else if (!canAfford) badge = '<span style="color:#8b3a3a;">Can\'t afford</span>';
 
     // Check alliance membership
     const allianceMembers = (typeof _currentAllianceData !== 'undefined' && _currentAllianceData && _currentAllianceData.myAlliance) ? (_currentAllianceData.myAlliance.members || []) : [];
@@ -6353,10 +6353,10 @@ function generateRelocateHTML() {
         ownerLine = `<span style="color:#ffd700; font-weight:bold;">Owned</span><br>`;
         ownerLine += `<span>Defense: ${defRating} | Tax: $${taxTotal.toLocaleString()}</span><br>`;
       } else if (isAllied) {
-        ownerLine = `<span style="color:#3498db; font-weight:bold;">Allied</span> <span style="color:#888;">(${ownerName})</span><br>`;
+        ownerLine = `<span style="color:#c0a062; font-weight:bold;">Allied</span> <span style="color:#888;">(${ownerName})</span><br>`;
         ownerLine += `<span>Defense: ${defRating} | Tax: $${taxTotal.toLocaleString()}</span><br>`;
       } else {
-        ownerLine = `<span style="color:#e74c3c;">Owner: ${ownerName}</span><br>`;
+        ownerLine = `<span style="color:#8b3a3a;">Owner: ${ownerName}</span><br>`;
         ownerLine += `<span>Defense: ${defRating} | Tax: $${taxTotal.toLocaleString()}</span><br>`;
       }
     } else {
@@ -6365,15 +6365,15 @@ function generateRelocateHTML() {
 
     html += `
       <div ${onclick}
-           style="background:rgba(44,62,80,0.85); border:2px solid ${borderColor}; border-radius:12px;
+           style="background:rgba(20, 18, 10,0.85); border:2px solid ${borderColor}; border-radius:12px;
                   padding:16px; cursor:${cursor}; opacity:${opacity}; transition:all 0.3s ease;
                   text-align:left; min-width:220px; max-width:280px; flex:1;"
-           ${!disabled ? `onmouseover="this.style.borderColor='#e74c3c'; this.style.transform='translateY(-4px)';"
+           ${!disabled ? `onmouseover="this.style.borderColor='#8b3a3a'; this.style.transform='translateY(-4px)';"
                          onmouseout="this.style.borderColor='${borderColor}'; this.style.transform='translateY(0)';"` : ''}>
         <div style="font-size:1.8em; margin-bottom:4px;">${d.icon}</div>
-        <div style="color:#e74c3c; font-weight:bold; font-size:1.05em; margin-bottom:4px;">${d.shortName}</div>
-        <p style="color:#95a5a6; font-size:0.8em; margin:0 0 8px;">${d.description}</p>
-        <div style="font-size:0.8em; color:#bdc3c7; line-height:1.5;">
+        <div style="color:#8b3a3a; font-weight:bold; font-size:1.05em; margin-bottom:4px;">${d.shortName}</div>
+        <p style="color:#8a7a5a; font-size:0.8em; margin:0 0 8px;">${d.description}</p>
+        <div style="font-size:0.8em; color:#d4c4a0; line-height:1.5;">
           ${ownerLine}
           <span>Residents: ${resCount}</span><br>
           <span>Move: $${d.moveCost.toLocaleString()}</span><br>
@@ -6889,90 +6889,90 @@ function showAdminPanel() {
 
   container.innerHTML = `
     <div class="content-header">
-      <h2 style="color: #e74c3c;">Admin Panel</h2>
+      <h2 style="color: #8b3a3a;">Admin Panel</h2>
       <button class="back-btn" onclick="showOptions()">Back to Settings</button>
     </div>
 
-    <div class="section-header" style="color: #e74c3c;">Quick Grants</div>
+    <div class="section-header" style="color: #8b3a3a;">Quick Grants</div>
     <div class="content-card" style="display:flex; flex-wrap:wrap; gap:8px;">
-      <button onclick="adminQuickGrant('money', 100000)" style="border-color:#e74c3c;">+$100K Clean</button>
-      <button onclick="adminQuickGrant('dirtyMoney', 100000)" style="border-color:#e74c3c;">+$100K Dirty</button>
-      <button onclick="adminQuickGrant('skillPoints', 100)" style="border-color:#e74c3c;">+100 Skill Pts</button>
-      <button onclick="adminQuickGrant('experience', 100000)" style="border-color:#e74c3c;">+100K XP</button>
-      <button onclick="adminQuickGrant('energy', 100)" style="border-color:#e74c3c;">+100 Energy</button>
-      <button onclick="adminQuickGrant('health', 100)" style="border-color:#e74c3c;">+100 Health</button>
-      <button onclick="adminQuickGrant('reputation', 500)" style="border-color:#e74c3c;">+500 Rep</button>
-      <button onclick="adminQuickGrant('ammo', 500)" style="border-color:#e74c3c;">+500 Ammo</button>
-      <button onclick="adminLevelUp(10)" style="border-color:#e74c3c;">+10 Levels</button>
+      <button onclick="adminQuickGrant('money', 100000)" style="border-color:#8b3a3a;">+$100K Clean</button>
+      <button onclick="adminQuickGrant('dirtyMoney', 100000)" style="border-color:#8b3a3a;">+$100K Dirty</button>
+      <button onclick="adminQuickGrant('skillPoints', 100)" style="border-color:#8b3a3a;">+100 Skill Pts</button>
+      <button onclick="adminQuickGrant('experience', 100000)" style="border-color:#8b3a3a;">+100K XP</button>
+      <button onclick="adminQuickGrant('energy', 100)" style="border-color:#8b3a3a;">+100 Energy</button>
+      <button onclick="adminQuickGrant('health', 100)" style="border-color:#8b3a3a;">+100 Health</button>
+      <button onclick="adminQuickGrant('reputation', 500)" style="border-color:#8b3a3a;">+500 Rep</button>
+      <button onclick="adminQuickGrant('ammo', 500)" style="border-color:#8b3a3a;">+500 Ammo</button>
+      <button onclick="adminLevelUp(10)" style="border-color:#8b3a3a;">+10 Levels</button>
     </div>
 
-    <div class="section-header" style="color: #e74c3c;">Set Stats Directly</div>
+    <div class="section-header" style="color: #8b3a3a;">Set Stats Directly</div>
     <div class="content-card">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Level (${player.level})</span>
-          <input type="number" id="admin-level" value="${player.level}" min="1" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-level" value="${player.level}" min="1" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>XP (${(player.experience || 0).toLocaleString()})</span>
-          <input type="number" id="admin-xp" value="${player.experience || 0}" min="0" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-xp" value="${player.experience || 0}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Clean Money ($${player.money.toLocaleString()})</span>
-          <input type="number" id="admin-money" value="${player.money}" min="0" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-money" value="${player.money}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Dirty Money ($${(player.dirtyMoney || 0).toLocaleString()})</span>
-          <input type="number" id="admin-dirty" value="${player.dirtyMoney || 0}" min="0" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-dirty" value="${player.dirtyMoney || 0}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Reputation (${player.reputation})</span>
-          <input type="number" id="admin-rep" value="${player.reputation}" min="0" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-rep" value="${player.reputation}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Skill Points (${player.skillPoints || 0})</span>
-          <input type="number" id="admin-sp" value="${player.skillPoints || 0}" min="0" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-sp" value="${player.skillPoints || 0}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Energy (${player.energy}/${player.maxEnergy})</span>
-          <input type="number" id="admin-energy" value="${player.energy}" min="0" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-energy" value="${player.energy}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Health (${player.health})</span>
-          <input type="number" id="admin-health" value="${player.health}" min="0" max="100" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-health" value="${player.health}" min="0" max="100" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Wanted Level (${player.wantedLevel})</span>
-          <input type="number" id="admin-wanted" value="${player.wantedLevel}" min="0" max="100" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-wanted" value="${player.wantedLevel}" min="0" max="100" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Gang Members (${player.gang.members})</span>
-          <input type="number" id="admin-gang" value="${player.gang.members}" min="0" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-gang" value="${player.gang.members}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Ammo (${player.ammo || 0})</span>
-          <input type="number" id="admin-ammo" value="${player.ammo || 0}" min="0" style="padding:6px; background:#1a1a2e; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <input type="number" id="admin-ammo" value="${player.ammo || 0}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
       </div>
       <div style="margin-top:12px; display:flex; gap:8px;">
-        <button onclick="adminApplyStats()" style="border-color:#e74c3c; color:#e74c3c; flex:1;">Apply All Changes</button>
+        <button onclick="adminApplyStats()" style="border-color:#8b3a3a; color:#8b3a3a; flex:1;">Apply All Changes</button>
         <button onclick="adminResetStats()" style="border-color:#ff6b6b; color:#ff6b6b;">Reset to Defaults</button>
       </div>
     </div>
 
-    <div class="section-header" style="color: #e74c3c;">Jail Controls</div>
+    <div class="section-header" style="color: #8b3a3a;">Jail Controls</div>
     <div class="content-card" style="display:flex; flex-wrap:wrap; gap:8px;">
-      <button onclick="adminJailRelease()" style="border-color:#e74c3c;">Release from Jail</button>
-      <button onclick="adminClearWanted()" style="border-color:#e74c3c;">Clear Wanted Level</button>
-      <button onclick="adminFullHeal()" style="border-color:#e74c3c;">Full Heal + Energy</button>
+      <button onclick="adminJailRelease()" style="border-color:#8b3a3a;">Release from Jail</button>
+      <button onclick="adminClearWanted()" style="border-color:#8b3a3a;">Clear Wanted Level</button>
+      <button onclick="adminFullHeal()" style="border-color:#8b3a3a;">Full Heal + Energy</button>
     </div>
 
-    <div class="section-header" style="color: #e74c3c;">Skills (Set All)</div>
+    <div class="section-header" style="color: #8b3a3a;">Skills (Set All)</div>
     <div class="content-card" style="display:flex; flex-wrap:wrap; gap:8px;">
-      <button onclick="adminSetAllSkills(5)" style="border-color:#e74c3c;">Set All Skills to 5</button>
-      <button onclick="adminSetAllSkills(10)" style="border-color:#e74c3c;">Set All Skills to 10</button>
-      <button onclick="adminSetAllSkills(25)" style="border-color:#e74c3c;">Set All Skills to 25</button>
-      <button onclick="adminSetAllSkills(0)" style="border-color:#e74c3c;">Reset All Skills to 0</button>
+      <button onclick="adminSetAllSkills(5)" style="border-color:#8b3a3a;">Set All Skills to 5</button>
+      <button onclick="adminSetAllSkills(10)" style="border-color:#8b3a3a;">Set All Skills to 10</button>
+      <button onclick="adminSetAllSkills(25)" style="border-color:#8b3a3a;">Set All Skills to 25</button>
+      <button onclick="adminSetAllSkills(0)" style="border-color:#8b3a3a;">Reset All Skills to 0</button>
     </div>
   `;
 }
@@ -7164,7 +7164,7 @@ function refreshJobsList() {
   }
 
   if (player.inJail) {
-    jobListElement.innerHTML = '<p style="color: #e74c3c; text-align: center; padding: 20px;">You cannot work while in jail!</p>';
+    jobListElement.innerHTML = '<p style="color: #8b3a3a; text-align: center; padding: 20px;">You cannot work while in jail!</p>';
     return;
   }
 
@@ -7177,7 +7177,7 @@ function refreshJobsList() {
     if (job.special === "car_theft") {
       payoutText = "Steal random car to sell";
     } else if (job.paysDirty) {
-      payoutText = `<span style="color:#e74c3c;">$${job.payout[0].toLocaleString()} to $${job.payout[1].toLocaleString()} (DIRTY MONEY)</span>`;
+      payoutText = `<span style="color:#8b3a3a;">$${job.payout[0].toLocaleString()} to $${job.payout[1].toLocaleString()} (DIRTY MONEY)</span>`;
     } else {
       payoutText = `$${job.payout[0].toLocaleString()} to $${job.payout[1].toLocaleString()}`;
     }
@@ -7264,11 +7264,11 @@ function updateQuickActions() {
 
   // Skip Tutorial button (only visible when tutorials are still active)
   if (localStorage.getItem('tutorialSkipAll') !== '1') {
-    html += `<button onclick="skipAllTutorials(); updateQuickActions();" class="quick-btn" style="border-color:#e74c3c;color:#e74c3c;font-size:0.85em;">Skip Tutorials</button>`;
+    html += `<button onclick="skipAllTutorials(); updateQuickActions();" class="quick-btn" style="border-color:#8b3a3a;color:#8b3a3a;font-size:0.85em;">Skip Tutorials</button>`;
   }
 
   // Help button
-  html += `<button onclick="showHelpScreen()" class="quick-btn" style="border-color:#3498db;color:#3498db;">Help</button>`;
+  html += `<button onclick="showHelpScreen()" class="quick-btn" style="border-color:#c0a062;color:#c0a062;">Help</button>`;
 
   container.innerHTML = html;
 }
@@ -7293,24 +7293,24 @@ function showQuickActionCustomizer() {
     </div>
 
     <div style="max-width:700px;margin:0 auto;">
-      <p style="color:#bdc3c7;text-align:center;margin-bottom:20px;font-size:0.95em;">Pick which shortcuts appear in the right-hand panel.<br>SafeHouse and Save Records are always shown.</p>
+      <p style="color:#d4c4a0;text-align:center;margin-bottom:20px;font-size:0.95em;">Pick which shortcuts appear in the right-hand panel.<br>SafeHouse and Save Records are always shown.</p>
 
       <div id="qa-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:25px;">
         ${unlocked.map(item => {
           const active = current.includes(item.id);
           return `<label data-qaid="${item.id}" onclick="toggleQuickActionPref('${item.id}')" 
             style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;transition:all 0.2s;
-            background:${active ? 'rgba(46,204,113,0.15)' : 'rgba(52,73,94,0.5)'};
-            border:2px solid ${active ? '#2ecc71' : '#555'};">
+            background:${active ? 'rgba(138, 154, 106,0.15)' : 'rgba(20, 18, 10,0.5)'};
+            border:2px solid ${active ? '#8a9a6a' : '#555'};">
             <span style="font-size:1.4em;">${active ? '✅' : '⬜'}</span>
-            <span style="color:#ecf0f1;font-weight:bold;">${item.label}</span>
+            <span style="color:#f5e6c8;font-weight:bold;">${item.label}</span>
           </label>`;
         }).join('')}
       </div>
 
       <div style="text-align:center;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <button onclick="resetQuickActionPrefs()" style="background:#95a5a6;color:#fff;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1em;">←© Reset to Default</button>
-        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#1a1a2e;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
+        <button onclick="resetQuickActionPrefs()" style="background:#8a7a5a;color:#fff;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1em;">←© Reset to Default</button>
+        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
       </div>
     </div>`;
 
@@ -7371,9 +7371,9 @@ function showMobileNavCustomizer() {
     </div>
 
     <div style="max-width:700px;margin:0 auto;">
-      <p style="color:#bdc3c7;text-align:center;margin-bottom:20px;font-size:0.95em;">
+      <p style="color:#d4c4a0;text-align:center;margin-bottom:20px;font-size:0.95em;">
         Choose up to <strong>5 tabs</strong> for your mobile bottom navigation bar.<br>
-        <span style="color:#e74c3c;">Safehouse is locked and always shown.</span>
+        <span style="color:#8b3a3a;">Safehouse is locked and always shown.</span>
       </p>
 
       <div id="mnav-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:25px;">
@@ -7384,11 +7384,11 @@ function showMobileNavCustomizer() {
           return `<label data-mnavid="${id}" onclick="${locked ? '' : `toggleMobileNavTab('${id}')`}" 
             style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;
             cursor:${locked ? 'not-allowed' : 'pointer'};transition:all 0.2s;
-            background:${active ? 'rgba(46,204,113,0.15)' : locked ? 'rgba(139,0,0,0.2)' : 'rgba(52,73,94,0.5)'};
-            border:2px solid ${locked ? '#ff0000' : active ? '#2ecc71' : '#555'};">
+            background:${active ? 'rgba(138, 154, 106,0.15)' : locked ? 'rgba(139,0,0,0.2)' : 'rgba(20, 18, 10,0.5)'};
+            border:2px solid ${locked ? '#ff0000' : active ? '#8a9a6a' : '#555'};">
             <span style="font-size:1.4em;">${locked ? '🔒' : active ? '✅' : '⬜'}</span>
             <div>
-              <span style="color:${locked ? '#ff6b6b' : '#ecf0f1'};font-weight:bold;">${def.label}</span>
+              <span style="color:${locked ? '#ff6b6b' : '#f5e6c8'};font-weight:bold;">${def.label}</span>
               ${locked ? '<br><small style="color:#ff6b6b;">Always shown</small>' : ''}
             </div>
           </label>`;
@@ -7396,17 +7396,17 @@ function showMobileNavCustomizer() {
       </div>
 
       <div style="text-align:center;margin-bottom:15px;">
-        <span id="mnav-count" style="color:#bdc3c7;font-size:0.9em;">Selected: ${currentTabs.length} / 5</span>
+        <span id="mnav-count" style="color:#d4c4a0;font-size:0.9em;">Selected: ${currentTabs.length} / 5</span>
       </div>
 
       <div style="text-align:center;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <button onclick="resetMobileNavTabs()" style="background:#95a5a6;color:#fff;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1em;">↺ Reset to Default</button>
-        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#1a1a2e;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
+        <button onclick="resetMobileNavTabs()" style="background:#8a7a5a;color:#fff;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1em;">↺ Reset to Default</button>
+        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
       </div>
 
       <!-- Live preview -->
       <div style="margin-top:25px;padding:15px;background:rgba(0,0,0,0.4);border-radius:10px;border:1px solid #555;">
-        <p style="color:#95a5a6;text-align:center;margin-bottom:10px;font-size:0.85em;">Preview:</p>
+        <p style="color:#8a7a5a;text-align:center;margin-bottom:10px;font-size:0.85em;">Preview:</p>
         <div id="mnav-preview" style="display:grid;grid-template-columns:repeat(${currentTabs.length}, 1fr);gap:4px;font-family:'Georgia',serif;">
           ${currentTabs.map(id => {
             const def = defs[id];
@@ -7905,30 +7905,30 @@ function showTutorialOverlay(screenId) {
   `;
 
   overlay.innerHTML = `
-    <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #c0a062;
+    <div style="background: linear-gradient(135deg, #14120a, #0d0b07); border: 2px solid #c0a062;
          border-radius: 16px; padding: 30px; max-width: 520px; width: 90%; max-height: 80vh;
          overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); position: relative;">
       <div style="text-align: center; margin-bottom: 20px;">
         <div style="font-size: 2em; margin-bottom: 8px;"></div>
         <h2 style="color: #c0a062; margin: 0; font-size: 1.5em; font-family: 'Georgia', serif;">${content.title}</h2>
-        <p style="color: #7f8c8d; font-size: 0.85em; margin: 6px 0 0;">First time here? Here's what you need to know.</p>
+        <p style="color: #6a5a3a; font-size: 0.85em; margin: 6px 0 0;">First time here? Here's what you need to know.</p>
       </div>
       ${content.sections.map(s => `
-        <div style="background: rgba(52,73,94,0.4); border-left: 3px solid #c0a062; border-radius: 0 8px 8px 0;
+        <div style="background: rgba(20, 18, 10,0.4); border-left: 3px solid #c0a062; border-radius: 0 8px 8px 0;
              padding: 12px 16px; margin-bottom: 10px;">
           <strong style="color: #d4af37; font-size: 1em;">${s.heading}</strong>
-          <p style="color: #bdc3c7; margin: 6px 0 0; font-size: 0.92em; line-height: 1.5;">${s.text}</p>
+          <p style="color: #d4c4a0; margin: 6px 0 0; font-size: 0.92em; line-height: 1.5;">${s.text}</p>
         </div>
       `).join('')}
       <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
         <button onclick="document.getElementById('tutorial-overlay').remove(); markTutorialSeen('${screenId}');"
-          style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #1a1a2e; border: none;
+          style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border: none;
                  padding: 12px 28px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;
                  font-family: 'Georgia', serif;">
           Got It
         </button>
         <button onclick="skipAllTutorials();"
-          style="background: transparent; color: #7f8c8d; border: 1px solid #555;
+          style="background: transparent; color: #6a5a3a; border: 1px solid #555;
                  padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 0.9em;">
           Skip All Tutorials
         </button>
@@ -8032,7 +8032,7 @@ const HELP_TOPICS = [
       <li><strong>Influence</strong> — A measure of your power in the underworld. Used to claim territory and affects your Empire Rating.</li>
     </ul>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Your First Steps</h4>
-    <ol style="color:#bdc3c7; line-height:1.7;">
+    <ol style="color:#d4c4a0; line-height:1.7;">
       <li>Do <strong>Jobs</strong> to earn cash and XP.</li>
       <li>Visit the <strong>Black Market</strong> to buy a weapon and armour.</li>
       <li>Check <strong>Missions</strong> to start your crime family story.</li>
@@ -8058,7 +8058,7 @@ const HELP_TOPICS = [
       <li><strong>Season / Weather</strong> — The current in-game season and weather, which can affect events.</li>
       <li><strong>Bullets / Gas / Respect</strong> — Resource counters shown when you have relevant items or features unlocked.</li>
     </ul>
-    <p style="color:#95a5a6; font-style:italic;">Tip: You can customise which stats appear on the Status Bar in Settings > UI Toggles.</p>
+    <p style="color:#8a7a5a; font-style:italic;">Tip: You can customise which stats appear on the Status Bar in Settings > UI Toggles.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">The Ledger (Activity Log)</h4>
     <p>Located below the status bar, The Ledger is a scrolling log that records everything you do — jobs completed, items bought, fights won or lost, story events, and atmospheric narration. It's your running history of actions and events.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Quick Actions Bar (Right Panel / Mobile Menu)</h4>
@@ -8071,7 +8071,7 @@ const HELP_TOPICS = [
       <li><strong>Help</strong> — Open this guide.</li>
       <li><strong>Energy Quick-Buy</strong> — Buy Coffee, Energy Drinks, or Steroids directly.</li>
     </ul>
-    <p style="color:#95a5a6; font-style:italic;">Tip: On mobile, access quick actions from the hamburger menu or swipe panel.</p>
+    <p style="color:#8a7a5a; font-style:italic;">Tip: On mobile, access quick actions from the hamburger menu or swipe panel.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Navigation Buttons</h4>
     <p>The main SafeHouse screen has buttons for every area of the game. Buttons are locked (greyed out) until you reach the required level. Hover over a locked button to see what level unlocks it.</p>
   `},
@@ -8194,7 +8194,7 @@ const HELP_TOPICS = [
       <li><strong>Lockpicking</strong> — Test your timing skills for small but consistent rewards.</li>
       <li><strong>Number Cracking</strong> — Guess the code for a payout.</li>
     </ul>
-    <p style="color:#e74c3c; font-style:italic;">Warning: The Casino uses your real in-game Cash. There is no guaranteed win — gamble responsibly!</p>
+    <p style="color:#8b3a3a; font-style:italic;">Warning: The Casino uses your real in-game Cash. There is no guaranteed win — gamble responsibly!</p>
   `},
   { id: 'stash-help', icon: '', title: 'Stash & Motor Pool', content: `
     <p>Your inventory and vehicle garage.</p>
@@ -8433,21 +8433,21 @@ function showHelpScreen(topicId) {
     if (topic) {
       html += `
         <div style="max-width: 700px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, rgba(26,26,46,0.9), rgba(22,33,62,0.9));
+          <div style="background: linear-gradient(135deg, rgba(20, 18, 10,0.9), rgba(13, 11, 7,0.9));
                border: 2px solid #c0a062; border-radius: 14px; padding: 24px; margin-bottom: 20px;">
             <h2 style="color: #c0a062; margin: 0 0 16px; font-family: 'Georgia', serif;">
               ${topic.icon} ${topic.title}
             </h2>
-            <div style="color: #bdc3c7; line-height: 1.7; font-size: 0.95em;">
+            <div style="color: #d4c4a0; line-height: 1.7; font-size: 0.95em;">
               ${topic.content}
             </div>
           </div>
           <div style="text-align: center; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <button onclick="showHelpScreen()" style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #1a1a2e;
+            <button onclick="showHelpScreen()" style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a;
               padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
               ← All Topics
             </button>
-            <button onclick="showOptions()" style="background: #34495e; color: #ecf0f1;
+            <button onclick="showOptions()" style="background: #1a1610; color: #f5e6c8;
               padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
               Back to Settings
             </button>
@@ -8460,7 +8460,7 @@ function showHelpScreen(topicId) {
     const tutorialsSkipped = localStorage.getItem('tutorialSkipAll') === '1';
     html += `
       <div style="max-width: 700px; margin: 0 auto;">
-        <p style="color: #bdc3c7; text-align: center; margin-bottom: 20px; font-size: 0.95em;">
+        <p style="color: #d4c4a0; text-align: center; margin-bottom: 20px; font-size: 0.95em;">
           Choose a topic to learn more about any game system.
         </p>
         
@@ -8468,23 +8468,23 @@ function showHelpScreen(topicId) {
           ${HELP_TOPICS.map(topic => `
             <button onclick="showHelpScreen('${topic.id}')"
               style="display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-              background: rgba(52,73,94,0.5); border: 2px solid #555; border-radius: 10px;
+              background: rgba(20, 18, 10,0.5); border: 2px solid #555; border-radius: 10px;
               cursor: pointer; transition: all 0.2s; text-align: left; width: 100%;"
               onmouseover="this.style.borderColor='#c0a062'; this.style.background='rgba(192,160,98,0.15)';"
-              onmouseout="this.style.borderColor='#555'; this.style.background='rgba(52,73,94,0.5)';">
+              onmouseout="this.style.borderColor='#555'; this.style.background='rgba(20, 18, 10,0.5)';">
               <span style="font-size: 1.5em;">${topic.icon}</span>
-              <span style="color: #ecf0f1; font-weight: bold; font-size: 0.95em;">${topic.title}</span>
+              <span style="color: #f5e6c8; font-weight: bold; font-size: 0.95em;">${topic.title}</span>
             </button>
           `).join('')}
         </div>
 
-        <div style="background: rgba(52,73,94,0.3); border: 1px solid #555; border-radius: 10px; padding: 16px; margin-bottom: 20px; text-align: center;">
-          <p style="color: #95a5a6; margin: 0 0 10px; font-size: 0.9em;">
-            Screen tutorials ${tutorialsSkipped ? 'are currently <strong style="color:#e74c3c;">disabled</strong>' : 'are currently <strong style="color:#2ecc71;">enabled</strong>'}.
+        <div style="background: rgba(20, 18, 10,0.3); border: 1px solid #555; border-radius: 10px; padding: 16px; margin-bottom: 20px; text-align: center;">
+          <p style="color: #8a7a5a; margin: 0 0 10px; font-size: 0.9em;">
+            Screen tutorials ${tutorialsSkipped ? 'are currently <strong style="color:#8b3a3a;">disabled</strong>' : 'are currently <strong style="color:#8a9a6a;">enabled</strong>'}.
             These pop up the first time you visit each screen.
           </p>
           <button onclick="${tutorialsSkipped ? 'reEnableTutorials(); showHelpScreen();' : 'skipAllTutorials(); showHelpScreen();'}"
-            style="background: ${tutorialsSkipped ? '#27ae60' : '#e74c3c'}; color: #fff;
+            style="background: ${tutorialsSkipped ? '#7a8a5a' : '#8b3a3a'}; color: #fff;
             padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em;">
             ${tutorialsSkipped ? 'Re-enable Tutorials' : 'Disable All Tutorials'}
           </button>
@@ -8519,8 +8519,8 @@ function syncTutorialToggleButton() {
   if (!btn) return;
   const skipped = localStorage.getItem('tutorialSkipAll') === '1';
   btn.textContent = skipped ? 'Tutorials: Disabled' : 'Tutorials: Enabled';
-  btn.style.borderColor = skipped ? '#e74c3c' : '#2ecc71';
-  btn.style.color = skipped ? '#e74c3c' : '#2ecc71';
+  btn.style.borderColor = skipped ? '#8b3a3a' : '#8a9a6a';
+  btn.style.color = skipped ? '#8b3a3a' : '#8a9a6a';
 }
 window.syncTutorialToggleButton = syncTutorialToggleButton;
 
@@ -8575,7 +8575,7 @@ function showJobs() {
         if (job.special === "car_theft") {
           payoutText = "Steal random car to sell";
         } else if (job.paysDirty) {
-          payoutText = `<span style="color:#e74c3c;">$${job.payout[0].toLocaleString()} to $${job.payout[1].toLocaleString()} (DIRTY MONEY)</span>`;
+          payoutText = `<span style="color:#8b3a3a;">$${job.payout[0].toLocaleString()} to $${job.payout[1].toLocaleString()} (DIRTY MONEY)</span>`;
         } else {
           payoutText = `$${job.payout[0].toLocaleString()} to $${job.payout[1].toLocaleString()}`;
         }
@@ -8593,10 +8593,10 @@ function showJobs() {
           buttonText = `Need ${actualEnergyCost} Energy`;
           isDisabled = true;
         } else if (job.risk === "legendary") {
-          buttonColor = "#9b59b6";
+          buttonColor = "#8b6a4a";
           buttonText = "Legendary Hit";
         } else if (job.risk === "extreme") {
-          buttonColor = "#c0392b";
+          buttonColor = "#7a2a2a";
           buttonText = "Go All In";
         } else if (job.risk === "very high") {
           buttonColor = "#e67e22";
@@ -8703,9 +8703,9 @@ function logAction(message, category) {
 
   // Style chat entries differently
   if (cat === 'chat') {
-    logItem.style.borderLeftColor = '#3498db';
+    logItem.style.borderLeftColor = '#c0a062';
   } else if (cat === 'online') {
-    logItem.style.borderLeftColor = '#9b59b6';
+    logItem.style.borderLeftColor = '#8b6a4a';
   }
 
   // Respect current filter
@@ -8902,8 +8902,8 @@ async function startJob(index) {
     const choice = await modal.show(
       `Plan the ${job.name}`,
       `<p>This is a <strong>${job.risk.toUpperCase()}</strong> risk job. How do you want to play it?</p>
-       <p style="color:#e74c3c;"><strong>Go Loud</strong> — Brute force. Higher success using <em>violence</em>, but more heat & injury risk.</p>
-       <p style="color:#3498db;"><strong>Stay Quiet</strong> — Stealth approach. Higher success using <em>stealth</em>, but lower payout if things go sideways.</p>`,
+       <p style="color:#8b3a3a;"><strong>Go Loud</strong> — Brute force. Higher success using <em>violence</em>, but more heat & injury risk.</p>
+       <p style="color:#c0a062;"><strong>Stay Quiet</strong> — Stealth approach. Higher success using <em>stealth</em>, but lower payout if things go sideways.</p>`,
       [
         { text: 'Go Loud', class: 'modal-btn-primary', value: 'loud', callback: () => true },
         { text: 'Stay Quiet', class: 'modal-btn-secondary', value: 'quiet', callback: () => true },
@@ -8927,23 +8927,23 @@ async function startJob(index) {
     const gangReady = player.gang.members >= 3;
     const carReady = player.selectedCar !== null && player.selectedCar < player.stolenCars.length;
     const gangStatus = gangReady 
-      ? `<span style="color:#2ecc71;">&#10004; ${player.gang.members} soldiers standing by</span>` 
-      : `<span style="color:#e74c3c;">&#10008; Need at least 3 gang members (have ${player.gang.members})</span>`;
+      ? `<span style="color:#8a9a6a;">&#10004; ${player.gang.members} soldiers standing by</span>` 
+      : `<span style="color:#8b3a3a;">&#10008; Need at least 3 gang members (have ${player.gang.members})</span>`;
     const carStatus = carReady 
-      ? `<span style="color:#2ecc71;">&#10004; Getaway vehicle selected: ${player.stolenCars[player.selectedCar].name}</span>` 
+      ? `<span style="color:#8a9a6a;">&#10004; Getaway vehicle selected: ${player.stolenCars[player.selectedCar].name}</span>` 
       : `<span style="color:#e67e22;">&#10008; No getaway vehicle selected (optional but recommended)</span>`;
     
     const modal = new ModalSystem();
     const choice = await modal.show(
       `${job.risk.toUpperCase()} BRIEFING: ${job.name}`,
       `<div style="padding:8px;">
-        <p>This is a <strong style="color:#9b59b6;">${job.risk.toUpperCase()}</strong> operation. Review your readiness:</p>
+        <p>This is a <strong style="color:#8b6a4a;">${job.risk.toUpperCase()}</strong> operation. Review your readiness:</p>
         <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.3); border-radius:5px;">
           <strong>Crew:</strong> ${gangStatus}<br>
           <strong>Vehicle:</strong> ${carStatus}<br>
           <strong>Your Power:</strong> ${player.power} | <strong>Health:</strong> ${player.health}
         </div>
-        <p style="color:#f39c12;">Gang members provide a bonus to success chance. A getaway vehicle boosts your odds further.</p>
+        <p style="color:#c0a040;">Gang members provide a bonus to success chance. A getaway vehicle boosts your odds further.</p>
        </div>`,
       [
         { text: 'Launch Operation', class: 'modal-btn-primary', value: 'go', callback: () => true },
@@ -9566,25 +9566,25 @@ function showCarTheftChoiceResult(stolenCar, wasHurt = false, healthLoss = 0) {
         
         <div class="popup-image-frame">
           <img src="${carImageSrc}" alt="${stolenCar.name}" 
-             style="width:200px;height:150px;border-radius:10px;object-fit:cover;border:3px solid #ecf0f1;margin-bottom:15px;" 
+             style="width:200px;height:150px;border-radius:10px;object-fit:cover;border:3px solid #f5e6c8;margin-bottom:15px;" 
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
           <div class="popup-image-fallback" style="display:none;width:200px;height:150px;">${stolenCar.name}</div>
-          <h3 style="color:#ecf0f1;margin:10px 0;">${stolenCar.name}</h3>
+          <h3 style="color:#f5e6c8;margin:10px 0;">${stolenCar.name}</h3>
         </div>
         
         <div class="popup-section" style="text-align:left;">
           <p style="margin:5px 0;"><strong>Current Value:</strong> $${stolenCar.currentValue.toLocaleString()}</p>
           <p style="margin:5px 0;"><strong>Damage:</strong> ${stolenCar.damagePercentage}%</p>
           <p style="margin:5px 0;"><strong>Base Value:</strong> $${stolenCar.baseValue.toLocaleString()}</p>
-          ${wasHurt ? `<p style="margin:5px 0;color:#e74c3c;"><strong>Health Lost:</strong> ${healthLoss}</p>` : ''}
+          ${wasHurt ? `<p style="margin:5px 0;color:#8b3a3a;"><strong>Health Lost:</strong> ${healthLoss}</p>` : ''}
         </div>
         
         <div class="popup-section" style="border-color:rgba(241,196,15,0.3);">
-          <h3 style="color:#f1c40f;margin-bottom:15px;">What do you want to do with this vehicle?</h3>
+          <h3 style="color:#c0a040;margin-bottom:15px;">What do you want to do with this vehicle?</h3>
           <p class="popup-quote">
             ${wasHurt ? getRandomNarration('carTheftDamaged') : getRandomNarration('carTheftSuccess')}
           </p>
-          <p style="margin:8px 0;color:#e74c3c;font-size:0.9em;">
+          <p style="margin:8px 0;color:#8b3a3a;font-size:0.9em;">
             This vehicle is hot — you can't sell it directly. Scrap it for parts or store it.
           </p>
         </div>
@@ -9601,8 +9601,8 @@ function showCarTheftChoiceResult(stolenCar, wasHurt = false, healthLoss = 0) {
         </div>
         
         <div class="popup-section" style="margin-top:15px;">
-          <p style="margin:0;color:#bdc3c7;font-size:0.9em;">
-            <strong>Tip:</strong> Stolen vehicles can't be sold directly — scrap them for quick parts money, or store and sell later through <strong style="color:#8e44ad;">The Fence</strong> for full black market value. Owning a <strong style="color:#e67e22;">Chop Shop</strong> massively boosts scrap profits!
+          <p style="margin:0;color:#d4c4a0;font-size:0.9em;">
+            <strong>Tip:</strong> Stolen vehicles can't be sold directly — scrap them for quick parts money, or store and sell later through <strong style="color:#7a5a3a;">The Fence</strong> for full black market value. Owning a <strong style="color:#e67e22;">Chop Shop</strong> massively boosts scrap profits!
           </p>
         </div>
     </div>
@@ -9715,17 +9715,17 @@ function showCarTheftResult(stolenCar, wasHurt = false, healthLoss = 0) {
         
         <div class="popup-image-frame">
           <img src="${carImageSrc}" alt="${stolenCar.name}" 
-             style="width:200px;height:150px;border-radius:10px;object-fit:cover;border:3px solid #ecf0f1;margin-bottom:15px;" 
+             style="width:200px;height:150px;border-radius:10px;object-fit:cover;border:3px solid #f5e6c8;margin-bottom:15px;" 
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
           <div class="popup-image-fallback" style="display:none;width:200px;height:150px;">${stolenCar.name}</div>
-          <h3 style="color:#ecf0f1;margin:10px 0;">${stolenCar.name}</h3>
+          <h3 style="color:#f5e6c8;margin:10px 0;">${stolenCar.name}</h3>
         </div>
         
         <div class="popup-section" style="text-align:left;">
           <p style="margin:5px 0;"><strong>Current Value:</strong> $${stolenCar.currentValue.toLocaleString()}</p>
           <p style="margin:5px 0;"><strong>Damage:</strong> ${stolenCar.damagePercentage}%</p>
           <p style="margin:5px 0;"><strong>Base Value:</strong> $${stolenCar.baseValue.toLocaleString()}</p>
-          ${wasHurt ? `<p style="margin:5px 0;color:#e74c3c;"><strong>Health Lost:</strong> ${healthLoss}</p>` : ''}
+          ${wasHurt ? `<p style="margin:5px 0;color:#8b3a3a;"><strong>Health Lost:</strong> ${healthLoss}</p>` : ''}
         </div>
         
         <p class="popup-quote">
@@ -10055,7 +10055,7 @@ function renderSkillTreeUI() {
         prereqText = nodeDef.prereqs.map(req => {
           const reqDef = treeDef.nodes[req.node];
           const reqMet = (treeData[req.node] || 0) >= req.rank;
-          return `<span style="color:${reqMet ? '#2ecc71' : '#e74c3c'}">${reqMet ? '✓' : '✗'} ${reqDef.name} Rank ${req.rank}</span>`;
+          return `<span style="color:${reqMet ? '#8a9a6a' : '#8b3a3a'}">${reqMet ? '✓' : '✗'} ${reqDef.name} Rank ${req.rank}</span>`;
         }).join(' ');
       }
 
@@ -10481,12 +10481,12 @@ function displayPlayerJailPortrait() {
   if (player.portrait && player.name) {
     portraitHTML = `
       <div style="position: relative; display: inline-block; margin: 20px auto;">
-        <div style="background: linear-gradient(135deg, #34495e, #2c3e50); padding: 20px; border-radius: 15px; border: 3px solid #7f8c8d; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
-          <h3 style="color: #e74c3c; margin: 0 0 15px 0; text-align: center;">Prisoner #${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</h3>
+        <div style="background: linear-gradient(135deg, #1a1610, #14120a); padding: 20px; border-radius: 15px; border: 3px solid #6a5a3a; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+          <h3 style="color: #8b3a3a; margin: 0 0 15px 0; text-align: center;">Prisoner #${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</h3>
           <div style="position: relative; display: inline-block;">
             <img src="${player.portrait}" alt="${player.name}" 
                style="width: 120px; height: 120px; border-radius: 10px; object-fit: cover; 
-                  border: 3px solid #95a5a6; filter: grayscale(20%) brightness(0.8);" />
+                  border: 3px solid #8a7a5a; filter: grayscale(20%) brightness(0.8);" />
             
             <!-- Prison bars overlay -->
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
@@ -10499,8 +10499,8 @@ function displayPlayerJailPortrait() {
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
                   background: rgba(0, 0, 0, 0.3); border-radius: 10px; pointer-events: none;"></div>
           </div>
-          <p style="color: #ecf0f1; margin: 15px 0 0 0; text-align: center; font-weight: bold; font-size: 1.1em;">${player.name}</p>
-          <p style="color: #95a5a6; margin: 5px 0 0 0; text-align: center; font-size: 0.9em; font-style: italic;">
+          <p style="color: #f5e6c8; margin: 15px 0 0 0; text-align: center; font-weight: bold; font-size: 1.1em;">${player.name}</p>
+          <p style="color: #8a7a5a; margin: 5px 0 0 0; text-align: center; font-size: 0.9em; font-style: italic;">
             Level ${player.level} Criminal
           </p>
         </div>
@@ -10508,9 +10508,9 @@ function displayPlayerJailPortrait() {
     `;
   } else {
     portraitHTML = `
-      <div style="text-align: center; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; border: 2px solid #7f8c8d; margin: 20px;">
-        <h3 style="color: #e74c3c;">Behind Bars</h3>
-        <p style="color: #ecf0f1;">You sit in your cell, contemplating your choices...</p>
+      <div style="text-align: center; padding: 20px; background: rgba(20, 18, 10, 0.6); border-radius: 10px; border: 2px solid #6a5a3a; margin: 20px;">
+        <h3 style="color: #8b3a3a;">Behind Bars</h3>
+        <p style="color: #f5e6c8;">You sit in your cell, contemplating your choices...</p>
       </div>
     `;
   }
@@ -10539,39 +10539,39 @@ function updatePrisonerList() {
       prisonerHTML += `
         <div style="background: rgba(139, 0, 0, 0.2); padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid #8b0000;">
           <strong style="color: #8b0000;">${p.name}</strong> - Time Left: ${Math.max(0, Math.ceil(p.jailTime))}s
-          <br><small style="color: #e74c3c;">Online Player • Level ${p.level || 1}</small>
-          ${isMe ? '<br><span style="color: #95a5a6; font-style: italic;">That\'s you!</span>' :
-            (player.inJail ? '<br><span style="color: #95a5a6; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" style="margin-top: 8px; background: #f39c12; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`)}
+          <br><small style="color: #8b3a3a;">Online Player • Level ${p.level || 1}</small>
+          ${isMe ? '<br><span style="color: #8a7a5a; font-style: italic;">That\'s you!</span>' :
+            (player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
+            `<br><button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" style="margin-top: 8px; background: #c0a040; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`)}
         </div>
       `;
     });
   } else {
-    prisonerHTML += `<p style="color: #95a5a6; font-style: italic;">No online players currently in jail.</p>`;
+    prisonerHTML += `<p style="color: #8a7a5a; font-style: italic;">No online players currently in jail.</p>`;
   }
   
   prisonerHTML += `</div>`;
   
   // === SECTION 2: Rival Family Members (Server Bots) ===
   prisonerHTML += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(139, 0, 0, 0.15); border-radius: 8px; border: 1px solid #8b0000;">
-    <h4 style="color: #e74c3c; margin: 0 0 5px 0;">Rival Family Members</h4>
-    <p style="color: #95a5a6; margin-bottom: 10px; font-size: 0.85em;">Break out rival family members to earn their respect.</p>`;
+    <h4 style="color: #8b3a3a; margin: 0 0 5px 0;">Rival Family Members</h4>
+    <p style="color: #8a7a5a; margin-bottom: 10px; font-size: 0.85em;">Break out rival family members to earn their respect.</p>`;
   
   if (bots.length > 0) {
     bots.forEach(bot => {
-      const difficultyColor = ['#2ecc71', '#f39c12', '#e74c3c'][bot.difficulty - 1] || '#f39c12';
+      const difficultyColor = ['#8a9a6a', '#c0a040', '#8b3a3a'][bot.difficulty - 1] || '#c0a040';
       const difficultyText = bot.securityLevel || ['Easy', 'Medium', 'Hard'][bot.difficulty - 1] || 'Unknown';
       prisonerHTML += `
-        <div style="background: rgba(52, 73, 94, 0.4); padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid ${difficultyColor};">
-          <strong style="color: #ecf0f1;">${bot.name}</strong> - Sentence: ${bot.sentence}s
+        <div style="background: rgba(20, 18, 10, 0.4); padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid ${difficultyColor};">
+          <strong style="color: #f5e6c8;">${bot.name}</strong> - Sentence: ${bot.sentence}s
           <br><small style="color: ${difficultyColor};">Difficulty: ${difficultyText}</small>
-          ${player.inJail ? '<br><span style="color: #95a5a6; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="margin-top: 8px; background: #3498db; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out (${bot.breakoutSuccess}%)</button>`}
+          ${player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
+            `<br><button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="margin-top: 8px; background: #c0a062; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out (${bot.breakoutSuccess}%)</button>`}
         </div>
       `;
     });
   } else {
-    prisonerHTML += `<p style="color: #95a5a6; font-style: italic;">No rival family members currently locked up.</p>`;
+    prisonerHTML += `<p style="color: #8a7a5a; font-style: italic;">No rival family members currently locked up.</p>`;
   }
   
   prisonerHTML += `</div>`;
@@ -11404,31 +11404,31 @@ function showEventsStatus() {
     <h2>City Status & Events</h2>
     
     <!-- Current Weather -->
-    <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #3498db;">
-      <h3 style="color: #3498db; margin-bottom: 15px;">${weather.icon} Current Weather: ${weather.name}</h3>
+    <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #c0a062;">
+      <h3 style="color: #c0a062; margin-bottom: 15px;">${weather.icon} Current Weather: ${weather.name}</h3>
       <p style="margin-bottom: 10px;">${weather.description}</p>
       <p style="margin-bottom: 10px;"><strong>Season:</strong> ${seasonName}</p>
     </div>
     
     <!-- Active Events -->
-    <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #e74c3c;">
-      <h3 style="color: #e74c3c; margin-bottom: 15px;">Active Events</h3>
+    <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #8b3a3a;">
+      <h3 style="color: #8b3a3a; margin-bottom: 15px;">Active Events</h3>
   `;
   
   if (activeEvents.length === 0) {
-    statusHTML += `<p style="color: #95a5a6;">No special events currently active.</p>`;
+    statusHTML += `<p style="color: #8a7a5a;">No special events currently active.</p>`;
   } else {
     activeEvents.forEach(event => {
       const timeLeft = Math.max(0, event.endTime - Date.now());
       const hoursLeft = Math.ceil(timeLeft / (60 * 60 * 1000));
-      const typeColor = event.type === 'crackdown' ? '#e74c3c' : 
-               event.type === 'news' ? '#f39c12' : '#2ecc71';
+      const typeColor = event.type === 'crackdown' ? '#8b3a3a' : 
+               event.type === 'news' ? '#c0a040' : '#8a9a6a';
       
       statusHTML += `
         <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid ${typeColor};">
           <h4 style="color: ${typeColor}; margin-bottom: 8px;">${event.icon || 'ï¿½'} ${event.name}</h4>
           <p style="margin-bottom: 8px;">${event.description}</p>
-          <p style="color: #f39c12; margin: 0;"><strong>Time Left:</strong> ${hoursLeft} hour(s)</p>
+          <p style="color: #c0a040; margin: 0;"><strong>Time Left:</strong> ${hoursLeft} hour(s)</p>
         </div>
       `;
     });
@@ -11438,18 +11438,18 @@ function showEventsStatus() {
     </div>
     
     <!-- Combined Effects Summary -->
-    <div style="background: rgba(44, 62, 80, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #9b59b6;">
-      <h3 style="color: #9b59b6; margin-bottom: 15px;">Current Effects Summary</h3>
+    <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #8b6a4a;">
+      <h3 style="color: #8b6a4a; margin-bottom: 15px;">Current Effects Summary</h3>
   `;
   
   if (Object.keys(effects).length === 0 || Object.values(effects).every(value => value === 0)) {
-    statusHTML += `<p style="color: #95a5a6;">No special effects currently active - standard operations apply.</p>`;
+    statusHTML += `<p style="color: #8a7a5a;">No special effects currently active - standard operations apply.</p>`;
   } else {
     Object.keys(effects).forEach(effect => {
       const value = effects[effect];
       if (value !== 0) {
         const sign = value > 0 ? '+' : '';
-        const color = value > 0 ? '#2ecc71' : '#e74c3c';
+        const color = value > 0 ? '#8a9a6a' : '#8b3a3a';
         statusHTML += `<p style="color: ${color}; margin: 5px 0;"><strong>${effect}:</strong> ${sign}${(value * 100).toFixed(0)}%</p>`;
       }
     });
@@ -11459,7 +11459,7 @@ function showEventsStatus() {
     </div>
     
     <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-      <button onclick="triggerRandomWeatherChange()" style="background: #3498db; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="triggerRandomWeatherChange()" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
         Check Weather Update
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
@@ -11573,24 +11573,24 @@ function showUnlockToast(items) {
   
   const itemList = items.map(i => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(212,175,55,0.2);">
     <strong style="color:#d4af37;">${i.label}</strong>
-    <small style="color:#bdc3c7;">${i.tip}</small>
+    <small style="color:#d4c4a0;">${i.tip}</small>
   </div>`).join('');
   
   const toast = document.createElement('div');
   toast.id = 'unlock-toast';
   toast.innerHTML = `
     <div style="position:fixed;top:20px;right:20px;z-index:3000;max-width:350px;width:90%;
-          background:linear-gradient(135deg,rgba(44,62,80,0.98),rgba(52,73,94,0.98));
+          background:linear-gradient(135deg,rgba(20, 18, 10,0.98),rgba(20, 18, 10,0.98));
           border:2px solid #d4af37;border-radius:12px;padding:18px;
           box-shadow:0 8px 32px rgba(0,0,0,0.6),0 0 20px rgba(212,175,55,0.2);
           animation:slideInRight 0.4s ease-out;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <h3 style="color:#d4af37;margin:0;font-size:1.1em;">New Unlocks!</h3>
         <button onclick="document.getElementById('unlock-toast').remove()" 
-                style="background:none;border:none;color:#95a5a6;cursor:pointer;font-size:1.2em;padding:0 4px;"></button>
+                style="background:none;border:none;color:#8a7a5a;cursor:pointer;font-size:1.2em;padding:0 4px;"></button>
       </div>
       ${itemList}
-      <p style="color:#7f8c8d;font-size:0.8em;margin:8px 0 0;text-align:center;">Visit the SafeHouse to explore</p>
+      <p style="color:#6a5a3a;font-size:0.8em;margin:8px 0 0;text-align:center;">Visit the SafeHouse to explore</p>
     </div>
   `;
   document.body.appendChild(toast);
@@ -11641,22 +11641,22 @@ function showSafehouseTip() {
   `;
 
   overlay.innerHTML = `
-    <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #c0a062;
+    <div style="background: linear-gradient(135deg, #14120a, #0d0b07); border: 2px solid #c0a062;
          border-radius: 16px; padding: 30px; max-width: 480px; width: 90%;
          box-shadow: 0 20px 60px rgba(0,0,0,0.8); text-align: center;">
       <div style="font-size: 2.5em; margin-bottom: 12px;">&#128161;</div>
       <h2 style="color: #c0a062; margin: 0 0 14px; font-family: 'Georgia', serif; font-size: 1.4em;">Tip: How to Get Started</h2>
-      <p style="color: #bdc3c7; font-size: 1em; line-height: 1.7; margin: 0 0 10px;">
+      <p style="color: #d4c4a0; font-size: 1em; line-height: 1.7; margin: 0 0 10px;">
         Start by running <strong style="color:#d4af37;">Operations</strong> and doing <strong style="color:#d4af37;">Jobs</strong> to earn cash, XP, and level up.
       </p>
-      <p style="color: #bdc3c7; font-size: 0.95em; line-height: 1.7; margin: 0 0 10px;">
+      <p style="color: #d4c4a0; font-size: 0.95em; line-height: 1.7; margin: 0 0 10px;">
         Once you have some money, visit the <strong style="color:#d4af37;">Black Market</strong> for weapons and armour, then check <strong style="color:#d4af37;">The Doctor</strong> when your health is low.
       </p>
-      <p style="color: #95a5a6; font-size: 0.85em; line-height: 1.6; margin: 0 0 20px;">
+      <p style="color: #8a7a5a; font-size: 0.85em; line-height: 1.6; margin: 0 0 20px;">
         More locations and features unlock as you level up. Check <strong>Settings &gt; Help</strong> any time for a full guide.
       </p>
       <button onclick="document.getElementById('safehouse-tip-overlay').remove(); localStorage.setItem('safehouseTipSeen', '1');"
-        style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #1a1a2e; border: none;
+        style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border: none;
                padding: 14px 36px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.05em;
                font-family: 'Georgia', serif; box-shadow: 0 4px 15px rgba(212,175,55,0.4);">
         Got It — Let's Go!
@@ -11680,14 +11680,14 @@ function showPlayerStats() {
   // --- Helper: stat row ---
   function row(label, value, color) {
     return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
-      <span style="color:#bdc3c7;">${label}</span>
-      <span style="color:${color || '#ecf0f1'};font-weight:600;">${value}</span>
+      <span style="color:#d4c4a0;">${label}</span>
+      <span style="color:${color || '#f5e6c8'};font-weight:600;">${value}</span>
     </div>`;
   }
 
   // --- Helper: section card ---
   function card(title, icon, content) {
-    return `<div style="background:rgba(44,62,80,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
+    return `<div style="background:rgba(20, 18, 10,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
       <h3 style="color:#d4af37;margin:0 0 10px;font-size:1.05em;">${icon} ${title}</h3>
       ${content}
     </div>`;
@@ -11699,29 +11699,29 @@ function showPlayerStats() {
   let originHTML = '';
   if (bgInfo) {
     originHTML += row('Background', `${bgInfo.icon} ${bgInfo.name}`, '#d4af37');
-    originHTML += row('Background Bonus', bgInfo.bonusText, '#2ecc71');
+    originHTML += row('Background Bonus', bgInfo.bonusText, '#8a9a6a');
   } else {
-    originHTML += row('Background', 'None chosen', '#7f8c8d');
+    originHTML += row('Background', 'None chosen', '#6a5a3a');
   }
   if (perkInfo) {
-    originHTML += row('Active Perk', `${perkInfo.icon} ${perkInfo.name}`, perkInfo.color || '#e74c3c');
-    originHTML += row('Perk Effect', perkInfo.effect, '#3498db');
+    originHTML += row('Active Perk', `${perkInfo.icon} ${perkInfo.name}`, perkInfo.color || '#8b3a3a');
+    originHTML += row('Perk Effect', perkInfo.effect, '#c0a062');
   } else {
-    originHTML += row('Active Perk', 'None chosen', '#7f8c8d');
+    originHTML += row('Active Perk', 'None chosen', '#6a5a3a');
   }
 
   // ---- SECTION 1: Core Stats ----
   const maxEnergy = 100 + ((st.endurance?.vitality || 0) * 2) + ((st.endurance?.conditioning || 0) * 3);
   const coreHTML = [
     row('Level', player.level, '#d4af37'),
-    row('XP', `${player.experience} / ${player.level * 600 + Math.pow(player.level, 2) * 120 + Math.pow(player.level, 3) * 8}`, '#3498db'),
-    row('Health', `${player.health !== undefined ? player.health : 100} / 100`, '#e74c3c'),
-    row('Energy', `${player.energy !== undefined ? player.energy : maxEnergy} / ${maxEnergy}`, '#2ecc71'),
-    row('Cash', `$${(player.money || 0).toLocaleString()}`, '#27ae60'),
-    row('Dirty Money', `$${(player.dirtyMoney || 0).toLocaleString()}`, '#c0392b'),
+    row('XP', `${player.experience} / ${player.level * 600 + Math.pow(player.level, 2) * 120 + Math.pow(player.level, 3) * 8}`, '#c0a062'),
+    row('Health', `${player.health !== undefined ? player.health : 100} / 100`, '#8b3a3a'),
+    row('Energy', `${player.energy !== undefined ? player.energy : maxEnergy} / ${maxEnergy}`, '#8a9a6a'),
+    row('Cash', `$${(player.money || 0).toLocaleString()}`, '#7a8a5a'),
+    row('Dirty Money', `$${(player.dirtyMoney || 0).toLocaleString()}`, '#7a2a2a'),
     row('Power', player.power || 0, '#e67e22'),
-    row('Reputation', player.reputation || 0, '#9b59b6'),
-    row('Wanted Level', `${player.wantedLevel || 0} / 100`, '#e74c3c'),
+    row('Reputation', player.reputation || 0, '#8b6a4a'),
+    row('Wanted Level', `${player.wantedLevel || 0} / 100`, '#8b3a3a'),
     row('Skill Points', player.skillPoints || 0, '#d4af37'),
   ].join('');
 
@@ -11732,8 +11732,8 @@ function showPlayerStats() {
     const totalPts = Object.values(nodes).reduce((a, b) => a + b, 0);
     if (totalPts === 0) {
       skillTreeOverviewHTML += `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-        <span style="color:#7f8c8d;">${treeDef.icon} ${treeDef.name}</span>
-        <span style="color:#7f8c8d;">No points invested</span>
+        <span style="color:#6a5a3a;">${treeDef.icon} ${treeDef.name}</span>
+        <span style="color:#6a5a3a;">No points invested</span>
       </div>`;
       continue;
     }
@@ -11746,8 +11746,8 @@ function showPlayerStats() {
       const rank = nodes[nodeId] || 0;
       if (rank > 0) {
         skillTreeOverviewHTML += `<div style="display:flex;justify-content:space-between;padding:2px 0 2px 16px;">
-          <span style="color:#bdc3c7;font-size:0.9em;">${nodeDef.icon} ${nodeDef.name}</span>
-          <span style="color:#ecf0f1;font-size:0.9em;">${rank}/${nodeDef.maxRank}</span>
+          <span style="color:#d4c4a0;font-size:0.9em;">${nodeDef.icon} ${nodeDef.name}</span>
+          <span style="color:#f5e6c8;font-size:0.9em;">${rank}/${nodeDef.maxRank}</span>
         </div>`;
       }
     }
@@ -11758,20 +11758,20 @@ function showPlayerStats() {
 
   // ---- SECTION 4: Gang & Territory ----
   const gangHTML = [
-    row('Gang Members', (player.gang.gangMembers || []).length, '#3498db'),
-    row('Max Gang Size', player.realEstate.maxGangMembers || 5, '#ecf0f1'),
+    row('Gang Members', (player.gang.gangMembers || []).length, '#c0a062'),
+    row('Max Gang Size', player.realEstate.maxGangMembers || 5, '#f5e6c8'),
     row('Territories Held', (player.turf?.owned || []).length, '#e67e22'),
-    row('Territory Power', player.territoryPower || 100, '#e74c3c'),
-    row('Territory Rep', player.territoryReputation || 0, '#9b59b6'),
+    row('Territory Power', player.territoryPower || 100, '#8b3a3a'),
+    row('Territory Rep', player.territoryReputation || 0, '#8b6a4a'),
     row('Properties Owned', (player.realEstate.ownedProperties || []).length, '#d4af37'),
-    row('Businesses Owned', (player.businesses || []).length, '#27ae60'),
+    row('Businesses Owned', (player.businesses || []).length, '#7a8a5a'),
   ].join('');
 
   // ---- SECTION 5: Faction Reputation ----
   const factionLabels = { torrino: 'Torrino Family', kozlov: 'Kozlov Bratva', chen: 'Chen Triad', morales: 'Morales Cartel', police: 'Police', civilians: 'Civilians', underground: 'Underground' };
   const factionHTML = Object.entries(player.streetReputation || {}).map(([f, val]) => {
     const label = factionLabels[f] || f;
-    const color = val > 0 ? '#2ecc71' : (val < 0 ? '#e74c3c' : '#7f8c8d');
+    const color = val > 0 ? '#8a9a6a' : (val < 0 ? '#8b3a3a' : '#6a5a3a');
     return row(label, val > 0 ? `+${val}` : val, color);
   }).join('');
 
@@ -11780,23 +11780,23 @@ function showPlayerStats() {
   if (player.equippedWeapon && typeof player.equippedWeapon === 'object') {
     const w = player.equippedWeapon;
     const durText = typeof w.durability === 'number' ? ` [${w.durability}/${w.maxDurability}]` : '';
-    equipHTML += row('Weapon', `${w.name || 'Unknown'} (+${w.power || 0} power)${durText}`, '#e74c3c');
+    equipHTML += row('Weapon', `${w.name || 'Unknown'} (+${w.power || 0} power)${durText}`, '#8b3a3a');
   } else {
-    equipHTML += row('Weapon', 'None equipped', '#7f8c8d');
+    equipHTML += row('Weapon', 'None equipped', '#6a5a3a');
   }
   if (player.equippedArmor && typeof player.equippedArmor === 'object') {
     const a = player.equippedArmor;
     const durText = typeof a.durability === 'number' ? ` [${a.durability}/${a.maxDurability}]` : '';
-    equipHTML += row('Armor', `${a.name || 'Unknown'} (+${a.power || 0} power)${durText}`, '#3498db');
+    equipHTML += row('Armor', `${a.name || 'Unknown'} (+${a.power || 0} power)${durText}`, '#c0a062');
   } else {
-    equipHTML += row('Armor', 'None equipped', '#7f8c8d');
+    equipHTML += row('Armor', 'None equipped', '#6a5a3a');
   }
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
     const v = player.equippedVehicle;
     const durText = typeof v.durability === 'number' ? ` [${v.durability}/${v.maxDurability}]` : '';
     equipHTML += row('Vehicle', `${v.name || 'Unknown'} (+${v.power || 0} power)${durText}`, '#e67e22');
   } else {
-    equipHTML += row('Vehicle', 'None', '#7f8c8d');
+    equipHTML += row('Vehicle', 'None', '#6a5a3a');
   }
 
   // ---- SECTION 7: Playstyle Stats ----
@@ -11814,12 +11814,12 @@ function showPlayerStats() {
   content.innerHTML = `
     <!-- Tab Navigation -->
     <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-      <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#1a1a2e;padding:8px 16px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Player Stats</button>
-      <button id="tab-career" onclick="showPlayerStatsTab('career')" style="background:rgba(52,152,219,0.3);color:#3498db;padding:8px 16px;border:1px solid #3498db;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Career Statistics</button>
-      <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#9b59b6;padding:8px 16px;border:1px solid #9b59b6;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Character Showcase</button>
-      <button id="tab-empire" onclick="showPlayerStatsTab('empire')" style="background:rgba(231,76,60,0.3);color:#e74c3c;padding:8px 16px;border:1px solid #e74c3c;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Rating</button>
+      <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#14120a;padding:8px 16px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Player Stats</button>
+      <button id="tab-career" onclick="showPlayerStatsTab('career')" style="background:rgba(52,152,219,0.3);color:#c0a062;padding:8px 16px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Career Statistics</button>
+      <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#8b6a4a;padding:8px 16px;border:1px solid #8b6a4a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Character Showcase</button>
+      <button id="tab-empire" onclick="showPlayerStatsTab('empire')" style="background:rgba(231,76,60,0.3);color:#8b3a3a;padding:8px 16px;border:1px solid #8b3a3a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Rating</button>
       <button id="tab-overview" onclick="showPlayerStatsTab('overview')" style="background:rgba(230,126,34,0.3);color:#e67e22;padding:8px 16px;border:1px solid #e67e22;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Overview</button>
-      <button id="tab-skills" onclick="showPlayerStatsTab('skills')" style="background:rgba(46,204,113,0.3);color:#2ecc71;padding:8px 16px;border:1px solid #2ecc71;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Expertise</button>
+      <button id="tab-skills" onclick="showPlayerStatsTab('skills')" style="background:rgba(138, 154, 106,0.3);color:#8a9a6a;padding:8px 16px;border:1px solid #8a9a6a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Expertise</button>
     </div>
     
     <!-- Stats Tab (default) -->
@@ -11854,12 +11854,12 @@ window.showPlayerStats = showPlayerStats;
 
 // Tab config for Player Stats screen
 const STATS_TAB_CONFIG = {
-  stats:    { inactive: 'rgba(212,175,55,0.3)', color: '#d4af37', active: '#d4af37', activeText: '#1a1a2e' },
-  career:   { inactive: 'rgba(52,152,219,0.3)', color: '#3498db', active: '#3498db', activeText: '#fff' },
-  showcase: { inactive: 'rgba(155,89,182,0.3)', color: '#9b59b6', active: '#9b59b6', activeText: '#fff' },
-  empire:   { inactive: 'rgba(231,76,60,0.3)',   color: '#e74c3c', active: '#e74c3c', activeText: '#fff' },
+  stats:    { inactive: 'rgba(212,175,55,0.3)', color: '#d4af37', active: '#d4af37', activeText: '#14120a' },
+  career:   { inactive: 'rgba(52,152,219,0.3)', color: '#c0a062', active: '#c0a062', activeText: '#fff' },
+  showcase: { inactive: 'rgba(155,89,182,0.3)', color: '#8b6a4a', active: '#8b6a4a', activeText: '#fff' },
+  empire:   { inactive: 'rgba(231,76,60,0.3)',   color: '#8b3a3a', active: '#8b3a3a', activeText: '#fff' },
   overview: { inactive: 'rgba(230,126,34,0.3)',  color: '#e67e22', active: '#e67e22', activeText: '#fff' },
-  skills:   { inactive: 'rgba(46,204,113,0.3)',  color: '#2ecc71', active: '#2ecc71', activeText: '#fff' },
+  skills:   { inactive: 'rgba(138, 154, 106,0.3)',  color: '#8a9a6a', active: '#8a9a6a', activeText: '#fff' },
 };
 const STATS_TAB_IDS = Object.keys(STATS_TAB_CONFIG);
 
@@ -11956,7 +11956,7 @@ function buildCareerStatisticsHTML() {
   
   return `
     <h2>Criminal Career Statistics</h2>
-    <p style="text-align:center;color:#bdc3c7;">Detailed analysis of your rise through the criminal underworld</p>
+    <p style="text-align:center;color:#d4c4a0;">Detailed analysis of your rise through the criminal underworld</p>
     
     <div class="stats-grid">
       <div class="stat-category">
@@ -12022,10 +12022,10 @@ function buildCareerStatisticsHTML() {
     </div>
     
     <div style="text-align: center; margin-top: 30px;">
-      <button onclick="exportStatistics()" style="background: #3498db; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="exportStatistics()" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
         Export Stats
       </button>
-      <button onclick="resetStatistics()" style="background: #e74c3c; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="resetStatistics()" style="background: #8b3a3a; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
         Reset Stats
       </button>
     </div>
@@ -12039,72 +12039,72 @@ function buildCharacterShowcaseHTML() {
   
   return `
     <div style="max-width: 1000px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #9b59b6; font-size: 2.2em; margin-bottom: 20px;">
+      <h2 style="text-align: center; color: #8b6a4a; font-size: 2.2em; margin-bottom: 20px;">
         Character Showcase
       </h2>
       
       <!-- Export/Import Controls -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
-        <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">Export</h3>
-          <button onclick="exportCharacterShowcase()" style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+        <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8a9a6a;">
+          <h3 style="color: #8a9a6a; margin: 0 0 10px 0;">Export</h3>
+          <button onclick="exportCharacterShowcase()" style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             Export My Story
           </button>
         </div>
-        <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 10px 0;">Import</h3>
-          <button onclick="importCharacterShowcase()" style="background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+        <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a062;">
+          <h3 style="color: #c0a062; margin: 0 0 10px 0;">Import</h3>
+          <button onclick="importCharacterShowcase()" style="background: #c0a062; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             View Others' Stories
           </button>
         </div>
       </div>
       
       <!-- Character Showcase Display -->
-      <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, rgba(44, 62, 80, 0.8) 0%, rgba(52, 73, 94, 0.8) 100%); border-radius: 15px; border: 3px solid ${gradeColor};">
+      <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, rgba(20, 18, 10, 0.8) 0%, rgba(20, 18, 10, 0.8) 100%); border-radius: 15px; border: 3px solid ${gradeColor};">
         <h1 style="color: ${gradeColor}; font-size: 3em; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
           ${showcase.characterName}
         </h1>
-        <h3 style="color: #ecf0f1; margin: 10px 0;">Level ${showcase.level} ${showcase.empireDescription}</h3>
+        <h3 style="color: #f5e6c8; margin: 10px 0;">Level ${showcase.level} ${showcase.empireDescription}</h3>
         <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 15px;">
           <span style="color: ${gradeColor}; font-size: 2em; font-weight: bold;">Grade ${showcase.empireGrade}</span>
-          <span style="color: #bdc3c7;">Empire Rating: ${showcase.empireRating.toLocaleString()}</span>
+          <span style="color: #d4c4a0;">Empire Rating: ${showcase.empireRating.toLocaleString()}</span>
         </div>
       </div>
       
       <!-- Stats Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div style="background: rgba(46, 204, 113, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 15px 0;">Financial Empire</h3>
+        <div style="background: rgba(138, 154, 106, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8a9a6a;">
+          <h3 style="color: #8a9a6a; margin: 0 0 15px 0;">Financial Empire</h3>
           <div style="display: grid; gap: 8px;">
-            <div style="display: flex; justify-content: space-between;"><span>Current Wealth:</span><span style="color: #2ecc71; font-weight: bold;">$${showcase.money.toLocaleString()}</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Total Earned:</span><span style="color: #2ecc71;">$${showcase.totalEarnings.toLocaleString()}</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Businesses:</span><span style="color: #2ecc71;">${showcase.businessCount}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Current Wealth:</span><span style="color: #8a9a6a; font-weight: bold;">$${showcase.money.toLocaleString()}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Total Earned:</span><span style="color: #8a9a6a;">$${showcase.totalEarnings.toLocaleString()}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Businesses:</span><span style="color: #8a9a6a;">${showcase.businessCount}</span></div>
           </div>
         </div>
         
-        <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #e74c3c;">
-          <h3 style="color: #e74c3c; margin: 0 0 15px 0;">Criminal Organization</h3>
+        <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8b3a3a;">
+          <h3 style="color: #8b3a3a; margin: 0 0 15px 0;">Criminal Organization</h3>
           <div style="display: grid; gap: 8px;">
-            <div style="display: flex; justify-content: space-between;"><span>Gang Members:</span><span style="color: #e74c3c; font-weight: bold;">${showcase.gangSize}</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Turf Control:</span><span style="color: #e74c3c;">${showcase.territory}</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Reputation:</span><span style="color: #e74c3c;">${showcase.reputation}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Gang Members:</span><span style="color: #8b3a3a; font-weight: bold;">${showcase.gangSize}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Turf Control:</span><span style="color: #8b3a3a;">${showcase.territory}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Reputation:</span><span style="color: #8b3a3a;">${showcase.reputation}</span></div>
           </div>
         </div>
         
-        <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 15px 0;">Criminal Record</h3>
+        <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #c0a062;">
+          <h3 style="color: #c0a062; margin: 0 0 15px 0;">Criminal Record</h3>
           <div style="display: grid; gap: 8px;">
-            <div style="display: flex; justify-content: space-between;"><span>Jobs Completed:</span><span style="color: #3498db; font-weight: bold;">${showcase.totalJobs}</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Escape Rate:</span><span style="color: #3498db;">${showcase.escapeRate}%</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Power Level:</span><span style="color: #3498db;">${showcase.power}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Jobs Completed:</span><span style="color: #c0a062; font-weight: bold;">${showcase.totalJobs}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Escape Rate:</span><span style="color: #c0a062;">${showcase.escapeRate}%</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Power Level:</span><span style="color: #c0a062;">${showcase.power}</span></div>
           </div>
         </div>
         
-        <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #9b59b6;">
-          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">Career Timeline</h3>
+        <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8b6a4a;">
+          <h3 style="color: #8b6a4a; margin: 0 0 15px 0;">Career Timeline</h3>
           <div style="display: grid; gap: 8px;">
-            <div style="display: flex; justify-content: space-between;"><span>Play Time:</span><span style="color: #9b59b6; font-weight: bold;">${formatPlaytime(showcase.playTime)}</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Challenges:</span><span style="color: #9b59b6;">${showcase.challengesCompleted}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Play Time:</span><span style="color: #8b6a4a; font-weight: bold;">${formatPlaytime(showcase.playTime)}</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Challenges:</span><span style="color: #8b6a4a;">${showcase.challengesCompleted}</span></div>
           </div>
         </div>
       </div>
@@ -12193,14 +12193,14 @@ function updateJailbreakPrisonerList() {
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 250px;">
               <h3 style="color: #8b0000; margin: 0 0 8px 0;">${p.name}</h3>
-              <p><strong>Status:</strong> <span style="color: #e74c3c;">Online Player</span></p>
+              <p><strong>Status:</strong> <span style="color: #8b3a3a;">Online Player</span></p>
               <p><strong>Time Left:</strong> ${Math.max(0, Math.ceil(p.jailTime))}s</p>
               <p><strong>Level:</strong> ${p.level || 1}</p>
               <p><strong>Energy Cost:</strong> 15</p>
             </div>
             <div style="text-align: center; min-width: 180px;">
               <button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" ${energyCheck ? '' : 'disabled'} 
-                      style="margin-top: 10px; width: 100%; background: ${energyCheck ? '#f39c12' : '#555'}; color: white; border: none; padding: 10px; border-radius: 4px; cursor: ${energyCheck ? 'pointer' : 'not-allowed'};">
+                      style="margin-top: 10px; width: 100%; background: ${energyCheck ? '#c0a040' : '#555'}; color: white; border: none; padding: 10px; border-radius: 4px; cursor: ${energyCheck ? 'pointer' : 'not-allowed'};">
                 ${energyCheck ? 'Break Out Player' : 'Not Enough Energy'}
               </button>
             </div>
@@ -12209,7 +12209,7 @@ function updateJailbreakPrisonerList() {
       `;
     });
   } else {
-    prisonerHTML += `<p style="color: #95a5a6; text-align: center; font-style: italic;">No online players currently in jail.</p>`;
+    prisonerHTML += `<p style="color: #8a7a5a; text-align: center; font-style: italic;">No online players currently in jail.</p>`;
   }
   
   prisonerHTML += `</div>`;
@@ -12217,16 +12217,16 @@ function updateJailbreakPrisonerList() {
   // === SECTION 2: Rival Family Members (Server Bots) ===
   prisonerHTML += `
     <div style="margin-bottom: 20px; padding: 15px; background: rgba(139, 0, 0, 0.15); border-radius: 10px; border: 2px solid #8b0000;">
-      <h3 style="color: #e74c3c; margin: 0 0 5px 0;">Rival Family Members</h3>
-      <p style="color: #95a5a6; margin-bottom: 15px; font-size: 0.9em;">Break out members of rival families to earn their respect and loyalty.</p>`;
+      <h3 style="color: #8b3a3a; margin: 0 0 5px 0;">Rival Family Members</h3>
+      <p style="color: #8a7a5a; margin-bottom: 15px; font-size: 0.9em;">Break out members of rival families to earn their respect and loyalty.</p>`;
   
   if (serverBots.length > 0) {
     serverBots.forEach(bot => {
-      const difficultyColor = ['#2ecc71', '#f39c12', '#e74c3c'][bot.difficulty - 1] || '#f39c12';
+      const difficultyColor = ['#8a9a6a', '#c0a040', '#8b3a3a'][bot.difficulty - 1] || '#c0a040';
       const difficultyText = bot.securityLevel || ['Minimum', 'Medium', 'Maximum'][bot.difficulty - 1] || 'Unknown';
       const energyCheck = player.energy >= 15;
       prisonerHTML += `
-        <div style="background: rgba(52, 73, 94, 0.5); padding: 15px; margin: 10px 0; border-radius: 8px; border: 2px solid ${difficultyColor};">
+        <div style="background: rgba(20, 18, 10, 0.5); padding: 15px; margin: 10px 0; border-radius: 8px; border: 2px solid ${difficultyColor};">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 250px;">
               <h3 style="color: ${difficultyColor}; margin: 0 0 8px 0;">${bot.name}</h3>
@@ -12235,9 +12235,9 @@ function updateJailbreakPrisonerList() {
               <p><strong>Energy Cost:</strong> 15</p>
             </div>
             <div style="text-align: center; min-width: 180px;">
-              <p><strong>Success Rate:</strong> <span style="color: #3498db">${bot.breakoutSuccess}%</span></p>
+              <p><strong>Success Rate:</strong> <span style="color: #c0a062">${bot.breakoutSuccess}%</span></p>
               <button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" ${energyCheck ? '' : 'disabled'}
-                      style="margin-top: 10px; width: 100%; background: ${energyCheck ? '#3498db' : '#555'}; color: white; border: none; padding: 10px; border-radius: 4px; cursor: ${energyCheck ? 'pointer' : 'not-allowed'};">
+                      style="margin-top: 10px; width: 100%; background: ${energyCheck ? '#c0a062' : '#555'}; color: white; border: none; padding: 10px; border-radius: 4px; cursor: ${energyCheck ? 'pointer' : 'not-allowed'};">
                 ${energyCheck ? 'Attempt Breakout' : 'Not Enough Energy'}
               </button>
             </div>
@@ -12246,7 +12246,7 @@ function updateJailbreakPrisonerList() {
       `;
     });
   } else {
-    prisonerHTML += `<p style="color: #95a5a6; text-align: center; font-style: italic;">No rival family members currently locked up.</p>`;
+    prisonerHTML += `<p style="color: #8a7a5a; text-align: center; font-style: italic;">No rival family members currently locked up.</p>`;
   }
   
   prisonerHTML += `</div>`;
@@ -12348,16 +12348,16 @@ function showRecruitment() {
     <div style="margin-bottom: 25px; padding: 20px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(192, 160, 98, 0.3);">
       <h4 style="color: #c0a062; margin-top: 0; font-family: 'Georgia', serif;">Experience Level Guide:</h4>
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
-        <div style="padding: 10px; background: rgba(149, 165, 166, 0.2); border: 1px solid #95a5a6; border-radius: 5px;">
-          <strong style="color: #95a5a6;">Levels 1-3: Rookies</strong><br>
+        <div style="padding: 10px; background: rgba(149, 165, 166, 0.2); border: 1px solid #8a7a5a; border-radius: 5px;">
+          <strong style="color: #8a7a5a;">Levels 1-3: Rookies</strong><br>
           <small>Common (85% chance)<br>Standard tribute</small>
         </div>
-        <div style="padding: 10px; background: rgba(52, 152, 219, 0.2); border: 1px solid #3498db; border-radius: 5px;">
-          <strong style="color: #3498db;">Levels 4-6: Experienced</strong><br>
+        <div style="padding: 10px; background: rgba(52, 152, 219, 0.2); border: 1px solid #c0a062; border-radius: 5px;">
+          <strong style="color: #c0a062;">Levels 4-6: Experienced</strong><br>
           <small>Rare (12% chance)<br>+20-80% tribute</small>
         </div>
-        <div style="padding: 10px; background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; border-radius: 5px;">
-          <strong style="color: #e74c3c;">Levels 7-10: Veterans</strong><br>
+        <div style="padding: 10px; background: rgba(231, 76, 60, 0.2); border: 1px solid #8b3a3a; border-radius: 5px;">
+          <strong style="color: #8b3a3a;">Levels 7-10: Veterans</strong><br>
           <small>Legendary (3% chance)<br>+110-200% tribute</small>
         </div>
       </div>
@@ -12367,13 +12367,13 @@ function showRecruitment() {
     <ul style="list-style: none; padding: 0; margin: 0;">
       ${availableRecruits.map((recruit, index) => {
         const canAfford = player.money >= recruit.cost;
-        const levelColor = recruit.experienceLevel <= 3 ? '#95a5a6' : 
-                recruit.experienceLevel <= 6 ? '#3498db' : '#e74c3c';
+        const levelColor = recruit.experienceLevel <= 3 ? '#8a7a5a' : 
+                recruit.experienceLevel <= 6 ? '#c0a062' : '#8b3a3a';
         const levelText = recruit.experienceLevel <= 3 ? 'Rookie' : 
                 recruit.experienceLevel <= 6 ? 'Experienced' : 'Veteran';
         
         return `
-          <li style="margin: 12px 0; padding: 20px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 12px; border: 1px solid ${levelColor}; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+          <li style="margin: 12px 0; padding: 20px; background: linear-gradient(135deg, #14120a 0%, #0d0b07 100%); border-radius: 12px; border: 1px solid ${levelColor}; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
               <div style="flex: 1; min-width: 220px;">
                 <h4 style="color: ${levelColor}; margin: 0 0 10px 0; font-size: 1.2em; font-family: 'Georgia', serif;">${recruit.name}</h4>
@@ -12381,7 +12381,7 @@ function showRecruitment() {
                   <span style="background: ${levelColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; font-weight: bold;">
                     Level ${recruit.experienceLevel} ${levelText}
                   </span>
-                  <span style="background: rgba(52, 73, 94, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; margin-left: 8px;">
+                  <span style="background: rgba(20, 18, 10, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; margin-left: 8px;">
                     ${recruit.specialization}
                   </span>
                 </div>
@@ -12390,12 +12390,12 @@ function showRecruitment() {
                 </div>
               </div>
               <div style="text-align: right; margin-left: 15px;">
-                <div style="font-size: 1.2em; font-weight: bold; color: #f39c12; margin-bottom: 10px;">
+                <div style="font-size: 1.2em; font-weight: bold; color: #c0a040; margin-bottom: 10px;">
                   $${recruit.cost.toLocaleString()}
                 </div>
                 <button onclick="recruitMember(${index})" 
                     ${canAfford ? '' : 'disabled'} 
-                    style="background: ${canAfford ? 'linear-gradient(180deg, #27ae60, #1a7a40)' : '#555'}; 
+                    style="background: ${canAfford ? 'linear-gradient(180deg, #7a8a5a, #1a7a40)' : '#555'}; 
                         color: white; padding: 12px 20px; border: none; border-radius: 8px; 
                         font-weight: bold; cursor: ${canAfford ? 'pointer' : 'not-allowed'}; 
                         font-size: 15px; font-family: 'Georgia', serif; transition: all 0.3s ease;">
@@ -12560,12 +12560,12 @@ function showStore(activeTab) {
     return `<button onclick="switchBlackMarketTab('${tab.id}')" 
         title="${tab.tip}"
         style="padding: 12px 20px; border: 2px solid ${isActive ? '#c0a062' : '#555'}; 
-        background: ${isActive ? 'rgba(192, 160, 98, 0.25)' : 'rgba(52, 73, 94, 0.4)'}; 
-        color: ${isActive ? '#c0a062' : '#bdc3c7'}; border-radius: 10px 10px 0 0; cursor: pointer; 
+        background: ${isActive ? 'rgba(192, 160, 98, 0.25)' : 'rgba(20, 18, 10, 0.4)'}; 
+        color: ${isActive ? '#c0a062' : '#d4c4a0'}; border-radius: 10px 10px 0 0; cursor: pointer; 
         font-weight: ${isActive ? 'bold' : 'normal'}; font-size: 1em; transition: all 0.2s ease;
         border-bottom: ${isActive ? '2px solid transparent' : '2px solid #555'};"
         onmouseover="if(!${isActive}) { this.style.borderColor='#c0a062'; this.style.color='#c0a062'; }" 
-        onmouseout="if(!${isActive}) { this.style.borderColor='${isActive ? '#c0a062' : '#555'}'; this.style.color='${isActive ? '#c0a062' : '#bdc3c7'}'; }">
+        onmouseout="if(!${isActive}) { this.style.borderColor='${isActive ? '#c0a062' : '#555'}'; this.style.color='${isActive ? '#c0a062' : '#d4c4a0'}'; }">
       ${tab.label}
     </button>`;
   }).join('');
@@ -12624,11 +12624,11 @@ function buildBuyTabContent() {
     const isActive = cat.id === _currentStoreTab;
     return `<button onclick="switchStoreTab('${cat.id}')" 
         style="padding: 10px 16px; border: 2px solid ${isActive ? '#c0a062' : '#555'}; 
-        background: ${isActive ? 'rgba(192, 160, 98, 0.25)' : 'rgba(52, 73, 94, 0.4)'}; 
-        color: ${isActive ? '#c0a062' : '#bdc3c7'}; border-radius: 8px; cursor: pointer; 
+        background: ${isActive ? 'rgba(192, 160, 98, 0.25)' : 'rgba(20, 18, 10, 0.4)'}; 
+        color: ${isActive ? '#c0a062' : '#d4c4a0'}; border-radius: 8px; cursor: pointer; 
         font-weight: ${isActive ? 'bold' : 'normal'}; font-size: 0.9em; transition: all 0.2s ease;"
         onmouseover="if(!${isActive}) { this.style.borderColor='#c0a062'; this.style.color='#c0a062'; }" 
-        onmouseout="if(!${isActive}) { this.style.borderColor='#555'; this.style.color='#bdc3c7'; }">
+        onmouseout="if(!${isActive}) { this.style.borderColor='#555'; this.style.color='#d4c4a0'; }">
       ${cat.icon} ${cat.label}
     </button>`;
   }).join('');
@@ -12638,21 +12638,21 @@ function buildBuyTabContent() {
     const imageSrc = getItemImage(item.name);
     return `
       <li style="display: flex; align-items: center; gap: 10px; padding: 10px; margin: 5px 0; 
-            background: rgba(39, 174, 96, 0.3); border-radius: 6px; border-left: 3px solid #2ecc71;">
+            background: rgba(122, 138, 90, 0.3); border-radius: 6px; border-left: 3px solid #8a9a6a;">
         <div style="flex-shrink: 0;">
           <img src="${imageSrc}" alt="${item.name}" 
              style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; 
-                border: 2px solid #2ecc71; box-shadow: 0 2px 6px rgba(0,0,0,0.2);" 
+                border: 2px solid #8a9a6a; box-shadow: 0 2px 6px rgba(0,0,0,0.2);" 
              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
           <div style="display: none; width: 50px; height: 50px; border-radius: 6px; 
-                background: #27ae60; align-items: center; justify-content: center; 
-                font-size: 10px; color: white; border: 2px solid #2ecc71; text-align: center;">
+                background: #7a8a5a; align-items: center; justify-content: center; 
+                font-size: 10px; color: white; border: 2px solid #8a9a6a; text-align: center;">
             ${item.name.substring(0, 6)}
           </div>
         </div>
-        <div style="flex: 1; color: #ecf0f1;">
+        <div style="flex: 1; color: #f5e6c8;">
           <strong>${item.name}</strong><br>
-          <small style="color: #bdc3c7;">Power: ${item.power}</small>
+          <small style="color: #d4c4a0;">Power: ${item.power}</small>
         </div>
       </li>
     `;
@@ -12678,41 +12678,41 @@ function buildBuyTabContent() {
 
 function buildFenceTabContent() {
   const rates = getFenceMultiplier();
-  const condColor = rates.marketCondition === 'Hot' ? '#2ecc71' : rates.marketCondition === 'Cold' ? '#e74c3c' : '#f39c12';
+  const condColor = rates.marketCondition === 'Hot' ? '#8a9a6a' : rates.marketCondition === 'Cold' ? '#8b3a3a' : '#c0a040';
 
   let html = `
-    <div style="background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.9)); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #8e44ad;">
-      <h3 style="color: #8e44ad; margin-bottom: 10px;">Today's Fence Rates</h3>
+    <div style="background: linear-gradient(135deg, rgba(20, 18, 10, 0.9), rgba(20, 18, 10, 0.9)); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #7a5a3a;">
+      <h3 style="color: #7a5a3a; margin-bottom: 10px;">Today's Fence Rates</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
         <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
-          <div style="color: #bdc3c7; font-size: 0.8em;">Items</div>
-          <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">${Math.round(rates.items * 100)}%</div>
+          <div style="color: #d4c4a0; font-size: 0.8em;">Items</div>
+          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">${Math.round(rates.items * 100)}%</div>
         </div>
         <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
-          <div style="color: #bdc3c7; font-size: 0.8em;">Vehicles</div>
-          <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">${Math.round(rates.cars * 100)}%</div>
+          <div style="color: #d4c4a0; font-size: 0.8em;">Vehicles</div>
+          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">${Math.round(rates.cars * 100)}%</div>
         </div>
         <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
-          <div style="color: #bdc3c7; font-size: 0.8em;">Contraband</div>
-          <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">${Math.round(rates.drugs * 100)}%</div>
+          <div style="color: #d4c4a0; font-size: 0.8em;">Contraband</div>
+          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">${Math.round(rates.drugs * 100)}%</div>
         </div>
         <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
-          <div style="color: #bdc3c7; font-size: 0.8em;">Market</div>
+          <div style="color: #d4c4a0; font-size: 0.8em;">Market</div>
           <div style="color: ${condColor}; font-size: 1.2em; font-weight: bold;">${rates.marketCondition}</div>
         </div>
       </div>
-      ${rates.heatPenalty > 0.03 ? '<p style="color: #e74c3c; font-size: 0.85em; margin-top: 8px;">Your heat is bringing down prices. Lay low to get better deals.</p>' : ''}
-      ${rates.chopBonus > 0 ? '<p style="color: #2ecc71; font-size: 0.85em; margin-top: 4px;">Chop Shop connection: +' + Math.round(rates.chopBonus * 100) + '% on vehicle sales</p>' : ''}
+      ${rates.heatPenalty > 0.03 ? '<p style="color: #8b3a3a; font-size: 0.85em; margin-top: 8px;">Your heat is bringing down prices. Lay low to get better deals.</p>' : ''}
+      ${rates.chopBonus > 0 ? '<p style="color: #8a9a6a; font-size: 0.85em; margin-top: 4px;">Chop Shop connection: +' + Math.round(rates.chopBonus * 100) + '% on vehicle sales</p>' : ''}
     </div>`;
 
   // === STOLEN CARS SECTION ===
   const stolenCars = player.stolenCars || [];
   html += '<div style="margin-bottom: 20px;">';
   html += '<h3 style="color: #e67e22; margin-bottom: 10px;">Black Market Vehicles (' + stolenCars.length + ')</h3>';
-  html += '<p style="color: #bdc3c7; font-size: 0.85em; margin: 0 0 10px;">Sell stolen cars through The Fence\'s underground network for full black market value.</p>';
+  html += '<p style="color: #d4c4a0; font-size: 0.85em; margin: 0 0 10px;">Sell stolen cars through The Fence\'s underground network for full black market value.</p>';
 
   if (stolenCars.length === 0) {
-    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #7f8c8d;"><p>No stolen vehicles to move. Boost some rides first.</p></div>';
+    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #6a5a3a;"><p>No stolen vehicles to move. Boost some rides first.</p></div>';
   } else {
     html += '<div style="display: grid; gap: 8px;">';
     stolenCars.forEach((car, idx) => {
@@ -12720,18 +12720,18 @@ function buildFenceTabContent() {
       const fencePrice = Math.floor(car.baseValue * (condition / 100) * rates.cars);
       const regularPrice = Math.floor(car.baseValue * (condition / 100) * 0.6);
       const premium = fencePrice - regularPrice;
-      const carCondColor = condition > 70 ? '#2ecc71' : condition > 40 ? '#f39c12' : '#e74c3c';
-      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #34495e; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
-      html += '<div><strong style="color: #ecf0f1;">' + car.name + '</strong><br>';
-      html += '<small style="color: #bdc3c7;">Base: $' + car.baseValue.toLocaleString() + ' | Condition: <span style="color: ' + carCondColor + ';">' + condition.toFixed(0) + '%</span></small><br>';
-      html += '<small style="color: #8e44ad;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #2ecc71;">(+$' + premium.toLocaleString() + ' vs street)</span></small></div>';
-      html += '<button onclick="fenceSellCar(' + idx + ')" style="background: #8e44ad; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+      const carCondColor = condition > 70 ? '#8a9a6a' : condition > 40 ? '#c0a040' : '#8b3a3a';
+      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #1a1610; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
+      html += '<div><strong style="color: #f5e6c8;">' + car.name + '</strong><br>';
+      html += '<small style="color: #d4c4a0;">Base: $' + car.baseValue.toLocaleString() + ' | Condition: <span style="color: ' + carCondColor + ';">' + condition.toFixed(0) + '%</span></small><br>';
+      html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #8a9a6a;">(+$' + premium.toLocaleString() + ' vs street)</span></small></div>';
+      html += '<button onclick="fenceSellCar(' + idx + ')" style="background: #7a5a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
       html += '</div>';
     });
     html += '</div>';
     if (stolenCars.length > 1) {
       const totalCarValue = stolenCars.reduce((sum, car) => sum + Math.floor(car.baseValue * ((100 - car.damagePercentage) / 100) * rates.cars), 0);
-      html += '<button onclick="fenceSellAllCars()" style="background: #c0392b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold;">Sell All Vehicles ($' + totalCarValue.toLocaleString() + ')</button>';
+      html += '<button onclick="fenceSellAllCars()" style="background: #7a2a2a; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold;">Sell All Vehicles ($' + totalCarValue.toLocaleString() + ')</button>';
     }
   }
   html += '</div>';
@@ -12745,20 +12745,20 @@ function buildFenceTabContent() {
 
   // Contraband section
   html += '<div style="margin-bottom: 20px;">';
-  html += '<h3 style="color: #e74c3c; margin-bottom: 10px;">Contraband (' + drugItems.length + ')</h3>';
+  html += '<h3 style="color: #8b3a3a; margin-bottom: 10px;">Contraband (' + drugItems.length + ')</h3>';
   if (drugItems.length === 0) {
-    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #7f8c8d;"><p>No contraband to move. Buy from the Black Market or cook in your Drug Lab.</p></div>';
+    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #6a5a3a;"><p>No contraband to move. Buy from the Black Market or cook in your Drug Lab.</p></div>';
   } else {
     html += '<div style="display: grid; gap: 8px;">';
     drugItems.forEach(item => {
       const globalIdx = player.inventory.indexOf(item);
       const fencePrice = Math.floor(item.price * rates.drugs);
       const maxPayout = item.maxPayout || Math.floor(item.price * 1.5);
-      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #e74c3c40; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
-      html += '<div><strong style="color: #ecf0f1;">' + item.name + '</strong><br>';
-      html += '<small style="color: #bdc3c7;">Bought at: $' + item.price.toLocaleString() + ' | Max street value: $' + maxPayout.toLocaleString() + '</small><br>';
-      html += '<small style="color: #8e44ad;">Fence price: $' + fencePrice.toLocaleString() + '</small></div>';
-      html += '<button onclick="fenceSellItem(' + globalIdx + ', \'drug\')" style="background: #e74c3c; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #8b3a3a40; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
+      html += '<div><strong style="color: #f5e6c8;">' + item.name + '</strong><br>';
+      html += '<small style="color: #d4c4a0;">Bought at: $' + item.price.toLocaleString() + ' | Max street value: $' + maxPayout.toLocaleString() + '</small><br>';
+      html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + '</small></div>';
+      html += '<button onclick="fenceSellItem(' + globalIdx + ', \'drug\')" style="background: #8b3a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
       html += '</div>';
     });
     html += '</div>';
@@ -12767,9 +12767,9 @@ function buildFenceTabContent() {
 
   // Merchandise section
   html += '<div style="margin-bottom: 20px;">';
-  html += '<h3 style="color: #3498db; margin-bottom: 10px;">Merchandise (' + regularItems.length + ')</h3>';
+  html += '<h3 style="color: #c0a062; margin-bottom: 10px;">Merchandise (' + regularItems.length + ')</h3>';
   if (regularItems.length === 0) {
-    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #7f8c8d;"><p>No merchandise to fence. Equipped items can\'t be sold here - unequip first.</p></div>';
+    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #6a5a3a;"><p>No merchandise to fence. Equipped items can\'t be sold here - unequip first.</p></div>';
   } else {
     html += '<div style="display: grid; gap: 8px;">';
     regularItems.forEach(item => {
@@ -12777,11 +12777,11 @@ function buildFenceTabContent() {
       const fencePrice = Math.floor(item.price * rates.items);
       const regularSellPrice = Math.floor(item.price * 0.4);
       const premium = fencePrice - regularSellPrice;
-      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #34495e; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
-      html += '<div><strong style="color: #ecf0f1;">' + item.name + '</strong> ' + (item.power ? '<small style="color: #bdc3c7;">(+' + item.power + ' Power)</small>' : '') + '<br>';
-      html += '<small style="color: #bdc3c7;">Value: $' + item.price.toLocaleString() + ' | Regular sell: $' + regularSellPrice.toLocaleString() + '</small><br>';
-      html += '<small style="color: #8e44ad;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #2ecc71;">(+$' + premium.toLocaleString() + ')</span></small></div>';
-      html += '<button onclick="fenceSellItem(' + globalIdx + ', \'item\')" style="background: #8e44ad; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #1a1610; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
+      html += '<div><strong style="color: #f5e6c8;">' + item.name + '</strong> ' + (item.power ? '<small style="color: #d4c4a0;">(+' + item.power + ' Power)</small>' : '') + '<br>';
+      html += '<small style="color: #d4c4a0;">Value: $' + item.price.toLocaleString() + ' | Regular sell: $' + regularSellPrice.toLocaleString() + '</small><br>';
+      html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #8a9a6a;">(+$' + premium.toLocaleString() + ')</span></small></div>';
+      html += '<button onclick="fenceSellItem(' + globalIdx + ', \'item\')" style="background: #7a5a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
       html += '</div>';
     });
     html += '</div>';
@@ -12789,8 +12789,8 @@ function buildFenceTabContent() {
   html += '</div>';
 
   // Heat warning
-  html += '<div style="padding: 12px; background: rgba(142, 68, 173, 0.15); border-radius: 10px; border: 1px solid #8e44ad40; margin-bottom: 15px; text-align: center;">';
-  html += '<small style="color: #bdc3c7;">Selling through the fence adds heat. Move product carefully.</small>';
+  html += '<div style="padding: 12px; background: rgba(142, 68, 173, 0.15); border-radius: 10px; border: 1px solid #7a5a3a40; margin-bottom: 15px; text-align: center;">';
+  html += '<small style="color: #d4c4a0;">Selling through the fence adds heat. Move product carefully.</small>';
   html += '</div>';
 
   return html;
@@ -12803,20 +12803,20 @@ function buildPlayerMarketTabContent() {
   }
   return `
     <div class="content-card" style="text-align: center; padding: 40px 20px;">
-      <h3 style="color: #2980b9; margin-bottom: 15px;">Player Marketplace</h3>
-      <p style="color: #bdc3c7; margin-bottom: 20px;">Trade vehicles with other players in real-time through The Commission's underground network.</p>
-      <div style="background: rgba(41, 128, 185, 0.15); padding: 20px; border-radius: 12px; border: 1px solid #2980b9; margin-bottom: 20px;">
-        <p style="color: #ecf0f1; margin: 0 0 15px 0;"><strong>Features:</strong></p>
-        <ul style="color: #bdc3c7; text-align: left; list-style: none; padding: 0;">
+      <h3 style="color: #a08850; margin-bottom: 15px;">Player Marketplace</h3>
+      <p style="color: #d4c4a0; margin-bottom: 20px;">Trade vehicles with other players in real-time through The Commission's underground network.</p>
+      <div style="background: rgba(41, 128, 185, 0.15); padding: 20px; border-radius: 12px; border: 1px solid #a08850; margin-bottom: 20px;">
+        <p style="color: #f5e6c8; margin: 0 0 15px 0;"><strong>Features:</strong></p>
+        <ul style="color: #d4c4a0; text-align: left; list-style: none; padding: 0;">
           <li style="margin: 8px 0;">List your stolen vehicles for sale to other players</li>
           <li style="margin: 8px 0;">Set your own asking prices</li>
           <li style="margin: 8px 0;">Browse and buy vehicles from other players</li>
           <li style="margin: 8px 0;">Real-time market listings</li>
         </ul>
       </div>
-      <p style="color: #f39c12; margin-bottom: 20px;">You must be connected to The Commission to access the Player Market.</p>
+      <p style="color: #c0a040; margin-bottom: 20px;">You must be connected to The Commission to access the Player Market.</p>
       <button onclick="if(typeof showOnlineWorld==='function') showOnlineWorld('market'); else showBriefNotification('Online features not available', 'error');" 
-        style="background: linear-gradient(45deg, #2980b9, #1a5276); color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1em;">
+        style="background: linear-gradient(45deg, #a08850, #1a5276); color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1em;">
         Connect to The Commission
       </button>
     </div>
@@ -12835,8 +12835,8 @@ function switchStoreTab(tabId) {
       const btnTabId = btn.getAttribute('onclick').match(/switchStoreTab\('(.*?)'\)/)?.[1];
       const isActive = btnTabId === tabId;
       btn.style.borderColor = isActive ? '#c0a062' : '#555';
-      btn.style.background = isActive ? 'rgba(192, 160, 98, 0.25)' : 'rgba(52, 73, 94, 0.4)';
-      btn.style.color = isActive ? '#c0a062' : '#bdc3c7';
+      btn.style.background = isActive ? 'rgba(192, 160, 98, 0.25)' : 'rgba(20, 18, 10, 0.4)';
+      btn.style.color = isActive ? '#c0a062' : '#d4c4a0';
       btn.style.fontWeight = isActive ? 'bold' : 'normal';
     });
   }
@@ -12874,16 +12874,16 @@ function renderStoreTab(tabId) {
         const bestOwned = ownedSameType.reduce((best, cur) => cur.power > best.power ? cur : best, ownedSameType[0]);
         const diff = item.power - bestOwned.power;
         if (diff > 0) {
-          comparisonHTML = `<div style="margin-top: 4px; color: #2ecc71; font-size: 0.85em;">▲ +${diff} power vs your ${bestOwned.name}</div>`;
+          comparisonHTML = `<div style="margin-top: 4px; color: #8a9a6a; font-size: 0.85em;">▲ +${diff} power vs your ${bestOwned.name}</div>`;
         } else if (diff < 0) {
-          comparisonHTML = `<div style="margin-top: 4px; color: #e74c3c; font-size: 0.85em;">▼ ${diff} power vs your ${bestOwned.name}</div>`;
+          comparisonHTML = `<div style="margin-top: 4px; color: #8b3a3a; font-size: 0.85em;">▼ ${diff} power vs your ${bestOwned.name}</div>`;
         } else {
-          comparisonHTML = `<div style="margin-top: 4px; color: #95a5a6; font-size: 0.85em;">= Same power as your ${bestOwned.name}</div>`;
+          comparisonHTML = `<div style="margin-top: 4px; color: #8a7a5a; font-size: 0.85em;">= Same power as your ${bestOwned.name}</div>`;
         }
       }
     }
     const alreadyOwned = player.inventory.some(inv => inv.name === item.name);
-    const ownedBadge = alreadyOwned ? `<span style="background: #27ae60; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">OWNED</span>` : '';
+    const ownedBadge = alreadyOwned ? `<span style="background: #7a8a5a; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">OWNED</span>` : '';
     
     // Check vehicle requirement
     let requirementMet = true;
@@ -12891,7 +12891,7 @@ function renderStoreTab(tabId) {
     if (item.requiredVehicle) {
       const hasVehicle = player.garage && player.garage.some(car => car.name === item.requiredVehicle);
       requirementMet = hasVehicle;
-      requirementText = `<div style="margin-top: 5px; color: ${hasVehicle ? '#2ecc71' : '#e74c3c'}; font-size: 0.9em;">
+      requirementText = `<div style="margin-top: 5px; color: ${hasVehicle ? '#8a9a6a' : '#8b3a3a'}; font-size: 0.9em;">
         ${hasVehicle ? '✓' : '🚫'} Requires: ${item.requiredVehicle}
       </div>`;
     }
@@ -12906,46 +12906,46 @@ function renderStoreTab(tabId) {
     const btnText = isEquipType && alreadyOwned ? 'Already Owned' : (player.money >= finalPrice ? 'Purchase' : 'Too Expensive');
     
     // Category-specific border color
-    const borderColorMap = { weapon: '#e74c3c', armor: '#3498db', vehicle: '#f39c12', ammo: '#95a5a6', gas: '#95a5a6', energy: '#2ecc71', utility: '#9b59b6', highLevelDrug: '#e67e22' };
-    const borderColor = borderColorMap[item.type] || '#3498db';
+    const borderColorMap = { weapon: '#8b3a3a', armor: '#c0a062', vehicle: '#c0a040', ammo: '#8a7a5a', gas: '#8a7a5a', energy: '#8a9a6a', utility: '#8b6a4a', highLevelDrug: '#e67e22' };
+    const borderColor = borderColorMap[item.type] || '#c0a062';
     
     return `
-      <li style="display: flex; align-items: center; gap: 15px; padding: 15px; margin: 10px 0; background: rgba(52, 73, 94, 0.6); border-radius: 8px; border-left: 4px solid ${borderColor};">
+      <li style="display: flex; align-items: center; gap: 15px; padding: 15px; margin: 10px 0; background: rgba(20, 18, 10, 0.6); border-radius: 8px; border-left: 4px solid ${borderColor};">
         <div style="flex-shrink: 0;">
           <img src="${imageSrc}" alt="${item.name}" 
              style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover; 
-                border: 2px solid #ecf0f1; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" 
+                border: 2px solid #f5e6c8; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" 
              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
           <div style="display: none; width: 80px; height: 80px; border-radius: 8px; 
-                background: #7f8c8d; align-items: center; justify-content: center; 
-                font-size: 12px; color: white; border: 2px solid #ecf0f1; text-align: center;">
+                background: #6a5a3a; align-items: center; justify-content: center; 
+                font-size: 12px; color: white; border: 2px solid #f5e6c8; text-align: center;">
             ${item.name}
           </div>
         </div>
         <div style="flex: 1;">
           <div style="margin-bottom: 5px;">
-            <strong style="color: #ecf0f1; font-size: 1.1em;">${item.name}</strong>${ownedBadge}
+            <strong style="color: #f5e6c8; font-size: 1.1em;">${item.name}</strong>${ownedBadge}
           </div>
-          <div style="margin-bottom: 8px; color: #bdc3c7;">
+          <div style="margin-bottom: 8px; color: #d4c4a0;">
             ${itemDescription}
           </div>
           ${item.description ? `<div style="margin-bottom: 6px; color: #a0b0c0; font-size: 0.88em; font-style: italic;">${item.description}</div>` : ''}
           ${comparisonHTML}
           ${requirementText}
-          <div id="store-price-${index}" data-base-price="${item.price}" style="color: #f1c40f; font-weight: bold; font-size: 1.1em;">
+          <div id="store-price-${index}" data-base-price="${item.price}" style="color: #c0a040; font-weight: bold; font-size: 1.1em;">
             $${finalPrice.toLocaleString()}${discountText}
           </div>
         </div>
         <div style="flex-shrink: 0;">
           <button id="buy-btn-${index}" onclick="buyItem(${index})" 
-              style="background: ${canBuy ? '#27ae60' : '#7f8c8d'}; 
+              style="background: ${canBuy ? '#7a8a5a' : '#6a5a3a'}; 
                   color: white; padding: 12px 20px; border: none; border-radius: 6px; 
                   cursor: ${canBuy ? 'pointer' : 'not-allowed'}; 
                   font-weight: bold; font-size: 14px; min-width: 120px;
                   transition: all 0.3s ease;"
               ${canBuy ? '' : 'disabled'}
               onmouseover="if(!this.disabled) this.style.background='#229954'"
-              onmouseout="if(!this.disabled) this.style.background='#27ae60'">
+              onmouseout="if(!this.disabled) this.style.background='#7a8a5a'">
             ${btnText}
           </button>
         </div>
@@ -12970,12 +12970,12 @@ function refreshStoreDynamicElements() {
     priceEl.textContent = `$${finalPrice.toLocaleString()}${discountText}`;
     if (player.money >= finalPrice) {
       btnEl.disabled = false;
-      btnEl.style.background = '#27ae60';
+      btnEl.style.background = '#7a8a5a';
       btnEl.style.cursor = 'pointer';
       btnEl.textContent = 'Purchase';
     } else {
       btnEl.disabled = true;
-      btnEl.style.background = '#7f8c8d';
+      btnEl.style.background = '#6a5a3a';
       btnEl.style.cursor = 'not-allowed';
       btnEl.textContent = 'Too Expensive';
     }
@@ -13099,21 +13099,21 @@ function refreshStoreAfterPurchase() {
     const imageSrc = getItemImage(item.name);
     return `
       <li style="display: flex; align-items: center; gap: 10px; padding: 10px; margin: 5px 0; 
-            background: rgba(39, 174, 96, 0.3); border-radius: 6px; border-left: 3px solid #2ecc71;">
+            background: rgba(122, 138, 90, 0.3); border-radius: 6px; border-left: 3px solid #8a9a6a;">
         <div style="flex-shrink: 0;">
           <img src="${imageSrc}" alt="${item.name}" 
              style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; 
-                border: 2px solid #2ecc71; box-shadow: 0 2px 6px rgba(0,0,0,0.2);" 
+                border: 2px solid #8a9a6a; box-shadow: 0 2px 6px rgba(0,0,0,0.2);" 
              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
           <div style="display: none; width: 50px; height: 50px; border-radius: 6px; 
-                background: #27ae60; align-items: center; justify-content: center; 
-                font-size: 10px; color: white; border: 2px solid #2ecc71; text-align: center;">
+                background: #7a8a5a; align-items: center; justify-content: center; 
+                font-size: 10px; color: white; border: 2px solid #8a9a6a; text-align: center;">
             ${item.name.substring(0, 6)}
           </div>
         </div>
-        <div style="flex: 1; color: #ecf0f1;">
+        <div style="flex: 1; color: #f5e6c8;">
           <strong>${item.name}</strong><br>
-          <small style="color: #bdc3c7;">Power: ${item.power}</small>
+          <small style="color: #d4c4a0;">Power: ${item.power}</small>
         </div>
       </li>
     `;
@@ -13136,12 +13136,12 @@ function showVehiclePurchaseResult(item, finalPrice) {
         
         <div class="popup-image-frame">
           <img src="${vehicleImageSrc}" alt="${item.name}" 
-             style="width:200px;height:150px;border-radius:10px;object-fit:cover;border:3px solid #ecf0f1;margin-bottom:15px;" 
+             style="width:200px;height:150px;border-radius:10px;object-fit:cover;border:3px solid #f5e6c8;margin-bottom:15px;" 
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
           <div class="popup-image-fallback" style="display:none;width:200px;height:150px;">
             ${item.name}
           </div>
-          <h3 style="color:#ecf0f1;margin:10px 0;">${item.name}</h3>
+          <h3 style="color:#f5e6c8;margin:10px 0;">${item.name}</h3>
         </div>
         
         <div class="popup-section" style="text-align:left;">
@@ -13202,10 +13202,10 @@ function showLevelUpEffects() {
   if (milestone) {
     player.money += milestone.bonus;
     milestoneHTML = `
-      <div style="margin: 15px 0; padding: 15px 25px; background: rgba(241, 196, 15, 0.15); border: 2px solid #f1c40f; border-radius: 10px;">
-        <div style="font-size: 1.6em; color: #f1c40f; font-weight: bold;">${milestone.title}</div>
-        <div style="font-size: 1.1em; color: #ecf0f1; margin-top: 8px; font-style: italic;">${milestone.msg}</div>
-        <div style="font-size: 1.3em; color: #2ecc71; margin-top: 8px;">+$${milestone.bonus.toLocaleString()} Bonus</div>
+      <div style="margin: 15px 0; padding: 15px 25px; background: rgba(241, 196, 15, 0.15); border: 2px solid #c0a040; border-radius: 10px;">
+        <div style="font-size: 1.6em; color: #c0a040; font-weight: bold;">${milestone.title}</div>
+        <div style="font-size: 1.1em; color: #f5e6c8; margin-top: 8px; font-style: italic;">${milestone.msg}</div>
+        <div style="font-size: 1.3em; color: #8a9a6a; margin-top: 8px;">+$${milestone.bonus.toLocaleString()} Bonus</div>
       </div>
     `;
     logAction(`Milestone reached: ${milestone.title}! Earned $${milestone.bonus.toLocaleString()} bonus.`);
@@ -13231,23 +13231,23 @@ function showLevelUpEffects() {
   // Create level up content
   levelUpOverlay.innerHTML = `
     <div style="text-align: center; color: white;">
-      <div style="font-size: 6em; font-weight: bold; color: #f1c40f; text-shadow: 0 0 30px #f39c12; 
+      <div style="font-size: 6em; font-weight: bold; color: #c0a040; text-shadow: 0 0 30px #c0a040; 
             animation: levelUpPulse 1s ease-in-out infinite alternate, levelUpGlow 2s ease-in-out infinite;">
         LEVEL UP!
       </div>
-      <div style="font-size: 3em; margin: 20px 0; color: #e74c3c; text-shadow: 0 0 20px #c0392b;">
+      <div style="font-size: 3em; margin: 20px 0; color: #8b3a3a; text-shadow: 0 0 20px #7a2a2a;">
         Level ${player.level}
       </div>
-      <div style="font-size: 1.5em; margin: 15px 0; color: #ecf0f1;">
+      <div style="font-size: 1.5em; margin: 15px 0; color: #f5e6c8;">
         +2 Skill Points Earned!
       </div>
       ${milestoneHTML}
-      <div style="font-size: 1.2em; color: #95a5a6; margin-top: ${milestone ? '15px' : '30px'};">
+      <div style="font-size: 1.2em; color: #8a7a5a; margin-top: ${milestone ? '15px' : '30px'};">
         ${milestone ? '' : 'Your reputation in the underworld grows...'}
       </div>
       <button onclick="closeLevelUpOverlay()" 
           style="margin-top: 40px; padding: 15px 40px; font-size: 1.3em; 
-              background: linear-gradient(45deg, #e74c3c, #c0392b); 
+              background: linear-gradient(45deg, #8b3a3a, #7a2a2a); 
               color: white; border: none; border-radius: 10px; cursor: pointer;
               box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
               transition: all 0.3s ease;">
@@ -13270,9 +13270,9 @@ function showLevelUpEffects() {
     }
     
     @keyframes levelUpGlow {
-      0% { text-shadow: 0 0 30px #f39c12, 0 0 60px #f39c12; }
-      50% { text-shadow: 0 0 50px #f1c40f, 0 0 80px #f1c40f, 0 0 100px #f39c12; }
-      100% { text-shadow: 0 0 30px #f39c12, 0 0 60px #f39c12; }
+      0% { text-shadow: 0 0 30px #c0a040, 0 0 60px #c0a040; }
+      50% { text-shadow: 0 0 50px #c0a040, 0 0 80px #c0a040, 0 0 100px #c0a040; }
+      100% { text-shadow: 0 0 30px #c0a040, 0 0 60px #c0a040; }
     }
     
     #level-up-overlay button:hover {
@@ -13316,7 +13316,7 @@ function createLevelUpParticles() {
         position: fixed;
         width: 6px;
         height: 6px;
-        background: ${Math.random() > 0.5 ? '#f1c40f' : '#e74c3c'};
+        background: ${Math.random() > 0.5 ? '#c0a040' : '#8b3a3a'};
         border-radius: 50%;
         z-index: 9999;
         pointer-events: none;
@@ -13364,7 +13364,7 @@ function showNarrativeOverlay(title, message, buttonText = "Continue", callback 
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: radial-gradient(circle, rgba(52, 73, 94, 0.95) 0%, rgba(0, 0, 0, 0.98) 70%);
+    background: radial-gradient(circle, rgba(20, 18, 10, 0.95) 0%, rgba(0, 0, 0, 0.98) 70%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -13375,17 +13375,17 @@ function showNarrativeOverlay(title, message, buttonText = "Continue", callback 
   // Create narrative content
   narrativeOverlay.innerHTML = `
     <div style="text-align: center; color: white; max-width: 600px; padding: 40px;">
-      <div style="font-size: 3em; font-weight: bold; color: #f39c12; text-shadow: 0 0 20px #e67e22; margin-bottom: 30px;">
+      <div style="font-size: 3em; font-weight: bold; color: #c0a040; text-shadow: 0 0 20px #e67e22; margin-bottom: 30px;">
         ${title}
       </div>
-      <div style="font-size: 1.4em; color: #ecf0f1; line-height: 1.6; margin-bottom: 40px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+      <div style="font-size: 1.4em; color: #f5e6c8; line-height: 1.6; margin-bottom: 40px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
         ${message}
       </div>
       <button onclick="closeNarrativeOverlay()" 
           style="padding: 15px 40px; font-size: 1.3em; 
-              background: linear-gradient(45deg, #34495e, #2c3e50); 
+              background: linear-gradient(45deg, #1a1610, #14120a); 
               color: white; border: none; border-radius: 10px; cursor: pointer;
-              box-shadow: 0 5px 15px rgba(52, 73, 94, 0.5);
+              box-shadow: 0 5px 15px rgba(20, 18, 10, 0.5);
               transition: all 0.3s ease;">
         ${buttonText} 
       </button>
@@ -13401,9 +13401,9 @@ function showNarrativeOverlay(title, message, buttonText = "Continue", callback 
     }
     
     #narrative-overlay button:hover {
-      background: linear-gradient(45deg, #2c3e50, #34495e);
+      background: linear-gradient(45deg, #14120a, #1a1610);
       transform: translateY(-2px);
-      box-shadow: 0 7px 20px rgba(52, 73, 94, 0.7);
+      box-shadow: 0 7px 20px rgba(20, 18, 10, 0.7);
     }
   `;
   document.head.appendChild(style);
@@ -13805,7 +13805,7 @@ function loadPortraitGrid() {
   
   portraitGrid.innerHTML = `
     <div class="portrait-gender-section">
-      <h3 style="grid-column: 1 / -1; color: #3498db; font-size: 1.3em; margin: 10px 0 5px; border-bottom: 2px solid #3498db; padding-bottom: 8px;">\uD83D\uDC68 Male</h3>
+      <h3 style="grid-column: 1 / -1; color: #c0a062; font-size: 1.3em; margin: 10px 0 5px; border-bottom: 2px solid #c0a062; padding-bottom: 8px;">\uD83D\uDC68 Male</h3>
       ${renderGroup(malePortraits)}
     </div>
     <div class="portrait-gender-section">
@@ -13872,12 +13872,12 @@ function showChangePortraitScreen() {
     </div>
 
     <div class="content-card" style="text-align:center; margin-bottom:20px;">
-      <p style="color:#95a5a6; margin:0 0 10px;">Current portrait:</p>
+      <p style="color:#8a7a5a; margin:0 0 10px;">Current portrait:</p>
       <img src="${player.portrait || ''}" alt="Current portrait"
-           style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #2ecc71;${player.portrait ? '' : ' display:none;'}" />
+           style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #8a9a6a;${player.portrait ? '' : ' display:none;'}" />
     </div>
 
-    <div class="section-header" style="color:#3498db;">\uD83D\uDC68 Male</div>
+    <div class="section-header" style="color:#c0a062;">\uD83D\uDC68 Male</div>
     <div class="content-card">
       <div class="portrait-selection-grid" style="max-height:none;">
         <div class="portrait-gender-section">
@@ -14013,26 +14013,26 @@ function showPortraitSelection() {
   
   const renderPortraitBtn = (option) => `
     <button onclick="selectPortrait('${option.file}', '${option.label}')" 
-        style="padding: 10px; border: 3px solid #7f8c8d; border-radius: 15px; 
-            background: rgba(52, 73, 94, 0.6); color: white; cursor: pointer; 
+        style="padding: 10px; border: 3px solid #6a5a3a; border-radius: 15px; 
+            background: rgba(20, 18, 10, 0.6); color: white; cursor: pointer; 
             transition: all 0.3s ease; min-height: 180px; display: flex; 
             flex-direction: column; align-items: center; justify-content: center;
             box-sizing: border-box;">
       <img src="${option.file}" alt="${option.label}" 
          style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover; 
-            border: 3px solid #ecf0f1;" />
+            border: 3px solid #f5e6c8;" />
     </button>
   `;
   
   let portraitHTML = `
     <div class="portrait-selection-overlay">
       <div class="portrait-selection-container">
-        <h1 style="color: #e74c3c; font-size: 3em; margin-bottom: 15px; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);">
+        <h1 style="color: #8b3a3a; font-size: 3em; margin-bottom: 15px; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);">
           Choose Your Identity, ${player.name}
         </h1>
         <p style="font-size: 1.2em; margin-bottom: 30px;">Select your appearance for the criminal underworld</p>
         
-        <h2 style="color: #3498db; font-size: 1.5em; margin: 20px 0 10px; border-bottom: 2px solid #3498db; padding-bottom: 8px; text-align: left;">👨 Male</h2>
+        <h2 style="color: #c0a062; font-size: 1.5em; margin: 20px 0 10px; border-bottom: 2px solid #c0a062; padding-bottom: 8px; text-align: left;">👨 Male</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin: 0 0 30px 0;">
           ${maleOptions.map(renderPortraitBtn).join('')}
         </div>
@@ -14043,7 +14043,7 @@ function showPortraitSelection() {
         </div>
         
         <button onclick="goBackToIntro()" 
-            style="background: #7f8c8d; color: white; padding: 15px 30px; border: none; 
+            style="background: #6a5a3a; color: white; padding: 15px 30px; border: none; 
                 border-radius: 10px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-top: 20px;">
           ← Back
         </button>
@@ -14106,13 +14106,13 @@ function showBackgroundAndPerkSelection() {
   container.innerHTML = `
     <div class="bg-perk-overlay">
       <div class="bg-perk-container">
-        <h2 style="color: #e74c3c; font-size: 2em; margin-bottom: 4px;">Build Your Story</h2>
-        <p style="color: #bdc3c7; margin-bottom: 20px; font-size: 1.05em;">
-          Every criminal has an origin. Choose your <strong style="color:#f39c12;">background</strong> and a <strong style="color:#2ecc71;">permanent perk</strong> that will shape your journey.
+        <h2 style="color: #8b3a3a; font-size: 2em; margin-bottom: 4px;">Build Your Story</h2>
+        <p style="color: #d4c4a0; margin-bottom: 20px; font-size: 1.05em;">
+          Every criminal has an origin. Choose your <strong style="color:#c0a040;">background</strong> and a <strong style="color:#8a9a6a;">permanent perk</strong> that will shape your journey.
         </p>
 
         <!-- BACKGROUNDS -->
-        <h3 style="color: #f39c12; font-size: 1.4em; margin-bottom: 12px; border-bottom: 2px solid #f39c12; padding-bottom: 6px;">Your Background</h3>
+        <h3 style="color: #c0a040; font-size: 1.4em; margin-bottom: 12px; border-bottom: 2px solid #c0a040; padding-bottom: 6px;">Your Background</h3>
         <div class="bg-perk-grid" id="background-grid">
           ${CHARACTER_BACKGROUNDS.map(bg => `
             <div class="bg-perk-card" data-bg-id="${bg.id}" onclick="selectBackground('${bg.id}')">
@@ -14125,7 +14125,7 @@ function showBackgroundAndPerkSelection() {
         </div>
 
         <!-- PERKS -->
-        <h3 style="color: #2ecc71; font-size: 1.4em; margin: 24px 0 12px; border-bottom: 2px solid #2ecc71; padding-bottom: 6px;">Choose Your Perk</h3>
+        <h3 style="color: #8a9a6a; font-size: 1.4em; margin: 24px 0 12px; border-bottom: 2px solid #8a9a6a; padding-bottom: 6px;">Choose Your Perk</h3>
         <div class="bg-perk-grid" id="perk-grid">
           ${CHARACTER_PERKS.map(pk => `
             <div class="bg-perk-card perk-card" data-perk-id="${pk.id}" onclick="selectPerk('${pk.id}')" style="--perk-color: ${pk.color};">
@@ -14139,18 +14139,18 @@ function showBackgroundAndPerkSelection() {
 
         <!-- PREVIEW + CONFIRM -->
         <div class="bg-perk-preview" id="bg-perk-preview">
-          <div id="preview-bg-text" style="color: #f39c12;">Background: <em>Not selected</em></div>
-          <div id="preview-perk-text" style="color: #2ecc71;">Perk: <em>Not selected</em></div>
+          <div id="preview-bg-text" style="color: #c0a040;">Background: <em>Not selected</em></div>
+          <div id="preview-perk-text" style="color: #8a9a6a;">Perk: <em>Not selected</em></div>
         </div>
 
         <div style="text-align: center; margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
           <button id="confirm-bg-perk-btn" onclick="confirmBackgroundAndPerk()" disabled
             style="padding: 14px 32px; font-size: 1.15em; font-weight: bold; border: none; border-radius: 10px;
-                   background: #7f8c8d; color: white; cursor: not-allowed; transition: all 0.3s ease;">
+                   background: #6a5a3a; color: white; cursor: not-allowed; transition: all 0.3s ease;">
             Continue →
           </button>
           <button onclick="skipBackgroundAndPerk()"
-            style="padding: 14px 24px; font-size: 1em; background: transparent; color: #7f8c8d;
+            style="padding: 14px 24px; font-size: 1em; background: transparent; color: #6a5a3a;
                    border: 1px solid #555; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
             Skip (Randomize)
           </button>
@@ -14169,7 +14169,7 @@ function selectBackground(bgId) {
   });
   const bg = CHARACTER_BACKGROUNDS.find(b => b.id === bgId);
   document.getElementById('preview-bg-text').innerHTML = bg
-    ? `Background: <strong>${bg.icon} ${bg.name}</strong> — <span style="color:#bdc3c7;">${bg.bonusText}</span>`
+    ? `Background: <strong>${bg.icon} ${bg.name}</strong> — <span style="color:#d4c4a0;">${bg.bonusText}</span>`
     : 'Background: <em>Not selected</em>';
   updateConfirmButton();
 }
@@ -14181,7 +14181,7 @@ function selectPerk(perkId) {
   });
   const pk = CHARACTER_PERKS.find(p => p.id === perkId);
   document.getElementById('preview-perk-text').innerHTML = pk
-    ? `Perk: <strong>${pk.icon} ${pk.name}</strong> — <span style="color:#bdc3c7;">${pk.effect}</span>`
+    ? `Perk: <strong>${pk.icon} ${pk.name}</strong> — <span style="color:#d4c4a0;">${pk.effect}</span>`
     : 'Perk: <em>Not selected</em>';
   updateConfirmButton();
 }
@@ -14191,7 +14191,7 @@ function updateConfirmButton() {
   if (!btn) return;
   const ready = _selectedBackground && _selectedPerk;
   btn.disabled = !ready;
-  btn.style.background = ready ? 'linear-gradient(45deg, #e74c3c, #c0392b)' : '#7f8c8d';
+  btn.style.background = ready ? 'linear-gradient(45deg, #8b3a3a, #7a2a2a)' : '#6a5a3a';
   btn.style.cursor = ready ? 'pointer' : 'not-allowed';
 }
 
@@ -14294,15 +14294,15 @@ function showTerritorySpawn() {
 
   const cards = DISTRICTS.map(d => `
     <div onclick="selectSpawnTerritory('${d.id}')"
-         style="background: rgba(44,62,80,0.85); border: 2px solid #555; border-radius: 12px;
+         style="background: rgba(20, 18, 10,0.85); border: 2px solid #555; border-radius: 12px;
                 padding: 18px; cursor: pointer; transition: all 0.3s ease;
                 text-align: left; min-width: 220px; max-width: 280px;"
-         onmouseover="this.style.borderColor='#e74c3c'; this.style.transform='translateY(-4px)';"
+         onmouseover="this.style.borderColor='#8b3a3a'; this.style.transform='translateY(-4px)';"
          onmouseout="this.style.borderColor='#555'; this.style.transform='translateY(0)';">
       <div style="font-size: 2em; margin-bottom: 6px;">${d.icon}</div>
-      <h3 style="color: #e74c3c; margin: 0 0 4px;">${d.shortName}</h3>
-      <p style="color: #95a5a6; font-size: 0.85em; margin: 0 0 10px;">${d.description}</p>
-      <div style="font-size: 0.8em; color: #bdc3c7; line-height: 1.6;">
+      <h3 style="color: #8b3a3a; margin: 0 0 4px;">${d.shortName}</h3>
+      <p style="color: #8a7a5a; font-size: 0.85em; margin: 0 0 10px;">${d.description}</p>
+      <div style="font-size: 0.8em; color: #d4c4a0; line-height: 1.6;">
         <span>Base Income: $${d.baseIncome}</span><br>
         <span>Max Businesses: ${d.maxBusinesses}</span><br>
         <span>Risk: ${d.riskLevel}</span><br>
@@ -14316,9 +14316,9 @@ function showTerritorySpawn() {
                 background: rgba(0,0,0,0.95); display: flex; align-items: center;
                 justify-content: center; z-index: 1000; overflow-y: auto;">
       <div style="max-width: 1000px; width: 95%; padding: 30px; text-align: center; color: white;">
-        <h2 style="color: #e74c3c; font-size: 2em; margin-bottom: 8px;">Choose Your Turf</h2>
-        <p style="color: #bdc3c7; margin-bottom: 24px; font-size: 1.1em;">
-          Where will <strong style="color:#f39c12;">${player.name}</strong> set up shop?
+        <h2 style="color: #8b3a3a; font-size: 2em; margin-bottom: 8px;">Choose Your Turf</h2>
+        <p style="color: #d4c4a0; margin-bottom: 24px; font-size: 1.1em;">
+          Where will <strong style="color:#c0a040;">${player.name}</strong> set up shop?
           Pick a district to call home — you can always relocate later.
         </p>
         <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
@@ -14398,12 +14398,12 @@ function renderTerritoriesScreen() {
       const income = Math.floor(zone.baseIncome * incomeMultiplier);
 
       return `
-        <div style="background: rgba(44,62,80,0.85); border: 2px solid #e74c3c; border-radius: 12px;
+        <div style="background: rgba(20, 18, 10,0.85); border: 2px solid #8b3a3a; border-radius: 12px;
                     padding: 16px; min-width: 220px; max-width: 280px; text-align: left;">
           <div style="font-size: 1.8em; margin-bottom: 4px;">${zone.icon}</div>
-          <h3 style="color: #e74c3c; margin: 0 0 4px;">${zone.name}</h3>
-          <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${zone.description}</p>
-          <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
+          <h3 style="color: #8b3a3a; margin: 0 0 4px;">${zone.name}</h3>
+          <p style="color: #8a7a5a; font-size: 0.8em; margin: 0 0 8px;">${zone.description}</p>
+          <div style="font-size: 0.85em; color: #d4c4a0; line-height: 1.6;">
             <span>Income: $${income.toLocaleString()}/cycle</span><br>
             <span>Fortification: Lv ${fort}</span><br>
             <span>Defense Req: ${zone.defenseRequired}</span><br>
@@ -14411,7 +14411,7 @@ function renderTerritoriesScreen() {
             <span>Risk: ${zone.riskLevel}</span>
           </div>
           <div style="margin-top: 10px; text-align: center;">
-            <span style="color: #2ecc71; font-weight: bold; font-size: 0.85em;">✅ Controlled</span>
+            <span style="color: #8a9a6a; font-weight: bold; font-size: 0.85em;">✅ Controlled</span>
           </div>
         </div>
       `;
@@ -14441,7 +14441,7 @@ function renderTerritoriesScreen() {
         const shown = residents.slice(0, 10);
         residentsHTML = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">';
         residentsHTML += '<span style="color: #d4af37; font-size: 0.8em; font-weight: bold;">Residents:</span><br>';
-        residentsHTML += shown.map(r => `<span style="color: #bdc3c7; font-size: 0.8em;">${typeof r === 'string' ? r : (r.name || 'Unknown')}</span>`).join('<br>');
+        residentsHTML += shown.map(r => `<span style="color: #d4c4a0; font-size: 0.8em;">${typeof r === 'string' ? r : (r.name || 'Unknown')}</span>`).join('<br>');
         if (residents.length > 10) {
           residentsHTML += `<br><span style="color: #888; font-size: 0.75em;">...and ${residents.length - 10} more</span>`;
         }
@@ -14451,12 +14451,12 @@ function renderTerritoriesScreen() {
       }
 
       return `
-        <div style="background: rgba(44,62,80,0.85); border: 2px solid #d4af37; border-radius: 12px;
+        <div style="background: rgba(20, 18, 10,0.85); border: 2px solid #d4af37; border-radius: 12px;
                     padding: 16px; min-width: 240px; max-width: 300px; text-align: left;">
           <div style="font-size: 1.8em; margin-bottom: 4px;">${d.icon}</div>
           <h3 style="color: #d4af37; margin: 0 0 4px;">${d.shortName}</h3>
-          <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
-          <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
+          <p style="color: #8a7a5a; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
+          <div style="font-size: 0.85em; color: #d4c4a0; line-height: 1.6;">
             <span>Owner: <strong style="color: #ffd700;">YOU</strong></span><br>
             <span>Residents: ${resCount}</span><br>
             <span>Defense Rating: ${defRating}</span><br>
@@ -14514,25 +14514,25 @@ function renderTerritoriesScreen() {
       if (isNPC) {
         ownerBadge = `<span style="color:#8b4513; font-weight:bold;">RIVAL BOSS</span><br><span style="color:#cd853f; font-size:0.85em;">${ownerName}</span>`;
       } else if (ownerName) {
-        ownerBadge = `<span style="color:#e74c3c;">Owner: ${ownerName}</span>`;
+        ownerBadge = `<span style="color:#8b3a3a;">Owner: ${ownerName}</span>`;
       } else {
         ownerBadge = '<span style="color:#888;">Unclaimed</span>';
       }
 
       return `
-        <div style="background: rgba(44,62,80,0.85); border: 2px solid ${isCurrent ? '#e74c3c' : '#555'}; border-radius: 12px;
+        <div style="background: rgba(20, 18, 10,0.85); border: 2px solid ${isCurrent ? '#8b3a3a' : '#555'}; border-radius: 12px;
                     padding: 16px; min-width: 220px; max-width: 280px; text-align: left; opacity: ${isCurrent ? '1' : '0.6'};">
           <div style="font-size: 1.8em; margin-bottom: 4px;">${d.icon}</div>
-          <h3 style="color: #e74c3c; margin: 0 0 4px;">${d.shortName}</h3>
-          <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
-          <div style="font-size: 0.85em; color: #bdc3c7; line-height: 1.6;">
+          <h3 style="color: #8b3a3a; margin: 0 0 4px;">${d.shortName}</h3>
+          <p style="color: #8a7a5a; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
+          <div style="font-size: 0.85em; color: #d4c4a0; line-height: 1.6;">
             ${ownerBadge}<br>
             <span>Residents: ${resCount}</span><br>
             <span>Defense: ${defRating}</span><br>
             <span>Risk: ${d.riskLevel} | Police: ${d.policePresence}%</span>
           </div>
           <div style="margin-top: 10px; text-align: center;">
-            ${isCurrent ? `<span style="color:#2ecc71; font-size:0.8em; display:block; margin-bottom:6px;">You live here</span>` : `<span style="color:#888; font-size:0.8em; display:block; margin-bottom:6px;">Relocate here first</span>`}
+            ${isCurrent ? `<span style="color:#8a9a6a; font-size:0.8em; display:block; margin-bottom:6px;">You live here</span>` : `<span style="color:#888; font-size:0.8em; display:block; margin-bottom:6px;">Relocate here first</span>`}
             <button onclick="wageWar('${d.id}')"
               style="background: ${canWar ? '#8b0000' : '#333'}; color: ${canWar ? '#fff' : '#666'}; border: 1px solid ${canWar ? '#ff0000' : '#444'}; padding: 8px 16px; border-radius: 6px; cursor: ${canWar ? 'pointer' : 'default'}; font-family: 'Georgia', serif; font-size: 0.9em; width: 100%;"
               ${canWar ? '' : 'disabled'} title="${warBtnTitle}">Wage War</button>
@@ -14541,7 +14541,7 @@ function renderTerritoriesScreen() {
       `;
     }).join('');
   } else {
-    conquerCards = '<p style="color:#2ecc71;text-align:center;padding:20px;width:100%;">You own all districts! Total domination.</p>';
+    conquerCards = '<p style="color:#8a9a6a;text-align:center;padding:20px;width:100%;">You own all districts! Total domination.</p>';
   }
 
   // ── Summary stats ──
@@ -14556,7 +14556,7 @@ function renderTerritoriesScreen() {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
         <div>
           <h2 style="color: #d4af37; margin: 0;">Your Territories</h2>
-          <p style="color: #bdc3c7; margin: 4px 0 0;">Manage your turf zones and district holdings</p>
+          <p style="color: #d4c4a0; margin: 4px 0 0;">Manage your turf zones and district holdings</p>
         </div>
         <button class="nav-btn-back" onclick="goBackToMainMenu();">← Back</button>
       </div>
@@ -14568,26 +14568,26 @@ function renderTerritoriesScreen() {
           <div style="color: #888; font-size: 0.8em;">Total Territories</div>
         </div>
         <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(231,76,60,0.3); text-align: center; min-width: 120px;">
-          <div style="color: #e74c3c; font-size: 1.4em; font-weight: bold;">${totalTurf}</div>
+          <div style="color: #8b3a3a; font-size: 1.4em; font-weight: bold;">${totalTurf}</div>
           <div style="color: #888; font-size: 0.8em;">Turf Zones</div>
         </div>
         <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(52,152,219,0.3); text-align: center; min-width: 120px;">
-          <div style="color: #3498db; font-size: 1.4em; font-weight: bold;">${totalDistricts}</div>
+          <div style="color: #c0a062; font-size: 1.4em; font-weight: bold;">${totalDistricts}</div>
           <div style="color: #888; font-size: 0.8em;">Online Districts</div>
         </div>
-        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(46,204,113,0.3); text-align: center; min-width: 120px;">
-          <div style="color: #2ecc71; font-size: 1.4em; font-weight: bold;">${totalResidents}</div>
+        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(138, 154, 106,0.3); text-align: center; min-width: 120px;">
+          <div style="color: #8a9a6a; font-size: 1.4em; font-weight: bold;">${totalResidents}</div>
           <div style="color: #888; font-size: 0.8em;">Total Residents</div>
         </div>
-        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(46,204,113,0.3); text-align: center; min-width: 120px;">
-          <div style="color: #2ecc71; font-size: 1.4em; font-weight: bold;">$${totalTaxIncome.toLocaleString()}</div>
+        <div style="background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(138, 154, 106,0.3); text-align: center; min-width: 120px;">
+          <div style="color: #8a9a6a; font-size: 1.4em; font-weight: bold;">$${totalTaxIncome.toLocaleString()}</div>
           <div style="color: #888; font-size: 0.8em;">Tax Revenue</div>
         </div>
       </div>
 
       <!-- SP Turf Zones Section -->
       <div style="margin-bottom: 30px;">
-        <h3 style="color: #e74c3c; margin: 0 0 12px; font-family: Georgia, serif;">Turf Zones <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Single-Player)</span></h3>
+        <h3 style="color: #8b3a3a; margin: 0 0 12px; font-family: Georgia, serif;">Turf Zones <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Single-Player)</span></h3>
         <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
           ${spCards}
         </div>
@@ -14595,7 +14595,7 @@ function renderTerritoriesScreen() {
 
       <!-- MP Districts Section -->
       <div style="margin-bottom: 30px;">
-        <h3 style="color: #3498db; margin: 0 0 12px; font-family: Georgia, serif;">Online Districts <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Multiplayer)</span></h3>
+        <h3 style="color: #c0a062; margin: 0 0 12px; font-family: Georgia, serif;">Online Districts <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Multiplayer)</span></h3>
         <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
           ${mpCards}
         </div>
@@ -14603,7 +14603,7 @@ function renderTerritoriesScreen() {
 
       <!-- Conquer Districts Section -->
       <div style="margin-bottom: 30px;">
-        <h3 style="color: #e74c3c; margin: 0 0 12px; font-family: Georgia, serif;">Conquer Districts <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Wage War)</span></h3>
+        <h3 style="color: #8b3a3a; margin: 0 0 12px; font-family: Georgia, serif;">Conquer Districts <span style="color: #888; font-size: 0.7em; font-weight: normal;">(Wage War)</span></h3>
         <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
           ${conquerCards}
         </div>
@@ -14632,15 +14632,15 @@ function showTerritoryRelocation() {
     const isCurrent = d.id === player.currentTerritory;
     const canAfford = player.money >= d.moveCost;
     const disabled = isCurrent || onCooldown || !canAfford;
-    const borderColor = isCurrent ? '#2ecc71' : disabled ? '#444' : '#555';
+    const borderColor = isCurrent ? '#8a9a6a' : disabled ? '#444' : '#555';
     const opacity = disabled && !isCurrent ? '0.5' : '1';
     const cursor = disabled ? 'default' : 'pointer';
     const onclick = disabled ? '' : `onclick="confirmRelocation('${d.id}')"`;
 
     let badge = '';
-    if (isCurrent) badge = '<span style="color:#2ecc71; font-weight:bold;">Current</span>';
+    if (isCurrent) badge = '<span style="color:#8a9a6a; font-weight:bold;">Current</span>';
     else if (onCooldown) badge = `<span style="color:#e67e22;">${cooldownRemaining} min</span>`;
-    else if (!canAfford) badge = '<span style="color:#e74c3c;">Can\'t afford</span>';
+    else if (!canAfford) badge = '<span style="color:#8b3a3a;">Can\'t afford</span>';
 
     // Ownership info
     const terrData = tState[d.id] || {};
@@ -14663,10 +14663,10 @@ function showTerritoryRelocation() {
         ownerLine = `<span style="color:#ffd700; font-weight:bold;">Owned</span><br>`;
         ownerLine += `<span>Defense: ${defRating} | Tax Collected: $${taxTotal.toLocaleString()}</span><br>`;
       } else if (isAllied) {
-        ownerLine = `<span style="color:#3498db; font-weight:bold;">Allied</span> <span style="color:#888;">(${ownerName})</span><br>`;
+        ownerLine = `<span style="color:#c0a062; font-weight:bold;">Allied</span> <span style="color:#888;">(${ownerName})</span><br>`;
         ownerLine += `<span>Defense: ${defRating} | Tax Collected: $${taxTotal.toLocaleString()}</span><br>`;
       } else {
-        ownerLine = `<span style="color:#e74c3c;">Owner: ${ownerName}</span><br>`;
+        ownerLine = `<span style="color:#8b3a3a;">Owner: ${ownerName}</span><br>`;
         ownerLine += `<span>Defense: ${defRating} | Tax Collected: $${taxTotal.toLocaleString()}</span><br>`;
       }
     } else {
@@ -14675,15 +14675,15 @@ function showTerritoryRelocation() {
 
     return `
       <div ${onclick}
-           style="background: rgba(44,62,80,0.85); border: 2px solid ${borderColor}; border-radius: 12px;
+           style="background: rgba(20, 18, 10,0.85); border: 2px solid ${borderColor}; border-radius: 12px;
                   padding: 16px; cursor: ${cursor}; opacity: ${opacity}; transition: all 0.3s ease;
                   text-align: left; min-width: 220px; max-width: 280px;"
-           ${!disabled ? `onmouseover="this.style.borderColor='#e74c3c'; this.style.transform='translateY(-4px)';"
+           ${!disabled ? `onmouseover="this.style.borderColor='#8b3a3a'; this.style.transform='translateY(-4px)';"
                          onmouseout="this.style.borderColor='${borderColor}'; this.style.transform='translateY(0)';"` : ''}>
         <div style="font-size: 1.8em; margin-bottom: 4px;">${d.icon}</div>
-        <h3 style="color: #e74c3c; margin: 0 0 4px;">${d.shortName}</h3>
-        <p style="color: #95a5a6; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
-        <div style="font-size: 0.8em; color: #bdc3c7; line-height: 1.5;">
+        <h3 style="color: #8b3a3a; margin: 0 0 4px;">${d.shortName}</h3>
+        <p style="color: #8a7a5a; font-size: 0.8em; margin: 0 0 8px;">${d.description}</p>
+        <div style="font-size: 0.8em; color: #d4c4a0; line-height: 1.5;">
           ${ownerLine}
           <span>Residents: ${resCount}</span><br>
           <span>Move Cost: $${d.moveCost.toLocaleString()}</span><br>
@@ -14698,7 +14698,7 @@ function showTerritoryRelocation() {
 
   const currentDistrict = getDistrict(player.currentTerritory);
   const headerNote = currentDistrict
-    ? `You currently live in <strong style="color:#2ecc71;">${currentDistrict.shortName}</strong> ${currentDistrict.icon}`
+    ? `You currently live in <strong style="color:#8a9a6a;">${currentDistrict.shortName}</strong> ${currentDistrict.icon}`
     : 'You haven\'t chosen a home district yet.';
 
   hideAllScreens();
@@ -14706,8 +14706,8 @@ function showTerritoryRelocation() {
     <div style="padding: 20px; color: white; max-width: 1000px; margin: 0 auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
-          <h2 style="color: #e74c3c; margin: 0;">Relocate</h2>
-          <p style="color: #bdc3c7; margin: 4px 0 0;">${headerNote}</p>
+          <h2 style="color: #8b3a3a; margin: 0;">Relocate</h2>
+          <p style="color: #d4c4a0; margin: 4px 0 0;">${headerNote}</p>
         </div>
         <button class="nav-btn-back" onclick="goBackToMainMenu();">← Back</button>
       </div>
@@ -14795,8 +14795,8 @@ async function wageWar(districtId) {
 // Function to show the intro narrative
 function showIntroNarrative() {
   const introText = `
-    <div style="text-align: center; padding: 30px; background: rgba(44, 62, 80, 0.9); color: white; border-radius: 15px; margin: 20px; border: 2px solid #e74c3c;">
-      <h2 style="color: #e74c3c; margin-bottom: 20px;">Welcome to the Streets, ${player.name}</h2>
+    <div style="text-align: center; padding: 30px; background: rgba(20, 18, 10, 0.9); color: white; border-radius: 15px; margin: 20px; border: 2px solid #8b3a3a;">
+      <h2 style="color: #8b3a3a; margin-bottom: 20px;">Welcome to the Streets, ${player.name}</h2>
       
       <div style="text-align: left; max-width: 600px; margin: 0 auto; line-height: 1.6; font-size: 16px;">
         <p style="margin-bottom: 15px;">
@@ -14804,7 +14804,7 @@ function showIntroNarrative() {
         </p>
         
         <p style="margin-bottom: 15px;">
-          You start with <span style="color: #e74c3c;">nothing</span> - zero dollars, zero reputation, zero respect. But in this city, empires aren't built with what you have, they're built with what you're willing to risk and how smart you are about taking it.
+          You start with <span style="color: #8b3a3a;">nothing</span> - zero dollars, zero reputation, zero respect. But in this city, empires aren't built with what you have, they're built with what you're willing to risk and how smart you are about taking it.
         </p>
         
         <p style="margin-bottom: 15px;">
@@ -14815,24 +14815,24 @@ function showIntroNarrative() {
           Some will remember you as a cautionary tale - another wannabe who burned out fast. Others will whisper your name in the same breath as legends. The choice is yours to make, but choose wisely - this world has a long memory.
         </p>
         
-        <p style="margin-bottom: 15px; color: #f39c12;">
+        <p style="margin-bottom: 15px; color: #c0a040;">
           <strong>Your empire awaits:</strong> Start small with street jobs, recruit loyal gang members, buy properties to expand your influence, and rise to become the most feared name in the underworld. Compete with other criminal masterminds and build an empire that will never be forgotten.
         </p>
         
-        <p style="margin-bottom: 20px; color: #3498db;">
+        <p style="margin-bottom: 20px; color: #c0a062;">
           <strong>The game has evolved:</strong> Multiple save slots protect your progress, weekly challenges test your skills, and an objective tracker guides your path to power. Use quick actions for instant navigation, track your missions in real-time, and compete in the online criminal underworld. Your empire awaits.
         </p>
         
-        <p style="text-align: center; font-style: italic; color: #95a5a6; margin-bottom: 15px;">
+        <p style="text-align: center; font-style: italic; color: #8a7a5a; margin-bottom: 15px;">
           Welcome to your new life, ${player.name}. The underworld is waiting.
         </p>
         
-        <p style="text-align: center; font-weight: bold; color: #2ecc71;">
+        <p style="text-align: center; font-weight: bold; color: #8a9a6a;">
           Every choice matters. Every risk counts. Your legend starts now.
         </p>
       </div>
       
-      <button onclick="finishIntro()" style="margin-top: 25px; padding: 15px 30px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold;">
+      <button onclick="finishIntro()" style="margin-top: 25px; padding: 15px 30px; background: #8b3a3a; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold;">
         Begin Your Empire
       </button>
     </div>
@@ -15454,7 +15454,7 @@ function showVersionUpdateNotification() {
   content.style.cssText = `
     max-width: 700px;
     width: 100%;
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.98) 0%, rgba(52, 73, 94, 0.98) 100%);
+    background: linear-gradient(135deg, rgba(20, 18, 10, 0.98) 0%, rgba(20, 18, 10, 0.98) 100%);
     padding: 40px;
     border-radius: 20px;
     border: 3px solid #c0a062;
@@ -15469,19 +15469,19 @@ function showVersionUpdateNotification() {
       <h2 style="color: #c0a062; font-size: 2.5em; margin: 0 0 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
         What's New in Mafia Born
       </h2>
-      <h3 style="color: #3498db; font-size: 1.5em; margin: 0;">
+      <h3 style="color: #c0a062; font-size: 1.5em; margin: 0;">
         ${updateInfo.title}
       </h3>
       <p style="color: #c0a062; font-weight: bold; font-size: 1.1em; margin: 5px 0;">
         Version ${CURRENT_VERSION}
       </p>
-      <p style="color: #95a5a6; font-size: 0.9em; margin: 10px 0 0 0;">
+      <p style="color: #8a7a5a; font-size: 0.9em; margin: 10px 0 0 0;">
         Released: ${updateInfo.date}
       </p>
     </div>
     
     <div style="background: rgba(0, 0, 0, 0.3); padding: 25px; border-radius: 15px; margin-bottom: 30px;">
-      <h4 style="color: #2ecc71; font-size: 1.3em; margin: 0 0 15px 0; text-align: center;">
+      <h4 style="color: #8a9a6a; font-size: 1.3em; margin: 0 0 15px 0; text-align: center;">
         Update Highlights
       </h4>
       <ul style="list-style: none; padding: 0; margin: 0;">
@@ -15491,7 +15491,7 @@ function showVersionUpdateNotification() {
             padding: 12px 15px;
             margin-bottom: 10px;
             border-radius: 8px;
-            border-left: 4px solid #3498db;
+            border-left: 4px solid #c0a062;
             font-size: 1.05em;
             line-height: 1.5;
           ">
@@ -15524,7 +15524,7 @@ function showVersionUpdateNotification() {
     </div>
     
     <div style="text-align: center; margin-top: 20px;">
-      <p style="color: #95a5a6; font-size: 0.85em;">
+      <p style="color: #8a7a5a; font-size: 0.85em;">
         Tip: You can always check the latest updates in the game menu
       </p>
     </div>
@@ -15559,8 +15559,8 @@ function showRealEstate(initialTab) {
   content.innerHTML = `
     <!-- Tab Navigation -->
     <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-      <button id="prop-tab-properties" onclick="showPropertiesTab('properties')" style="background:#3498db;color:#fff;padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Properties</button>
-      <button id="prop-tab-fronts" onclick="showPropertiesTab('fronts')" style="background:rgba(243,156,18,0.3);color:#f39c12;padding:8px 20px;border:1px solid #f39c12;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Fronts</button>
+      <button id="prop-tab-properties" onclick="showPropertiesTab('properties')" style="background:#c0a062;color:#fff;padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Properties</button>
+      <button id="prop-tab-fronts" onclick="showPropertiesTab('fronts')" style="background:rgba(243,156,18,0.3);color:#c0a040;padding:8px 20px;border:1px solid #c0a040;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Fronts</button>
     </div>
     <!-- Properties Tab (default) -->
     <div id="panel-properties"></div>
@@ -15577,8 +15577,8 @@ function showRealEstate(initialTab) {
 
 // Tab switching for Properties screen
 const PROP_TAB_CONFIG = {
-  properties: { inactive: 'rgba(52,152,219,0.3)', color: '#3498db', active: '#3498db', activeText: '#fff' },
-  fronts:     { inactive: 'rgba(243,156,18,0.3)', color: '#f39c12', active: '#f39c12', activeText: '#fff' },
+  properties: { inactive: 'rgba(52,152,219,0.3)', color: '#c0a062', active: '#c0a062', activeText: '#fff' },
+  fronts:     { inactive: 'rgba(243,156,18,0.3)', color: '#c0a040', active: '#c0a040', activeText: '#fff' },
 };
 function showPropertiesTab(tab) {
   ['properties', 'fronts'].forEach(t => {
@@ -15619,26 +15619,26 @@ function updateRealEstateDisplay() {
   }
   
   let html = `
-    <div style="margin-bottom: 20px; padding: 15px; background: rgba(52, 73, 94, 0.6); border-radius: 10px;">
-      <h3 style="color: #ecf0f1;">Property Overview</h3>
+    <div style="margin-bottom: 20px; padding: 15px; background: rgba(20, 18, 10, 0.6); border-radius: 10px;">
+      <h3 style="color: #f5e6c8;">Property Overview</h3>
       <p><strong>Current Gang Capacity:</strong> ${currentCapacity} members</p>
       <p><strong>Current Gang Size:</strong> ${player.gang.gangMembers.length} members</p>
       <p><strong>Properties Owned:</strong> ${player.realEstate.ownedProperties.length}</p>
-      ${totalRentIncome > 0 ? `<p><strong>Rental Income:</strong> <span style="color: #f1c40f;">$${totalRentIncome.toLocaleString()}</span> per cycle (collected automatically)</p>` : ''}
+      ${totalRentIncome > 0 ? `<p><strong>Rental Income:</strong> <span style="color: #c0a040;">$${totalRentIncome.toLocaleString()}</span> per cycle (collected automatically)</p>` : ''}
     </div>
   `;
   
   if (player.realEstate.ownedProperties.length > 0) {
     html += `
-      <div style="margin-bottom: 20px; padding: 15px; background: rgba(39, 174, 96, 0.3); border-radius: 10px;">
-        <h3 style="color: #2ecc71;">Your Properties</h3>
+      <div style="margin-bottom: 20px; padding: 15px; background: rgba(122, 138, 90, 0.3); border-radius: 10px;">
+        <h3 style="color: #8a9a6a;">Your Properties</h3>
         ${player.realEstate.ownedProperties.map(property => `
           <div style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px;">
             <strong>${property.name}</strong><br>
             <small>${property.description}</small><br>
-            <span style="color: #3498db;">Gang Capacity: +${property.gangCapacity}</span> |
-            <span style="color: #e74c3c;">Power: +${property.power}</span>
-            ${property.income > 0 ? `| <span style="color: #f1c40f;">Income: $${property.income}/tribute</span>` : ''}
+            <span style="color: #c0a062;">Gang Capacity: +${property.gangCapacity}</span> |
+            <span style="color: #8b3a3a;">Power: +${property.power}</span>
+            ${property.income > 0 ? `| <span style="color: #c0a040;">Income: $${property.income}/tribute</span>` : ''}
           </div>
         `).join('')}
       </div>
@@ -15647,32 +15647,32 @@ function updateRealEstateDisplay() {
   
   html += `
     <div style="margin-bottom: 20px;">
-      <h3 style="color: #ecf0f1;">Available Properties</h3>
+      <h3 style="color: #f5e6c8;">Available Properties</h3>
       <div style="display: grid; gap: 15px;">
         ${realEstateProperties.map((property, index) => {
           const isOwned = player.realEstate.ownedProperties.some(owned => owned.name === property.name);
           const canAfford = player.money >= property.price;
           
           return `
-            <div style="padding: 15px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; border: 2px solid ${isOwned ? '#2ecc71' : (canAfford ? '#3498db' : '#e74c3c')};">
-              <h4 style="color: ${isOwned ? '#2ecc71' : '#ecf0f1'}; margin-bottom: 10px;">
+            <div style="padding: 15px; background: rgba(20, 18, 10, 0.6); border-radius: 10px; border: 2px solid ${isOwned ? '#8a9a6a' : (canAfford ? '#c0a062' : '#8b3a3a')};">
+              <h4 style="color: ${isOwned ? '#8a9a6a' : '#f5e6c8'}; margin-bottom: 10px;">
                 ${property.name} ${isOwned ? '✅' : ''}
               </h4>
-              <p style="color: #bdc3c7; margin-bottom: 10px;">${property.description}</p>
+              <p style="color: #d4c4a0; margin-bottom: 10px;">${property.description}</p>
               <div style="margin-bottom: 10px;">
-                <span style="color: #f1c40f; font-weight: bold;">$${property.price.toLocaleString()}</span> |
-                <span style="color: #3498db;">Gang Capacity: +${property.gangCapacity}</span> |
-                <span style="color: #e74c3c;">Power: +${property.power}</span>
-                ${property.income > 0 ? `| <span style="color: #f1c40f;">Income: $${property.income}/tribute</span>` : ''}
+                <span style="color: #c0a040; font-weight: bold;">$${property.price.toLocaleString()}</span> |
+                <span style="color: #c0a062;">Gang Capacity: +${property.gangCapacity}</span> |
+                <span style="color: #8b3a3a;">Power: +${property.power}</span>
+                ${property.income > 0 ? `| <span style="color: #c0a040;">Income: $${property.income}/tribute</span>` : ''}
               </div>
               ${!isOwned ? `
                 <button onclick="buyProperty(${index})" 
-                    style="background: ${canAfford ? '#27ae60' : '#7f8c8d'}; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: ${canAfford ? 'pointer' : 'not-allowed'}; font-weight: bold;"
+                    style="background: ${canAfford ? '#7a8a5a' : '#6a5a3a'}; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: ${canAfford ? 'pointer' : 'not-allowed'}; font-weight: bold;"
                     ${!canAfford ? 'disabled' : ''}>
                   ${canAfford ? 'Purchase' : 'Too Expensive'}
                 </button>
               ` : `
-                <span style="color: #2ecc71; font-weight: bold;">✓ OWNED</span>
+                <span style="color: #8a9a6a; font-weight: bold;">✓ OWNED</span>
               `}
             </div>
           `;
@@ -15864,8 +15864,8 @@ function resetWantedLevelCourtHouse() {
 
 // Function to show the inventory screen (with Stash + Motor Pool tabs)
 const STASH_TAB_CONFIG = {
-  stash:     { inactive: 'rgba(212,175,55,0.3)', color: '#d4af37', active: '#d4af37', activeText: '#1a1a2e' },
-  motorpool: { inactive: 'rgba(52,152,219,0.3)', color: '#3498db', active: '#3498db', activeText: '#fff' },
+  stash:     { inactive: 'rgba(212,175,55,0.3)', color: '#d4af37', active: '#d4af37', activeText: '#14120a' },
+  motorpool: { inactive: 'rgba(52,152,219,0.3)', color: '#c0a062', active: '#c0a062', activeText: '#fff' },
 };
 const STASH_TAB_IDS = Object.keys(STASH_TAB_CONFIG);
 
@@ -15930,16 +15930,16 @@ function buildStashHTML() {
 
   let html = `
     <h2>Inventory</h2>
-    <div style="padding: 10px; background: rgba(52,73,94,0.6); border-radius: 10px; margin-bottom: 15px;">
+    <div style="padding: 10px; background: rgba(20, 18, 10,0.6); border-radius: 10px; margin-bottom: 15px;">
       <strong>Total Items:</strong> ${player.inventory.length} | 
-      <strong>Equipped Power:</strong> <span style="color:#2ecc71;">${equippedPower}</span> | 
+      <strong>Equipped Power:</strong> <span style="color:#8a9a6a;">${equippedPower}</span> | 
       <strong>Inventory Power:</strong> ${totalPower} | 
       <strong>Ammo:</strong> ${player.ammo} | 
       <strong>Gas:</strong> ${player.gas}
     </div>`;
 
   function renderCategory(title, icon, items) {
-    if (items.length === 0) return `<div style="margin-bottom:15px;"><h3 style="color:#95a5a6;">${icon} ${title} <small>(empty)</small></h3></div>`;
+    if (items.length === 0) return `<div style="margin-bottom:15px;"><h3 style="color:#8a7a5a;">${icon} ${title} <small>(empty)</small></h3></div>`;
     let s = `<div style="margin-bottom:15px;"><h3 style="color:#e67e22;">${icon} ${title}</h3><div style="display:grid;gap:8px;">`;
     items.forEach((item, idx) => {
       const globalIdx = player.inventory.indexOf(item);
@@ -15947,21 +15947,21 @@ function buildStashHTML() {
       const sellPrice = Math.floor((item.price || 0) * 0.4);
       const hasDurability = typeof item.durability === 'number' && typeof item.maxDurability === 'number';
       const durPct = hasDurability ? Math.round((item.durability / item.maxDurability) * 100) : 100;
-      const durColor = durPct > 60 ? '#2ecc71' : durPct > 30 ? '#f39c12' : '#e74c3c';
+      const durColor = durPct > 60 ? '#8a9a6a' : durPct > 30 ? '#c0a040' : '#8b3a3a';
       const durBar = hasDurability ? `<div style="margin-top:4px;width:120px;height:6px;background:#555;border-radius:3px;"><div style="width:${durPct}%;height:100%;background:${durColor};border-radius:3px;"></div></div><small style="color:${durColor};">${item.durability}/${item.maxDurability}</small>` : '';
       const isEquippable = item.type === 'weapon' || item.type === 'armor' || item.type === 'vehicle';
-      s += `<div style="padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:2px solid ${equipped ? '#2ecc71' : '#34495e'};display:flex;justify-content:space-between;align-items:center;">
+      s += `<div style="padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:2px solid ${equipped ? '#8a9a6a' : '#1a1610'};display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <strong style="color:${equipped ? '#2ecc71' : '#ecf0f1'};">${item.name} ${equipped ? '✅ EQUIPPED' : ''}</strong><br>
-          <small style="color:#bdc3c7;">Power: +${item.power || 0}${item.price ? ` | Value: $${sellPrice.toLocaleString()}` : ''}</small>
+          <strong style="color:${equipped ? '#8a9a6a' : '#f5e6c8'};">${item.name} ${equipped ? '✅ EQUIPPED' : ''}</strong><br>
+          <small style="color:#d4c4a0;">Power: +${item.power || 0}${item.price ? ` | Value: $${sellPrice.toLocaleString()}` : ''}</small>
           ${durBar}
         </div>
         <div style="display:flex;gap:8px;">
           ${isEquippable && !equipped ? 
-            `<button onclick="equipItem(${globalIdx})" style="background:#3498db;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Equip</button>` : ''}
+            `<button onclick="equipItem(${globalIdx})" style="background:#c0a062;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Equip</button>` : ''}
           ${equipped ? 
             `<button onclick="unequipItem(${globalIdx})" style="background:#e67e22;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Unequip</button>` : ''}
-          <button onclick="sellItem(${globalIdx})" style="background:#e74c3c;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>
+          <button onclick="sellItem(${globalIdx})" style="background:#8b3a3a;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>
         </div>
       </div>`;
     });
@@ -15976,17 +15976,17 @@ function buildStashHTML() {
 
   if (player.stolenCars && player.stolenCars.length > 0) {
     html += `<div style="margin-bottom:15px;"><h3 style="color:#e67e22;">Stolen Cars (${player.stolenCars.length})</h3>
-      <p style="color:#bdc3c7;font-size:0.85em;margin:4px 0 10px;">Hot vehicles can't be sold directly. Scrap for parts or sell through <a href="#" onclick="showFence();return false;" style="color:#8e44ad;font-weight:bold;">The Fence</a>.</p>
+      <p style="color:#d4c4a0;font-size:0.85em;margin:4px 0 10px;">Hot vehicles can't be sold directly. Scrap for parts or sell through <a href="#" onclick="showFence();return false;" style="color:#7a5a3a;font-weight:bold;">The Fence</a>.</p>
       <div style="display:grid;gap:8px;">`;
     player.stolenCars.forEach((car, idx) => {
       const selected = player.selectedCar === idx;
-      html += `<div style="padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:2px solid ${selected ? '#2ecc71' : '#34495e'};display:flex;justify-content:space-between;align-items:center;">
+      html += `<div style="padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:2px solid ${selected ? '#8a9a6a' : '#1a1610'};display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <strong style="color:${selected ? '#2ecc71' : '#ecf0f1'};">${car.name} ${selected ? 'SELECTED' : ''}</strong><br>
-          <small style="color:#bdc3c7;">Value: $${car.baseValue.toLocaleString()} | ${car.damagePercentage}% damaged</small>
+          <strong style="color:${selected ? '#8a9a6a' : '#f5e6c8'};">${car.name} ${selected ? 'SELECTED' : ''}</strong><br>
+          <small style="color:#d4c4a0;">Value: $${car.baseValue.toLocaleString()} | ${car.damagePercentage}% damaged</small>
         </div>
         <div style="display:flex;gap:8px;">
-          ${!selected ? `<button onclick="selectCar(${idx})" style="background:#3498db;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Select</button>` : ''}
+          ${!selected ? `<button onclick="selectCar(${idx})" style="background:#c0a062;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Select</button>` : ''}
           <button onclick="scrapStolenCar(${idx})" style="background:#e67e22;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Scrap</button>
         </div>
       </div>`;
@@ -15999,27 +15999,27 @@ function buildStashHTML() {
 
 function buildMotorPoolHTML() {
   if (player.inJail) {
-    return `<div style="text-align:center;padding:30px;"><h3 style="color:#e74c3c;">Can't access your garage while in jail!</h3></div>`;
+    return `<div style="text-align:center;padding:30px;"><h3 style="color:#8b3a3a;">Can't access your garage while in jail!</h3></div>`;
   }
 
   let carsHTML = `
     <h2>Vehicle Garage</h2>
-    <p>Your collection of acquired vehicles. Scrap them for parts or sell through <strong style="color:#8e44ad;">The Fence</strong> for full black market value!</p>
+    <p>Your collection of acquired vehicles. Scrap them for parts or sell through <strong style="color:#7a5a3a;">The Fence</strong> for full black market value!</p>
     <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-      <button onclick="showFence()" style="background: linear-gradient(45deg, #8e44ad, #6c3483); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+      <button onclick="showFence()" style="background: linear-gradient(45deg, #7a5a3a, #6c3483); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
         Sell at The Fence
       </button>
-      ${(typeof showVehicleMarketplace === 'function' || window.showVehicleMarketplace) ? '<button onclick="showVehicleMarketplace()" style="background: linear-gradient(45deg, #2980b9, #1a5276); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Player Marketplace</button>' : ''}
+      ${(typeof showVehicleMarketplace === 'function' || window.showVehicleMarketplace) ? '<button onclick="showVehicleMarketplace()" style="background: linear-gradient(45deg, #a08850, #1a5276); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Player Marketplace</button>' : ''}
     </div>
   `;
 
   if (player.stolenCars.length === 0) {
     carsHTML += `
-      <div style="text-align: center; margin: 40px 0; padding: 30px; background: rgba(52, 73, 94, 0.6); border-radius: 15px; border: 2px solid #f39c12;">
-        <h3 style="color: #f39c12; margin-bottom: 15px;">Empty Garage</h3>
-        <p style="color: #ecf0f1; margin-bottom: 20px;">Your garage is currently empty. Start stealing cars through jobs to build your vehicle collection!</p>
-        <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 1px solid #f39c12; margin: 20px 0;">
-          <p style="color: #ecf0f1; margin: 0;"><strong>Tip:</strong> Look for "Car Theft" jobs to acquire vehicles. Cars can be sold for money or used to improve job success rates!</p>
+      <div style="text-align: center; margin: 40px 0; padding: 30px; background: rgba(20, 18, 10, 0.6); border-radius: 15px; border: 2px solid #c0a040;">
+        <h3 style="color: #c0a040; margin-bottom: 15px;">Empty Garage</h3>
+        <p style="color: #f5e6c8; margin-bottom: 20px;">Your garage is currently empty. Start stealing cars through jobs to build your vehicle collection!</p>
+        <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 1px solid #c0a040; margin: 20px 0;">
+          <p style="color: #f5e6c8; margin: 0;"><strong>Tip:</strong> Look for "Car Theft" jobs to acquire vehicles. Cars can be sold for money or used to improve job success rates!</p>
         </div>
       </div>
     `;
@@ -16029,18 +16029,18 @@ function buildMotorPoolHTML() {
         ${player.stolenCars.map((car, index) => {
           let conditionText = car.damagePercentage <= 15 ? 'PRISTINE' : 
                    car.damagePercentage <= 50 ? 'DAMAGED' : 'HEAVILY DAMAGED';
-          let conditionColor = car.damagePercentage <= 15 ? '#2ecc71' : 
-                    car.damagePercentage <= 50 ? '#f39c12' : '#e74c3c';
+          let conditionColor = car.damagePercentage <= 15 ? '#8a9a6a' : 
+                    car.damagePercentage <= 50 ? '#c0a040' : '#8b3a3a';
           const carImageSrc = car.image || `vehicles/${car.name}.png`;
           
           return `
-            <div style="background: rgba(44, 62, 80, 0.8); border-radius: 15px; padding: 25px; border: 2px solid #34495e; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); transition: transform 0.3s ease;">
+            <div style="background: rgba(20, 18, 10, 0.8); border-radius: 15px; padding: 25px; border: 2px solid #1a1610; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); transition: transform 0.3s ease;">
               <div style="text-align: center; margin-bottom: 20px;">
                 <img src="${carImageSrc}" alt="${car.name}" 
                    style="width: 220px; height: 165px; border-radius: 12px; object-fit: cover; 
-                      border: 3px solid #ecf0f1; margin-bottom: 15px; transition: transform 0.3s ease;" 
+                      border: 3px solid #f5e6c8; margin-bottom: 15px; transition: transform 0.3s ease;" 
                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIwIiBoZWlnaHQ9IjE2NSIgdmlld0JveD0iMCAwIDIyMCAxNjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIyMCIgaGVpZ2h0PSIxNjUiIGZpbGw9IiM3ZjhjOGQiLz48dGV4dCB4PSIxMTAiIHk9IjgyLjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0iI2VjZjBmMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+VmVoaWNsZSBJbWFnZTwvdGV4dD48L3N2Zz4=';" />
-                <h3 style="color: #ecf0f1; margin: 15px 0; font-size: 1.3em;">${car.name}</h3>
+                <h3 style="color: #f5e6c8; margin: 15px 0; font-size: 1.3em;">${car.name}</h3>
               </div>
               
               <div style="text-align: center; margin: 20px 0;">
@@ -16048,9 +16048,9 @@ function buildMotorPoolHTML() {
                   <p style="margin: 8px 0; color: ${conditionColor}; font-weight: bold; font-size: 1.1em;">
                     ${conditionText} (${car.damagePercentage}% damaged)
                   </p>
-                  <p style="margin: 8px 0; color: #f39c12; font-size: 1.05em;"><strong>Current Value:</strong> $${car.currentValue.toLocaleString()}</p>
-                  <p style="margin: 8px 0; color: #3498db; font-size: 1.05em;"><strong>Base Value:</strong> $${car.baseValue.toLocaleString()}</p>
-                  <p style="margin: 8px 0; color: #95a5a6; font-size: 1.05em;"><strong>Times Used:</strong> ${car.usageCount}</p>
+                  <p style="margin: 8px 0; color: #c0a040; font-size: 1.05em;"><strong>Current Value:</strong> $${car.currentValue.toLocaleString()}</p>
+                  <p style="margin: 8px 0; color: #c0a062; font-size: 1.05em;"><strong>Base Value:</strong> $${car.baseValue.toLocaleString()}</p>
+                  <p style="margin: 8px 0; color: #8a7a5a; font-size: 1.05em;"><strong>Times Used:</strong> ${car.usageCount}</p>
                 </div>
                 
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
@@ -16061,7 +16061,7 @@ function buildMotorPoolHTML() {
                     Scrap ($${Math.floor(car.currentValue * 0.35).toLocaleString()})
                   </button>
                   <button onclick="useCar(${index}, 'job')" ${car.damagePercentage >= 90 ? 'disabled' : ''}
-                      style="background: ${car.damagePercentage >= 90 ? '#7f8c8d' : 'linear-gradient(45deg, #2ecc71, #27ae60)'}; 
+                      style="background: ${car.damagePercentage >= 90 ? '#6a5a3a' : 'linear-gradient(45deg, #8a9a6a, #7a8a5a)'}; 
                           color: white; padding: 12px 18px; border: none; border-radius: 10px; 
                           font-weight: bold; cursor: ${car.damagePercentage >= 90 ? 'not-allowed' : 'pointer'}; font-size: 15px;
                           transition: all 0.3s ease; min-width: 120px;">
@@ -16316,7 +16316,7 @@ function renderHospitalContent() {
   const restEnergyCost = 25;
   
   // Health bar color
-  const healthColor = player.health > 60 ? '#2ecc71' : player.health > 30 ? '#f39c12' : '#e74c3c';
+  const healthColor = player.health > 60 ? '#8a9a6a' : player.health > 30 ? '#c0a040' : '#8b3a3a';
   const healthBar = `<div style="background: #333; border-radius: 8px; height: 24px; margin: 10px 0 20px; overflow: hidden; border: 1px solid #555;">
     <div style="background: ${healthColor}; height: 100%; width: ${player.health}%; transition: width 0.5s; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85em; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
       ${player.health}/100 HP
@@ -16326,7 +16326,7 @@ function renderHospitalContent() {
   let html = `<div class="content-card">${healthBar}`;
   
   if (player.health >= 100) {
-    html += `<p style="color: #2ecc71; text-align: center; font-size: 1.1em;">You're in perfect health. No treatment needed.</p>`;
+    html += `<p style="color: #8a9a6a; text-align: center; font-size: 1.1em;">You're in perfect health. No treatment needed.</p>`;
   } else {
     html += `<div class="hospital-services">`;
     
@@ -16376,7 +16376,7 @@ function renderHospitalContent() {
         </div>
       </div>
       <div class="hospital-option-footer">
-        <span class="hospital-cost" style="color: #3498db;">${restEnergyCost} Energy</span>
+        <span class="hospital-cost" style="color: #c0a062;">${restEnergyCost} Energy</span>
         <button onclick="healAtHospital('rest')" ${player.energy < restEnergyCost || restHealAmount <= 0 ? 'disabled' : ''}>
           ${player.energy < restEnergyCost ? 'Not Enough Energy' : restHealAmount <= 0 ? 'Too Healthy to Rest' : `Rest (+${restHealAmount} HP)`}
         </button>
@@ -16516,10 +16516,10 @@ function showDeathScreen(causeOfDeath) {
   if (restartArea) {
     restartArea.innerHTML = `
       <div style="margin: 25px auto; max-width: 500px; text-align: center;">
-        <p style="color: #bdc3c7; margin-bottom: 20px; font-style: italic;">
+        <p style="color: #d4c4a0; margin-bottom: 20px; font-style: italic;">
           "Every empire falls. Will you build another?"
         </p>
-        <button onclick="restartGame()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: #ecf0f1; padding: 18px 40px; border: none; border-radius: 12px; font-size: 1.3em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+        <button onclick="restartGame()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: #f5e6c8; padding: 18px 40px; border: none; border-radius: 12px; font-size: 1.3em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
           Start a New Life
         </button>
       </div>
@@ -16583,11 +16583,11 @@ function showAchievements() {
     <!-- Progress bar -->
     <div style="margin: 15px 0 25px; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px;">
       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        <span style="color: #f1c40f; font-weight: bold;">${unlockedCount} / ${totalCount} Unlocked</span>
-        <span style="color: #95a5a6;">${progressPct}%</span>
+        <span style="color: #c0a040; font-weight: bold;">${unlockedCount} / ${totalCount} Unlocked</span>
+        <span style="color: #8a7a5a;">${progressPct}%</span>
       </div>
       <div style="background: rgba(0,0,0,0.4); border-radius: 6px; height: 12px; overflow: hidden;">
-        <div style="background: linear-gradient(90deg, #f39c12, #f1c40f); height: 100%; width: ${progressPct}%; border-radius: 6px; transition: width 0.5s;"></div>
+        <div style="background: linear-gradient(90deg, #c0a040, #c0a040); height: 100%; width: ${progressPct}%; border-radius: 6px; transition: width 0.5s;"></div>
       </div>
     </div>
   `;
@@ -16598,21 +16598,21 @@ function showAchievements() {
     
     achievementsHTML += `
       <div style="margin-bottom: 20px;">
-        <h3 style="color: #f39c12; border-bottom: 1px solid rgba(243,156,18,0.3); padding-bottom: 8px; margin-bottom: 12px;">
-          ${cat.icon} ${cat.name} <span style="font-size: 0.7em; color: #95a5a6;">(${catUnlocked}/${catAchievements.length})</span>
+        <h3 style="color: #c0a040; border-bottom: 1px solid rgba(243,156,18,0.3); padding-bottom: 8px; margin-bottom: 12px;">
+          ${cat.icon} ${cat.name} <span style="font-size: 0.7em; color: #8a7a5a;">(${catUnlocked}/${catAchievements.length})</span>
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px;">
           ${catAchievements.map(a => {
             return `
-              <div style="background: ${a.unlocked ? 'rgba(46, 204, 113, 0.15)' : 'rgba(0,0,0,0.3)'}; 
+              <div style="background: ${a.unlocked ? 'rgba(138, 154, 106, 0.15)' : 'rgba(0,0,0,0.3)'}; 
                     padding: 12px; border-radius: 8px; 
-                    border: 1px solid ${a.unlocked ? '#2ecc71' : '#555'}; 
+                    border: 1px solid ${a.unlocked ? '#8a9a6a' : '#555'}; 
                     opacity: ${a.unlocked ? '1' : '0.7'};">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <strong style="color: ${a.unlocked ? '#2ecc71' : '#ecf0f1'};">${a.name}</strong>
+                  <strong style="color: ${a.unlocked ? '#8a9a6a' : '#f5e6c8'};">${a.name}</strong>
                   <span style="font-size: 1.2em;">${a.unlocked ? '✅' : '🔒'}</span>
                 </div>
-                <p style="color: #bdc3c7; font-size: 0.85em; margin: 5px 0 3px;">${a.description}</p>
+                <p style="color: #d4c4a0; font-size: 0.85em; margin: 5px 0 3px;">${a.description}</p>
               </div>
             `;
           }).join('')}
@@ -16801,10 +16801,10 @@ function gangRecruitment() {
     const recruitmentId = 'recruitment-' + Date.now();
     logAction(` <strong>${recruit.name}</strong> approaches you in the shadows. They've heard about your reputation and want to join your crew for <strong>$${recruit.cost.toLocaleString()}</strong>. 
           Specializes in <em>${recruit.skill}</em> (+${recruit.power} power). 
-          <button id="${recruitmentId}" onclick="hireRandomRecruit('${recruitmentId}')" style="background: #27ae60; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; font-weight: bold;">
+          <button id="${recruitmentId}" onclick="hireRandomRecruit('${recruitmentId}')" style="background: #7a8a5a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; font-weight: bold;">
             Hire for $${recruit.cost.toLocaleString()}
           </button>
-          <span id="${recruitmentId}-timer" style="color: #e74c3c; margin-left: 10px; font-weight: bold;">2:00</span>`);
+          <span id="${recruitmentId}-timer" style="color: #8b3a3a; margin-left: 10px; font-weight: bold;">2:00</span>`);
     
     // Start 2-minute countdown
     let timeLeft = 120; // 2 minutes in seconds
@@ -16818,9 +16818,9 @@ function gangRecruitment() {
         timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         
         if (timeLeft <= 30) {
-          timerElement.style.color = '#e74c3c'; // Red for last 30 seconds
+          timerElement.style.color = '#8b3a3a'; // Red for last 30 seconds
         } else if (timeLeft <= 60) {
-          timerElement.style.color = '#f39c12'; // Orange for last minute
+          timerElement.style.color = '#c0a040'; // Orange for last minute
         }
       }
       
@@ -16832,14 +16832,14 @@ function gangRecruitment() {
         const buttonElement = document.getElementById(recruitmentId);
         if (buttonElement) {
           buttonElement.disabled = true;
-          buttonElement.style.background = '#7f8c8d';
+          buttonElement.style.background = '#6a5a3a';
           buttonElement.style.cursor = 'not-allowed';
           buttonElement.textContent = 'Opportunity Expired';
         }
         
         if (timerElement) {
           timerElement.textContent = 'EXPIRED';
-          timerElement.style.color = '#7f8c8d';
+          timerElement.style.color = '#6a5a3a';
         }
         
         logAction(`${recruit.name} grows impatient and disappears into the night. The opportunity has passed.`);
@@ -16895,7 +16895,7 @@ async function hireRandomRecruit(buttonId) {
   const buttonElement = document.getElementById(buttonId);
   if (buttonElement) {
     buttonElement.disabled = true;
-    buttonElement.style.background = '#2ecc71';
+    buttonElement.style.background = '#8a9a6a';
     buttonElement.style.cursor = 'not-allowed';
     buttonElement.textContent = '✓ HIRED';
   }
@@ -16904,7 +16904,7 @@ async function hireRandomRecruit(buttonId) {
   const timerElement = document.getElementById(`${buttonId}-timer`);
   if (timerElement) {
     timerElement.textContent = 'HIRED';
-    timerElement.style.color = '#2ecc71';
+    timerElement.style.color = '#8a9a6a';
   }
   
   updateUI();
@@ -17261,31 +17261,31 @@ function loadGame() {
 // `onClickFn` receives a save object and returns the onclick JS string for that card.
 function renderLoadSlotCards(saves, onClickFn) {
   return saves.map(save => `
-    <div style="background: rgba(52, 73, 94, 0.8); border: 2px solid #3498db; border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s ease;"
+    <div style="background: rgba(20, 18, 10, 0.8); border: 2px solid #c0a062; border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s ease;"
        onclick="${onClickFn(save)}"
-       onmouseover="this.style.background='rgba(52, 152, 219, 0.3)'; this.style.borderColor='#2ecc71';"
-       onmouseout="this.style.background='rgba(52, 73, 94, 0.8)'; this.style.borderColor='#3498db';">
+       onmouseover="this.style.background='rgba(52, 152, 219, 0.3)'; this.style.borderColor='#8a9a6a';"
+       onmouseout="this.style.background='rgba(20, 18, 10, 0.8)'; this.style.borderColor='#c0a062';">
       <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
         <div>
-          <h3 style="color: #3498db; margin: 0; font-size: 1.1em;">
+          <h3 style="color: #c0a062; margin: 0; font-size: 1.1em;">
             ${save.slotNumber === 0 ? 'Auto-Save' : `Slot ${save.slotNumber}`}
           </h3>
         </div>
         <div>
-          <h4 style="color: #2ecc71; margin: 0 0 5px 0; font-size: 1.2em;">${save.saveName}</h4>
-          <p style="color: #bdc3c7; margin: 0; font-size: 0.9em;">${save.playerName} - Level ${save.level}</p>
+          <h4 style="color: #8a9a6a; margin: 0 0 5px 0; font-size: 1.2em;">${save.saveName}</h4>
+          <p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${save.playerName} - Level ${save.level}</p>
         </div>
         <div style="text-align: center;">
-          <p style="color: #f39c12; margin: 0; font-weight: bold;">$${save.money.toLocaleString()}</p>
-          <p style="color: #95a5a6; margin: 0; font-size: 0.8em;">Money</p>
+          <p style="color: #c0a040; margin: 0; font-weight: bold;">$${save.money.toLocaleString()}</p>
+          <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">Money</p>
         </div>
         <div style="text-align: center;">
-          <p style="color: #e74c3c; margin: 0; font-weight: bold;">${Math.floor(save.reputation)}</p>
-          <p style="color: #95a5a6; margin: 0; font-size: 0.8em;">Reputation</p>
+          <p style="color: #8b3a3a; margin: 0; font-weight: bold;">${Math.floor(save.reputation)}</p>
+          <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">Reputation</p>
         </div>
         <div style="text-align: center;">
-          <p style="color: #3498db; margin: 0; font-size: 0.9em;">${save.playtime}</p>
-          <p style="color: #95a5a6; margin: 0; font-size: 0.8em;">${formatTimestamp(save.saveDate)}</p>
+          <p style="color: #c0a062; margin: 0; font-size: 0.9em;">${save.playtime}</p>
+          <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">${formatTimestamp(save.saveDate)}</p>
         </div>
       </div>
     </div>
@@ -17298,11 +17298,11 @@ function showSaveSelectionInterface(saves) {
   
   const content = `
     <div style="max-width: 1000px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #3498db; font-size: 2.5em; margin-bottom: 30px;">
+      <h2 style="text-align: center; color: #c0a062; font-size: 2.5em; margin-bottom: 30px;">
         Load Game
       </h2>
       
-      <p style="text-align: center; color: #ecf0f1; font-size: 1.2em; margin-bottom: 30px;">
+      <p style="text-align: center; color: #f5e6c8; font-size: 1.2em; margin-bottom: 30px;">
         Select a saved game to load:
       </p>
       
@@ -17364,13 +17364,13 @@ function showSaveSelectionFromIntro(saves) {
   `;
   
   const content = `
-    <div style="max-width: 1000px; width: 100%; background: linear-gradient(135deg, rgba(44, 62, 80, 0.98) 0%, rgba(52, 73, 94, 0.98) 100%); 
-          padding: 40px; border-radius: 20px; border: 2px solid #e74c3c; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; color: white;">
-      <h2 style="color: #3498db; font-size: 2.5em; margin-bottom: 30px;">
+    <div style="max-width: 1000px; width: 100%; background: linear-gradient(135deg, rgba(20, 18, 10, 0.98) 0%, rgba(20, 18, 10, 0.98) 100%); 
+          padding: 40px; border-radius: 20px; border: 2px solid #8b3a3a; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; color: white;">
+      <h2 style="color: #c0a062; font-size: 2.5em; margin-bottom: 30px;">
         Load Game
       </h2>
       
-      <p style="color: #ecf0f1; font-size: 1.2em; margin-bottom: 30px;">
+      <p style="color: #f5e6c8; font-size: 1.2em; margin-bottom: 30px;">
         Select a saved game to load:
       </p>
       
@@ -17379,7 +17379,7 @@ function showSaveSelectionFromIntro(saves) {
       </div>
       
       <div style="text-align: center;">
-        <button onclick="cancelLoadFromIntro()" style="background: #95a5a6; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.1em;">
+        <button onclick="cancelLoadFromIntro()" style="background: #8a7a5a; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.1em;">
           ← Back to Main Screen
         </button>
       </div>
@@ -17578,22 +17578,22 @@ function checkForUpdates() {
 
       if (serverVersion !== localVersion) {
         btn.innerHTML = `🆕 Update found! v${localVersion} → v${serverVersion} — Updating...`;
-        btn.style.borderColor = '#2ecc71';
-        btn.style.color = '#2ecc71';
+        btn.style.borderColor = '#8a9a6a';
+        btn.style.color = '#8a9a6a';
 
         // Short pause so player sees the message, then force reload
         setTimeout(() => forceHardReload(), 1800);
       } else {
         btn.innerHTML = `You're up to date! (v${localVersion})`;
-        btn.style.borderColor = '#2ecc71';
-        btn.style.color = '#2ecc71';
+        btn.style.borderColor = '#8a9a6a';
+        btn.style.color = '#8a9a6a';
 
         // Offer a force-refresh option in case assets are still cached
         setTimeout(() => {
           btn.innerHTML = 'Force Refresh';
           btn.title = 'Click to force-reload all game files from server';
-          btn.style.borderColor = '#3498db';
-          btn.style.color = '#3498db';
+          btn.style.borderColor = '#c0a062';
+          btn.style.color = '#c0a062';
           btn.disabled = false;
           btn.style.cursor = 'pointer';
           btn.onclick = () => {
@@ -17606,13 +17606,13 @@ function checkForUpdates() {
     } catch (err) {
       console.error('Version check failed:', err);
       btn.innerHTML = 'Server offline — try Force Refresh';
-      btn.style.borderColor = '#e74c3c';
-      btn.style.color = '#e74c3c';
+      btn.style.borderColor = '#8b3a3a';
+      btn.style.color = '#8b3a3a';
       setTimeout(() => {
         btn.innerHTML = 'Force Refresh';
         btn.title = 'Click to force-reload all game files';
-        btn.style.borderColor = '#3498db';
-        btn.style.color = '#3498db';
+        btn.style.borderColor = '#c0a062';
+        btn.style.color = '#c0a062';
         btn.disabled = false;
         btn.style.cursor = 'pointer';
         btn.onclick = () => {
@@ -17670,60 +17670,60 @@ function showDeleteSelectionInterface(saves) {
   `;
   
   const content = `
-    <div style="max-width: 1000px; width: 100%; background: linear-gradient(135deg, rgba(44, 62, 80, 0.98) 0%, rgba(52, 73, 94, 0.98) 100%); 
-          padding: 40px; border-radius: 20px; border: 2px solid #e74c3c; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; color: white;">
-      <h2 style="color: #e74c3c; font-size: 2.5em; margin-bottom: 30px;">
+    <div style="max-width: 1000px; width: 100%; background: linear-gradient(135deg, rgba(20, 18, 10, 0.98) 0%, rgba(20, 18, 10, 0.98) 100%); 
+          padding: 40px; border-radius: 20px; border: 2px solid #8b3a3a; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; color: white;">
+      <h2 style="color: #8b3a3a; font-size: 2.5em; margin-bottom: 30px;">
         Delete Save Game
       </h2>
       
-      <p style="color: #ecf0f1; font-size: 1.2em; margin-bottom: 30px;">
+      <p style="color: #f5e6c8; font-size: 1.2em; margin-bottom: 30px;">
         <strong>WARNING:</strong> This action cannot be undone! Select a saved game to permanently delete:
       </p>
       
       <div style="display: grid; gap: 15px; margin-bottom: 30px;">
         ${saves.map(save => `
-          <div style="background: rgba(52, 73, 94, 0.8); border: 2px solid #e74c3c; border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s ease;" 
+          <div style="background: rgba(20, 18, 10, 0.8); border: 2px solid #8b3a3a; border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s ease;" 
              onclick="confirmDeleteSave(${save.slotNumber})"
-             onmouseover="this.style.background='rgba(231, 76, 60, 0.3)'; this.style.borderColor='#c0392b';"
-             onmouseout="this.style.background='rgba(52, 73, 94, 0.8)'; this.style.borderColor='#e74c3c';">
+             onmouseover="this.style.background='rgba(231, 76, 60, 0.3)'; this.style.borderColor='#7a2a2a';"
+             onmouseout="this.style.background='rgba(20, 18, 10, 0.8)'; this.style.borderColor='#8b3a3a';">
             
             <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
               <div>
-                <h3 style="color: #e74c3c; margin: 0; font-size: 1.1em;">
+                <h3 style="color: #8b3a3a; margin: 0; font-size: 1.1em;">
                   ${save.slotNumber === 0 ? 'Auto-Save' : `Slot ${save.slotNumber}`}
                 </h3>
               </div>
               
               <div>
-                <h4 style="color: #2ecc71; margin: 0 0 5px 0; font-size: 1.2em;">${save.saveName}</h4>
-                <p style="color: #bdc3c7; margin: 0; font-size: 0.9em;">${save.playerName} - Level ${save.level}</p>
+                <h4 style="color: #8a9a6a; margin: 0 0 5px 0; font-size: 1.2em;">${save.saveName}</h4>
+                <p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${save.playerName} - Level ${save.level}</p>
               </div>
               
               <div style="text-align: center;">
-                <p style="color: #f39c12; margin: 0; font-weight: bold;">$${save.money.toLocaleString()}</p>
-                <p style="color: #95a5a6; margin: 0; font-size: 0.8em;">Money</p>
+                <p style="color: #c0a040; margin: 0; font-weight: bold;">$${save.money.toLocaleString()}</p>
+                <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">Money</p>
               </div>
               
               <div style="text-align: center;">
-                <p style="color: #e74c3c; margin: 0; font-weight: bold;">${Math.floor(save.reputation)}</p>
-                <p style="color: #95a5a6; margin: 0; font-size: 0.8em;">Reputation</p>
+                <p style="color: #8b3a3a; margin: 0; font-weight: bold;">${Math.floor(save.reputation)}</p>
+                <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">Reputation</p>
               </div>
               
               <div style="text-align: center;">
-                <p style="color: #3498db; margin: 0; font-size: 0.9em;">${save.playtime}</p>
-                <p style="color: #95a5a6; margin: 0; font-size: 0.8em;">${formatTimestamp(save.saveDate)}</p>
+                <p style="color: #c0a062; margin: 0; font-size: 0.9em;">${save.playtime}</p>
+                <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">${formatTimestamp(save.saveDate)}</p>
               </div>
             </div>
             
             <div style="margin-top: 15px; text-align: center;">
-              <span style="color: #e74c3c; font-weight: bold; font-size: 0.9em;">Click to DELETE this save</span>
+              <span style="color: #8b3a3a; font-weight: bold; font-size: 0.9em;">Click to DELETE this save</span>
             </div>
           </div>
         `).join('')}
       </div>
       
       <div style="text-align: center;">
-        <button onclick="cancelDeleteSave()" style="background: #95a5a6; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.1em;">
+        <button onclick="cancelDeleteSave()" style="background: #8a7a5a; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.1em;">
           ← Cancel
         </button>
       </div>
@@ -18062,11 +18062,11 @@ function showMap() {
     <p>Visual overview of the city's turf zones and your criminal empire</p>
     
     <div style="margin: 20px 0; padding: 15px; background: rgba(52, 152, 219, 0.2); border-radius: 10px;">
-      <h3 style="color: #3498db; margin: 0 0 10px 0;">Map Legend</h3>
+      <h3 style="color: #c0a062; margin: 0 0 10px 0;">Map Legend</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-        <div style="color: #2ecc71;">✅ Your Turf</div>
-        <div style="color: #e74c3c;">Rival Controlled</div>
-        <div style="color: #f39c12;">Contested</div>
+        <div style="color: #8a9a6a;">✅ Your Turf</div>
+        <div style="color: #8b3a3a;">Rival Controlled</div>
+        <div style="color: #c0a040;">Contested</div>
       </div>
     </div>
     
@@ -18084,17 +18084,17 @@ function showMap() {
     if (isOwned) {
       tileClass += 'territory-controlled';
       statusText = 'YOUR TURF';
-      statusColor = '#2ecc71';
+      statusColor = '#8a9a6a';
       clickAction = `onclick="manageTurfDetails('${zone.id}')"`;
     } else if (isContested) {
       tileClass += 'territory-available';
       statusText = 'CONTESTED';
-      statusColor = '#f39c12';
+      statusColor = '#c0a040';
       clickAction = `onclick="showTerritoryInfo('${zone.id}')"`;
     } else {
       tileClass += 'territory-rival';
       statusText = zone.controlledBy ? zone.controlledBy.toUpperCase() : 'RIVAL';
-      statusColor = '#e74c3c';
+      statusColor = '#8b3a3a';
       clickAction = `onclick="showTerritoryInfo('${zone.id}')"`;
     }
     
@@ -18105,7 +18105,7 @@ function showMap() {
         <div class="territory-info">
           <div style="color: ${statusColor}; font-weight: bold;">${statusText}</div>
           <div style="font-size: 0.8em;">Income: $${zone.baseIncome.toLocaleString()}/week</div>
-          <div style="font-size: 0.75em; color: #95a5a6;">Defense: ${zone.defenseRequired} | Risk: ${zone.riskLevel}</div>
+          <div style="font-size: 0.75em; color: #8a7a5a;">Defense: ${zone.defenseRequired} | Risk: ${zone.riskLevel}</div>
         </div>
       </div>
     `;
@@ -18115,7 +18115,7 @@ function showMap() {
     </div>
     
     <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-      <button onclick="showTerritoryControl();" style="background: #3498db; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="showTerritoryControl();" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
         Turf Management
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
@@ -18214,8 +18214,8 @@ function showCalendar() {
   calendarHTML += `
     </div>
     
-    <div style="margin: 30px 0; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px;">
-      <h3 style="color: #f39c12; margin-bottom: 15px;">Upcoming Events</h3>
+    <div style="margin: 30px 0; padding: 20px; background: rgba(20, 18, 10, 0.6); border-radius: 10px;">
+      <h3 style="color: #c0a040; margin-bottom: 15px;">Upcoming Events</h3>
       <div style="display: grid; gap: 10px;">
   `;
   
@@ -18508,10 +18508,10 @@ function showStatistics() {
     </div>
     
     <div style="text-align: center; margin-top: 30px;">
-      <button onclick="exportStatistics()" style="background: #3498db; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="exportStatistics()" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
         Export Stats
       </button>
-      <button onclick="resetStatistics()" style="background: #e74c3c; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="resetStatistics()" style="background: #8b3a3a; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
         Reset Stats
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
@@ -18665,13 +18665,13 @@ function calculateEmpireRating() {
 // Get Empire Rating Grade
 function getEmpireRatingGrade(score) {
   if (score >= 9000) return { grade: "LEGENDARY", color: "#ff6b35", description: "Criminal Mastermind" };
-  if (score >= 7500) return { grade: "S+", color: "#f39c12", description: "Underworld Kingpin" };
-  if (score >= 6000) return { grade: "S", color: "#e74c3c", description: "Crime Boss" };
-  if (score >= 4500) return { grade: "A+", color: "#9b59b6", description: "Mob Lieutenant" };
-  if (score >= 3000) return { grade: "A", color: "#3498db", description: "Gang Leader" };
-  if (score >= 1500) return { grade: "B", color: "#2ecc71", description: "Street Captain" };
-  if (score >= 750) return { grade: "C", color: "#95a5a6", description: "Thug" };
-  return { grade: "D", color: "#7f8c8d", description: "Street Criminal" };
+  if (score >= 7500) return { grade: "S+", color: "#c0a040", description: "Underworld Kingpin" };
+  if (score >= 6000) return { grade: "S", color: "#8b3a3a", description: "Crime Boss" };
+  if (score >= 4500) return { grade: "A+", color: "#8b6a4a", description: "Mob Lieutenant" };
+  if (score >= 3000) return { grade: "A", color: "#c0a062", description: "Gang Leader" };
+  if (score >= 1500) return { grade: "B", color: "#8a9a6a", description: "Street Captain" };
+  if (score >= 750) return { grade: "C", color: "#8a7a5a", description: "Thug" };
+  return { grade: "D", color: "#6a5a3a", description: "Street Criminal" };
 }
 
 // Build Empire Rating HTML (used as tab content in Stats screen)
@@ -18689,49 +18689,49 @@ function buildEmpireRatingHTML() {
         <h1 style="color: ${grade.color}; font-size: 3.5em; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
           ${grade.grade}
         </h1>
-        <h3 style="color: #ecf0f1; margin: 5px 0;">${grade.description}</h3>
-        <p style="color: #bdc3c7; font-size: 1.2em; margin: 10px 0;">
+        <h3 style="color: #f5e6c8; margin: 5px 0;">${grade.description}</h3>
+        <p style="color: #d4c4a0; font-size: 1.2em; margin: 10px 0;">
           Total Empire Score: <span style="color: ${grade.color}; font-weight: bold;">${rating.totalScore.toLocaleString()}</span>
         </p>
       </div>
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
         <div class="rating-category">
-          <h3 style="color: #2ecc71;">Money Power</h3>
+          <h3 style="color: #8a9a6a;">Money Power</h3>
           <div class="progress-bar">
-            <div style="width: ${(rating.moneyPower/2000)*100}%; background: #2ecc71;"></div>
+            <div style="width: ${(rating.moneyPower/2000)*100}%; background: #8a9a6a;"></div>
           </div>
           <p>${rating.moneyPower}/2000 points</p>
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #e74c3c;">Gang Power</h3>
+          <h3 style="color: #8b3a3a;">Gang Power</h3>
           <div class="progress-bar">
-            <div style="width: ${(rating.gangPower/1500)*100}%; background: #e74c3c;"></div>
+            <div style="width: ${(rating.gangPower/1500)*100}%; background: #8b3a3a;"></div>
           </div>
           <p>${rating.gangPower}/1500 points</p>
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #f39c12;">Territory Power</h3>
+          <h3 style="color: #c0a040;">Territory Power</h3>
           <div class="progress-bar">
-            <div style="width: ${(rating.territoryPower/1500)*100}%; background: #f39c12;"></div>
+            <div style="width: ${(rating.territoryPower/1500)*100}%; background: #c0a040;"></div>
           </div>
           <p>${rating.territoryPower}/1500 points</p>
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #9b59b6;">Business Power</h3>
+          <h3 style="color: #8b6a4a;">Business Power</h3>
           <div class="progress-bar">
-            <div style="width: ${(rating.businessPower/1500)*100}%; background: #9b59b6;"></div>
+            <div style="width: ${(rating.businessPower/1500)*100}%; background: #8b6a4a;"></div>
           </div>
           <p>${rating.businessPower}/1500 points</p>
         </div>
         
         <div class="rating-category">
-          <h3 style="color: #3498db;">Reputation Power</h3>
+          <h3 style="color: #c0a062;">Reputation Power</h3>
           <div class="progress-bar">
-            <div style="width: ${(rating.reputationPower/2000)*100}%; background: #3498db;"></div>
+            <div style="width: ${(rating.reputationPower/2000)*100}%; background: #c0a062;"></div>
           </div>
           <p>${rating.reputationPower}/2000 points</p>
         </div>
@@ -18746,7 +18746,7 @@ function buildEmpireRatingHTML() {
       </div>
       
       <div style="text-align: center; margin-top: 20px;">
-        <button onclick="showAchievements()" style="background: linear-gradient(45deg, #f39c12, #e67e22); color: white; padding: 12px 26px; border: none; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer;">
+        <button onclick="showAchievements()" style="background: linear-gradient(45deg, #c0a040, #e67e22); color: white; padding: 12px 26px; border: none; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer;">
           Achievements
         </button>
       </div>
@@ -18848,14 +18848,14 @@ function buildEmpireOverviewHTML() {
         </div>
       </div>
 
-      <div style="background:rgba(44,62,80,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
+      <div style="background:rgba(20, 18, 10,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
         <h3 style="color:#d4af37;margin:0 0 12px;border-bottom:1px solid #444;padding-bottom:8px;">Faction Relations</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           ${factionCardsHTML}
         </div>
       </div>
 
-      <div style="background:rgba(44,62,80,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
+      <div style="background:rgba(20, 18, 10,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
         <h3 style="color:#d4af37;margin:0 0 12px;border-bottom:1px solid #444;padding-bottom:8px;">Active Passives</h3>
         ${passivesHTML}
       </div>
@@ -19440,28 +19440,28 @@ function showSaveSystem() {
   
   const content = `
     <div style="max-width: 1200px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #3498db; font-size: 2.5em; margin-bottom: 20px;">
+      <h2 style="text-align: center; color: #c0a062; font-size: 2.5em; margin-bottom: 20px;">
         Save System
       </h2>
       
       <!-- Save System Controls -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
-        <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 10px 0;">Auto-Save</h3>
-          <label style="display: flex; align-items: center; color: #ecf0f1;">
+        <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a062;">
+          <h3 style="color: #c0a062; margin: 0 0 10px 0;">Auto-Save</h3>
+          <label style="display: flex; align-items: center; color: #f5e6c8;">
             <input type="checkbox" ${SAVE_SYSTEM.autoSaveEnabled ? 'checked' : ''} onchange="toggleAutoSave(this.checked)" style="margin-right: 8px;">
             Auto-save every ${SAVE_SYSTEM.autoSaveInterval/1000}s
           </label>
-          <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #bdc3c7;">
+          <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #d4c4a0;">
             Last: ${SAVE_SYSTEM.lastAutoSave ? formatTimestamp(SAVE_SYSTEM.lastAutoSave) : 'Never'}
           </p>
         </div>
-        <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">Backup</h3>
-          <button onclick="exportSaveData()" style="background:#2ecc71; color:white; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:3px; width:100%;">
+        <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8a9a6a;">
+          <h3 style="color: #8a9a6a; margin: 0 0 10px 0;">Backup</h3>
+          <button onclick="exportSaveData()" style="background:#8a9a6a; color:white; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:3px; width:100%;">
             Export Save
           </button>
-          <button onclick="importSaveData()" style="background:#3498db; color:white; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:3px; width:100%;">
+          <button onclick="importSaveData()" style="background:#c0a062; color:white; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:3px; width:100%;">
             Import Save
           </button>
         </div>
@@ -19469,7 +19469,7 @@ function showSaveSystem() {
       
       <!-- Save Slots -->
       <div id="save-slots-container">
-        <h3 style="color: #ecf0f1; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px;">
+        <h3 style="color: #f5e6c8; border-bottom: 2px solid #c0a062; padding-bottom: 10px; margin-bottom: 20px;">
           Save Slots
         </h3>
         
@@ -19477,12 +19477,12 @@ function showSaveSystem() {
           ${slots.map(slot => {
             if (slot.empty) {
               return `
-                <div style="padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 2px dashed #7f8c8d; display: flex; justify-content: space-between; align-items: center;">
+                <div style="padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 2px dashed #6a5a3a; display: flex; justify-content: space-between; align-items: center;">
                   <div>
-                    <h4 style="color: #95a5a6; margin: 0;">Slot ${slot.slotNumber} - Empty</h4>
-                    <p style="color: #7f8c8d; margin: 5px 0 0 0;">No save data</p>
+                    <h4 style="color: #8a7a5a; margin: 0;">Slot ${slot.slotNumber} - Empty</h4>
+                    <p style="color: #6a5a3a; margin: 5px 0 0 0;">No save data</p>
                   </div>
-                  <button onclick="saveToSlot(${slot.slotNumber})" style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                  <button onclick="saveToSlot(${slot.slotNumber})" style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                     Save Here
                   </button>
                 </div>
@@ -19490,41 +19490,41 @@ function showSaveSystem() {
             } else {
               const isAutoSave = slot.slotNumber === 0;
               const isCurrent = slot.slotNumber === SAVE_SYSTEM.currentSlot;
-              const borderColor = isAutoSave ? '#f39c12' : isCurrent ? '#2ecc71' : '#3498db';
+              const borderColor = isAutoSave ? '#c0a040' : isCurrent ? '#8a9a6a' : '#c0a062';
               
               return `
                 <div style="padding: 20px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 2px solid ${borderColor}; display: grid; grid-template-columns: 1fr auto auto auto; gap: 15px; align-items: center;">
                   <div>
-                    <h4 style="color: #ecf0f1; margin: 0 0 5px 0;">
+                    <h4 style="color: #f5e6c8; margin: 0 0 5px 0;">
                       ${isAutoSave ? '' : ''}${slot.saveName}
                       ${isCurrent ? ' (Current)' : ''}
                     </h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 10px 0;">
-                      <div><span style="color: #2ecc71;"></span> $${slot.money.toLocaleString()}</div>
-                      <div><span style="color: #3498db;"></span> Level ${slot.level}</div>
-                      <div><span style="color: #e74c3c;">⭐</span> ${slot.reputation}</div>
-                      <div><span style="color: #f39c12;"></span> ${slot.empireRating.toLocaleString()}</div>
+                      <div><span style="color: #8a9a6a;"></span> $${slot.money.toLocaleString()}</div>
+                      <div><span style="color: #c0a062;"></span> Level ${slot.level}</div>
+                      <div><span style="color: #8b3a3a;">⭐</span> ${slot.reputation}</div>
+                      <div><span style="color: #c0a040;"></span> ${slot.empireRating.toLocaleString()}</div>
                     </div>
-                    <p style="color: #95a5a6; margin: 5px 0 0 0; font-size: 0.9em;">
+                    <p style="color: #8a7a5a; margin: 5px 0 0 0; font-size: 0.9em;">
                       ${formatTimestamp(new Date(slot.saveDate).getTime())} • ${slot.playtime || 'Unknown'}
                     </p>
                   </div>
                   
-                  <button onclick="loadGameFromSlot(${slot.slotNumber})" style="background: #3498db; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                  <button onclick="loadGameFromSlot(${slot.slotNumber})" style="background: #c0a062; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                     Load
                   </button>
                   
                   ${!isAutoSave ? `
-                    <button onclick="saveToSlot(${slot.slotNumber})" style="background: #2ecc71; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    <button onclick="saveToSlot(${slot.slotNumber})" style="background: #8a9a6a; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                       Overwrite
                     </button>
                     
-                    <button onclick="deleteGameSlot(${slot.slotNumber})" style="background: #e74c3c; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    <button onclick="deleteGameSlot(${slot.slotNumber})" style="background: #8b3a3a; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                       Delete
                     </button>
                   ` : `
                     <div></div>
-                    <div style="color: #f39c12; font-size: 0.9em; text-align: center;">Auto-Save</div>
+                    <div style="color: #c0a040; font-size: 0.9em; text-align: center;">Auto-Save</div>
                   `}
                 </div>
               `;
@@ -19683,17 +19683,17 @@ function formatTimestamp(timestamp) {
 function showBriefNotification(message, durationOrType = 2000) {
   // Support type strings as second arg: 'success', 'warning', 'danger', or a number for duration
   let duration = 2000;
-  let borderColor = '#3498db';
-  let bgColor = 'rgba(44, 62, 80, 0.95)';
+  let borderColor = '#c0a062';
+  let bgColor = 'rgba(20, 18, 10, 0.95)';
   
   if (typeof durationOrType === 'string') {
     duration = 3000;
     switch (durationOrType) {
-      case 'success': borderColor = '#2ecc71'; bgColor = 'rgba(39, 174, 96, 0.15)'; break;
-      case 'warning': borderColor = '#f39c12'; bgColor = 'rgba(243, 156, 18, 0.15)'; break;
-      case 'danger':  borderColor = '#e74c3c'; bgColor = 'rgba(231, 76, 60, 0.15)'; break;
+      case 'success': borderColor = '#8a9a6a'; bgColor = 'rgba(122, 138, 90, 0.15)'; break;
+      case 'warning': borderColor = '#c0a040'; bgColor = 'rgba(243, 156, 18, 0.15)'; break;
+      case 'danger':  borderColor = '#8b3a3a'; bgColor = 'rgba(231, 76, 60, 0.15)'; break;
     }
-    bgColor = 'rgba(44, 62, 80, 0.95)'; // keep dark bg for readability
+    bgColor = 'rgba(20, 18, 10, 0.95)'; // keep dark bg for readability
   } else if (typeof durationOrType === 'number') {
     duration = durationOrType;
   }
@@ -19709,7 +19709,7 @@ function showBriefNotification(message, durationOrType = 2000) {
     position: fixed;
     top: ${topOffset}px;
     right: 20px;
-    background: rgba(44, 62, 80, 0.95);
+    background: rgba(20, 18, 10, 0.95);
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
@@ -20204,86 +20204,86 @@ function displayImportedShowcase(showcase) {
   
   const content = `
     <div style="max-width: 1000px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #3498db; font-size: 2.5em; margin-bottom: 20px;">
+      <h2 style="text-align: center; color: #c0a062; font-size: 2.5em; margin-bottom: 20px;">
         Character Showcase
       </h2>
       
-      <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, rgba(44, 62, 80, 0.8) 0%, rgba(52, 73, 94, 0.8) 100%); border-radius: 15px; border: 3px solid ${gradeColor};">
+      <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, rgba(20, 18, 10, 0.8) 0%, rgba(20, 18, 10, 0.8) 100%); border-radius: 15px; border: 3px solid ${gradeColor};">
         <h1 style="color: ${gradeColor}; font-size: 3em; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
           ${showcase.characterName}
         </h1>
-        <h3 style="color: #ecf0f1; margin: 10px 0;">Level ${showcase.level} ${showcase.empireDescription}</h3>
+        <h3 style="color: #f5e6c8; margin: 10px 0;">Level ${showcase.level} ${showcase.empireDescription}</h3>
         <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 15px;">
           <span style="color: ${gradeColor}; font-size: 2em; font-weight: bold;">Grade ${showcase.empireGrade}</span>
-          <span style="color: #bdc3c7;">Empire Rating: ${showcase.empireRating.toLocaleString()}</span>
+          <span style="color: #d4c4a0;">Empire Rating: ${showcase.empireRating.toLocaleString()}</span>
         </div>
       </div>
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div style="background: rgba(46, 204, 113, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 15px 0;">Financial Empire</h3>
+        <div style="background: rgba(138, 154, 106, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8a9a6a;">
+          <h3 style="color: #8a9a6a; margin: 0 0 15px 0;">Financial Empire</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;">
               <span>Current Wealth:</span>
-              <span style="color: #2ecc71; font-weight: bold;">$${showcase.money.toLocaleString()}</span>
+              <span style="color: #8a9a6a; font-weight: bold;">$${showcase.money.toLocaleString()}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span>Total Earned:</span>
-              <span style="color: #2ecc71;">$${showcase.totalEarnings.toLocaleString()}</span>
+              <span style="color: #8a9a6a;">$${showcase.totalEarnings.toLocaleString()}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span>Businesses:</span>
-              <span style="color: #2ecc71;">${showcase.businessCount}</span>
+              <span style="color: #8a9a6a;">${showcase.businessCount}</span>
             </div>
           </div>
         </div>
         
-        <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #e74c3c;">
-          <h3 style="color: #e74c3c; margin: 0 0 15px 0;">Criminal Organization</h3>
+        <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8b3a3a;">
+          <h3 style="color: #8b3a3a; margin: 0 0 15px 0;">Criminal Organization</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;">
               <span>Gang Members:</span>
-              <span style="color: #e74c3c; font-weight: bold;">${showcase.gangSize}</span>
+              <span style="color: #8b3a3a; font-weight: bold;">${showcase.gangSize}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span>Turf Control:</span>
-              <span style="color: #e74c3c;">${showcase.territory}</span>
+              <span style="color: #8b3a3a;">${showcase.territory}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span>Reputation:</span>
-              <span style="color: #e74c3c;">${showcase.reputation}</span>
+              <span style="color: #8b3a3a;">${showcase.reputation}</span>
             </div>
           </div>
         </div>
         
-        <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 15px 0;">Criminal Record</h3>
+        <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #c0a062;">
+          <h3 style="color: #c0a062; margin: 0 0 15px 0;">Criminal Record</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;">
               <span>Jobs Completed:</span>
-              <span style="color: #3498db; font-weight: bold;">${showcase.totalJobs}</span>
+              <span style="color: #c0a062; font-weight: bold;">${showcase.totalJobs}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span>Escape Rate:</span>
-              <span style="color: #3498db;">${showcase.escapeRate}%</span>
+              <span style="color: #c0a062;">${showcase.escapeRate}%</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span>Power Level:</span>
-              <span style="color: #3498db;">${showcase.power}</span>
+              <span style="color: #c0a062;">${showcase.power}</span>
             </div>
           </div>
         </div>
         
-        <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #9b59b6;">
-          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">Career Timeline</h3>
+        <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8b6a4a;">
+          <h3 style="color: #8b6a4a; margin: 0 0 15px 0;">Career Timeline</h3>
           <div style="display: grid; gap: 8px;">
             <div style="display: flex; justify-content: space-between;">
               <span>Play Time:</span>
-              <span style="color: #9b59b6; font-weight: bold;">${formatPlaytime(showcase.playTime)}</span>
+              <span style="color: #8b6a4a; font-weight: bold;">${formatPlaytime(showcase.playTime)}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span>Challenges:</span>
-              <span style="color: #9b59b6;">${showcase.challengesCompleted}</span>
+              <span style="color: #8b6a4a;">${showcase.challengesCompleted}</span>
             </div>
           </div>
         </div>
@@ -20311,28 +20311,28 @@ function showRivalsScreen() {
   
   const content = `
     <div style="max-width: 1200px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #e74c3c; font-size: 2.5em; margin-bottom: 20px;">
+      <h2 style="text-align: center; color: #8b3a3a; font-size: 2.5em; margin-bottom: 20px;">
         Rivals & Competition
       </h2>
       
       <!-- Local Rankings -->
-      <div style="background: rgba(46, 204, 113, 0.2); 
+      <div style="background: rgba(138, 154, 106, 0.2); 
                   padding: 15px; border-radius: 10px; margin-bottom: 20px; 
-                  border: 2px solid #2ecc71; text-align: center;">
-        <h3 style="color: #2ecc71; margin: 0 0 5px 0;">
+                  border: 2px solid #8a9a6a; text-align: center;">
+        <h3 style="color: #8a9a6a; margin: 0 0 5px 0;">
           Local Rankings
         </h3>
-        <p style="margin: 0; color: #ecf0f1; font-size: 0.9em;">
+        <p style="margin: 0; color: #f5e6c8; font-size: 0.9em;">
           Compete against AI rivals and climb the leaderboards
         </p>
       </div>
       
       <!-- Navigation Tabs -->
-      <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #34495e; padding-bottom: 10px;">
-        <button onclick="showRivalsTab()" id="rivals-tab-btn" style="flex: 1; background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 12px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold;">
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #1a1610; padding-bottom: 10px;">
+        <button onclick="showRivalsTab()" id="rivals-tab-btn" style="flex: 1; background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: white; padding: 12px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold;">
           AI Rivals
         </button>
-        <button onclick="showCompetitionTab()" id="competition-tab-btn" style="flex: 1; background: rgba(52, 73, 94, 0.6); color: #95a5a6; padding: 12px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold;">
+        <button onclick="showCompetitionTab()" id="competition-tab-btn" style="flex: 1; background: rgba(20, 18, 10, 0.6); color: #8a7a5a; padding: 12px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold;">
           Leaderboards
         </button>
       </div>
@@ -20354,42 +20354,42 @@ function showRivalsScreen() {
 
 function showRivalsTab() {
   // Update tab buttons
-  document.getElementById('rivals-tab-btn').style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+  document.getElementById('rivals-tab-btn').style.background = 'linear-gradient(45deg, #8b3a3a, #7a2a2a)';
   document.getElementById('rivals-tab-btn').style.color = 'white';
-  document.getElementById('competition-tab-btn').style.background = 'rgba(52, 73, 94, 0.6)';
-  document.getElementById('competition-tab-btn').style.color = '#95a5a6';
+  document.getElementById('competition-tab-btn').style.background = 'rgba(20, 18, 10, 0.6)';
+  document.getElementById('competition-tab-btn').style.color = '#8a7a5a';
   
   const rivals = player.rivalKingpins || RIVAL_KINGPINS;
   
   const content = `
     <div>
-      <h3 style="color: #ecf0f1; margin-bottom: 15px; text-align: center;">Track your AI competitors and plan your moves</h3>
+      <h3 style="color: #f5e6c8; margin-bottom: 15px; text-align: center;">Track your AI competitors and plan your moves</h3>
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
         ${rivals.map(rival => {
           const playerRespect = player.relationships?.[rival.id] || 0;
-          const respectColor = playerRespect > 20 ? '#2ecc71' : playerRespect < -20 ? '#e74c3c' : '#7f8c8d';
+          const respectColor = playerRespect > 20 ? '#8a9a6a' : playerRespect < -20 ? '#8b3a3a' : '#6a5a3a';
           
           return `
-            <div style="background: rgba(44, 62, 80, 0.6); padding: 20px; border-radius: 15px; border: 2px solid #34495e;">
-              <h3 style="color: #e74c3c; margin: 0 0 5px 0;">${rival.name}</h3>
-              <div style="color: #95a5a6; font-size: 0.9em; margin-bottom: 15px;">${rival.faction.toUpperCase()}</div>
+            <div style="background: rgba(20, 18, 10, 0.6); padding: 20px; border-radius: 15px; border: 2px solid #1a1610;">
+              <h3 style="color: #8b3a3a; margin: 0 0 5px 0;">${rival.name}</h3>
+              <div style="color: #8a7a5a; font-size: 0.9em; margin-bottom: 15px;">${rival.faction.toUpperCase()}</div>
               
               <div style="display: grid; gap: 8px; margin-bottom: 15px;">
-                <div style="color: #ecf0f1;">Power: ${rival.powerRating}</div>
-                <div style="color: #ecf0f1;">Gang Size: ${rival.gangSize}</div>
-                <div style="color: #ecf0f1;">Wealth: $${rival.wealth.toLocaleString()}</div>
-                <div style="color: #ecf0f1;">Territories: ${rival.territories.length}</div>
+                <div style="color: #f5e6c8;">Power: ${rival.powerRating}</div>
+                <div style="color: #f5e6c8;">Gang Size: ${rival.gangSize}</div>
+                <div style="color: #f5e6c8;">Wealth: $${rival.wealth.toLocaleString()}</div>
+                <div style="color: #f5e6c8;">Territories: ${rival.territories.length}</div>
                 <div style="color: ${respectColor};">Respect: ${playerRespect > 0 ? '+' : ''}${playerRespect}</div>
               </div>
               
               <div style="background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                <div style="color: #95a5a6; font-size: 0.9em; margin-bottom: 5px;"><strong>Personality:</strong> ${rival.personality}</div>
-                <div style="color: #f39c12;">Aggressiveness: ${Math.floor(rival.aggressiveness * 100)}%</div>
+                <div style="color: #8a7a5a; font-size: 0.9em; margin-bottom: 5px;"><strong>Personality:</strong> ${rival.personality}</div>
+                <div style="color: #c0a040;">Aggressiveness: ${Math.floor(rival.aggressiveness * 100)}%</div>
               </div>
               
-              <div style="background: rgba(155, 89, 182, 0.3); padding: 10px; border-radius: 8px; border: 1px solid #9b59b6;">
-                <div style="color: #ecf0f1; font-size: 0.9em;"><strong>Special:</strong> ${formatSpecialAbility(rival.specialAbility)}</div>
+              <div style="background: rgba(155, 89, 182, 0.3); padding: 10px; border-radius: 8px; border: 1px solid #8b6a4a;">
+                <div style="color: #f5e6c8; font-size: 0.9em;"><strong>Special:</strong> ${formatSpecialAbility(rival.specialAbility)}</div>
               </div>
             </div>
           `;
@@ -20403,9 +20403,9 @@ function showRivalsTab() {
 
 function showCompetitionTab() {
   // Update tab buttons
-  document.getElementById('rivals-tab-btn').style.background = 'rgba(52, 73, 94, 0.6)';
-  document.getElementById('rivals-tab-btn').style.color = '#95a5a6';
-  document.getElementById('competition-tab-btn').style.background = 'linear-gradient(45deg, #3498db, #2980b9)';
+  document.getElementById('rivals-tab-btn').style.background = 'rgba(20, 18, 10, 0.6)';
+  document.getElementById('rivals-tab-btn').style.color = '#8a7a5a';
+  document.getElementById('competition-tab-btn').style.background = 'linear-gradient(45deg, #c0a062, #a08850)';
   document.getElementById('competition-tab-btn').style.color = 'white';
   
   const playerRankings = {};
@@ -20420,49 +20420,49 @@ function showCompetitionTab() {
     <div>
       <!-- Competition Overview -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
-        <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
-          <h3 style="color: #3498db; margin: 0 0 10px 0;">Leaderboards</h3>
-          <p style="margin: 0 0 10px 0; color: #ecf0f1; font-size: 0.9em;">Compare your criminal empire with others worldwide</p>
-          <button onclick="showLeaderboards()" style="background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+        <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a062;">
+          <h3 style="color: #c0a062; margin: 0 0 10px 0;">Leaderboards</h3>
+          <p style="margin: 0 0 10px 0; color: #f5e6c8; font-size: 0.9em;">Compare your criminal empire with others worldwide</p>
+          <button onclick="showLeaderboards()" style="background: #c0a062; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             View Rankings
           </button>
         </div>
         
-        <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #f39c12;">
-          <h3 style="color: #f39c12; margin: 0 0 10px 0;">Weekly Challenges</h3>
-          <p style="margin: 0 0 10px 0; color: #ecf0f1; font-size: 0.9em;">Complete special objectives for unique rewards</p>
-          <button onclick="showWeeklyChallenges()" style="background: #f39c12; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+        <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a040;">
+          <h3 style="color: #c0a040; margin: 0 0 10px 0;">Weekly Challenges</h3>
+          <p style="margin: 0 0 10px 0; color: #f5e6c8; font-size: 0.9em;">Complete special objectives for unique rewards</p>
+          <button onclick="showWeeklyChallenges()" style="background: #c0a040; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             View Challenges
           </button>
         </div>
         
-        <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #9b59b6;">
-          <h3 style="color: #9b59b6; margin: 0 0 10px 0;">Character Showcase</h3>
-          <p style="margin: 0 0 10px 0; color: #ecf0f1; font-size: 0.9em;">Share your criminal's story and achievements</p>
-          <button onclick="showCharacterShowcase()" style="background: #9b59b6; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+        <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8b6a4a;">
+          <h3 style="color: #8b6a4a; margin: 0 0 10px 0;">Character Showcase</h3>
+          <p style="margin: 0 0 10px 0; color: #f5e6c8; font-size: 0.9em;">Share your criminal's story and achievements</p>
+          <button onclick="showCharacterShowcase()" style="background: #8b6a4a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
             My Showcase
           </button>
         </div>
         
-        <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #2ecc71;">
-          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">Submit Rankings</h3>
-          <p style="margin: 0 0 10px 0; color: #ecf0f1; font-size: 0.9em;">Update your position on the leaderboards</p>
+        <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8a9a6a;">
+          <h3 style="color: #8a9a6a; margin: 0 0 10px 0;">Submit Rankings</h3>
+          <p style="margin: 0 0 10px 0; color: #f5e6c8; font-size: 0.9em;">Update your position on the leaderboards</p>
           <button onclick="submitToLeaderboards()" ${canSubmit ? '' : 'disabled'} 
-              style="background: ${canSubmit ? '#2ecc71' : '#7f8c8d'}; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: ${canSubmit ? 'pointer' : 'not-allowed'}; width: 100%;">
+              style="background: ${canSubmit ? '#8a9a6a' : '#6a5a3a'}; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: ${canSubmit ? 'pointer' : 'not-allowed'}; width: 100%;">
             ${canSubmit ? 'Submit Now' : 'Cooldown...'}
           </button>
         </div>
       </div>
       
       <!-- Quick Stats -->
-      <div style="background: rgba(44, 62, 80, 0.6); padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-        <h3 style="color: #ecf0f1; margin: 0 0 15px 0;">Your Competition Stats</h3>
+      <div style="background: rgba(20, 18, 10, 0.6); padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+        <h3 style="color: #f5e6c8; margin: 0 0 15px 0;">Your Competition Stats</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
           ${COMPETITION_SYSTEM.leaderboardCategories.map(category => `
             <div style="text-align: center; padding: 10px;">
               <div style="font-size: 1.5em; margin-bottom: 5px;">${category.icon}</div>
-              <div style="color: #ecf0f1; font-size: 0.9em;">${category.name}</div>
-              <div style="color: ${playerRankings[category.id] ? '#2ecc71' : '#7f8c8d'}; font-weight: bold;">
+              <div style="color: #f5e6c8; font-size: 0.9em;">${category.name}</div>
+              <div style="color: ${playerRankings[category.id] ? '#8a9a6a' : '#6a5a3a'}; font-weight: bold;">
                 ${playerRankings[category.id] ? `#${playerRankings[category.id]}` : 'Unranked'}
               </div>
             </div>
@@ -20472,17 +20472,17 @@ function showCompetitionTab() {
       
       <!-- Current Weekly Challenges Preview -->
       ${currentChallenges.length > 0 ? `
-        <div style="background: rgba(243, 156, 18, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #f39c12; margin-bottom: 30px;">
-          <h3 style="color: #f39c12; margin: 0 0 15px 0;">This Week's Challenges</h3>
+        <div style="background: rgba(243, 156, 18, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #c0a040; margin-bottom: 30px;">
+          <h3 style="color: #c0a040; margin: 0 0 15px 0;">This Week's Challenges</h3>
           <div style="display: grid; gap: 10px;">
             ${currentChallenges.map(challenge => `
-              <div style="display: flex; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; ${challenge.completed ? 'border: 2px solid #2ecc71;' : ''}">
+              <div style="display: flex; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; ${challenge.completed ? 'border: 2px solid #8a9a6a;' : ''}">
                 <span style="font-size: 1.5em; margin-right: 10px;">${challenge.icon}</span>
                 <div style="flex: 1;">
-                  <div style="color: #ecf0f1; font-weight: bold;">${challenge.name}</div>
-                  <div style="color: #bdc3c7; font-size: 0.9em;">${challenge.description}</div>
+                  <div style="color: #f5e6c8; font-weight: bold;">${challenge.name}</div>
+                  <div style="color: #d4c4a0; font-size: 0.9em;">${challenge.description}</div>
                 </div>
-                <div style="color: ${challenge.completed ? '#2ecc71' : '#f39c12'}; font-weight: bold;">
+                <div style="color: ${challenge.completed ? '#8a9a6a' : '#c0a040'}; font-weight: bold;">
                   ${challenge.completed ? '✅ Complete' : challenge.difficulty.toUpperCase()}
                 </div>
               </div>
@@ -20524,17 +20524,17 @@ function showLeaderboards() {
   
   const content = `
     <div style="max-width: 1200px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #3498db; font-size: 2.5em; margin-bottom: 20px;">
+      <h2 style="text-align: center; color: #c0a062; font-size: 2.5em; margin-bottom: 20px;">
         Criminal Leaderboards
       </h2>
       
       <div style="margin-bottom: 20px;">
-        <select id="leaderboard-category" onchange="updateLeaderboardDisplay()" style="background: rgba(44, 62, 80, 0.8); color: #ecf0f1; border: 2px solid #3498db; padding: 10px 15px; border-radius: 8px; font-size: 1em; margin-right: 10px;">
+        <select id="leaderboard-category" onchange="updateLeaderboardDisplay()" style="background: rgba(20, 18, 10, 0.8); color: #f5e6c8; border: 2px solid #c0a062; padding: 10px 15px; border-radius: 8px; font-size: 1em; margin-right: 10px;">
           ${COMPETITION_SYSTEM.leaderboardCategories.map(category => `
             <option value="${category.id}">${category.icon} ${category.name}</option>
           `).join('')}
         </select>
-        <button onclick="submitToLeaderboards()" style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;">
+        <button onclick="submitToLeaderboards()" style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;">
           Update My Rankings
         </button>
       </div>
@@ -20544,7 +20544,7 @@ function showLeaderboards() {
       </div>
       
       <div style="text-align: center; margin-top: 30px;">
-        <button onclick="showCompetition()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
+        <button onclick="showCompetition()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
           Back to Competition
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
@@ -20564,32 +20564,32 @@ function updateLeaderboardDisplay() {
   const playerName = player.name || "Anonymous Criminal";
   
   const content = `
-    <div style="background: rgba(44, 62, 80, 0.6); padding: 20px; border-radius: 15px;">
-      <h3 style="color: #3498db; margin: 0 0 10px 0;">${category.icon} ${category.name}</h3>
-      <p style="color: #bdc3c7; margin: 0 0 20px 0; font-style: italic;">${category.description}</p>
+    <div style="background: rgba(20, 18, 10, 0.6); padding: 20px; border-radius: 15px;">
+      <h3 style="color: #c0a062; margin: 0 0 10px 0;">${category.icon} ${category.name}</h3>
+      <p style="color: #d4c4a0; margin: 0 0 20px 0; font-style: italic;">${category.description}</p>
       
       ${leaderboard.length === 0 ? `
         <div style="text-align: center; padding: 50px; background: rgba(0,0,0,0.3); border-radius: 10px;">
-          <h4 style="color: #95a5a6;">No rankings yet!</h4>
-          <p style="color: #7f8c8d;">Be the first to submit your criminal empire to this leaderboard.</p>
+          <h4 style="color: #8a7a5a;">No rankings yet!</h4>
+          <p style="color: #6a5a3a;">Be the first to submit your criminal empire to this leaderboard.</p>
         </div>
       ` : `
         <div style="display: grid; gap: 8px;">
           ${leaderboard.map((entry, index) => {
             const isPlayer = entry.name === playerName;
-            const rankColor = index === 0 ? '#f1c40f' : index === 1 ? '#95a5a6' : index === 2 ? '#cd7f32' : '#ecf0f1';
+            const rankColor = index === 0 ? '#c0a040' : index === 1 ? '#8a7a5a' : index === 2 ? '#cd7f32' : '#f5e6c8';
             const rankIcon = index === 0 ? '‡' : index === 1 ? 'ˆ' : index === 2 ? '‰' : `#${index + 1}`;
             
             return `
-              <div style="display: flex; align-items: center; padding: 12px; background: ${isPlayer ? 'rgba(46, 204, 113, 0.2)' : 'rgba(0,0,0,0.3)'}; border-radius: 8px; ${isPlayer ? 'border: 2px solid #2ecc71;' : ''}">
+              <div style="display: flex; align-items: center; padding: 12px; background: ${isPlayer ? 'rgba(138, 154, 106, 0.2)' : 'rgba(0,0,0,0.3)'}; border-radius: 8px; ${isPlayer ? 'border: 2px solid #8a9a6a;' : ''}">
                 <div style="color: ${rankColor}; font-weight: bold; font-size: 1.2em; margin-right: 15px; min-width: 40px;">
                   ${rankIcon}
                 </div>
                 <div style="flex: 1;">
-                  <div style="color: ${isPlayer ? '#2ecc71' : '#ecf0f1'}; font-weight: bold; font-size: 1.1em;">
+                  <div style="color: ${isPlayer ? '#8a9a6a' : '#f5e6c8'}; font-weight: bold; font-size: 1.1em;">
                     ${entry.name} ${isPlayer ? '(You)' : ''}
                   </div>
-                  <div style="color: #bdc3c7; font-size: 0.9em;">
+                  <div style="color: #d4c4a0; font-size: 0.9em;">
                     Level ${entry.level} • Submitted ${formatTimestamp(entry.submissionDate)}
                   </div>
                 </div>
@@ -20617,29 +20617,29 @@ function showWeeklyChallenges() {
   
   const content = `
     <div style="max-width: 1000px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #f39c12; font-size: 2.5em; margin-bottom: 20px;">
+      <h2 style="text-align: center; color: #c0a040; font-size: 2.5em; margin-bottom: 20px;">
         Weekly Challenges
       </h2>
       
       <!-- Challenge Overview -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
-        <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #f39c12; text-align: center;">
-          <h3 style="color: #f39c12; margin: 0 0 10px 0;">Current Week</h3>
-          <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">
+        <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a040; text-align: center;">
+          <h3 style="color: #c0a040; margin: 0 0 10px 0;">Current Week</h3>
+          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">
             ${WEEKLY_CHALLENGES.currentWeek ? WEEKLY_CHALLENGES.currentWeek.weekKey : 'No challenges'}
           </div>
         </div>
         
-        <div style="background: rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #2ecc71; text-align: center;">
-          <h3 style="color: #2ecc71; margin: 0 0 10px 0;">Completed</h3>
-          <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">
+        <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8a9a6a; text-align: center;">
+          <h3 style="color: #8a9a6a; margin: 0 0 10px 0;">Completed</h3>
+          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">
             ${completedThisWeek} / ${currentChallenges.length}
           </div>
         </div>
         
-        <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #9b59b6; text-align: center;">
-          <h3 style="color: #9b59b6; margin: 0 0 10px 0;">Total Completed</h3>
-          <div style="color: #ecf0f1; font-size: 1.2em; font-weight: bold;">
+        <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8b6a4a; text-align: center;">
+          <h3 style="color: #8b6a4a; margin: 0 0 10px 0;">Total Completed</h3>
+          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">
             ${WEEKLY_CHALLENGES.completedChallenges.length}
           </div>
         </div>
@@ -20647,56 +20647,56 @@ function showWeeklyChallenges() {
       
       <!-- Current Week's Challenges -->
       ${currentChallenges.length > 0 ? `
-        <div style="background: rgba(44, 62, 80, 0.6); padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-          <h3 style="color: #f39c12; margin: 0 0 20px 0;">This Week's Challenges</h3>
+        <div style="background: rgba(20, 18, 10, 0.6); padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+          <h3 style="color: #c0a040; margin: 0 0 20px 0;">This Week's Challenges</h3>
           <div style="display: grid; gap: 15px;">
             ${currentChallenges.map(challenge => {
               const progress = challenge.checkProgress ? challenge.checkProgress(challenge.target) : false;
               const difficultyColors = {
-                easy: '#2ecc71',
-                medium: '#f39c12', 
-                hard: '#e74c3c',
-                extreme: '#9b59b6'
+                easy: '#8a9a6a',
+                medium: '#c0a040', 
+                hard: '#8b3a3a',
+                extreme: '#8b6a4a'
               };
               
               return `
-                <div style="padding: 20px; background: ${challenge.completed ? 'rgba(46, 204, 113, 0.2)' : 'rgba(0,0,0,0.3)'}; border-radius: 12px; border: 2px solid ${challenge.completed ? '#2ecc71' : difficultyColors[challenge.difficulty]};">
+                <div style="padding: 20px; background: ${challenge.completed ? 'rgba(138, 154, 106, 0.2)' : 'rgba(0,0,0,0.3)'}; border-radius: 12px; border: 2px solid ${challenge.completed ? '#8a9a6a' : difficultyColors[challenge.difficulty]};">
                   <div style="display: flex; align-items: center; margin-bottom: 15px;">
                     <span style="font-size: 2em; margin-right: 15px;">${challenge.icon}</span>
                     <div style="flex: 1;">
-                      <h4 style="color: #ecf0f1; margin: 0; font-size: 1.3em;">${challenge.name}</h4>
-                      <p style="color: #bdc3c7; margin: 5px 0 0 0;">${challenge.description}</p>
+                      <h4 style="color: #f5e6c8; margin: 0; font-size: 1.3em;">${challenge.name}</h4>
+                      <p style="color: #d4c4a0; margin: 5px 0 0 0;">${challenge.description}</p>
                     </div>
                     <div style="text-align: right;">
                       <div style="color: ${difficultyColors[challenge.difficulty]}; font-weight: bold; font-size: 1.1em; text-transform: uppercase;">
                         ${challenge.difficulty}
                       </div>
-                      <div style="color: ${challenge.completed ? '#2ecc71' : '#bdc3c7'}; font-size: 0.9em;">
+                      <div style="color: ${challenge.completed ? '#8a9a6a' : '#d4c4a0'}; font-size: 0.9em;">
                         ${challenge.completed ? '✅ Complete' : (progress ? 'Ready!' : 'In Progress')}
                       </div>
                     </div>
                   </div>
                   
                   <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
-                    <h5 style="color: #f39c12; margin: 0 0 10px 0;">Rewards</h5>
+                    <h5 style="color: #c0a040; margin: 0 0 10px 0;">Rewards</h5>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
                       <div style="text-align: center;">
-                        <div style="color: #2ecc71; font-weight: bold;">Money</div>
-                        <div style="color: #ecf0f1;">$${challenge.reward.money.toLocaleString()}</div>
+                        <div style="color: #8a9a6a; font-weight: bold;">Money</div>
+                        <div style="color: #f5e6c8;">$${challenge.reward.money.toLocaleString()}</div>
                       </div>
                       <div style="text-align: center;">
-                        <div style="color: #3498db; font-weight: bold;">Experience</div>
-                        <div style="color: #ecf0f1;">${challenge.reward.experience.toLocaleString()} XP</div>
+                        <div style="color: #c0a062; font-weight: bold;">Experience</div>
+                        <div style="color: #f5e6c8;">${challenge.reward.experience.toLocaleString()} XP</div>
                       </div>
                       <div style="text-align: center;">
-                        <div style="color: #e74c3c; font-weight: bold;">Reputation</div>
-                        <div style="color: #ecf0f1;">+${challenge.reward.reputation}</div>
+                        <div style="color: #8b3a3a; font-weight: bold;">Reputation</div>
+                        <div style="color: #f5e6c8;">+${challenge.reward.reputation}</div>
                       </div>
                     </div>
                   </div>
                   
                   ${challenge.completed ? `
-                    <div style="text-align: center; margin-top: 15px; color: #2ecc71; font-weight: bold;">
+                    <div style="text-align: center; margin-top: 15px; color: #8a9a6a; font-weight: bold;">
                       Completed on ${new Date(challenge.completedAt).toLocaleDateString()}
                     </div>
                   ` : ''}
@@ -20707,25 +20707,25 @@ function showWeeklyChallenges() {
         </div>
       ` : `
         <div style="text-align: center; padding: 50px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-bottom: 30px;">
-          <h3 style="color: #95a5a6;">No challenges available</h3>
-          <p style="color: #7f8c8d;">Check back soon for new weekly challenges!</p>
+          <h3 style="color: #8a7a5a;">No challenges available</h3>
+          <p style="color: #6a5a3a;">Check back soon for new weekly challenges!</p>
         </div>
       `}
       
       <!-- Recent Completions -->
       ${recentCompletions.length > 0 ? `
-        <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #9b59b6;">
-          <h3 style="color: #9b59b6; margin: 0 0 15px 0;">Recent Completions</h3>
+        <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8b6a4a;">
+          <h3 style="color: #8b6a4a; margin: 0 0 15px 0;">Recent Completions</h3>
           <div style="display: grid; gap: 8px;">
             ${recentCompletions.map(completion => `
               <div style="display: flex; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
                 <div style="flex: 1;">
-                  <div style="color: #ecf0f1; font-weight: bold;">${completion.name}</div>
-                  <div style="color: #bdc3c7; font-size: 0.9em;">
+                  <div style="color: #f5e6c8; font-weight: bold;">${completion.name}</div>
+                  <div style="color: #d4c4a0; font-size: 0.9em;">
                     ${completion.difficulty.toUpperCase()} • Completed ${new Date(completion.completedAt).toLocaleDateString()}
                   </div>
                 </div>
-                <div style="color: #9b59b6; font-weight: bold;">
+                <div style="color: #8b6a4a; font-weight: bold;">
                   $${completion.reward.money.toLocaleString()}
                 </div>
               </div>
@@ -20735,7 +20735,7 @@ function showWeeklyChallenges() {
       ` : ''}
       
       <div style="text-align: center; margin-top: 30px;">
-        <button onclick="showRivalsScreen()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
+        <button onclick="showRivalsScreen()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
           Back to Rivals
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>
@@ -20754,7 +20754,7 @@ function showCharacterShowcase() {
   const showcaseHTML = buildCharacterShowcaseHTML();
   const navButtons = `
       <div style="text-align: center; margin-top: 30px;">
-        <button onclick="showRivalsScreen()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
+        <button onclick="showRivalsScreen()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
           Back to Rivals
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()">← Back to SafeHouse</button>

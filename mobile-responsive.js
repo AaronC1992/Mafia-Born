@@ -230,7 +230,7 @@ export const MobileSystem = {
             <div style="color: #c0a062; font-family: 'Georgia', serif;">
                 <div style="text-align: center; margin-bottom: 20px;">
                     <h3 style="color: #c0a062; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;">📜 The Ledger</h3>
-                    <small style="color: #95a5a6; font-style: italic;">Tap 📜 button or swipe left to close</small>
+                    <small style="color: #8a7a5a; font-style: italic;">Tap 📜 button or swipe left to close</small>
                 </div>
                 
                 <div id="mobile-action-list" style="max-height: calc(100vh - 120px); overflow-y: auto; 
@@ -240,7 +240,7 @@ export const MobileSystem = {
                 </div>
                 
                 <div style="text-align: center; margin-top: 15px;">
-                    <small style="color: #95a5a6; font-style: italic;">Showing recent activity</small>
+                    <small style="color: #8a7a5a; font-style: italic;">Showing recent activity</small>
                 </div>
                 
                 <div style="position: absolute; top: 20px; right: 20px;">
@@ -434,8 +434,8 @@ export const MobileSystem = {
                 </button>
                 
                 <button onclick="buyEnergy(); MobileSystem.toggleMobileMenu();" 
-                        style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(45deg, #f39c12, #d35400); 
-                               color: white; border: 1px solid #f39c12; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
+                        style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(45deg, #c0a040, #d35400); 
+                               color: white; border: 1px solid #c0a040; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
                     Boost
                 </button>
                 
@@ -447,13 +447,13 @@ export const MobileSystem = {
                 
                 ${localStorage.getItem('tutorialSkipAll') !== '1' ? `<button onclick="skipAllTutorials(); MobileSystem.toggleMobileMenu();" 
                         style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(45deg, #333, #000); 
-                               color: #e74c3c; border: 1px solid #e74c3c; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
+                               color: #8b3a3a; border: 1px solid #8b3a3a; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
                     ⏭ Skip Tutorials
                 </button>` : ''}
                 
                 <button onclick="showHelpScreen(); MobileSystem.toggleMobileMenu();" 
                         style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(45deg, #333, #000); 
-                               color: #3498db; border: 1px solid #3498db; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
+                               color: #c0a062; border: 1px solid #c0a062; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
                     ❓ Help
                 </button>
                 
@@ -464,7 +464,7 @@ export const MobileSystem = {
                         Loading records...
                     </div>
                     <div style="text-align: center; margin-top: 10px;">
-                        <small style="color: #95a5a6; font-style: italic;">Showing last 10 entries</small>
+                        <small style="color: #8a7a5a; font-style: italic;">Showing last 10 entries</small>
                     </div>
                 </div>
             </div>
@@ -489,11 +489,11 @@ export const MobileSystem = {
                 if (recentActions.length > 0) {
                     mobileActionList.innerHTML = recentActions.map(item => 
                         `<div style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.05); 
-                                     border-radius: 4px; color: #ecf0f1; font-size: 13px; line-height: 1.4; 
+                                     border-radius: 4px; color: #f5e6c8; font-size: 13px; line-height: 1.4; 
                                      border-left: 3px solid #c0a062; font-family: 'Georgia', serif;">${item.textContent}</div>`
                     ).join('');
                 } else {
-                    mobileActionList.innerHTML = '<div style="color: #95a5a6; font-style: italic; text-align: center; padding: 20px;">No recent activity</div>';
+                    mobileActionList.innerHTML = '<div style="color: #8a7a5a; font-style: italic; text-align: center; padding: 20px;">No recent activity</div>';
                 }
             } else {
                 mobileActionList.innerHTML = '<div style="color: #8b0000; font-style: italic; text-align: center; padding: 20px;">Record not found</div>';

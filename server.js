@@ -1050,7 +1050,7 @@ function handleGlobalChat(clientId, message) {
         playerName: player.name,
         message: sanitizedMessage,
         timestamp: chatMessage.timestamp,
-        color: '#3498db' // Default color for other players
+        color: '#c0a062' // Default color for other players
     });
 }
 
@@ -1141,7 +1141,7 @@ function handleTerritorySpawn(clientId, message) {
         territories: gameState.territories
     });
 
-    addGlobalChatMessage('System', `📍 ${player.name} set up shop in ${districtId.replace(/_/g, ' ')}!`, '#3498db');
+    addGlobalChatMessage('System', `📍 ${player.name} set up shop in ${districtId.replace(/_/g, ' ')}!`, '#c0a062');
     scheduleWorldSave();
 }
 
@@ -4383,7 +4383,7 @@ function handleMarketplaceList(clientId, message) {
     }
     
     // Broadcast to all connected players
-    addGlobalChatMessage('System', `🏪 ${seller.name} listed a ${vehicleName} for $${price.toLocaleString()} on the marketplace!`, '#2980b9');
+    addGlobalChatMessage('System', `🏪 ${seller.name} listed a ${vehicleName} for $${price.toLocaleString()} on the marketplace!`, '#a08850');
 }
 
 function handleMarketplaceBuy(clientId, message) {

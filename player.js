@@ -78,7 +78,7 @@ export const CHARACTER_PERKS = [
     icon: '🔥',
     description: 'Your willpower is unbreakable. You resist jail time better than anyone.',
     effect: 'Jail sentences reduced by 25%. +10% breakout success chance.',
-    color: '#e74c3c'
+    color: '#8b3a3a'
   },
   {
     id: 'silver_tongue',
@@ -86,7 +86,7 @@ export const CHARACTER_PERKS = [
     icon: '🗣️',
     description: 'You could sell ice to a penguin. People trust you — that\'s their mistake.',
     effect: '+15% better prices when selling. +10% bribe & negotiation success.',
-    color: '#f39c12'
+    color: '#c0a040'
   },
   {
     id: 'quick_hands',
@@ -94,7 +94,7 @@ export const CHARACTER_PERKS = [
     icon: '🤚',
     description: 'Lightning-fast reflexes. You act before others can react.',
     effect: '-15% energy cost on all jobs. +10% car theft success.',
-    color: '#3498db'
+    color: '#c0a062'
   },
   {
     id: 'street_smarts',
@@ -102,7 +102,7 @@ export const CHARACTER_PERKS = [
     icon: '🧠',
     description: 'You read people and situations like an open book.',
     effect: '+15% job success chance. +10% XP from all sources.',
-    color: '#2ecc71'
+    color: '#8a9a6a'
   },
   {
     id: 'lucky_devil',
@@ -110,7 +110,7 @@ export const CHARACTER_PERKS = [
     icon: '🍀',
     description: 'Fortune favors you. Lucky breaks seem to follow you everywhere.',
     effect: '+20% casino winnings. +10% chance for bonus loot on jobs.',
-    color: '#9b59b6'
+    color: '#8b6a4a'
   },
   {
     id: 'thick_skin',
@@ -377,7 +377,7 @@ export const SKILL_TREE_DEFS = {
   stealth: {
     name: "Shadow Arts",
     icon: "🕵️",
-    color: "#9b59b6",
+    color: "#8b6a4a",
     desc: "Move unseen, strike unheard. The art of the invisible hand.",
     nodes: {
       shadow_step:    { tier: 1, name: "Shadow Step",    icon: "🌑", maxRank: 10, desc: "Move unseen through the criminal underworld", effect: "-2% arrest chance per rank", prereqs: [] },
@@ -391,7 +391,7 @@ export const SKILL_TREE_DEFS = {
   combat: {
     name: "Combat",
     icon: "⚔️",
-    color: "#e74c3c",
+    color: "#8b3a3a",
     desc: "Raw power, deadly precision. Violence is a language you speak fluently.",
     nodes: {
       brawler:       { tier: 1, name: "Brawler",       icon: "👊", maxRank: 10, desc: "Raw fighting power and combat instincts", effect: "+5% combat power per rank", prereqs: [] },
@@ -405,7 +405,7 @@ export const SKILL_TREE_DEFS = {
   charisma: {
     name: "Influence",
     icon: "🗣️",
-    color: "#f39c12",
+    color: "#c0a040",
     desc: "Words sharper than knives. Bend the world to your will without lifting a finger.",
     nodes: {
       smooth_talker: { tier: 1, name: "Smooth Talker",  icon: "💬", maxRank: 10, desc: "Words are your greatest weapon", effect: "+3% negotiation per rank", prereqs: [] },
@@ -419,7 +419,7 @@ export const SKILL_TREE_DEFS = {
   intelligence: {
     name: "Intellect",
     icon: "🧠",
-    color: "#3498db",
+    color: "#c0a062",
     desc: "Outsmart, outplan, outmaneuver. The mind is the deadliest weapon.",
     nodes: {
       quick_study: { tier: 1, name: "Quick Study",   icon: "📚", maxRank: 10, desc: "A sharp mind that learns from every job", effect: "+4% job success per rank", prereqs: [] },
@@ -433,7 +433,7 @@ export const SKILL_TREE_DEFS = {
   luck: {
     name: "Fortune",
     icon: "🍀",
-    color: "#2ecc71",
+    color: "#8a9a6a",
     desc: "Fortune favors the bold — and sometimes, the downright reckless.",
     nodes: {
       fortune:     { tier: 1, name: "Fortune",       icon: "🌟", maxRank: 10, desc: "The universe favors the bold", effect: "+2% earnings per rank", prereqs: [] },

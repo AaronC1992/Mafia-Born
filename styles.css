@@ -3302,7 +3302,7 @@ p, ul {
 
 /* ===== RPG Skill Tree System ===== */
 .rpg-skill-container {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: linear-gradient(135deg, #14120a, #0d0b07);
   padding: 24px;
   border-radius: 2px;
   color: var(--color-cream);
@@ -3368,9 +3368,9 @@ p, ul {
   background: rgba(20, 18, 10, 0.9);
 }
 .rpg-tree-tab-active {
-  background: linear-gradient(135deg, rgba(52, 73, 94, 0.95), rgba(44, 62, 80, 0.95)) !important;
-  border-color: var(--tab-color, #7a8a6a) !important;
-  box-shadow: 0 0 12px rgba(var(--tab-color, 52, 152, 219), 0.3);
+  background: linear-gradient(135deg, rgba(20, 18, 10, 0.95), rgba(13, 11, 7, 0.95)) !important;
+  border-color: var(--tab-color, #c0a062) !important;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
 }
 .rpg-tree-tab-icon {
   font-size: 1.5em;

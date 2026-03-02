@@ -1,9 +1,9 @@
-Ôªø<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Mafia Born ‚Äî From Dusk To Don. Rise through the criminal underworld in this browser-based RPG.">
+    <meta name="description" content="Mafia Born ó From Dusk To Don. Rise through the criminal underworld in this browser-based RPG.">
     <meta name="theme-color" content="#000000">
     <meta property="og:title" content="Mafia Born - From Dusk To Don">
     <meta property="og:description" content="Rise through the criminal underworld in this multiplayer browser RPG.">
@@ -68,9 +68,9 @@
                 <h2 style="margin: 10px 0; color: #d4af37; text-transform: uppercase; letter-spacing: 6px; font-family: 'Playfair Display SC', 'Georgia', serif; font-size: 2em; border: none;">MAFIA BORN</h2>
                 <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin: 8px 0;">
                     <span style="flex: 1; max-width: 80px; height: 1px; background: linear-gradient(to right, transparent, #d4af37);"></span>
-                    <span style="color: #d4af37; font-size: 12px;">‚óÜ</span>
+                    <span style="color: #d4af37; font-size: 12px;">?</span>
                     <span style="color: #c0a062; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-family: 'Playfair Display SC', serif;">From Dusk To Don</span>
-                    <span style="color: #d4af37; font-size: 12px;">‚óÜ</span>
+                    <span style="color: #d4af37; font-size: 12px;">?</span>
                     <span style="flex: 1; max-width: 80px; height: 1px; background: linear-gradient(to left, transparent, #d4af37);"></span>
                 </div>
                 <p id="loading-text" style="margin: 14px 0 6px; color: #8a7a5a; font-size: 15px; font-family: 'Special Elite', 'Courier New', monospace; letter-spacing: 1px;">Preparing the Family business...</p>
@@ -113,7 +113,7 @@
                     <p id="dirty-money-display">Dirty: $0</p>
                     <p id="power-display">Influence: 0</p>
                     <p id="territory-display" style="display: none;">Turf: 0 | Tribute: $0/week</p>
-                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: ‚Äî</p>
+                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: ó</p>
                     <p id="experience-display">XP: 0/100</p>
                     <p id="skill-points-display">Skill Points: 0</p>
                     <p id="season-display">Season: Spring</p>
@@ -210,7 +210,7 @@
                             Enter the Underworld
                         </button>
                         <button onclick="goBackToIntro()" style="background: #333; margin-left: 10px; border-color: #555; color: #aaa;">
-                            ‚Üê Back
+                            ? Back
                         </button>
                     </div>
                 </div>
@@ -274,13 +274,13 @@
                 <h1><span class="icon"></span> Properties</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Properties & Fronts</span>
                 </div>
             </div>
             <div id="real-estate-content"></div>
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="goBackToMainMenu()">? Back to SafeHouse</button>
             </div>
         </div>
 
@@ -290,7 +290,7 @@
                 <h1><span class="icon"></span> Jobs</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Jobs</span>
                 </div>
             </div>
@@ -298,14 +298,14 @@
             <p>Earn your keep. Do what needs to be done.</p>
             <ul id="job-list"></ul> <!-- Dynamically filled by JS -->
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="goBackToMainMenu()">? Back to SafeHouse</button>
             </div>
         </div>
 
         <!-- Jail Screen -->
         <div id="jail-screen" class="game-screen" style="display:none;">
             <div class="page-header">
-                <h1><span class="icon">üîí</span> Locked Up</h1>
+                <h1><span class="icon">??</span> Locked Up</h1>
                 <div class="breadcrumb">
                     <span class="current">Jail</span>
                 </div>
@@ -316,7 +316,7 @@
             </div>
             <p id="jail-timer">You're doing time for <span id="jail-time">10</span> seconds.</p>
             <button id="breakout-button" onclick="attemptBreakout()">Attempt Escape</button>
-            <button id="bribe-button" onclick="bribeGuard()" style="margin-left: 10px; background: linear-gradient(135deg, #27ae60, #2ecc71); border: none; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Bribe Guard</button>
+            <button id="bribe-button" onclick="bribeGuard()" style="margin-left: 10px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a); border: none; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Bribe Guard</button>
             <p id="bribe-cost" style="color: #95a5a6; font-size: 0.85em; margin-top: 5px;"></p>
             
             <h3>Other Inmates</h3>
@@ -372,7 +372,7 @@
                 <h1><span class="icon"></span> Legal Aid</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Court House</span>
                 </div>
             </div>
@@ -382,7 +382,7 @@
                 <button id="reset-wanted-level-court-house" onclick="resetWantedLevelCourtHouse()">Clear Heat for $0</button>
             </div>
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="goBackToMainMenu()">? Back to SafeHouse</button>
             </div>
         </div>
 
@@ -392,7 +392,7 @@
                 <h1><span class="icon"></span> The Doctor</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Hospital</span>
                 </div>
             </div>
@@ -400,7 +400,7 @@
             <p>No questions asked. Just cash.</p>
             <div id="hospital-content"></div>
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="goBackToMainMenu()">? Back to SafeHouse</button>
             </div>
         </div>
 
@@ -410,13 +410,13 @@
                 <h1><span class="icon"></span> Stash</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Stash &amp; Motor Pool</span>
                 </div>
             </div>
             <div id="stash-content"></div>
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="goBackToMainMenu()">? Back to SafeHouse</button>
             </div>
         </div>
 
@@ -435,30 +435,30 @@
                 <h1><span class="icon"></span> Gambling Den</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Gambling &amp; Mini Games</span>
                 </div>
             </div>
 
             <!-- Tab Navigation -->
             <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-                <button id="casino-tab-gambling" onclick="showCasinoTab('gambling')" style="background:#d4af37;color:#1a1a2e;padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Gambling</button>
-                <button id="casino-tab-minigames" onclick="showCasinoTab('minigames')" style="background:rgba(192,160,98,0.3);color:#c0a062;padding:8px 20px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Mini Games</button>
+                <button id="casino-tab-gambling" onclick="showCasinoTab('gambling')" style="background:#d4af37;color:#14120a;padding:8px 20px;border:none;border-radius:2px 2px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Gambling</button>
+                <button id="casino-tab-minigames" onclick="showCasinoTab('minigames')" style="background:rgba(192,160,98,0.3);color:#c0a062;padding:8px 20px;border:1px solid #c0a062;border-radius: 2px 2px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Mini Games</button>
             </div>
 
             <!-- Gambling Tab (default) -->
             <div id="panel-gambling">
-                <div id="casino-balance" style="text-align: center; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid #d4af37;">
+                <div id="casino-balance" style="text-align: center; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 2px; border: 1px solid #d4af37;">
                     <span style="color: #f1c40f; font-size: 1.2em; font-weight: bold;">Wallet: $<span id="casino-wallet">0</span></span>
                 </div>
                 <div class="content-card" id="casino-game-select">
-                    <p style="text-align:center; color:#bdc3c7;">Choose your game:</p>
+                    <p style="text-align:center; color:#d4c4a0;">Choose your game:</p>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 10px;">
-                        <button id="btn-blackjack" onclick="startBlackjack()" style="padding: 15px; border-radius: 10px; border: 2px solid #27ae60; background: rgba(39,174,96,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">üÉè Blackjack</button>
-                        <button id="btn-slots" onclick="startSlots()" style="padding: 15px; border-radius: 10px; border: 2px solid #e67e22; background: rgba(230,126,34,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Slots</button>
-                        <button id="btn-roulette" onclick="startRoulette()" style="padding: 15px; border-radius: 10px; border: 2px solid #e74c3c; background: rgba(231,76,60,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Roulette</button>
-                        <button id="btn-dice" onclick="startDiceGame()" style="padding: 15px; border-radius: 10px; border: 2px solid #3498db; background: rgba(52,152,219,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Dice</button>
-                        <button id="btn-horses" onclick="startHorseRacing()" style="padding: 15px; border-radius: 10px; border: 2px solid #c0a062; background: rgba(192,160,98,0.2); color: #ecf0f1; cursor: pointer; font-size: 1.1em;">Horse Racing</button>
+                        <button id="btn-blackjack" onclick="startBlackjack()" style="padding: 15px; border-radius: 2px; border: 2px solid #7a8a5a; background: rgba(122, 138, 90,0.2); color: #f5e6c8; cursor: pointer; font-size: 1.1em;">?? Blackjack</button>
+                        <button id="btn-slots" onclick="startSlots()" style="padding: 15px; border-radius: 2px; border: 2px solid #e67e22; background: rgba(230,126,34,0.2); color: #f5e6c8; cursor: pointer; font-size: 1.1em;">Slots</button>
+                        <button id="btn-roulette" onclick="startRoulette()" style="padding: 15px; border-radius: 2px; border: 2px solid #8b3a3a; background: rgba(139, 58, 58,0.2); color: #f5e6c8; cursor: pointer; font-size: 1.1em;">Roulette</button>
+                        <button id="btn-dice" onclick="startDiceGame()" style="padding: 15px; border-radius: 2px; border: 2px solid #c0a062; background: rgba(192,160,98,0.2); color: #f5e6c8; cursor: pointer; font-size: 1.1em;">Dice</button>
+                        <button id="btn-horses" onclick="startHorseRacing()" style="padding: 15px; border-radius: 2px; border: 2px solid #c0a062; background: rgba(192,160,98,0.2); color: #f5e6c8; cursor: pointer; font-size: 1.1em;">Horse Racing</button>
                     </div>
                 </div>
                 <div id="casino-game-area" style="margin-top: 15px;"></div>
@@ -532,7 +532,7 @@
                         </div>
                     </div>
                     <div style="text-align: center; margin-top: 20px;">
-                        <button onclick="backToMiniGamesList()" style="background: #333; color: #aaa; padding: 12px 25px; border: 1px solid #555; border-radius: 2px; cursor: pointer;">‚Üê Back to Games</button>
+                        <button onclick="backToMiniGamesList()" style="background: #333; color: #aaa; padding: 12px 25px; border: 1px solid #555; border-radius: 2px; cursor: pointer;">? Back to Games</button>
                     </div>
                 </div>
                 
@@ -540,13 +540,13 @@
                 <div id="other-minigames" style="display: none; margin-top: 40px; padding: 30px; background: #1a1a1a; border-radius: 4px;">
                     <div id="minigame-content"></div>
                     <div style="text-align: center; margin-top: 20px;">
-                        <button onclick="backToMiniGamesList()" style="background: #333; color: #aaa; padding: 12px 25px; border: 1px solid #555; border-radius: 2px; cursor: pointer;">‚Üê Back to Games</button>
+                        <button onclick="backToMiniGamesList()" style="background: #333; color: #aaa; padding: 12px 25px; border: 1px solid #555; border-radius: 2px; cursor: pointer;">? Back to Games</button>
                     </div>
                 </div>
             </div>
 
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="goBackToMainMenu()">? Back to SafeHouse</button>
             </div>
         </div>
 
@@ -556,7 +556,7 @@
                 <h1><span class="icon"></span> Settings</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Options</span>
                 </div>
             </div>
@@ -582,8 +582,8 @@
             </div>
             <div class="section-header">Help & Tutorials</div>
             <div class="content-card">
-                <button onclick="showHelpScreen()" style="border-color: #3498db; color: #3498db;">Help & Game Guide</button>
-                <button id="tutorial-toggle-btn" onclick="toggleTutorialFromSettings()" style="border-color: #2ecc71; color: #2ecc71;">Tutorials: Enabled</button>
+                <button onclick="showHelpScreen()" style="border-color: #c0a062; color: #c0a062;">Help & Game Guide</button>
+                <button id="tutorial-toggle-btn" onclick="toggleTutorialFromSettings()" style="border-color: #8a9a6a; color: #8a9a6a;">Tutorials: Enabled</button>
             </div>
             <div class="section-header">UI Toggles</div>
             <div class="content-card" style="display:flex; flex-direction:column; gap:10px;">
@@ -606,11 +606,11 @@
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="health-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#e74c3c;">Health</span>
+                        <span style="color:#8b3a3a;">Health</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="energy-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#2ecc71;">Energy</span>
+                        <span style="color:#8a9a6a;">Energy</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="wanted-level-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
@@ -618,15 +618,15 @@
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="level-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#3498db;">Rank</span>
+                        <span style="color:#c0a062;">Rank</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="dirty-money-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#9b59b6;">Dirty Money</span>
+                        <span style="color:#8b6a4a;">Dirty Money</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="power-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#1abc9c;">Influence</span>
+                        <span style="color:#8a9a6a;">Influence</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="territory-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
@@ -638,11 +638,11 @@
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="experience-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#3498db;">XP</span>
+                        <span style="color:#c0a062;">XP</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="skill-points-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#2ecc71;">Skill Points</span>
+                        <span style="color:#8a9a6a;">Skill Points</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="season-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
@@ -654,7 +654,7 @@
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="ammo-display" onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#e74c3c;">Bullets</span>
+                        <span style="color:#8b3a3a;">Bullets</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="gas-display" onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
@@ -667,13 +667,13 @@
                 </div>
             </div>
             <div id="admin-settings-section" style="display:none;">
-                <div class="section-header" style="color: #e74c3c;">Administration</div>
+                <div class="section-header" style="color: #8b3a3a;">Administration</div>
                 <div class="content-card">
-                    <button onclick="showAdminPanel()" style="border-color: #e74c3c; color: #e74c3c;">Admin Panel</button>
+                    <button onclick="showAdminPanel()" style="border-color: #8b3a3a; color: #8b3a3a;">Admin Panel</button>
                 </div>
             </div>
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="goBackToMainMenu()">? Back to SafeHouse</button>
             </div>
             <div id="settings-version" style="text-align: right; color: #95a5a6; font-size: 0.85em; opacity: 0.7; margin-top: 15px; padding-right: 10px;"></div>
         </div>
@@ -687,7 +687,7 @@
                 <h1><span class="icon"></span> The Family</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Gang</span>
                 </div>
             </div>
@@ -700,7 +700,7 @@
                 <h1><span class="icon"></span> Recruitment</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Recruitment</span>
                 </div>
             </div>
@@ -713,7 +713,7 @@
                 <h1><span class="icon"></span> Achievements</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Achievements</span>
                 </div>
             </div>
@@ -731,7 +731,7 @@
                 <h1><span class="icon"></span> Underground Network</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Jailbreak</span>
                 </div>
             </div>
@@ -745,15 +745,15 @@
             
             <div style="margin-top: 20px; padding: 15px; background: #1a0000; border-radius: 4px; border: 1px solid #ff0000;">
                 <h4>Risks</h4>
-                <p>‚Ä¢ Failure means you join them</p>
-                <p>‚Ä¢ Stealth helps you stay unseen</p>
-                <p>‚Ä¢ Takes energy</p>
-                <p>‚Ä¢ Earns respect</p>
+                <p>ï Failure means you join them</p>
+                <p>ï Stealth helps you stay unseen</p>
+                <p>ï Takes energy</p>
+                <p>ï Earns respect</p>
             </div>
             
             <button onclick="if(typeof requestJailRoster==='function') requestJailRoster(); if(typeof updateJailbreakPrisonerList==='function') updateJailbreakPrisonerList();">Refresh Intel</button>
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="goBackToMainMenu()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="goBackToMainMenu()">? Back to SafeHouse</button>
             </div>
         </div>
 
@@ -765,7 +765,7 @@
                 <h1><span class="icon"></span> Operations</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Missions</span>
                 </div>
             </div>
@@ -780,7 +780,7 @@
                 <h1><span class="icon"></span> Fronts</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Businesses</span>
                 </div>
             </div>
@@ -797,7 +797,7 @@
                 <h1><span class="icon"></span> The Wash</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Money Laundering</span>
                 </div>
             </div>
@@ -812,7 +812,7 @@
                 <h1><span class="icon"></span> Territories</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Territories</span>
                 </div>
             </div>
@@ -827,7 +827,7 @@
                 <h1><span class="icon"></span> Turf Wars</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Turf</span>
                 </div>
             </div>
@@ -842,7 +842,7 @@
                 <h1><span class="icon"></span> Events</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Events</span>
                 </div>
             </div>
@@ -857,7 +857,7 @@
                 <h1><span class="icon"></span> City Map</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">‚Ä∫</span>
+                    <span class="separator">õ</span>
                     <span class="current">Map</span>
                 </div>
             </div>
@@ -889,7 +889,7 @@
                 <!-- Content will be generated by JavaScript -->
             </div>
             <div class="page-nav">
-                <button class="nav-btn-back" onclick="showCommandCenter()">‚Üê Back to SafeHouse</button>
+                <button class="nav-btn-back" onclick="showCommandCenter()">? Back to SafeHouse</button>
             </div>
         </div>
 

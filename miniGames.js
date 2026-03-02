@@ -114,7 +114,7 @@ function tttStart(ctx) {
   cells.forEach(cell => {
     cell.textContent = '';
     cell.disabled = false;
-    cell.style.background = '#34495e';
+    cell.style.background = '#1a1610';
   });
   ctx.onStart();
 }
@@ -124,7 +124,7 @@ function tttMakeMove(ctx, cellIndex) {
   ctx.board[cellIndex] = 'X';
   const cell = document.querySelectorAll(ctx.cellSelector)[cellIndex];
   cell.textContent = 'X';
-  cell.style.color = '#2ecc71';
+  cell.style.color = '#8a9a6a';
   cell.disabled = true;
   const result = tttCheckWinner(ctx);
   if (result) { tttEnd(ctx, result); return; }
@@ -140,7 +140,7 @@ function tttMakeAIMove(ctx) {
   ctx.board[aiMove] = 'O';
   const cell = document.querySelectorAll(ctx.cellSelector)[aiMove];
   cell.textContent = 'O';
-  cell.style.color = '#e74c3c';
+  cell.style.color = '#8b3a3a';
   cell.disabled = true;
   const result = tttCheckWinner(ctx);
   if (result) { tttEnd(ctx, result); return; }
@@ -199,11 +199,11 @@ function tttUpdateDisplay(ctx) {
   const status = document.getElementById(ctx.statusId);
   if (ctx.currentPlayer === 'X') {
     label.textContent = 'Your turn (X)';
-    label.style.color = '#2ecc71';
+    label.style.color = '#8a9a6a';
     status.textContent = 'Make your move!';
   } else {
     label.textContent = `${ctx.opponentName}'s turn (O)`;
-    label.style.color = '#e74c3c';
+    label.style.color = '#8b3a3a';
     status.textContent = `Waiting for ${ctx.opponentName.toLowerCase()}...`;
   }
 }
@@ -223,7 +223,7 @@ function tttReset(ctx) {
   cells.forEach(cell => {
     cell.textContent = '';
     cell.disabled = false;
-    cell.style.background = '#34495e';
+    cell.style.background = '#1a1610';
     cell.style.color = 'white';
   });
 }
@@ -396,15 +396,15 @@ export function startNumberGuessing() {
   numberGuessingAttempts = 0;
 
   document.getElementById("minigame-content").innerHTML = `
-    <h3 style="color: #2ecc71; text-align: center; margin-bottom: 20px;">Number Hunter</h3>
+    <h3 style="color: #8a9a6a; text-align: center; margin-bottom: 20px;">Number Hunter</h3>
     <div style="text-align: center;">
       <p style="font-size: 1.2em; margin-bottom: 20px;">I'm thinking of a number between 1 and 100!</p>
       <p>Attempts: <span id="guess-attempts">0</span></p>
       <div style="margin: 20px 0;">
         <input type="number" id="guess-input" min="1" max="100" placeholder="Enter your guess..."
-            style="padding: 10px; font-size: 16px; border-radius: 5px; border: 2px solid #2ecc71; width: 150px; text-align: center;"
+            style="padding: 10px; font-size: 16px; border-radius: 5px; border: 2px solid #8a9a6a; width: 150px; text-align: center;"
             onkeypress="if(event.key==='Enter') makeGuess()">
-        <button onclick="makeGuess()" style="background: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+        <button onclick="makeGuess()" style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
           Guess!
         </button>
       </div>
@@ -428,7 +428,7 @@ export function makeGuess() {
   const guess = parseInt(input.value);
 
   if (isNaN(guess) || guess < 1 || guess > 100) {
-    document.getElementById('guess-feedback').innerHTML = '<span style="color: #e74c3c;">Please enter a number between 1 and 100!</span>';
+    document.getElementById('guess-feedback').innerHTML = '<span style="color: #8b3a3a;">Please enter a number between 1 and 100!</span>';
     return;
   }
 
@@ -446,13 +446,13 @@ export function makeGuess() {
     _updateStatistic('totalMoneyEarned', totalReward);
 
     _updateUI();
-    document.getElementById('guess-feedback').innerHTML = `<span style="color: #2ecc71;">Correct! You found ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}! (Luck +50 XP)</span>`;
+    document.getElementById('guess-feedback').innerHTML = `<span style="color: #8a9a6a;">Correct! You found ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}! (Luck +50 XP)</span>`;
     _logAction(`Number Hunter victory! Found the target ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}. Your intuition is razor-sharp. (Luck +50 XP)`);
     setTimeout(() => startNumberGuessing(), 3000);
   } else if (guess < numberGuessingTarget) {
-    document.getElementById('guess-feedback').innerHTML = '<span style="color: #f39c12;">Too low! Go higher!</span>';
+    document.getElementById('guess-feedback').innerHTML = '<span style="color: #c0a040;">Too low! Go higher!</span>';
   } else {
-    document.getElementById('guess-feedback').innerHTML = '<span style="color: #f39c12;">Too high! Go lower!</span>';
+    document.getElementById('guess-feedback').innerHTML = '<span style="color: #c0a040;">Too high! Go lower!</span>';
   }
 
   input.value = '';
@@ -483,7 +483,7 @@ export function startRockPaperScissors() {
 
 export function updateRPSDisplay() {
   document.getElementById("minigame-content").innerHTML = `
-    <h3 style="color: #e74c3c; text-align: center; margin-bottom: 20px;">Rock Paper Scissors</h3>
+    <h3 style="color: #8b3a3a; text-align: center; margin-bottom: 20px;">Rock Paper Scissors</h3>
     <div style="text-align: center;">
       <p style="font-size: 1.2em; margin-bottom: 20px;">Best of 5 Rounds</p>
       <div style="display: flex; justify-content: space-around; margin: 20px 0;">
@@ -502,20 +502,20 @@ export function updateRPSDisplay() {
       </div>
       ${rpsPlayerScore < 3 && rpsAIScore < 3 ? `
         <div style="display: flex; justify-content: center; gap: 20px; margin: 30px 0;">
-          <button onclick="playRPS('rock')" style="background: #95a5a6; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
+          <button onclick="playRPS('rock')" style="background: #8a7a5a; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
             Rock
           </button>
-          <button onclick="playRPS('paper')" style="background: #3498db; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
+          <button onclick="playRPS('paper')" style="background: #c0a062; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
             Paper
           </button>
-          <button onclick="playRPS('scissors')" style="background: #e74c3c; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
+          <button onclick="playRPS('scissors')" style="background: #8b3a3a; color: white; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 24px;">
             Scissors
           </button>
         </div>
       ` : `
         <div style="margin: 30px 0;">
           <h3>${rpsPlayerScore > rpsAIScore ? 'You Won the Match! +$' + (100 + (player.level * 50)).toLocaleString() : 'AI Won the Match!'}</h3>
-          <button onclick="startRockPaperScissors()" style="background: #2ecc71; color: white; padding: 15px 25px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px;">
+          <button onclick="startRockPaperScissors()" style="background: #8a9a6a; color: white; padding: 15px 25px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px;">
             Play Again
           </button>
         </div>
@@ -579,18 +579,18 @@ export function startMemoryMatch() {
 
   const bestTimeText = memoryPersonalBest ? `Personal Best: ${memoryPersonalBest}s` : 'No personal best yet';
 
-  let cardHTML = '<h3 style="color: #f39c12; text-align: center; margin-bottom: 20px;">Memory Match</h3>';
+  let cardHTML = '<h3 style="color: #c0a040; text-align: center; margin-bottom: 20px;">Memory Match</h3>';
   cardHTML += '<p style="text-align: center; margin-bottom: 10px;">Find all pairs in under 60s for $100! Beat your best time for $500!</p>';
-  cardHTML += '<p style="text-align: center; margin-bottom: 5px; color: #9b59b6; font-weight: bold;">Rewards: Stealth & Planning XP boost</p>';
-  cardHTML += `<p style="text-align: center; margin-bottom: 10px; color: #f39c12; font-weight: bold;">${bestTimeText}</p>`;
-  cardHTML += '<p style="text-align: center; margin-bottom: 20px;">Time: <span id="memory-timer" style="color: #e74c3c; font-weight: bold;">60</span>s | Pairs: <span id="memory-score">0</span>/8</p>';
+  cardHTML += '<p style="text-align: center; margin-bottom: 5px; color: #8b6a4a; font-weight: bold;">Rewards: Stealth & Planning XP boost</p>';
+  cardHTML += `<p style="text-align: center; margin-bottom: 10px; color: #c0a040; font-weight: bold;">${bestTimeText}</p>`;
+  cardHTML += '<p style="text-align: center; margin-bottom: 20px;">Time: <span id="memory-timer" style="color: #8b3a3a; font-weight: bold;">60</span>s | Pairs: <span id="memory-score">0</span>/8</p>';
   cardHTML += '<div style="display: grid; grid-template-columns: repeat(4, 80px); gap: 10px; justify-content: center; margin: 20px auto;">';
 
   for (let i = 0; i < 16; i++) {
     cardHTML += `
       <button id="memory-card-${i}" onclick="flipMemoryCard(${i})"
-          style="width: 80px; height: 80px; font-size: 32px; background: #34495e; color: white;
-              border: 2px solid #7f8c8d; border-radius: 8px; cursor: pointer;">
+          style="width: 80px; height: 80px; font-size: 32px; background: #1a1610; color: white;
+              border: 2px solid #6a5a3a; border-radius: 8px; cursor: pointer;">
         ?
       </button>
     `;
@@ -631,7 +631,7 @@ export function flipMemoryCard(index) {
 
   const card = document.getElementById(`memory-card-${index}`);
   card.textContent = memoryCards[index];
-  card.style.background = '#3498db';
+  card.style.background = '#c0a062';
   card.disabled = true;
 
   memoryFlippedCards.push(index);
@@ -698,10 +698,10 @@ export function flipMemoryCard(index) {
         }
       } else {
         document.getElementById(`memory-card-${first}`).textContent = '?';
-        document.getElementById(`memory-card-${first}`).style.background = '#34495e';
+        document.getElementById(`memory-card-${first}`).style.background = '#1a1610';
         document.getElementById(`memory-card-${first}`).disabled = false;
         document.getElementById(`memory-card-${second}`).textContent = '?';
-        document.getElementById(`memory-card-${second}`).style.background = '#34495e';
+        document.getElementById(`memory-card-${second}`).style.background = '#1a1610';
         document.getElementById(`memory-card-${second}`).disabled = false;
       }
       memoryFlippedCards = [];
@@ -718,17 +718,17 @@ export function startSnakeGame() {
   document.getElementById("other-minigames").style.display = "block";
 
   document.getElementById("minigame-content").innerHTML = `
-    <h3 style="color: #9b59b6; text-align: center; margin-bottom: 20px;">Snake</h3>
+    <h3 style="color: #8b6a4a; text-align: center; margin-bottom: 20px;">Snake</h3>
     <div style="text-align: center;">
-      <p style="margin-bottom: 5px; color: #27ae60; font-weight: bold;">Rewards: Stamina & Endurance boost</p>
+      <p style="margin-bottom: 5px; color: #7a8a5a; font-weight: bold;">Rewards: Stamina & Endurance boost</p>
       <p>Score: <span id="snake-score">0</span></p>
       <canvas id="snake-canvas" width="400" height="400"
-          style="border: 2px solid #9b59b6; background: #2c3e50; margin: 20px auto; display: block; cursor: crosshair;"></canvas>
-      <p style="margin-top: 10px; color: #ecf0f1;">
+          style="border: 2px solid #8b6a4a; background: #14120a; margin: 20px auto; display: block; cursor: crosshair;"></canvas>
+      <p style="margin-top: 10px; color: #f5e6c8;">
         <strong>Controls:</strong> Use WASD keys or move your mouse in the canvas to start and guide the snake<br>
         <small>W = Up, A = Left, S = Down, D = Right | Game starts when you give input</small>
       </p>
-      <button onclick="restartSnake()" style="background: #9b59b6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+      <button onclick="restartSnake()" style="background: #8b6a4a; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
         Restart Game
       </button>
     </div>
@@ -893,12 +893,12 @@ export function updateSnake() {
 export function drawSnake() {
   snakeGame.ctx.clearRect(0, 0, snakeGame.canvas.width, snakeGame.canvas.height);
 
-  snakeGame.ctx.fillStyle = '#2ecc71';
+  snakeGame.ctx.fillStyle = '#8a9a6a';
   for (let segment of snakeGame.snake) {
     snakeGame.ctx.fillRect(segment.x, segment.y, snakeGame.gridSize, snakeGame.gridSize);
   }
 
-  snakeGame.ctx.fillStyle = '#e74c3c';
+  snakeGame.ctx.fillStyle = '#8b3a3a';
   snakeGame.ctx.fillRect(snakeGame.food.x, snakeGame.food.y, snakeGame.gridSize, snakeGame.gridSize);
 }
 
@@ -967,10 +967,10 @@ export function startQuickDraw() {
     <div style="text-align: center;">
       <p style="margin-bottom: 10px;">React under 300ms for cash | Beat your best time for bonus!</p>
       <p style="margin-bottom: 5px; color: #8b0000; font-weight: bold;">Rewards: Combat Reflex boost (better violent job success)</p>
-      <p style="margin-bottom: 20px; color: #f39c12; font-weight: bold;">${bestTimeText}</p>
+      <p style="margin-bottom: 20px; color: #c0a040; font-weight: bold;">${bestTimeText}</p>
       <div id="reaction-area" onclick="handleReactionClick()"
          style="width: 300px; height: 200px; margin: 20px auto; border: 3px solid #1abc9c;
-            border-radius: 10px; background: #e74c3c; display: flex; align-items: center;
+            border-radius: 10px; background: #8b3a3a; display: flex; align-items: center;
             justify-content: center; cursor: pointer; font-size: 24px; color: white;">
         Click when GREEN!
       </div>
@@ -998,7 +998,7 @@ export function startReactionTest() {
   const result = document.getElementById('reaction-result');
 
   quickDrawWaiting = false;
-  area.style.background = '#e74c3c';
+  area.style.background = '#8b3a3a';
   area.textContent = 'Wait...';
   instruction.textContent = 'Get ready...';
   result.textContent = '';
@@ -1007,7 +1007,7 @@ export function startReactionTest() {
 
   setTimeout(() => {
     if (currentMiniGame === 'quick-draw') {
-      area.style.background = '#2ecc71';
+      area.style.background = '#8a9a6a';
       area.textContent = 'CLICK NOW!';
       instruction.textContent = 'CLICK THE GREEN AREA!';
       quickDrawStartTime = Date.now();
@@ -1018,7 +1018,7 @@ export function startReactionTest() {
 
 export function handleReactionClick() {
   if (!quickDrawWaiting) {
-    document.getElementById('reaction-result').innerHTML = '<span style="color: #e74c3c;">Too early! Wait for green!</span>';
+    document.getElementById('reaction-result').innerHTML = '<span style="color: #8b3a3a;">Too early! Wait for green!</span>';
     return;
   }
 
@@ -1026,7 +1026,7 @@ export function handleReactionClick() {
   quickDrawWaiting = false;
 
   const area = document.getElementById('reaction-area');
-  area.style.background = '#95a5a6';
+  area.style.background = '#8a7a5a';
   area.textContent = 'Click when GREEN!';
 
   let message = '';
@@ -1052,17 +1052,17 @@ export function handleReactionClick() {
 
     if (reactionTime < 200) {
       message = 'Lightning fast!';
-      color = '#2ecc71';
+      color = '#8a9a6a';
     } else {
       message = 'Excellent reflexes!';
-      color = '#3498db';
+      color = '#c0a062';
     }
   } else if (reactionTime < 500) {
     message = 'Good reaction time!';
-    color = '#f39c12';
+    color = '#c0a040';
   } else {
     message = 'Could be faster...';
-    color = '#e74c3c';
+    color = '#8b3a3a';
   }
 
   if (!player.combatReflexBonus) player.combatReflexBonus = 0;
@@ -1081,11 +1081,11 @@ export function handleReactionClick() {
 
   let bonusText = '';
   if (personalBestBonus && earnedMoney) {
-    bonusText = `<br><span style="color: #2ecc71;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #2ecc71;">Sub-300ms reflexes! +$100!</span><br><span style="color: #f1c40f;">Total earned: $${totalEarned}</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #8a9a6a;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #8a9a6a;">Sub-300ms reflexes! +$100!</span><br><span style="color: #c0a040;">Total earned: $${totalEarned}</span><br><span style="color: #8b3a3a;">Violence +50 XP</span>`;
   } else if (personalBestBonus) {
-    bonusText = `<br><span style="color: #2ecc71;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #8a9a6a;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #8b3a3a;">Violence +50 XP</span>`;
   } else if (earnedMoney) {
-    bonusText = `<br><span style="color: #2ecc71;">Sub-300ms reflexes! +$100!</span><br><span style="color: #e74c3c;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #8a9a6a;">Sub-300ms reflexes! +$100!</span><br><span style="color: #8b3a3a;">Violence +50 XP</span>`;
   }
 
   document.getElementById('reaction-result').innerHTML =
