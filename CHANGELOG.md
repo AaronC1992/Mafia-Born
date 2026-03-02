@@ -5,6 +5,25 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.7] - 2026-03-02
+
+### Added — Turf System Overhaul: Milestones, Escalation & Dominance
+- **Turf Milestones** — 4 progression tiers unlock at 2/4/6/8 zones with permanent perks:
+  - Street Presence (2 zones): +10% XP from all sources
+  - Neighbourhood Boss (4 zones): turf heat decays twice as fast
+  - District Kingpin (6 zones): +15% turf income
+  - City Overlord (8 zones): +25% turf income + exclusive Overlord's Scepter weapon (60 power)
+- **Rival Escalation** — rival attack frequency and power now scale with zones owned (7.5% chance / 55 power at 1 zone → 25% / 160+ at 8 zones)
+- **Power-Scaled Defense** — fortifications now give 25 defense per level (up from 10) and 10% of total turf power is added as passive defense to every zone
+- **Family Dominance** — seize all zones of a rival family to earn a one-time bonus: $100,000 + 50 reputation + 50 power + 30 turf rep
+- **Defense Breakdown panel** on the Manage screen — shows fortification contribution, defender count, power bonus, total defense, and vulnerability status
+- **Rival Threat Level panel** — displays current attack chance %, attack power range, and zone vulnerability (Well Defended / At Risk / Vulnerable)
+- **Turf Milestones panel** on the Territory Control screen — tracks progress toward all 4 milestones with locked/unlocked indicators
+- **Family Dominance panel** with progress bars — visual tracker for eliminating each rival family's territory
+- **Milestone perks wired into gameplay** — XP boost, heat decay, and income bonuses applied through centralized `gainExperience()` and income calculation
+- Key XP grants (chapters, operations, jailbreaks) now route through `gainExperience()` for consistent perk application
+- Updated Territory Control help topic with full documentation of all new turf systems
+
 ## [1.11.6] - 2026-03-02
 
 ### Fixed — Admin Kill & Death Newspaper

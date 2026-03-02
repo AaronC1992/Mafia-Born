@@ -8595,22 +8595,43 @@ const HELP_TOPICS = [
     </ul>
   `},
   { id: 'territory-help', icon: '', title: 'Territory Control', content: `
-    <p>Dominate the city district by district.</p>
+    <p>Dominate the city district by district. The turf system is your path to real power — but expanding your empire paints a bigger target on your back.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Claiming Territory</h4>
     <ul>
-      <li>The city is divided into <strong>districts</strong>. Claim them by spending Influence and winning fights against NPC defenders (or rival players).</li>
-      <li>Each district you control generates <strong>Tribute</strong> — passive income every game cycle.</li>
+      <li>The city has <strong>8 turf zones</strong> — each controlled by a rival family or independent crew. Attack from the Turf Map to seize control.</li>
+      <li>Each zone you control generates <strong>weekly Tribute</strong> (dirty money) based on its base income, your fortification level, and active perks.</li>
+      <li>Some zones have a <strong>boss</strong> you must defeat before claiming the zone.</li>
     </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Defending & Upgrading</h4>
+    <h4 style="color:#c0a062; margin:14px 0 6px;">Defending & Fortifying</h4>
     <ul>
-      <li>Upgrade district <strong>defences</strong> to make them harder for rivals to take.</li>
-      <li>Assign <strong>crew members</strong> to defend your most valuable turf.</li>
-      <li>Rivals (AI or players) may attack your territory at any time.</li>
+      <li><strong>Fortify</strong> a zone to increase its defense (25 defense per level). Costs cash, but makes it much harder for rivals to take.</li>
+      <li>Assign <strong>crew members</strong> as defenders — each member adds 20 defense.</li>
+      <li>Your total <strong>Turf Power</strong> gives a passive 10% bonus to every zone's defense.</li>
+      <li>Click <strong>Manage</strong> on any zone to see a full Defense Breakdown and your Vulnerability Status.</li>
     </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Relocation</h4>
+    <h4 style="color:#c0a062; margin:14px 0 6px;">Rival Escalation</h4>
     <ul>
-      <li>You can <strong>relocate</strong> to a different district to access local bonuses and unique job variants.</li>
-      <li>Your "home" district affects some events and encounters.</li>
+      <li>The more zones you own, the <strong>harder and more frequent</strong> rival attacks become.</li>
+      <li>At 1 zone, rivals attack at ~7.5% chance with ~55 power. At 8 zones it rises to 25% chance with 160+ power.</li>
+      <li>Fortify and defend your zones or risk losing them to retaliation!</li>
+    </ul>
+    <h4 style="color:#c0a062; margin:14px 0 6px;">Turf Milestones</h4>
+    <ul>
+      <li><strong>2 zones — Street Presence:</strong> +10% XP from all sources.</li>
+      <li><strong>4 zones — Neighbourhood Boss:</strong> Turf heat decays twice as fast.</li>
+      <li><strong>6 zones — District Kingpin:</strong> +15% turf income.</li>
+      <li><strong>8 zones — City Overlord:</strong> +25% turf income + the exclusive Overlord's Scepter weapon (60 power).</li>
+    </ul>
+    <h4 style="color:#c0a062; margin:14px 0 6px;">Family Dominance</h4>
+    <ul>
+      <li>Seize <strong>all zones</strong> belonging to a rival family to earn a one-time dominance bonus: $100K + 50 rep + 50 power + 30 turf reputation.</li>
+      <li>Track your progress toward dominating each family on the Territory Control screen.</li>
+    </ul>
+    <h4 style="color:#c0a062; margin:14px 0 6px;">Tips</h4>
+    <ul>
+      <li>Don't over-expand without fortifying — more zones means stronger rival attacks.</li>
+      <li>Use the <strong>Manage</strong> panel to check if your zone is <span style="color:#2ecc71;">Well Defended</span>, <span style="color:#f39c12;">At Risk</span>, or <span style="color:#e74c3c;">Vulnerable</span>.</li>
+      <li>Reduce turf heat to maximize your weekly income — high heat cuts income by up to 70%.</li>
     </ul>
   `},
   { id: 'stats-help', icon: '', title: 'Stats & Empire', content: `
@@ -15232,8 +15253,24 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.11.6";
+const CURRENT_VERSION = "1.11.7";
 const VERSION_UPDATES = {
+  "1.11.7": {
+    title: "Turf System Overhaul — Milestones, Escalation & Dominance",
+    date: "March 2026",
+    changes: [
+      "Turf Milestones — 4 tiers unlock at 2/4/6/8 zones: +10% XP, faster heat decay, +15% income, and the exclusive Overlord's Scepter weapon",
+      "Rival Escalation — rival attacks now scale with your empire: attack chance rises from 7.5% to 25% and power from 55 to 160+ as you control more zones",
+      "Power-Scaled Defense — fortifications give 25 defense per level (up from 10), plus 10% of your total turf power as a passive bonus to every zone",
+      "Family Dominance — seize all zones from a rival family to earn $100K + 50 rep + 50 power + 30 turf reputation",
+      "Defense Breakdown panel on the Manage screen — shows fort contribution, defender count, power bonus, total defense, and vulnerability status",
+      "Rival Threat Level panel — shows current attack chance %, attack power range, and whether you're Well Defended / At Risk / Vulnerable",
+      "Turf Milestones panel on the Territory screen — tracks progress toward all 4 milestone tiers with locked/unlocked indicators",
+      "Family Dominance progress bars on the Territory screen — visual progress toward eliminating each rival family's territory",
+      "Milestone perks wired into gameplay — XP boost via gainExperience(), heat decay doubles with perk, turf income boosted +15%/+25%",
+      "Key XP grants (chapters, operations, jailbreaks) now route through gainExperience() for consistent perk application",
+    ]
+  },
   "1.11.6": {
     title: "Admin Kill Fix & Death Newspaper Polish",
     date: "March 2026",
