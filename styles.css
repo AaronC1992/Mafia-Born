@@ -337,114 +337,76 @@ button:disabled {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    padding: 16px 24px;
-    min-height: 72px;
+    gap: 5px;
+    padding: 18px 30px;
+    min-height: 74px;
     text-transform: uppercase;
     position: relative;
-    background: linear-gradient(170deg, #2a3a5c 0%, #1a2744 40%, #162040 60%, #111b36 100%) !important;
+    background: linear-gradient(172deg, #2e4168 0%, #1f3050 35%, #182844 65%, #111d38 100%) !important;
     border: 2px solid #b8973a !important;
     border-radius: 3px !important;
+    outline: 1px solid rgba(0, 0, 0, 0.5);
+    outline-offset: 2px;
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        inset 0 0 20px rgba(26, 39, 68, 0.5),
-        0 4px 12px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(0, 0, 0, 0.4) !important;
+        inset 0 1px 0 rgba(255, 255, 255, 0.07),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.6) !important;
     overflow: visible;
     transition: all 0.25s ease;
 }
 
-/* Inner border frame */
+/* Inner inset border to create the double-frame effect */
 .menu-btn-unlocked::before {
     content: '';
     position: absolute;
-    inset: 3px;
-    border: 1px solid rgba(184, 151, 58, 0.45);
-    border-radius: 2px;
+    inset: 4px;
+    border: 1px solid rgba(184, 151, 58, 0.4);
+    border-radius: 1px;
     pointer-events: none;
     transition: border-color 0.25s ease;
 }
 
-/* Diamond corner accents */
+/* Diamond accents — left and right center */
 .menu-btn-unlocked::after {
-    content: '';
+    content: '\u25C7          \u25C7';
     position: absolute;
-    inset: -6px;
-    pointer-events: none;
-    background:
-        /* Top-left diamond */
-        radial-gradient(circle at 0% 0%, transparent 3px, transparent 3px) no-repeat,
-        /* Top-right diamond */
-        radial-gradient(circle at 100% 0%, transparent 3px, transparent 3px) no-repeat,
-        /* Bottom-left diamond */
-        radial-gradient(circle at 0% 100%, transparent 3px, transparent 3px) no-repeat,
-        /* Bottom-right diamond */
-        radial-gradient(circle at 100% 100%, transparent 3px, transparent 3px) no-repeat;
-}
-/* Left diamond accent */
-.menu-btn-unlocked .menu-btn-label::before {
-    content: '\u25C7';
-    position: absolute;
-    left: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    font-size: 11px;
     color: #b8973a;
-    text-shadow: 0 0 4px rgba(184, 151, 58, 0.4);
-    transition: color 0.25s ease, text-shadow 0.25s ease;
-}
-/* Right diamond accent */
-.menu-btn-unlocked .menu-btn-tip::after {
-    content: '\u25C7';
-    position: absolute;
-    right: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    color: #b8973a;
-    text-shadow: 0 0 4px rgba(184, 151, 58, 0.4);
-    transition: color 0.25s ease, text-shadow 0.25s ease;
-}
-
-/* Top sheen highlight */
-.menu-btn-unlocked .menu-btn-label::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 4px;
-    right: 4px;
-    height: 40%;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 100%);
-    border-radius: 2px 2px 0 0;
     pointer-events: none;
+    text-shadow: 0 0 4px rgba(184, 151, 58, 0.35);
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+    white-space: pre;
 }
 
 .menu-btn-unlocked:hover {
-    background: linear-gradient(170deg, #334a70 0%, #223358 40%, #1c2a50 60%, #162242 100%) !important;
+    background: linear-gradient(172deg, #36507a 0%, #263c60 35%, #1e3254 65%, #152746 100%) !important;
     border-color: #d4b44a !important;
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.12),
-        inset 0 0 25px rgba(30, 50, 90, 0.5),
-        0 6px 20px rgba(0, 0, 0, 0.7),
-        0 0 15px rgba(184, 151, 58, 0.15),
-        0 0 0 1px rgba(0, 0, 0, 0.5) !important;
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+        0 6px 18px rgba(0, 0, 0, 0.7),
+        0 0 12px rgba(184, 151, 58, 0.12) !important;
     transform: translateY(-2px);
 }
 .menu-btn-unlocked:hover::before {
-    border-color: rgba(212, 180, 74, 0.6);
+    border-color: rgba(212, 180, 74, 0.55);
 }
-.menu-btn-unlocked:hover .menu-btn-label::before,
-.menu-btn-unlocked:hover .menu-btn-tip::after {
+.menu-btn-unlocked:hover::after {
     color: #d4b44a;
-    text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 }
 
 .menu-btn-unlocked:active {
     transform: translateY(0px) !important;
     box-shadow:
-        inset 0 2px 6px rgba(0, 0, 0, 0.4),
-        inset 0 0 20px rgba(17, 27, 54, 0.8),
-        0 2px 4px rgba(0, 0, 0, 0.5) !important;
+        inset 0 2px 8px rgba(0, 0, 0, 0.5),
+        inset 0 0 15px rgba(17, 29, 56, 0.6),
+        0 2px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
 .menu-btn-unlocked .menu-btn-label {
@@ -452,15 +414,14 @@ button:disabled {
     font-weight: bold;
     letter-spacing: 2px;
     color: #d4af37;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     z-index: 1;
-    position: relative;
     transition: color 0.25s ease, text-shadow 0.25s ease;
 }
 
 .menu-btn-unlocked:hover .menu-btn-label {
     color: #e8c84a;
-    text-shadow: 0 0 8px rgba(212, 175, 55, 0.4), 0 1px 3px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.35), 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .menu-btn-unlocked .menu-btn-tip {
@@ -472,7 +433,6 @@ button:disabled {
     line-height: 1.2;
     opacity: 0.9;
     z-index: 1;
-    position: relative;
     transition: color 0.25s ease;
 }
 
