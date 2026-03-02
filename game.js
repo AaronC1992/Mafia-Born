@@ -7036,7 +7036,8 @@ function adminApplyStats() {
 
 function adminResetStats() {
   if (window.ui && window.ui.confirm) {
-    window.ui.confirm('Reset Stats', 'Reset ALL stats to starting values? This cannot be undone.', () => {
+    window.ui.confirm('Reset ALL stats to starting values? This cannot be undone.', 'Reset Stats').then(result => {
+      if (result !== true) return;
       player.level = 1;
       player.experience = 0;
       player.money = 0;
@@ -7109,16 +7110,20 @@ function buildAdminKillPlayerList() {
   if (players.length === 0) {
     return '<div style="color: #8a7a5a; font-style: italic; text-align: center;">No players online.</div>';
   }
+  // Local escapeHTML in case multiplayer.js version isn't in scope
+  const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   let html = '';
   players.forEach(p => {
     const isMe = p.playerId === onlineWorldState.playerId;
+    const safeName = esc(p.name);
+    const safeId = esc(p.playerId);
     html += `
       <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; margin:4px 0; background:rgba(20,18,10,0.3); border-radius:4px; border-left:3px solid ${isMe ? '#c0a062' : '#8b3a3a'};">
         <div>
-          <strong style="color:${isMe ? '#c0a062' : '#f5e6c8'};">${escapeHTML(p.name)}${isMe ? ' (You)' : ''}</strong>
+          <strong style="color:${isMe ? '#c0a062' : '#f5e6c8'};">${safeName}${isMe ? ' (You)' : ''}</strong>
           <br><small style="color:#8a7a5a;">Level ${p.level || 1} &bull; ${p.reputation || 0} rep</small>
         </div>
-        ${isMe ? '' : `<button onclick="adminKillPlayer('${p.playerId}', '${escapeHTML(p.name)}')" style="background:#4a0e0e; color:#ff6b6b; border:1px solid #8b3a3a; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;">&#9760; Kill</button>`}
+        ${isMe ? '' : `<button onclick="adminKillPlayer('${safeId}', '${safeName}')" style="background:#4a0e0e; color:#ff6b6b; border:1px solid #8b3a3a; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;">&#9760; Kill</button>`}
       </div>
     `;
   });
@@ -7133,11 +7138,12 @@ function adminRefreshPlayerList() {
   showBriefNotification('Player list refreshed', 'success');
 }
 
-function adminKillPlayer(targetPlayerId, targetName) {
+async function adminKillPlayer(targetPlayerId, targetName) {
   if (window.ui && window.ui.confirm) {
-    window.ui.confirm('Confirm Kill', `Execute ${targetName}? This will trigger permadeath for their character.`, () => {
+    const result = await window.ui.confirm(`Execute ${targetName}? This will trigger permadeath for their character.`, 'Confirm Kill');
+    if (result === true) {
       executeAdminKill(targetPlayerId, targetName);
-    });
+    }
   } else {
     if (confirm(`Execute ${targetName}? This will trigger permadeath for their character.`)) {
       executeAdminKill(targetPlayerId, targetName);
