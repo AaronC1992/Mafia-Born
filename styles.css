@@ -967,14 +967,28 @@ button:disabled::after {
     max-width: 700px;
     max-height: 92vh;
     overflow-y: auto;
+    background-color: #f2e6c9;
     background-image: url('Backgrounds/death-paper.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-blend-mode: lighten;
     border: 3px solid #8b7355;
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.9), inset 0 0 80px rgba(80, 60, 30, 0.3);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7), 4px 4px 12px rgba(0,0,0,0.4);
     cursor: default;
     padding: 0;
+}
+#death-newspaper::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(242, 230, 201, 0.72);
+    pointer-events: none;
+    z-index: 0;
+}
+#newspaper-content {
+    position: relative;
+    z-index: 1;
 }
 
 #newspaper-close-btn {
@@ -994,9 +1008,11 @@ button:disabled::after {
 
 #newspaper-content {
     padding: 40px 36px 30px;
-    color: #2a1a0a;
+    color: #1a1008;
     font-family: var(--font-body);
     min-height: 400px;
+    position: relative;
+    z-index: 1;
 }
 
 .newspaper-masthead {
@@ -1010,7 +1026,7 @@ button:disabled::after {
     font-size: 2.4em;
     letter-spacing: 6px;
     text-transform: uppercase;
-    color: #1a0a00;
+    color: #0e0804;
     margin: 0;
     line-height: 1.1;
 }
@@ -1065,8 +1081,8 @@ button:disabled::after {
     float: left;
     margin: 0 14px 8px 0;
     border: 2px solid #5a4a3a;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-    background: #d8c8a8;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+    background: #e8d8b8;
     padding: 3px;
     max-width: 100px;
 }
@@ -1089,11 +1105,11 @@ button:disabled::after {
     font-family: var(--font-body);
     font-size: 0.88em;
     line-height: 1.55;
-    color: #2a1a0a;
+    color: #1a1008;
     text-align: justify;
     column-count: 2;
     column-gap: 20px;
-    column-rule: 1px solid #8a7a5a;
+    column-rule: 1px solid #7a6a4a;
 }
 .newspaper-body p {
     margin: 0 0 8px;
@@ -1116,7 +1132,7 @@ button:disabled::after {
     border: 1px solid #5a4a3a;
     padding: 10px 14px;
     margin: 12px 0;
-    background: rgba(200, 180, 140, 0.15);
+    background: rgba(220, 200, 160, 0.35);
     break-inside: avoid;
 }
 .newspaper-stats-box h4 {
