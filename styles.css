@@ -259,10 +259,10 @@ body.season-winter {
 /* â”€â”€ Full SafeHouse Grid â”€â”€ */
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-    padding: 24px;
-    max-width: 860px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 20px;
+    max-width: 800px; /* Increased from 600px to fit more buttons */
     margin: 0 auto;
     max-height: calc(100vh - 200px); /* Adjust height to account for margins and padding */
     overflow-y: auto; /* Add vertical scroll */
@@ -331,154 +331,61 @@ button:disabled {
 
 /* ==================== COMMAND CENTER PROGRESSIVE UNLOCK STYLES ==================== */
 
-/* Unlocked menu button — ornate RPG frame style */
+/* Unlocked menu button with tooltip subtitle */
 .menu-btn-unlocked {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    padding: 18px 30px;
-    min-height: 74px;
+    gap: 4px;
+    padding: 14px 12px;
+    min-height: 68px;
     text-transform: uppercase;
-    position: relative;
-    background: linear-gradient(172deg, #2e4168 0%, #1f3050 35%, #182844 65%, #111d38 100%) !important;
-    border: 2px solid #b8973a !important;
-    border-radius: 3px !important;
-    outline: 1px solid rgba(0, 0, 0, 0.5);
-    outline-offset: 2px;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.07),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-        0 4px 12px rgba(0, 0, 0, 0.6) !important;
-    overflow: visible;
-    transition: all 0.25s ease;
-}
-
-/* Inner inset border to create the double-frame effect */
-.menu-btn-unlocked::before {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border: 1px solid rgba(184, 151, 58, 0.4);
-    border-radius: 1px;
-    pointer-events: none;
-    transition: border-color 0.25s ease;
-}
-
-/* Diamond accents — left and right center */
-.menu-btn-unlocked::after {
-    content: '\u25C7          \u25C7';
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 4px;
-    font-size: 11px;
-    color: #b8973a;
-    pointer-events: none;
-    text-shadow: 0 0 4px rgba(184, 151, 58, 0.35);
-    transition: color 0.25s ease, text-shadow 0.25s ease;
-    white-space: pre;
-}
-
-.menu-btn-unlocked:hover {
-    background: linear-gradient(172deg, #36507a 0%, #263c60 35%, #1e3254 65%, #152746 100%) !important;
-    border-color: #d4b44a !important;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-        0 6px 18px rgba(0, 0, 0, 0.7),
-        0 0 12px rgba(184, 151, 58, 0.12) !important;
-    transform: translateY(-2px);
-}
-.menu-btn-unlocked:hover::before {
-    border-color: rgba(212, 180, 74, 0.55);
-}
-.menu-btn-unlocked:hover::after {
-    color: #d4b44a;
-    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
-}
-
-.menu-btn-unlocked:active {
-    transform: translateY(0px) !important;
-    box-shadow:
-        inset 0 2px 8px rgba(0, 0, 0, 0.5),
-        inset 0 0 15px rgba(17, 29, 56, 0.6),
-        0 2px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
 .menu-btn-unlocked .menu-btn-label {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     color: #d4af37;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    z-index: 1;
-    transition: color 0.25s ease, text-shadow 0.25s ease;
-}
-
-.menu-btn-unlocked:hover .menu-btn-label {
-    color: #e8c84a;
-    text-shadow: 0 0 8px rgba(212, 175, 55, 0.35), 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .menu-btn-unlocked .menu-btn-tip {
     font-size: 10px;
     font-weight: normal;
-    color: #7a8ba8;
+    color: #95a5a6;
     text-transform: none;
-    letter-spacing: 0.5px;
+    letter-spacing: 0;
     line-height: 1.2;
-    opacity: 0.9;
-    z-index: 1;
-    transition: color 0.25s ease;
+    opacity: 0.85;
 }
 
 .menu-btn-unlocked:hover .menu-btn-tip {
-    color: #9aabca;
+    color: #bdc3c7;
     opacity: 1;
 }
 
-/* Locked menu button — silver/disabled variant */
+/* Locked menu button */
 .menu-btn-locked {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    padding: 16px 24px;
-    min-height: 72px;
-    position: relative;
-    background: linear-gradient(170deg, #2a2a30 0%, #1e1e24 40%, #1a1a20 60%, #151518 100%) !important;
-    border: 2px solid #555 !important;
-    border-radius: 3px !important;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.04),
-        inset 0 0 20px rgba(20, 20, 26, 0.5),
-        0 4px 12px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(0, 0, 0, 0.3) !important;
+    padding: 14px 12px;
+    min-height: 68px;
+    background: linear-gradient(to bottom, #1a1a1a, #111) !important;
+    border-color: #444 !important;
     opacity: 0.5;
     cursor: not-allowed !important;
     text-transform: uppercase;
-    overflow: visible;
-}
-.menu-btn-locked::before {
-    content: '';
-    position: absolute;
-    inset: 3px;
-    border: 1px solid rgba(120, 120, 130, 0.3);
-    border-radius: 2px;
-    pointer-events: none;
 }
 
 .menu-btn-locked .menu-btn-label {
     font-size: 14px;
     font-weight: bold;
-    color: #777;
-    letter-spacing: 2px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    color: #666;
+    letter-spacing: 1px;
 }
 
 .menu-btn-locked .menu-btn-tip {
