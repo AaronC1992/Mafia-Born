@@ -926,6 +926,9 @@ async function startFactionMission(familyKey, missionId) {
   
   // Calculate success chance
   let successChance = 60 + (player.power * 0.5) + (player.skillTree.intelligence.quick_study * 2);
+  // Chen Triad reputation: intelligence network boosts mission success
+  const chenMissionMod = getStreetRepBonus('chen', 0, 0.05, 0.10, 0.15);
+  if (chenMissionMod !== 0) successChance += chenMissionMod * 100;
   successChance = Math.min(successChance, 95);
   
   // Execute mission
@@ -1700,6 +1703,12 @@ function calculateTurfDefense(zone, player) {
     const turfRepDef = (player.turf && player.turf.reputation) || 0;
     if (turfRepDef > 0) {
       totalDefense = Math.floor(totalDefense * (1 + Math.min(turfRepDef, 100) * 0.002));
+    }
+    
+    // Torrino Family reputation: high standing grants territorial protection
+    const torrinoDefMod = getStreetRepBonus('torrino', 0, 0, 0.10, 0.20);
+    if (torrinoDefMod !== 0) {
+      totalDefense = Math.floor(totalDefense * (1 + torrinoDefMod));
     }
     
     return Math.floor(totalDefense);
@@ -4339,8 +4348,15 @@ function collectLaundering(opId) {
     return;
   }
   
-  // Pay out clean money
-  player.money += op.cleanAmount;
+  // Pay out clean money — Chen smuggling network gives bonus on collection
+  let payout = op.cleanAmount;
+  const collSmugBuff = getChosenFamilyBuff();
+  if (collSmugBuff && collSmugBuff.smugglingMultiplier) {
+    const smugBonus = Math.floor(payout * (collSmugBuff.smugglingMultiplier - 1) * 0.5); // +15% bonus
+    payout += smugBonus;
+    if (smugBonus > 0) logAction(`Chen Triad smuggling routes net you an extra $${smugBonus.toLocaleString()} on collection.`);
+  }
+  player.money += payout;
   player.activeLaundering.splice(opIndex, 1);
   
   // Collecting laundered money boosts underground reputation
@@ -4348,8 +4364,8 @@ function collectLaundering(opId) {
     player.streetReputation.underground = Math.min(100, (player.streetReputation.underground || 0) + 2);
   }
   
-  showToast(`Collected $${op.cleanAmount.toLocaleString()} clean money from ${op.methodName}!`, 'success');
-  logAction(`The ${op.methodName} laundering operation is complete. $${op.cleanAmount.toLocaleString()} of squeaky-clean cash has been added to your wallet.`);
+  showToast(`Collected $${payout.toLocaleString()} clean money from ${op.methodName}!`, 'success');
+  logAction(`The ${op.methodName} laundering operation is complete. $${payout.toLocaleString()} of squeaky-clean cash has been added to your wallet.`);
   
   updateUI();
   showMoneyLaundering();
@@ -9546,14 +9562,7 @@ function updateFactionReputation(job, success) {
 
 // checkForNewPerks removed Ã¢â‚¬â€ Phase 31
 
-function getReputationPriceModifier(faction) {
-  const reputation = player.streetReputation[faction] || 0;
-  if (reputation >= 50) return 0.85; // 15% discount for high positive reputation
-  if (reputation >= 25) return 0.90; // 10% discount for medium positive reputation
-  if (reputation <= -50) return 1.25; // 25% markup for high negative reputation
-  if (reputation <= -25) return 1.15; // 15% markup for medium negative reputation
-  return 1.0; // No change for neutral reputation
-}
+// getReputationPriceModifier removed — redundant with getStreetRepBonus('underground', ...) in buyItem()
 
 // Check if the player has a specific utility item in their inventory
 function hasUtilityItem(name) {
@@ -9823,6 +9832,12 @@ async function startJob(index) {
       earnings += bonus;
       logAction(`Chen Triad smuggling routes boost your earnings by $${bonus.toLocaleString()}.`);
     }
+    // Chen streetReputation: additional drug/smuggle earnings modifier
+    const chenDrugMod = getStreetRepBonus('chen', 0.05, 0.10, 0.15, 0.20);
+    if (chenDrugMod !== 0) {
+      const chenRepBonus = Math.floor(earnings * chenDrugMod);
+      earnings = Math.max(1, earnings + chenRepBonus);
+    }
   }
   
   // Drug Lab synergy: owning a Drug Lab boosts drug job payouts by 10-25%
@@ -9963,6 +9978,12 @@ async function startJob(index) {
     logAction(`Your Police Scanner intercepts radio chatter Ã¢â‚¬â€ you dodge the heat (+20% wanted reduction).`);
   }
   
+    // Morales Cartel streetReputation: heat modifier (positive = less heat, negative = more)
+  const moralesHeatMod = getStreetRepBonus('morales', 0.05, 0.10, 0.15, 0.20);
+  if (moralesHeatMod !== 0) {
+    wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - moralesHeatMod)));
+  }
+
   // Morales Cartel passive: violent crimes generate 20% less heat
   if (job.name && (job.name.toLowerCase().includes('fight') || job.name.toLowerCase().includes('rob') || 
       job.name.toLowerCase().includes('assault') || job.name.toLowerCase().includes('heist'))) {
@@ -10102,6 +10123,12 @@ async function startJob(index) {
   const luckyBreakLevel = player.skillTree.luck?.lucky_break || 0;
   if (luckyBreakLevel > 0) {
     hurtChance = Math.max(0, hurtChance * (1 - luckyBreakLevel * 0.05));
+  }
+
+  // Morales Cartel reputation: Sicario training reduces injury chance
+  const moralesHurtMod = getStreetRepBonus('morales', 0, 0.05, 0.10, 0.15);
+  if (moralesHurtMod !== 0) {
+    hurtChance = Math.max(0, hurtChance * (1 - moralesHurtMod));
   }
 
   // Check if the player gets hurt
@@ -10383,6 +10410,14 @@ function handleLaunderMoneyJob(job, approachLabel, actualEnergyCost) {
   if (player.businesses && player.businesses.some(b => b.id === 'counterfeiting')) {
     conversionRate += 0.03; // +3% if you own the Counterfeiting Operation
     logAction(`Your Counterfeiting Operation helps mix the bills Ã¢â‚¬â€ improved conversion rate.`);
+  }
+
+  // Chen Triad smuggling network: buff.smugglingMultiplier boosts laundering conversion
+  const smugBuff = getChosenFamilyBuff();
+  if (smugBuff && smugBuff.smugglingMultiplier) {
+    const smugBonus = (smugBuff.smugglingMultiplier - 1); // 1.30 -> 0.30
+    conversionRate += smugBonus * 0.15; // +4.5% conversion rate from Chen network
+    logAction(`Chen Triad smuggling network improves your laundering channels.`);
   }
 
   // Cap at 95%
@@ -11260,6 +11295,13 @@ function gangWar() {
   }
   
   let powerLevel = player.power + (actualGangSize * 10);
+  
+  // Kozlov Bratva reputation: gang war power bonus/penalty (Bratva backup at high rep)
+  const kozlovWarMod = getStreetRepBonus('kozlov', 0.05, 0.10, 0.15, 0.20);
+  if (kozlovWarMod !== 0) {
+    const kozlovBonus = Math.floor(powerLevel * kozlovWarMod);
+    powerLevel += kozlovBonus;
+  }
   
   // Car bonus for gang wars
   let carBonus = 0;
@@ -12769,6 +12811,7 @@ function showPlayerStats() {
     row('Diplomatic Actions', ps.diplomaticActions || 0),
     row('Hacking Attempts', ps.hackingAttempts || 0),
     row('Gambling Wins', ps.gamblingWins || 0),
+    row('Skill Upgrades', ps.skillTreeUpgrades || 0),
   ].join('');
 
   // ---- Assemble full page ----
@@ -13967,6 +14010,11 @@ async function buyItem(index) {
     const weaponBuff = getChosenFamilyBuff();
     if (weaponBuff && weaponBuff.weaponDiscount) {
       finalPrice = Math.floor(finalPrice * (1 - weaponBuff.weaponDiscount));
+    }
+    // Kozlov streetReputation: additional weapon price modifier
+    const kozlovWeapMod = getStreetRepBonus('kozlov', 0.03, 0.06, 0.10, 0.15);
+    if (kozlovWeapMod !== 0) {
+      finalPrice = Math.max(1, Math.floor(finalPrice * (1 - kozlovWeapMod)));
     }
     // District benefit: weapons discount
     if (player.currentTerritory) {
@@ -17140,6 +17188,9 @@ function sellItem(index) {
   let sellMultiplier = 0.4;
   // Silver Tongue perk: +15% better sell prices
   if (hasPlayerPerk('silver_tongue')) sellMultiplier += 0.06;
+  // Torrino Family reputation: better/worse sell prices based on standing
+  const torrinoSellMod = getStreetRepBonus('torrino', 0.05, 0.10, 0.15, 0.20);
+  if (torrinoSellMod !== 0) sellMultiplier += torrinoSellMod;
   const sellPrice = Math.floor((item.price || 0) * sellMultiplier);
   player.money += sellPrice;
   player.inventory.splice(index, 1);
@@ -17238,7 +17289,10 @@ function fenceSellItem(index, type) {
   if (!item) return;
   
   const rates = getFenceMultiplier();
-  const rate = type === 'drug' ? rates.drugs : rates.items;
+  let rate = type === 'drug' ? rates.drugs : rates.items;
+  // Torrino Family reputation: better/worse fence rates based on standing
+  const torrinoFenceMod = getStreetRepBonus('torrino', 0.03, 0.06, 0.10, 0.15);
+  if (torrinoFenceMod !== 0) rate += torrinoFenceMod;
   const fencePrice = Math.floor(item.price * rate);
   
   // Unequip if equipped (reference comparison)
@@ -22351,7 +22405,7 @@ window.formatShortMoney = formatShortMoney;
 window.trackJobPlaystyle = trackJobPlaystyle;
 window.applySkillTreeBonuses = applySkillTreeBonuses;
 window.updateFactionReputation = updateFactionReputation;
-window.getReputationPriceModifier = getReputationPriceModifier;
+window.getChosenFamilyBuff = getChosenFamilyBuff;
 window.hasRequiredItems = hasRequiredItems;
 window.flashHurtScreen = flashHurtScreen;
 window.updateRightPanel = updateRightPanel;

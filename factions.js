@@ -112,64 +112,64 @@ export const factionEffects = {
         name: "Torrino Family",
         icon: "ITA",
         positiveEffects: [
-            { level: 25, effect: "15% better prices at Italian businesses" },
-            { level: 50, effect: "Access to Torrino weapon dealers" },
-            { level: 75, effect: "Protection from rival family attacks" },
-            { level: 100, effect: "Made member status - major power boost" }
+            { level: 25, effect: "+5% sell prices at shops and fence" },
+            { level: 50, effect: "+10% sell prices at shops and fence" },
+            { level: 75, effect: "+15% sell prices, +10% territory defense" },
+            { level: 100, effect: "+20% sell prices, +20% territory defense" }
         ],
         negativeEffects: [
-            { level: -25, effect: "15% higher prices at Italian businesses" },
-            { level: -50, effect: "Targeted by Torrino enforcers" },
-            { level: -75, effect: "Active bounty on your head" },
-            { level: -100, effect: "Marked for death by the family" }
+            { level: -25, effect: "-5% sell prices at shops and fence" },
+            { level: -50, effect: "-10% sell prices at shops and fence" },
+            { level: -75, effect: "-15% sell prices, -10% territory defense" },
+            { level: -100, effect: "-20% sell prices, -20% territory defense" }
         ]
     },
     kozlov: {
         name: "Kozlov Bratva",
         icon: "RUS",
         positiveEffects: [
-            { level: 25, effect: "Access to Russian weapons and vehicles" },
-            { level: 50, effect: "Bratva backup in gang wars" },
-            { level: 75, effect: "Smuggling route access" },
-            { level: 100, effect: "Vor status - criminal elite recognition" }
+            { level: 25, effect: "+3% weapon discount, +5% gang war power" },
+            { level: 50, effect: "+6% weapon discount, +10% gang war power" },
+            { level: 75, effect: "+10% weapon discount, +15% gang war power" },
+            { level: 100, effect: "+15% weapon discount, +20% gang war power" }
         ],
         negativeEffects: [
-            { level: -25, effect: "Russian businesses refuse service" },
-            { level: -50, effect: "Bratva enforcers hunt you" },
-            { level: -75, effect: "Assets frozen by Russian contacts" },
-            { level: -100, effect: "Siberian vacation - permanent" }
+            { level: -25, effect: "+3% weapon markup, -5% gang war power" },
+            { level: -50, effect: "+6% weapon markup, -10% gang war power" },
+            { level: -75, effect: "+10% weapon markup, -15% gang war power" },
+            { level: -100, effect: "+15% weapon markup, -20% gang war power" }
         ]
     },
     chen: {
         name: "Chen Triad",
         icon: "CHN",
         positiveEffects: [
-            { level: 25, effect: "Access to Triad drug networks" },
-            { level: 50, effect: "Ancient martial arts training" },
-            { level: 75, effect: "Protection money from Chinatown" },
-            { level: 100, effect: "Dragon Head status - ultimate honor" }
+            { level: 25, effect: "+5% drug/smuggling income" },
+            { level: 50, effect: "+10% drug/smuggling, +5% mission success" },
+            { level: 75, effect: "+15% drug/smuggling, +10% mission success" },
+            { level: 100, effect: "+20% drug/smuggling, +15% mission success" }
         ],
         negativeEffects: [
-            { level: -25, effect: "Banned from Chinatown businesses" },
-            { level: -50, effect: "Triad assassins pursue you" },
-            { level: -75, effect: "Cursed by ancestral spirits" },
-            { level: -100, effect: "Dishonor demands blood payment" }
+            { level: -25, effect: "-5% drug/smuggling income" },
+            { level: -50, effect: "-10% drug/smuggling, -5% mission success" },
+            { level: -75, effect: "-15% drug/smuggling, -10% mission success" },
+            { level: -100, effect: "-20% drug/smuggling, -15% mission success" }
         ]
     },
     morales: {
         name: "Morales Cartel",
         icon: "MEX",
         positiveEffects: [
-            { level: 25, effect: "Cartel drug discounts and access" },
-            { level: 50, effect: "Border smuggling routes" },
-            { level: 75, effect: "Sicario training programs" },
-            { level: 100, effect: "Patrón status - empire builder" }
+            { level: 25, effect: "-5% heat from all activities" },
+            { level: 50, effect: "-10% heat, -5% injury chance" },
+            { level: 75, effect: "-15% heat, -10% injury chance" },
+            { level: 100, effect: "-20% heat, -15% injury chance" }
         ],
         negativeEffects: [
-            { level: -25, effect: "Cartel prices increase 20%" },
-            { level: -50, effect: "Sicarios target your operations" },
-            { level: -75, effect: "All cartel territory becomes hostile" },
-            { level: -100, effect: "Blood feud - no quarter given" }
+            { level: -25, effect: "+5% heat from all activities" },
+            { level: -50, effect: "+10% heat, +5% injury chance" },
+            { level: -75, effect: "+15% heat, +10% injury chance" },
+            { level: -100, effect: "+20% heat, +15% injury chance" }
         ]
     },
     police: {

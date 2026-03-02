@@ -332,9 +332,10 @@ export function regenerateEnergy() {
       // v1.11.0 Rebalance: Regen interval 45s base (was 20s) — Omerta-style energy scarcity
       // Reduced by 1s per 2 recovery levels (min 25s)
       let regenInterval = Math.max(25, 45 - Math.floor(recoveryLevel / 2));
-      // Morales Cartel Supply Line: +20% energy regen speed
-      if (player.chosenFamily === 'morales') {
-        regenInterval = Math.max(20, Math.floor(regenInterval * 0.80));
+      // Family buff: energyRegenBonus (e.g. Morales Cartel Supply Line: +20% energy regen speed)
+      const famBuff = (typeof window.getChosenFamilyBuff === 'function') ? window.getChosenFamilyBuff() : null;
+      if (famBuff && famBuff.energyRegenBonus) {
+        regenInterval = Math.max(20, Math.floor(regenInterval * (1 - famBuff.energyRegenBonus)));
       }
       player.energyRegenTimer = regenInterval;
       
