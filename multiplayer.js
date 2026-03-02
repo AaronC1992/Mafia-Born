@@ -1171,10 +1171,19 @@ async function handleServerMessage(message) {
             break;
 
         case 'admin_killed':
-            // Admin has executed this player — trigger death
+            // Admin has executed this player — trigger full permadeath
             console.log('☠️ You have been killed by admin:', message.causeOfDeath);
             if (typeof showDeathScreen === 'function') {
                 showDeathScreen(message.causeOfDeath || 'Executed by order of the Don');
+            } else if (typeof window.showDeathScreen === 'function') {
+                window.showDeathScreen(message.causeOfDeath || 'Executed by order of the Don');
+            } else {
+                // Fallback: at minimum show newspaper if death screen unavailable
+                console.error('showDeathScreen not available — showing newspaper fallback');
+                if (typeof window.generateDeathNewspaperData === 'function' && typeof window.showDeathNewspaper === 'function') {
+                    const nd = window.generateDeathNewspaperData(message.causeOfDeath || 'Executed by order of the Don');
+                    window.showDeathNewspaper(nd);
+                }
             }
             break;
         

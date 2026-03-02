@@ -1035,7 +1035,8 @@ button:disabled::after {
     font-family: var(--font-typewriter);
     font-size: 0.75em;
     letter-spacing: 3px;
-    color: #2a1a0a;
+    color: #000000;
+    font-weight: 600;
     margin: 2px 0 0;
 }
 .newspaper-dateline {
@@ -1043,7 +1044,8 @@ button:disabled::after {
     justify-content: space-between;
     font-family: var(--font-typewriter);
     font-size: 0.7em;
-    color: #2a1a0a;
+    color: #000000;
+    font-weight: 600;
     padding: 4px 0;
     border-bottom: 1px solid #5a4a2a;
     margin-bottom: 14px;
@@ -1101,7 +1103,8 @@ button:disabled::after {
     text-align: center;
     font-family: var(--font-typewriter);
     font-size: 0.6em;
-    color: #1a0e04;
+    color: #000000;
+    font-weight: 700;
     margin-top: 2px;
 }
 
@@ -1109,10 +1112,10 @@ button:disabled::after {
     font-family: var(--font-body);
     font-size: 0.92em;
     line-height: 1.55;
-    color: #000000;
+    color: #000000 !important;
     font-weight: 700;
-    text-shadow: 0 0 0 #000000;
-    -webkit-text-stroke: 0.2px #000000;
+    text-shadow: 0 0 1px #000000;
+    -webkit-text-stroke: 0.3px #000000;
     text-align: justify;
     column-count: 2;
     column-gap: 20px;
@@ -1121,6 +1124,7 @@ button:disabled::after {
 .newspaper-body p {
     margin: 0 0 8px;
     text-indent: 1.5em;
+    color: #000000 !important;
 }
 .newspaper-body p:first-child {
     text-indent: 0;
@@ -1158,15 +1162,17 @@ button:disabled::after {
     font-family: var(--font-typewriter);
     font-size: 0.78em;
     padding: 2px 0;
-    color: #000000;
-    font-weight: 600;
+    color: #000000 !important;
+    font-weight: 700;
+    -webkit-text-stroke: 0.2px #000000;
 }
 
 .newspaper-footer {
     text-align: center;
     font-family: var(--font-typewriter);
     font-size: 0.7em;
-    color: #2a1a0a;
+    color: #000000;
+    font-weight: 700;
     margin-top: 14px;
     padding-top: 8px;
     border-top: 3px double #3a2a1a;

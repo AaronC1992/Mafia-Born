@@ -16779,6 +16779,8 @@ function showDeathNewspaper(data) {
   overlay.style.display = 'flex';
 }
 window.showDeathNewspaper = showDeathNewspaper;
+window.showDeathScreen = showDeathScreen;
+window.generateDeathNewspaperData = generateDeathNewspaperData;
 
 function closeDeathNewspaper() {
   const overlay = document.getElementById('death-newspaper-overlay');

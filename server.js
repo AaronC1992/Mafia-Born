@@ -2847,24 +2847,50 @@ function handleAdminKillPlayer(clientId, message) {
 
     console.log(`☠️ ADMIN KILL: ${username} executed ${targetPlayer.name} (${targetPlayerId}) — "${causeOfDeath}"`);
 
-    // Send kill command to the target client
+    // Send kill command to the target client — includes basic player info for newspaper
     targetWs.send(JSON.stringify({
         type: 'admin_killed',
         causeOfDeath: causeOfDeath,
         killedBy: 'The Don'
     }));
 
-    // Announce in world chat
-    addGlobalChatMessage('System', `☠️ ${targetPlayer.name} has been executed by order of the Don!`, '#8b0000');
+    // Build a server-side newspaper for the broadcast to all other clients
+    const serverNewspaper = {
+        name: targetPlayer.name,
+        portrait: '',
+        level: targetState ? targetState.level || 1 : 1,
+        legacyTitle: 'Criminal',
+        causeOfDeath: causeOfDeath,
+        money: targetState ? targetState.money || 0 : 0,
+        totalCrimes: 0,
+        gangSize: 0,
+        territories: 0,
+        businesses: 0,
+        properties: 0,
+        bestSkill: 'Unknown',
+        bestSkillRank: 0,
+        gamblingWins: 0,
+        family: 'Unknown',
+        timestamp: Date.now()
+    };
 
-    // Broadcast chat update to all clients
+    // Announce in world chat
+    addGlobalChatMessage('The Daily Racketeer', `📰 EXTRA! EXTRA! Read all about it! ${targetPlayer.name} is DEAD! "${causeOfDeath}" — Click to read the full story!`, '#c0a040');
+
+    // Broadcast the newspaper to ALL clients so everyone sees the death popup
+    broadcastToAll({
+        type: 'player_death_newspaper',
+        newspaperData: serverNewspaper
+    });
+
+    // Also broadcast as global chat
     broadcastToAll({
         type: 'global_chat',
         playerId: 'SYSTEM',
-        playerName: 'System',
-        message: `☠️ ${targetPlayer.name} has been executed by order of the Don!`,
+        playerName: 'The Daily Racketeer',
+        message: `📰 EXTRA! EXTRA! ${targetPlayer.name} is DEAD! "${causeOfDeath}" — Click to read the full story!`,
         timestamp: Date.now(),
-        color: '#8b0000'
+        color: '#c0a040'
     });
 
     // Confirm to admin
