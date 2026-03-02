@@ -14015,6 +14015,12 @@ async function buyItem(index) {
       // Energy drinks take a toll on your health
       player.health = Math.max(player.health - 1, 0);
       // Reset timer if energy is now full
+    
+    // Black market purchases boost underground rep (you're a regular customer)
+    if (player.streetReputation && (item.type === 'weapon' || item.type === 'armor' || item.type === 'highLevelDrug' || item.type === 'ammo')) {
+      player.streetReputation.underground = Math.min(100, (player.streetReputation.underground || 0) + 1);
+    }
+    
       if (player.energy >= player.maxEnergy) {
         player.energyRegenTimer = 0;
       }
