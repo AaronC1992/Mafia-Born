@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Mafia Born — From Dusk To Don. Rise through the criminal underworld in this browser-based RPG.">
+    <meta name="description" content="Mafia Born ï¿½ From Dusk To Don. Rise through the criminal underworld in this browser-based RPG.">
     <meta name="theme-color" content="#000000">
     <meta property="og:title" content="Mafia Born - From Dusk To Don">
     <meta property="og:description" content="Rise through the criminal underworld in this multiplayer browser RPG.">
@@ -113,7 +113,7 @@
                     <p id="dirty-money-display">Dirty: $0</p>
                     <p id="power-display">Influence: 0</p>
                     <p id="territory-display" style="display: none;">Turf: 0 | Tribute: $0/week</p>
-                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: —</p>
+                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: ï¿½</p>
                     <p id="experience-display">XP: 0/100</p>
                     <p id="skill-points-display">Skill Points: 0</p>
                     <p id="season-display">Season: Spring</p>
@@ -274,7 +274,7 @@
                 <h1><span class="icon"></span> Properties</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Properties & Fronts</span>
                 </div>
             </div>
@@ -290,7 +290,7 @@
                 <h1><span class="icon"></span> Jobs</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Jobs</span>
                 </div>
             </div>
@@ -372,7 +372,7 @@
                 <h1><span class="icon"></span> Legal Aid</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Court House</span>
                 </div>
             </div>
@@ -392,7 +392,7 @@
                 <h1><span class="icon"></span> The Doctor</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Hospital</span>
                 </div>
             </div>
@@ -410,7 +410,7 @@
                 <h1><span class="icon"></span> Stash</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Stash &amp; Motor Pool</span>
                 </div>
             </div>
@@ -428,6 +428,16 @@
             <div id="death-legacy-offer"></div>
         </div>
 
+        <!-- Newspaper Death Popup (full-screen overlay) -->
+        <div id="death-newspaper-overlay" style="display:none;" onclick="if(event.target===this)closeDeathNewspaper()">
+            <div id="death-newspaper">
+                <button id="newspaper-close-btn" onclick="closeDeathNewspaper()" title="Close">&times;</button>
+                <div id="newspaper-content">
+                    <!-- Filled dynamically by showDeathNewspaper() -->
+                </div>
+            </div>
+        </div>
+
 
         <!-- Casino Screen -->
         <div id="casino-screen" class="game-screen" style="display:none;">
@@ -435,7 +445,7 @@
                 <h1><span class="icon"></span> Gambling Den</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Gambling &amp; Mini Games</span>
                 </div>
             </div>
@@ -556,7 +566,7 @@
                 <h1><span class="icon"></span> Settings</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Options</span>
                 </div>
             </div>
@@ -687,7 +697,7 @@
                 <h1><span class="icon"></span> The Family</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Gang</span>
                 </div>
             </div>
@@ -700,7 +710,7 @@
                 <h1><span class="icon"></span> Recruitment</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Recruitment</span>
                 </div>
             </div>
@@ -713,7 +723,7 @@
                 <h1><span class="icon"></span> Achievements</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Achievements</span>
                 </div>
             </div>
@@ -731,7 +741,7 @@
                 <h1><span class="icon"></span> Underground Network</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Jailbreak</span>
                 </div>
             </div>
@@ -745,10 +755,10 @@
             
             <div style="margin-top: 20px; padding: 15px; background: #1a0000; border-radius: 4px; border: 1px solid #ff0000;">
                 <h4>Risks</h4>
-                <p>• Failure means you join them</p>
-                <p>• Stealth helps you stay unseen</p>
-                <p>• Takes energy</p>
-                <p>• Earns respect</p>
+                <p>ï¿½ Failure means you join them</p>
+                <p>ï¿½ Stealth helps you stay unseen</p>
+                <p>ï¿½ Takes energy</p>
+                <p>ï¿½ Earns respect</p>
             </div>
             
             <button onclick="if(typeof requestJailRoster==='function') requestJailRoster(); if(typeof updateJailbreakPrisonerList==='function') updateJailbreakPrisonerList();">Refresh Intel</button>
@@ -765,7 +775,7 @@
                 <h1><span class="icon"></span> Operations</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Missions</span>
                 </div>
             </div>
@@ -780,7 +790,7 @@
                 <h1><span class="icon"></span> Fronts</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Businesses</span>
                 </div>
             </div>
@@ -797,7 +807,7 @@
                 <h1><span class="icon"></span> The Wash</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Money Laundering</span>
                 </div>
             </div>
@@ -812,7 +822,7 @@
                 <h1><span class="icon"></span> Territories</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Territories</span>
                 </div>
             </div>
@@ -827,7 +837,7 @@
                 <h1><span class="icon"></span> Turf Wars</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Turf</span>
                 </div>
             </div>
@@ -842,7 +852,7 @@
                 <h1><span class="icon"></span> Events</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Events</span>
                 </div>
             </div>
@@ -857,7 +867,7 @@
                 <h1><span class="icon"></span> City Map</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
-                    <span class="separator">›</span>
+                    <span class="separator">ï¿½</span>
                     <span class="current">Map</span>
                 </div>
             </div>

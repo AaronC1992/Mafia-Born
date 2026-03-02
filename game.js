@@ -16516,14 +16516,30 @@ function showDeathScreen(causeOfDeath) {
   if (restartArea) {
     restartArea.innerHTML = `
       <div style="margin: 25px auto; max-width: 500px; text-align: center;">
+        <button onclick="showDeathNewspaper(lastDeathNewspaperData)" style="background: linear-gradient(45deg, #5a4a30, #4a3a20); color: #f5e6c8; padding: 14px 30px; border: 2px solid #8b7355; border-radius: 2px; font-size: 1.1em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-family: var(--font-typewriter); margin-bottom: 16px;">
+          &#128240; Read Your Obituary
+        </button>
         <p style="color: #d4c4a0; margin-bottom: 20px; font-style: italic;">
           "Every empire falls. Will you build another?"
         </p>
-        <button onclick="restartGame()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: #f5e6c8; padding: 18px 40px; border: none; border-radius: 12px; font-size: 1.3em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+        <button onclick="restartGame()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: #f5e6c8; padding: 18px 40px; border: none; border-radius: 2px; font-size: 1.3em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
           Start a New Life
         </button>
       </div>
     `;
+  }
+
+  // Generate and show the death newspaper
+  const newspaperData = generateDeathNewspaperData(cause);
+  lastDeathNewspaperData = newspaperData;
+  showDeathNewspaper(newspaperData);
+
+  // Log to the local ledger
+  logAction(`EXTRA! EXTRA! Read all about it! ${player.name || 'A criminal'} is dead! "${cause}"`, 'chat');
+
+  // Broadcast death to world chat via multiplayer (if connected)
+  if (typeof broadcastDeathNewspaper === 'function') {
+    broadcastDeathNewspaper(newspaperData);
   }
 
   document.getElementById("menu").style.display = "none";
@@ -16554,6 +16570,137 @@ function restartGame() {
   document.getElementById("death-screen").style.display = "none";
   startGame();
 }
+
+// ==================== DEATH NEWSPAPER SYSTEM ====================
+// Store the latest death newspaper data so others can view it
+let lastDeathNewspaperData = null;
+
+function generateDeathNewspaperData(causeOfDeath) {
+  const totalCrimes = (player.playstyleStats.stealthyJobs || 0) + (player.playstyleStats.violentJobs || 0) + (player.playstyleStats.diplomaticActions || 0);
+  const gangSize = player.gang ? player.gang.members : 0;
+  const territoriesOwned = (player.turf?.owned || []).length;
+  const businessCount = player.businesses ? player.businesses.length : 0;
+  const propertiesOwned = player.realEstate ? player.realEstate.ownedProperties.length : 0;
+  let highestSkill = ['None', 0];
+  for (const [treeName, nodes] of Object.entries(player.skillTree || {})) {
+    for (const [nodeName, rank] of Object.entries(nodes)) {
+      if (rank > highestSkill[1]) highestSkill = [nodeName, rank];
+    }
+  }
+  let legacyTitle = 'Street Rat';
+  if (player.level >= 50) legacyTitle = 'Legendary Kingpin';
+  else if (player.level >= 35) legacyTitle = 'Crime Lord';
+  else if (player.level >= 25) legacyTitle = 'Underboss';
+  else if (player.level >= 15) legacyTitle = 'Made Man';
+  else if (player.level >= 10) legacyTitle = 'Enforcer';
+  else if (player.level >= 5) legacyTitle = 'Hustler';
+  const familyName = player.chosenFamily ? player.chosenFamily.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Unaffiliated';
+  return {
+    name: player.name || 'Unknown',
+    portrait: player.portrait || '',
+    level: player.level || 1,
+    legacyTitle: legacyTitle,
+    causeOfDeath: causeOfDeath || 'Died on the streets',
+    money: player.money || 0,
+    totalCrimes: totalCrimes,
+    gangSize: gangSize,
+    territories: territoriesOwned,
+    businesses: businessCount,
+    properties: propertiesOwned,
+    bestSkill: highestSkill[0],
+    bestSkillRank: highestSkill[1],
+    gamblingWins: player.playstyleStats.gamblingWins || 0,
+    family: familyName,
+    timestamp: Date.now()
+  };
+}
+
+function buildNewspaperHTML(data) {
+  const deathDate = new Date(data.timestamp);
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dateStr = `${months[deathDate.getMonth()]} ${deathDate.getDate()}, ${deathDate.getFullYear()}`;
+  const edition = ['Morning','Evening','Late','Final'][Math.floor(Math.random() * 4)] + ' Edition';
+  const price = 'Price: Two Cents';
+
+  // Generate the prose obituary
+  const netWorthStr = '$' + data.money.toLocaleString();
+  let openingLine = `The city mourns — or celebrates — the demise of <strong>${data.name}</strong>, a ${data.legacyTitle} of the ${data.family} family, found dead under grim circumstances.`;
+  let causeP = `Authorities report the cause of death as: <em>"${data.causeOfDeath}."</em> Police have closed the case, citing the dangers of the underworld as a sufficient explanation.`;
+  let legacyP = '';
+  if (data.level >= 25) {
+    legacyP = `At level ${data.level}, ${data.name} had risen to the rank of ${data.legacyTitle}, amassing a fortune of ${netWorthStr} and leaving behind an empire spanning ${data.territories} territories and ${data.businesses} businesses. Associates say the streets will never be the same.`;
+  } else if (data.level >= 10) {
+    legacyP = `Having reached level ${data.level}, ${data.name} was beginning to make a name in the organization as a ${data.legacyTitle}, with ${netWorthStr} to their name. Those who knew them say they had potential — if only they'd lived long enough to see it through.`;
+  } else {
+    legacyP = `At only level ${data.level}, ${data.name} was still a relative nobody — a ${data.legacyTitle} with ${netWorthStr} in crumpled bills and little else. The city barely noticed their passing, and the gutter claimed another soul.`;
+  }
+  let crimeP = data.totalCrimes > 0
+    ? `During their career, ${data.name} committed ${data.totalCrimes} known crimes, commanded a gang of ${data.gangSize}, and ${data.gamblingWins > 0 ? `won ${data.gamblingWins} times at the gambling tables` : 'never had any luck at the tables'}.`
+    : `${data.name} had no known criminal record — at least, none that survived the filing cabinet fire at the precinct.`;
+  let skillP = data.bestSkillRank > 0
+    ? `Their most notable talent was ${data.bestSkill} (Rank ${data.bestSkillRank}), a skill that ultimately could not save them from fate.`
+    : '';
+
+  const portraitHTML = data.portrait
+    ? `<div class="newspaper-portrait-wrap"><img src="${data.portrait}" alt="${data.name}"><div class="newspaper-portrait-caption">${data.name}</div></div>`
+    : '';
+
+  return `
+    <div class="newspaper-masthead">
+      <h2 class="newspaper-title">The Daily Racketeer</h2>
+      <p class="newspaper-subtitle">All the News That&rsquo;s Fit to Print &mdash; And Plenty That Isn&rsquo;t</p>
+    </div>
+    <div class="newspaper-dateline">
+      <span>${dateStr}</span>
+      <span>${edition}</span>
+      <span>${price}</span>
+    </div>
+    <h3 class="newspaper-headline">EXTRA! EXTRA!<br>${data.name.toUpperCase()} FOUND DEAD</h3>
+    <p class="newspaper-subhead">${data.legacyTitle} of the ${data.family} Family meets untimely end &mdash; "${data.causeOfDeath}"</p>
+    <hr class="newspaper-rule-double">
+    <div class="newspaper-body">
+      ${portraitHTML}
+      <p>${openingLine}</p>
+      <p>${causeP}</p>
+      <p>${legacyP}</p>
+      <p>${crimeP}</p>
+      ${skillP ? `<p>${skillP}</p>` : ''}
+      <div class="newspaper-stats-box">
+        <h4>By the Numbers</h4>
+        <div class="newspaper-stat-row"><span>Net Worth</span><span>${netWorthStr}</span></div>
+        <div class="newspaper-stat-row"><span>Level</span><span>${data.level}</span></div>
+        <div class="newspaper-stat-row"><span>Crimes</span><span>${data.totalCrimes}</span></div>
+        <div class="newspaper-stat-row"><span>Gang Size</span><span>${data.gangSize}</span></div>
+        <div class="newspaper-stat-row"><span>Territories</span><span>${data.territories}</span></div>
+        <div class="newspaper-stat-row"><span>Businesses</span><span>${data.businesses}</span></div>
+        <div class="newspaper-stat-row"><span>Properties</span><span>${data.properties}</span></div>
+        <div class="newspaper-stat-row"><span>Best Skill</span><span>${data.bestSkill} (${data.bestSkillRank})</span></div>
+        <div class="newspaper-stat-row"><span>Gambling Wins</span><span>${data.gamblingWins}</span></div>
+      </div>
+    </div>
+    <div class="newspaper-footer">
+      &ldquo;In this business, everyone&rsquo;s time runs out eventually.&rdquo;<br>
+      &mdash; The Daily Racketeer, est. 1923
+    </div>
+  `;
+}
+
+function showDeathNewspaper(data) {
+  if (!data) return;
+  lastDeathNewspaperData = data;
+  const overlay = document.getElementById('death-newspaper-overlay');
+  const content = document.getElementById('newspaper-content');
+  if (!overlay || !content) return;
+  content.innerHTML = buildNewspaperHTML(data);
+  overlay.style.display = 'flex';
+}
+window.showDeathNewspaper = showDeathNewspaper;
+
+function closeDeathNewspaper() {
+  const overlay = document.getElementById('death-newspaper-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+window.closeDeathNewspaper = closeDeathNewspaper;
 
 // Function to show achievements
 function showAchievements() {

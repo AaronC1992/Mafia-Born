@@ -893,6 +893,10 @@ function handleClientMessage(clientId, message, ws) {
             handleMarketplaceGetListings(clientId);
             break;
 
+        case 'player_death':
+            handlePlayerDeath(clientId, message);
+            break;
+
         default:
             console.log(`⚠️ Unknown message type: ${message.type}`);
     }
@@ -2763,6 +2767,43 @@ function addGlobalChatMessage(sender, message, color = '#ffffff') {
     broadcastToAll({
         type: 'global_chat',
         ...chatMessage
+    });
+}
+
+// ==================== PLAYER DEATH NEWSPAPER ====================
+function handlePlayerDeath(clientId, message) {
+    const playerData = gameState.players.get(clientId);
+    if (!playerData) return;
+    const nd = message.newspaperData;
+    if (!nd || !nd.name) return;
+
+    // Sanitize the newspaper data (don't trust client blindly)
+    const sanitized = {
+        name: String(nd.name).slice(0, 30),
+        portrait: nd.portrait ? String(nd.portrait).slice(0, 200) : '',
+        level: Math.max(1, Math.min(100, parseInt(nd.level) || 1)),
+        legacyTitle: String(nd.legacyTitle || 'Street Rat').slice(0, 30),
+        causeOfDeath: String(nd.causeOfDeath || 'Died on the streets').slice(0, 100),
+        money: Math.max(0, parseInt(nd.money) || 0),
+        totalCrimes: Math.max(0, parseInt(nd.totalCrimes) || 0),
+        gangSize: Math.max(0, parseInt(nd.gangSize) || 0),
+        territories: Math.max(0, parseInt(nd.territories) || 0),
+        businesses: Math.max(0, parseInt(nd.businesses) || 0),
+        properties: Math.max(0, parseInt(nd.properties) || 0),
+        bestSkill: String(nd.bestSkill || 'None').slice(0, 30),
+        bestSkillRank: Math.max(0, parseInt(nd.bestSkillRank) || 0),
+        gamblingWins: Math.max(0, parseInt(nd.gamblingWins) || 0),
+        family: String(nd.family || 'Unaffiliated').slice(0, 30),
+        timestamp: Date.now()
+    };
+
+    // Send chat announcement
+    addGlobalChatMessage('The Daily Racketeer', `📰 EXTRA! EXTRA! Read all about it! ${sanitized.name} is DEAD! "${sanitized.causeOfDeath}" — Click to read the full story!`, '#c0a040');
+
+    // Broadcast the newspaper data to all connected clients so they can view the popup
+    broadcastToAll({
+        type: 'player_death_newspaper',
+        newspaperData: sanitized
     });
 }
 

@@ -947,6 +947,245 @@ button:disabled::after {
 .obit-label { color: #8a7a5a; font-size: 0.85em; }
 .obit-value { color: var(--color-cream); font-weight: bold; font-size: 0.9em; }
 
+/* ===== Death Newspaper Overlay ===== */
+#death-newspaper-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: deathFadeIn 0.6s ease-in;
+    cursor: pointer;
+}
+
+#death-newspaper {
+    position: relative;
+    width: 90%;
+    max-width: 700px;
+    max-height: 92vh;
+    overflow-y: auto;
+    background-image: url('Backgrounds/death-paper.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 3px solid #8b7355;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.9), inset 0 0 80px rgba(80, 60, 30, 0.3);
+    cursor: default;
+    padding: 0;
+}
+
+#newspaper-close-btn {
+    position: absolute;
+    top: 8px; right: 12px;
+    background: none;
+    border: none;
+    color: #3a2a1a;
+    font-size: 2em;
+    cursor: pointer;
+    z-index: 10;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+#newspaper-close-btn:hover { opacity: 1; }
+
+#newspaper-content {
+    padding: 40px 36px 30px;
+    color: #2a1a0a;
+    font-family: var(--font-body);
+    min-height: 400px;
+}
+
+.newspaper-masthead {
+    text-align: center;
+    border-bottom: 3px double #3a2a1a;
+    padding-bottom: 10px;
+    margin-bottom: 6px;
+}
+.newspaper-title {
+    font-family: var(--font-heading);
+    font-size: 2.4em;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #1a0a00;
+    margin: 0;
+    line-height: 1.1;
+}
+.newspaper-subtitle {
+    font-family: var(--font-typewriter);
+    font-size: 0.75em;
+    letter-spacing: 3px;
+    color: #5a4a3a;
+    margin: 2px 0 0;
+}
+.newspaper-dateline {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-typewriter);
+    font-size: 0.7em;
+    color: #5a4a3a;
+    padding: 4px 0;
+    border-bottom: 1px solid #8a7a5a;
+    margin-bottom: 14px;
+}
+
+.newspaper-headline {
+    font-family: var(--font-display);
+    font-size: 1.95em;
+    text-align: center;
+    color: #1a0a00;
+    margin: 10px 0 4px;
+    line-height: 1.15;
+    font-weight: 900;
+}
+.newspaper-subhead {
+    font-family: var(--font-body);
+    font-size: 1em;
+    text-align: center;
+    font-style: italic;
+    color: #4a3a2a;
+    margin: 0 0 14px;
+}
+
+.newspaper-rule {
+    border: none;
+    border-top: 1px solid #3a2a1a;
+    margin: 10px 0;
+}
+.newspaper-rule-double {
+    border: none;
+    border-top: 3px double #3a2a1a;
+    margin: 12px 0;
+}
+
+.newspaper-portrait-wrap {
+    float: left;
+    margin: 0 14px 8px 0;
+    border: 2px solid #5a4a3a;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    background: #d8c8a8;
+    padding: 3px;
+    max-width: 100px;
+}
+.newspaper-portrait-wrap img {
+    display: block;
+    width: 94px;
+    height: 94px;
+    object-fit: cover;
+    filter: sepia(0.6) contrast(1.1);
+}
+.newspaper-portrait-caption {
+    text-align: center;
+    font-family: var(--font-typewriter);
+    font-size: 0.6em;
+    color: #5a4a3a;
+    margin-top: 2px;
+}
+
+.newspaper-body {
+    font-family: var(--font-body);
+    font-size: 0.88em;
+    line-height: 1.55;
+    color: #2a1a0a;
+    text-align: justify;
+    column-count: 2;
+    column-gap: 20px;
+    column-rule: 1px solid #8a7a5a;
+}
+.newspaper-body p {
+    margin: 0 0 8px;
+    text-indent: 1.5em;
+}
+.newspaper-body p:first-child {
+    text-indent: 0;
+}
+.newspaper-body p:first-child::first-letter {
+    font-family: var(--font-display);
+    font-size: 2.8em;
+    float: left;
+    line-height: 0.85;
+    margin: 2px 6px 0 0;
+    color: #1a0a00;
+    font-weight: 900;
+}
+
+.newspaper-stats-box {
+    border: 1px solid #5a4a3a;
+    padding: 10px 14px;
+    margin: 12px 0;
+    background: rgba(200, 180, 140, 0.15);
+    break-inside: avoid;
+}
+.newspaper-stats-box h4 {
+    font-family: var(--font-heading);
+    font-size: 0.85em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    color: #1a0a00;
+    border-bottom: 1px solid #8a7a5a;
+    padding-bottom: 4px;
+}
+.newspaper-stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-typewriter);
+    font-size: 0.78em;
+    padding: 2px 0;
+    color: #3a2a1a;
+}
+
+.newspaper-footer {
+    text-align: center;
+    font-family: var(--font-typewriter);
+    font-size: 0.7em;
+    color: #5a4a3a;
+    margin-top: 14px;
+    padding-top: 8px;
+    border-top: 3px double #3a2a1a;
+    font-style: italic;
+}
+
+/* Chat newspaper link */
+.newspaper-chat-link {
+    display: inline-block;
+    cursor: pointer;
+    color: #c0a040;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.newspaper-chat-link:hover {
+    color: #d4af37;
+}
+
+/* Responsive: single column on small screens */
+@media (max-width: 600px) {
+    #death-newspaper {
+        width: 96%;
+        max-height: 96vh;
+    }
+    #newspaper-content {
+        padding: 24px 18px 20px;
+    }
+    .newspaper-title {
+        font-size: 1.6em;
+        letter-spacing: 3px;
+    }
+    .newspaper-headline {
+        font-size: 1.4em;
+    }
+    .newspaper-body {
+        column-count: 1;
+    }
+    .newspaper-portrait-wrap {
+        float: none;
+        margin: 0 auto 10px;
+    }
+}
+
 /* ===== Hospital Services ===== */
 .hospital-services {
     display: flex;
