@@ -31,7 +31,7 @@ const config = {
   
   // Heartbeat & connection
   heartbeatInterval: 30000, // 30 seconds
-  reconnectInterval: 5000,  // 5 seconds
+  reconnectInterval: 5000, // 5 seconds
   
   // World state persistence
   saveThrottleMs: 5000, // Don't save more than once per 5 seconds
@@ -60,11 +60,11 @@ const config = {
 
 // Production environment overrides
 if (config.environment === 'production') {
-  console.log('🚀 Running in PRODUCTION mode');
+  console.log(' Running in PRODUCTION mode');
   config.enableVerboseLogging = false;
   config.corsOrigin = `https://${config.productionDomain}`;
 } else {
-  console.log('🔧 Running in DEVELOPMENT mode');
+  console.log(' Running in DEVELOPMENT mode');
 }
 
 module.exports = config;

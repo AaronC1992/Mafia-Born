@@ -216,7 +216,7 @@ export function showAuthModal(onSuccessOrOpts) {
     overlay.innerHTML = `
         <div class="auth-modal">
             <button class="auth-close" id="auth-close-btn" ${required ? 'style="display:none;"' : ''}>&times;</button>
-            <h2 class="auth-title" id="auth-modal-title">${startOnRegister ? '📝 Create Account' : 'Sign In'}</h2>
+            <h2 class="auth-title" id="auth-modal-title">${startOnRegister ? ' Create Account' : 'Sign In'}</h2>
             <p class="auth-subtitle" id="auth-modal-subtitle">${required ? 'An account is required to play' : 'Play across all your devices'}</p>
             
             <div id="auth-form-area">
@@ -239,14 +239,14 @@ export function showAuthModal(onSuccessOrOpts) {
 
             <div id="auth-logged-in-area" style="display:none;">
                 <div class="auth-profile-info">
-                    <p>✅ Signed in as <strong id="auth-display-name"></strong></p>
+                    <p> Signed in as <strong id="auth-display-name"></strong></p>
                     <p class="auth-save-info" id="auth-save-info"></p>
                 </div>
-                <button class="auth-btn auth-btn-primary" id="auth-cloud-save-btn">☁️ Save to Cloud</button>
-                <button class="auth-btn auth-btn-secondary" id="auth-cloud-load-btn">📥 Load from Cloud</button>
+                <button class="auth-btn auth-btn-primary" id="auth-cloud-save-btn"> Save to Cloud</button>
+                <button class="auth-btn auth-btn-secondary" id="auth-cloud-load-btn"> Load from Cloud</button>
                 <button class="auth-btn auth-btn-danger" id="auth-logout-btn">Sign Out</button>
                 <hr style="border-color: #333; margin: 15px 0;">
-                <button class="auth-btn auth-btn-danger" id="auth-delete-account-btn" style="border-color: #ff2222; margin-top: 5px;">🗑️ Delete Account & Save</button>
+                <button class="auth-btn auth-btn-danger" id="auth-delete-account-btn" style="border-color: #ff2222; margin-top: 5px;"> Delete Account & Save</button>
             </div>
         </div>
     `;
@@ -287,7 +287,7 @@ export function showAuthModal(onSuccessOrOpts) {
     switchLink.onclick = () => {
         isRegisterMode = !isRegisterMode;
         if (isRegisterMode) {
-            titleEl.textContent = '📝 Create Account';
+            titleEl.textContent = ' Create Account';
             subtitleEl.textContent = 'Save your progress across devices';
             submitBtn.textContent = 'Create Account';
             confirmField.style.display = 'block';
@@ -341,7 +341,7 @@ export function showAuthModal(onSuccessOrOpts) {
                     if (save && save.data && typeof window.applyCloudSave === 'function') {
                         window.applyCloudSave(save);
                         if (typeof window.showBriefNotification === 'function') {
-                            window.showBriefNotification('☁️ Cloud save loaded!', 'success');
+                            window.showBriefNotification(' Cloud save loaded!', 'success');
                         }
                         close();
                         return; // skip onSuccess — save was loaded, game is running
@@ -373,7 +373,7 @@ export function showAuthModal(onSuccessOrOpts) {
     async function showLoggedInPanel() {
         formArea.style.display = 'none';
         loggedInArea.style.display = 'block';
-        titleEl.textContent = '☁️ Cloud Account';
+        titleEl.textContent = ' Cloud Account';
         subtitleEl.textContent = 'Manage your cloud saves';
 
         document.getElementById('auth-display-name').textContent = authUsername;
@@ -396,28 +396,28 @@ export function showAuthModal(onSuccessOrOpts) {
         document.getElementById('auth-cloud-save-btn').onclick = async () => {
             const btn = document.getElementById('auth-cloud-save-btn');
             btn.disabled = true;
-            btn.textContent = '☁️ Saving...';
+            btn.textContent = ' Saving...';
             try {
                 // Access the global save data creator from game.js
                 if (typeof window.createSaveDataForCloud === 'function') {
                     const saveEntry = window.createSaveDataForCloud();
                     await cloudSave(saveEntry);
-                    btn.textContent = '✅ Saved!';
+                    btn.textContent = ' Saved!';
                     if (typeof window.showBriefNotification === 'function') {
-                        window.showBriefNotification('☁️ Progress saved to cloud!', 'success');
+                        window.showBriefNotification(' Progress saved to cloud!', 'success');
                     }
                     // Refresh save info
                     showLoggedInPanel();
                 } else {
-                    btn.textContent = '❌ No active game to save';
+                    btn.textContent = ' No active game to save';
                 }
             } catch (err) {
-                btn.textContent = '❌ Save failed';
+                btn.textContent = ' Save failed';
                 console.error('Cloud save error:', err);
             }
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = '☁️ Save to Cloud';
+                btn.textContent = ' Save to Cloud';
             }, 2000);
         };
 
@@ -425,7 +425,7 @@ export function showAuthModal(onSuccessOrOpts) {
         document.getElementById('auth-cloud-load-btn').onclick = async () => {
             const btn = document.getElementById('auth-cloud-load-btn');
             btn.disabled = true;
-            btn.textContent = '📥 Loading...';
+            btn.textContent = ' Loading...';
             try {
                 const save = await cloudLoad();
                 if (save && save.data) {
@@ -434,29 +434,29 @@ export function showAuthModal(onSuccessOrOpts) {
                         if (hasCurrentGame) {
                             if (!await ui.confirm(`This will replace your current game with your cloud save:\n${save.playerName || 'Unknown'} (Lvl ${save.level || '?'})\n\nContinue?`)) {
                                 btn.disabled = false;
-                                btn.textContent = '📥 Load from Cloud';
+                                btn.textContent = ' Load from Cloud';
                                 return;
                             }
                         }
                         window.applyCloudSave(save);
-                        btn.textContent = '✅ Loaded!';
+                        btn.textContent = ' Loaded!';
                         if (typeof window.showBriefNotification === 'function') {
-                            window.showBriefNotification('☁️ Cloud save loaded!', 'success');
+                            window.showBriefNotification(' Cloud save loaded!', 'success');
                         }
                         setTimeout(close, 1000);
                     } else {
-                        btn.textContent = '❌ Game not ready';
+                        btn.textContent = ' Game not ready';
                     }
                 } else {
-                    btn.textContent = '❌ No cloud save found';
+                    btn.textContent = ' No cloud save found';
                 }
             } catch (err) {
-                btn.textContent = err.message === 'No cloud save found' ? '❌ No cloud save' : '❌ Load failed';
+                btn.textContent = err.message === 'No cloud save found' ? ' No cloud save' : ' Load failed';
                 console.error('Cloud load error:', err);
             }
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = '📥 Load from Cloud';
+                btn.textContent = ' Load from Cloud';
             }, 2000);
         };
 
@@ -476,7 +476,7 @@ export function showAuthModal(onSuccessOrOpts) {
             if (!await ui.confirm('Are you REALLY sure? All progress will be lost forever.')) return;
             const btn = document.getElementById('auth-delete-account-btn');
             btn.disabled = true;
-            btn.textContent = '🗑️ Deleting...';
+            btn.textContent = ' Deleting...';
 
             // Attempt server-side deletion, but always clean up locally
             try {
@@ -503,9 +503,9 @@ export function updateAuthStatusUI() {
     const indicators = document.querySelectorAll('.auth-status-indicator');
     indicators.forEach(el => {
         if (isLoggedIn) {
-            el.innerHTML = `<span class="auth-status-online" title="Signed in as ${authUsername}">☁️ ${authUsername}</span>`;
+            el.innerHTML = `<span class="auth-status-online" title="Signed in as ${authUsername}"> ${authUsername}</span>`;
         } else {
-            el.innerHTML = `<span class="auth-status-offline" title="Not signed in — progress saved locally only">💾 Local Only</span>`;
+            el.innerHTML = `<span class="auth-status-offline" title="Not signed in — progress saved locally only"> Local Only</span>`;
         }
     });
 
@@ -513,7 +513,7 @@ export function updateAuthStatusUI() {
     const introLoginBtn = document.getElementById('intro-login-btn');
     if (introLoginBtn) {
         if (isLoggedIn) {
-            introLoginBtn.textContent = `☁️ ${authUsername}`;
+            introLoginBtn.textContent = ` ${authUsername}`;
             introLoginBtn.title = 'Manage cloud account';
         } else {
             introLoginBtn.textContent = 'Sign In';
@@ -547,7 +547,7 @@ export async function initAuth() {
                     window.applyCloudSave(save);
                     console.log('[auth] Cloud save auto-loaded on startup');
                     if (typeof window.showBriefNotification === 'function') {
-                        setTimeout(() => window.showBriefNotification(`☁️ Welcome back, ${save.playerName || authUsername}!`, 'success'), 500);
+                        setTimeout(() => window.showBriefNotification(` Welcome back, ${save.playerName || authUsername}!`, 'success'), 500);
                     }
                 }
             } catch (e) {

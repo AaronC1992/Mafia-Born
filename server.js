@@ -254,7 +254,7 @@ const server = http.createServer(async (req, res) => {
     }
     // Prevent path traversal attacks - ensure resolved path is under the static root
     if (!filePath.startsWith(staticRoot)) {
-        console.log(`⚠️ Attempted path traversal: ${req.url} -> ${filePath}`);
+        console.log(` Attempted path traversal: ${req.url} -> ${filePath}`);
         res.writeHead(403, { 'Content-Type': 'text/html' });
         res.end(`<h1>403 Forbidden</h1><p>Access denied</p>`);
         return;
@@ -289,17 +289,17 @@ const server = http.createServer(async (req, res) => {
     fs.readFile(filePath, (error, content) => {
         if (error) {
             if (error.code === 'ENOENT') {
-                console.log(`❌ File not found: ${filePath}`);
+                console.log(` File not found: ${filePath}`);
                 res.writeHead(404, { 'Content-Type': 'text/html' });
                 res.end(`
-                    <h1>🎮 Mafia Born - Multiplayer Server</h1>
+                    <h1> Mafia Born - Multiplayer Server</h1>
                     <p>File not found: ${req.url}</p>
-                    <p><a href="/">🏠 Go to Game</a></p>
+                    <p><a href="/"> Go to Game</a></p>
                     <hr>
-                    <p>Server Status: ✅ Online | Players Connected: ${clients.size}</p>
+                    <p>Server Status: Online | Players Connected: ${clients.size}</p>
                 `, 'utf-8');
             } else {
-                console.log(`❌ Server error for ${filePath}:`, error);
+                console.log(` Server error for ${filePath}:`, error);
                 res.writeHead(500);
                 res.end(`Server Error: ${error.code}`, 'utf-8');
             }
@@ -323,7 +323,7 @@ const server = http.createServer(async (req, res) => {
             } else {
                 res.end(content);
             }
-            console.log(`✅ Served: ${filePath} (${contentType})`);
+            console.log(` Served: ${filePath} (${contentType})`);
         }
     });
 });
@@ -400,8 +400,8 @@ const jailTickInterval = setInterval(function jailTick() {
                 changed = true;
                 const p = gameState.players.get(id);
                 const pName = p ? p.name : 'Unknown';
-                console.log(`🔓 ${pName} served their sentence (server-side release)`);
-                addGlobalChatMessage('System', `🔓 ${pName} was released from jail!`, '#2ecc71');
+                console.log(` ${pName} served their sentence (server-side release)`);
+                addGlobalChatMessage('System', ` ${pName} was released from jail!`, '#2ecc71');
                 // Notify the specific client
                 const ws = clients.get(id);
                 if (ws && ws.readyState === WebSocket.OPEN) {
@@ -452,31 +452,31 @@ const gameState = {
     // Vehicle Marketplace — player-to-player vehicle trading
     marketplace: [], // { id, sellerId, sellerName, vehicleName, baseValue, currentValue, damagePercentage, image, usageCount, price, listedAt }
     // Phase C: Competitive Features
-    alliances: new Map(),   // id -> { id, name, tag, leader, members[], createdAt, treasury, motto }
-    bounties: [],           // { id, posterId, posterName, targetId, targetName, reward, reason, postedAt, expiresAt }
-    season: {               // Ranked season state
+    alliances: new Map(), // id -> { id, name, tag, leader, members[], createdAt, treasury, motto }
+    bounties: [], // { id, posterId, posterName, targetId, targetName, reward, reason, postedAt, expiresAt }
+    season: { // Ranked season state
         number: 1,
         startedAt: Date.now(),
         endsAt: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
-        ratings: new Map()  // playerId -> { elo, tier, wins, losses }
+        ratings: new Map() // playerId -> { elo, tier, wins, losses }
     },
     // Political system — Top Don controls server-wide policies
     politics: {
-        topDonName: null,       // player name of the Top Don
-        topDonClientId: null,   // clientId (null if offline)
-        territoryCount: 0,      // how many territories the Top Don controls
-        isAlliance: false,      // true if an alliance leader holds the seat
-        allianceName: null,     // alliance name if applicable
-        allianceTag: null,      // alliance tag if applicable
+        topDonName: null, // player name of the Top Don
+        topDonClientId: null, // clientId (null if offline)
+        territoryCount: 0, // how many territories the Top Don controls
+        isAlliance: false, // true if an alliance leader holds the seat
+        allianceName: null, // alliance name if applicable
+        allianceTag: null, // alliance tag if applicable
         policies: {
-            worldTaxRate: 10,   // % territory tax on resident earnings (5-25)
-            marketFee: 5,       // % fee on vehicle marketplace sales (0-15)
-            crimeBonus: 0,      // % bonus to all job/crime earnings (0-20)
-            jailTimeMod: 0,     // % jail time modification (-30 to +30)
-            heistBonus: 0       // % bonus to heist payouts (0-25)
+            worldTaxRate: 10, // % territory tax on resident earnings (5-25)
+            marketFee: 5, // % fee on vehicle marketplace sales (0-15)
+            crimeBonus: 0, // % bonus to all job/crime earnings (0-20)
+            jailTimeMod: 0, // % jail time modification (-30 to +30)
+            heistBonus: 0 // % bonus to heist payouts (0-25)
         },
         lastRecalc: Date.now(),
-        policyChangedAt: 0      // cooldown tracking
+        policyChangedAt: 0 // cooldown tracking
     },
     // Weather system — server-authoritative, synced to all players every 30 minutes
     currentWeather: 'clear',
@@ -501,14 +501,14 @@ const MOVE_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
 
 // NPC bosses — every territory starts under rival NPC control
 const NPC_TERRITORY_BOSSES = {
-    residential_low:         { name: "Vinnie 'The Rat' Morello",   defenseRating: 80  },
-    residential_middle:      { name: "Fat Tony Deluca",            defenseRating: 120 },
-    residential_upscale:     { name: "Don Castellano",             defenseRating: 180 },
-    commercial_downtown:     { name: "Marco 'The Banker' Ricci",   defenseRating: 160 },
-    commercial_shopping:     { name: "Luca 'Fingers' Bianchi",     defenseRating: 100 },
-    industrial_warehouse:    { name: "Big Sal Ferrara",            defenseRating: 140 },
-    industrial_port:         { name: "Nikolai 'The Bear' Volkov",  defenseRating: 200 },
-    entertainment_nightlife: { name: "Johnny 'Neon' Cavallo",      defenseRating: 150 }
+    residential_low: { name: "Vinnie 'The Rat' Morello", defenseRating: 80 },
+    residential_middle: { name: "Fat Tony Deluca", defenseRating: 120 },
+    residential_upscale: { name: "Don Castellano", defenseRating: 180 },
+    commercial_downtown: { name: "Marco 'The Banker' Ricci", defenseRating: 160 },
+    commercial_shopping: { name: "Luca 'Fingers' Bianchi", defenseRating: 100 },
+    industrial_warehouse: { name: "Big Sal Ferrara", defenseRating: 140 },
+    industrial_port: { name: "Nikolai 'The Bear' Volkov", defenseRating: 200 },
+    entertainment_nightlife: { name: "Johnny 'Neon' Cavallo", defenseRating: 150 }
 };
 const NPC_OWNER_NAMES = new Set(Object.values(NPC_TERRITORY_BOSSES).map(b => b.name));
 
@@ -550,14 +550,14 @@ try {
             if (boss) {
                 terr.owner = boss.name;
                 terr.defenseRating = Math.max(terr.defenseRating || 0, boss.defenseRating);
-                console.log(`🤖 Migrated ${id} → NPC boss ${boss.name}`);
+                console.log(` Migrated ${id} → NPC boss ${boss.name}`);
             }
         }
     }
 
-    console.log('💾 World state loaded from world-state.json');
+    console.log(' World state loaded from world-state.json');
 } catch (e) {
-    console.log('⚠️ Failed to load world state; using defaults');
+    console.log(' Failed to load world state; using defaults');
     // Provide defaults if not loaded
     gameState.cityDistricts = {
         downtown: { controlledBy: null, crimeLevel: 50 },
@@ -590,7 +590,7 @@ function scheduleWorldSave() {
                 politics: gameState.politics
             });
         } catch (err) {
-            console.error('⚠️ Error during world save:', err.message);
+            console.error(' Error during world save:', err.message);
         }
     }, 5000);
 }
@@ -631,7 +631,7 @@ function ensureUniqueName(baseName) {
     return candidate;
 }
 
-console.log('🌐 Mafia Born - Multiplayer Server Starting...');
+console.log(' Mafia Born - Multiplayer Server Starting...');
 
 // WebSocket connection handler
 wss.on('connection', (ws, req) => {
@@ -641,7 +641,7 @@ wss.on('connection', (ws, req) => {
     sessions.set(ws, { playerId: clientId, playerName: null });
     gameState.serverStats.totalConnections++;
     
-    console.log(`🎮 Player connected: ${clientId} (Total: ${clients.size})`);
+    console.log(` Player connected: ${clientId} (Total: ${clients.size})`);
     
     // Handle incoming messages
     ws.on('message', (data) => {
@@ -649,7 +649,7 @@ wss.on('connection', (ws, req) => {
             const message = JSON.parse(data.toString());
             handleClientMessage(clientId, message, ws);
         } catch (error) {
-            console.error('❌ Error parsing message:', error);
+            console.error(' Error parsing message:', error);
         }
     });
     
@@ -659,7 +659,7 @@ wss.on('connection', (ws, req) => {
     
     // Handle client disconnect
     ws.on('close', () => {
-        console.log(`👋 Player disconnected: ${clientId}`);
+        console.log(` Player disconnected: ${clientId}`);
         
         // Remove player from game state
         const player = gameState.players.get(clientId);
@@ -902,7 +902,7 @@ function handleClientMessage(clientId, message, ws) {
             break;
 
         default:
-            console.log(`⚠️ Unknown message type: ${message.type}`);
+            console.log(` Unknown message type: ${message.type}`);
     }
 }
 
@@ -957,7 +957,7 @@ function handlePlayerConnect(clientId, message, ws) {
         }
     }
     
-    console.log(`✅ Player registered: ${player.name} (ID: ${clientId}) ${playerState.inJail ? '[IN JAIL]' : ''}`);
+    console.log(` Player registered: ${player.name} (ID: ${clientId}) ${playerState.inJail ? '[IN JAIL]' : ''}`);
     
     // Update jail bots based on new jail population
     updateJailBots();
@@ -1049,7 +1049,7 @@ function handleGlobalChat(clientId, message) {
         gameState.globalChat = gameState.globalChat.slice(-50);
     }
     
-    console.log(`💬 ${player.name}: ${sanitizedMessage}`);
+    console.log(` ${player.name}: ${sanitizedMessage}`);
     
     // Broadcast to all players
     broadcastToAll({
@@ -1083,7 +1083,7 @@ function handleTerritoryClaim(clientId, message) {
             ps.lastUpdate = Date.now();
         }
         
-        console.log(`🏛️ ${player.name} claimed ${district} for $${cost}`);
+        console.log(` ${player.name} claimed ${district} for $${cost}`);
         
         // Broadcast territory change with authoritative numeric state
         broadcastToAll({
@@ -1096,7 +1096,7 @@ function handleTerritoryClaim(clientId, message) {
         });
         
         // Add to global chat
-        addGlobalChatMessage('System', `🏛️ ${player.name} claimed ${district} district!`, '#e74c3c');
+        addGlobalChatMessage('System', ` ${player.name} claimed ${district} district!`, '#e74c3c');
         broadcastPlayerStates();
         scheduleWorldSave();
     }
@@ -1133,7 +1133,7 @@ function handleTerritorySpawn(clientId, message) {
     const ps = gameState.playerStates.get(clientId);
     if (ps) { ps.currentTerritory = districtId; ps.lastUpdate = Date.now(); }
 
-    console.log(`📍 ${player.name} spawned in ${districtId}`);
+    console.log(` ${player.name} spawned in ${districtId}`);
 
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
@@ -1149,7 +1149,7 @@ function handleTerritorySpawn(clientId, message) {
         territories: gameState.territories
     });
 
-    addGlobalChatMessage('System', `📍 ${player.name} set up shop in ${districtId.replace(/_/g, ' ')}!`, '#c0a062');
+    addGlobalChatMessage('System', ` ${player.name} set up shop in ${districtId.replace(/_/g, ' ')}!`, '#c0a062');
     scheduleWorldSave();
 }
 
@@ -1199,7 +1199,7 @@ function handleTerritoryMove(clientId, message) {
     const ps = gameState.playerStates.get(clientId);
     if (ps) { ps.currentTerritory = targetId; ps.money = player.money; ps.lastUpdate = now; }
 
-    console.log(`🚚 ${player.name} moved from ${oldId} to ${targetId} ($${moveCost})`);
+    console.log(` ${player.name} moved from ${oldId} to ${targetId} ($${moveCost})`);
 
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
@@ -1217,7 +1217,7 @@ function handleTerritoryMove(clientId, message) {
         territories: gameState.territories
     });
 
-    addGlobalChatMessage('System', `🚚 ${player.name} relocated to ${targetId.replace(/_/g, ' ')}!`, '#9b59b6');
+    addGlobalChatMessage('System', ` ${player.name} relocated to ${targetId.replace(/_/g, ' ')}!`, '#9b59b6');
     broadcastPlayerStates();
     scheduleWorldSave();
 }
@@ -1268,7 +1268,7 @@ function handleTerritoryClaimOwnership(clientId, message) {
     ps.money = player.money;
     terr.owner = player.name;
 
-    console.log(`👑 ${player.name} claimed ownership of ${districtId} for $${cost.toLocaleString()}`);
+    console.log(` ${player.name} claimed ownership of ${districtId} for $${cost.toLocaleString()}`);
 
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
@@ -1290,7 +1290,7 @@ function handleTerritoryClaimOwnership(clientId, message) {
         method: 'claim'
     });
 
-    addGlobalChatMessage('System', `👑 ${player.name} claimed ownership of ${districtId.replace(/_/g, ' ')}!`, '#d4af37');
+    addGlobalChatMessage('System', ` ${player.name} claimed ownership of ${districtId.replace(/_/g, ' ')}!`, '#d4af37');
     recalcTopDon();
     broadcastPlayerStates();
     scheduleWorldSave();
@@ -1481,7 +1481,7 @@ function handleTerritoryWar(clientId, message) {
             jailed = true;
         }
 
-        console.log(`⚔️ TERRITORY WAR FAILED: ${attacker.name} failed to take ${districtId} (ATK ${attackScore} ≤ DEF ${defenseScore})${jailed ? ' — ARRESTED' : ''}`);
+        console.log(` TERRITORY WAR FAILED: ${attacker.name} failed to take ${districtId} (ATK ${attackScore} ≤ DEF ${defenseScore})${jailed ? ' — ARRESTED' : ''}`);
 
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
@@ -1519,7 +1519,7 @@ function handleTerritoryWar(clientId, message) {
         }
 
         if (jailed) {
-            addGlobalChatMessage('System', `⚔️ ${attacker.name} attacked ${districtId.replace(/_/g, ' ')} and was repelled — then arrested!`, '#e74c3c');
+            addGlobalChatMessage('System', ` ${attacker.name} attacked ${districtId.replace(/_/g, ' ')} and was repelled — then arrested!`, '#e74c3c');
         }
     }
 
@@ -1554,7 +1554,7 @@ function handleHeistCreate(clientId, message) {
     
     gameState.activeHeists.push(heist);
     
-    console.log(`💰 ${player.name} created heist: ${heist.target}`);
+    console.log(` ${player.name} created heist: ${heist.target}`);
     
     // Broadcast heist creation
     broadcastToAll({
@@ -1565,7 +1565,7 @@ function handleHeistCreate(clientId, message) {
     });
     
     // Add to global chat
-    addGlobalChatMessage('System', `💰 ${player.name} is organizing a heist: ${heist.target}!`, '#8e44ad');
+    addGlobalChatMessage('System', ` ${player.name} is organizing a heist: ${heist.target}!`, '#8e44ad');
 }
 
 // Heist join handler
@@ -1579,7 +1579,7 @@ function handleHeistJoin(clientId, message) {
     if (heist.participants.length < heist.maxParticipants && !heist.participants.includes(clientId)) {
         heist.participants.push(clientId);
         
-        console.log(`🚀 ${player.name} joined heist: ${heist.target}`);
+        console.log(` ${player.name} joined heist: ${heist.target}`);
         
         // Broadcast heist update
         broadcastToAll({
@@ -1657,35 +1657,35 @@ function handlePlayerChallenge(clientId, message) {
     const tRep = targetPlayer.reputation || 0;
 
     // Cap client-reported stats to sane maximums
-    const cPower   = Math.max(0, Math.min(message.power || 0, 5000));
-    const cGang    = Math.max(0, Math.min(message.gangMembers || 0, 100));
-    const cHealth  = Math.max(0, Math.min(challengerState.health || 100, 200));
-    const cEnergy  = Math.max(0, Math.min(challengerState.energy || 100, 200));
+    const cPower = Math.max(0, Math.min(message.power || 0, 5000));
+    const cGang = Math.max(0, Math.min(message.gangMembers || 0, 100));
+    const cHealth = Math.max(0, Math.min(challengerState.health || 100, 200));
+    const cEnergy = Math.max(0, Math.min(challengerState.energy || 100, 200));
 
     // Target stats from server-authoritative state (no client trust)
-    const tPower   = Math.max(0, Math.min(targetState.power || 0, 5000));
-    const tGang    = Math.max(0, Math.min(targetState.gangMembers || 0, 100));
-    const tHealth  = Math.max(0, Math.min(targetState.health || 100, 200));
-    const tEnergy  = Math.max(0, Math.min(targetState.energy || 100, 200));
+    const tPower = Math.max(0, Math.min(targetState.power || 0, 5000));
+    const tGang = Math.max(0, Math.min(targetState.gangMembers || 0, 100));
+    const tHealth = Math.max(0, Math.min(targetState.health || 100, 200));
+    const tEnergy = Math.max(0, Math.min(targetState.energy || 100, 200));
 
     // Composite combat score
     function combatScore(lvl, rep, power, gang, hp, en) {
-        return (lvl * 5)                        // Level:       max ~250 @ lvl 50
-             + (rep * 0.3)                      // Reputation:  max ~150 @ 500 rep
-             + (power * 0.08)                   // Gear power:  max ~400 @ 5000
-             + (gang * 3)                       // Gang:        max ~300 @ 100 members
-             + ((hp / 100) * 20)                // Health:      max ~40  @ 200 HP
-             + ((en / 100) * 10)                // Energy:      max ~20  @ 200
-             + (Math.random() * 40);            // Randomness:  0-40 (upset factor)
+        return (lvl * 5) // Level: max ~250 @ lvl 50
+             + (rep * 0.3) // Reputation: max ~150 @ 500 rep
+             + (power * 0.08) // Gear power: max ~400 @ 5000
+             + (gang * 3) // Gang: max ~300 @ 100 members
+             + ((hp / 100) * 20) // Health: max ~40 @ 200 HP
+             + ((en / 100) * 10) // Energy: max ~20 @ 200
+             + (Math.random() * 40); // Randomness: 0-40 (upset factor)
     }
 
     const challengerScore = combatScore(cLevel, cRep, cPower, cGang, cHealth, cEnergy);
-    const targetScore     = combatScore(tLevel, tRep, tPower, tGang, tHealth, tEnergy);
+    const targetScore = combatScore(tLevel, tRep, tPower, tGang, tHealth, tEnergy);
     const victory = challengerScore > targetScore;
 
     // Health damage from the fight (both take damage)
-    const winnerDmg = 5 + Math.floor(Math.random() * 10);   // 5-14
-    const loserDmg  = 10 + Math.floor(Math.random() * 15);  // 10-24
+    const winnerDmg = 5 + Math.floor(Math.random() * 10); // 5-14
+    const loserDmg = 10 + Math.floor(Math.random() * 15); // 10-24
 
     if (victory) {
         const repGain = 5 + Math.floor(Math.random() * 10);
@@ -1709,7 +1709,7 @@ function handlePlayerChallenge(clientId, message) {
         challengerState.health = Math.max(1, (challengerState.health || 100) - winnerDmg);
         targetState.health = Math.max(1, (targetState.health || 100) - loserDmg);
 
-        console.log(`⚔️ ${challenger.name} defeated ${targetPlayer.name} (${Math.round(challengerScore)} vs ${Math.round(targetScore)})`);
+        console.log(` ${challenger.name} defeated ${targetPlayer.name} (${Math.round(challengerScore)} vs ${Math.round(targetScore)})`);
 
         broadcastToAll({
             type: 'combat_result',
@@ -1721,8 +1721,8 @@ function handlePlayerChallenge(clientId, message) {
             eloChange: getEloChange(clientId)
         });
 
-        addGlobalChatMessage('System', `⚔️ ${challenger.name} defeated ${targetPlayer.name} in combat!`, '#e74c3c');
-        if (bountyClaim) addGlobalChatMessage('System', `💀 ${challenger.name} claimed a $${bountyClaim.reward.toLocaleString()} bounty on ${targetPlayer.name}!`, '#ff6600');
+        addGlobalChatMessage('System', ` ${challenger.name} defeated ${targetPlayer.name} in combat!`, '#e74c3c');
+        if (bountyClaim) addGlobalChatMessage('System', ` ${challenger.name} claimed a $${bountyClaim.reward.toLocaleString()} bounty on ${targetPlayer.name}!`, '#ff6600');
         persistedLeaderboard = generateLeaderboard();
         broadcastToAll({ type: 'player_ranked', leaderboard: persistedLeaderboard });
         scheduleWorldSave();
@@ -1748,7 +1748,7 @@ function handlePlayerChallenge(clientId, message) {
         challengerState.health = Math.max(1, (challengerState.health || 100) - loserDmg);
         targetState.health = Math.max(1, (targetState.health || 100) - winnerDmg);
 
-        console.log(`⚔️ ${targetPlayer.name} defeated ${challenger.name} (${Math.round(targetScore)} vs ${Math.round(challengerScore)})`);
+        console.log(` ${targetPlayer.name} defeated ${challenger.name} (${Math.round(targetScore)} vs ${Math.round(challengerScore)})`);
 
         broadcastToAll({
             type: 'combat_result',
@@ -1760,8 +1760,8 @@ function handlePlayerChallenge(clientId, message) {
             eloChange: getEloChange(targetId)
         });
 
-        addGlobalChatMessage('System', `⚔️ ${targetPlayer.name} defeated ${challenger.name} in combat!`, '#e74c3c');
-        if (bountyClaim) addGlobalChatMessage('System', `💀 ${targetPlayer.name} claimed a $${bountyClaim.reward.toLocaleString()} bounty on ${challenger.name}!`, '#ff6600');
+        addGlobalChatMessage('System', ` ${targetPlayer.name} defeated ${challenger.name} in combat!`, '#e74c3c');
+        if (bountyClaim) addGlobalChatMessage('System', ` ${targetPlayer.name} claimed a $${bountyClaim.reward.toLocaleString()} bounty on ${challenger.name}!`, '#ff6600');
         persistedLeaderboard = generateLeaderboard();
         broadcastToAll({ type: 'player_ranked', leaderboard: persistedLeaderboard });
         scheduleWorldSave();
@@ -1782,7 +1782,7 @@ function handleHeistStart(clientId, message) {
     // Must have minimum crew
     if (heist.participants.length < (heist.minCrew || 1)) return;
     
-    console.log(`🚀 ${heist.organizer} launched heist: ${heist.target} with ${heist.participants.length} crew`);
+    console.log(` ${heist.organizer} launched heist: ${heist.target} with ${heist.participants.length} crew`);
     executeHeist(heist);
 }
 
@@ -1797,7 +1797,7 @@ function handleHeistLeave(clientId, message) {
     heist.participants = heist.participants.filter(pid => pid !== clientId);
     
     const player = gameState.players.get(clientId);
-    console.log(`🚪 ${player ? player.name : clientId} left heist: ${heist.target}`);
+    console.log(` ${player ? player.name : clientId} left heist: ${heist.target}`);
     
     broadcastToAll({
         type: 'heist_update',
@@ -1819,15 +1819,15 @@ function handleHeistCancel(clientId, message) {
     
     gameState.activeHeists.splice(heistIdx, 1);
     
-    console.log(`❌ ${heist.organizer} cancelled heist: ${heist.target}`);
+    console.log(` ${heist.organizer} cancelled heist: ${heist.target}`);
     
     broadcastToAll({
         type: 'heist_cancelled',
         heistId: heist.id,
-        message: `❌ ${heist.organizer} cancelled the heist on ${heist.target}.`
+        message: ` ${heist.organizer} cancelled the heist on ${heist.target}.`
     });
     
-    addGlobalChatMessage('System', `❌ ${heist.organizer} cancelled their heist on ${heist.target}.`, '#e67e22');
+    addGlobalChatMessage('System', ` ${heist.organizer} cancelled their heist on ${heist.target}.`, '#e67e22');
 }
 
 // Heist invite handler
@@ -1887,7 +1887,7 @@ function handlePlayerUpdate(clientId, message) {
             // Also update playerState name
             const ps = gameState.playerStates.get(clientId);
             if (ps) ps.name = player.name;
-            console.log(`📝 Player name updated: ${player.name} (ID: ${clientId})`);
+            console.log(` Player name updated: ${player.name} (ID: ${clientId})`);
         }
     }
     
@@ -1922,7 +1922,7 @@ function handlePlayerUpdate(clientId, message) {
         playerState.lastUpdate = Date.now();
     }
     
-    console.log(`🔄 Updated player state: ${player.name} ${playerState.inJail ? '[IN JAIL]' : ''}`);
+    console.log(` Updated player state: ${player.name} ${playerState.inJail ? '[IN JAIL]' : ''}`);
     
     // If jail status changed, broadcast it
     const wasInJail = playerState.previousInJail || false;
@@ -1936,7 +1936,7 @@ function handlePlayerUpdate(clientId, message) {
                 jailTime: playerState.jailTime
             });
             
-            addGlobalChatMessage('System', `🚔 ${player.name} was arrested and sent to jail!`, '#e74c3c');
+            addGlobalChatMessage('System', ` ${player.name} was arrested and sent to jail!`, '#e74c3c');
         } else {
             // Player was released or escaped
             broadcastToAll({
@@ -1945,7 +1945,7 @@ function handlePlayerUpdate(clientId, message) {
                 playerName: player.name
             });
             
-            addGlobalChatMessage('System', `🔓 ${player.name} was released from jail!`, '#2ecc71');
+            addGlobalChatMessage('System', ` ${player.name} was released from jail!`, '#2ecc71');
         }
         
         playerState.previousInJail = playerState.inJail;
@@ -1983,8 +1983,8 @@ function handleJailStatusSync(clientId, message) {
 
     if (wasInJail !== isNowInJail) {
         if (isNowInJail) {
-            console.log(`🚔 ${player.name} jail status synced: IN JAIL (${playerState.jailTime}s)`);
-            addGlobalChatMessage('System', `🚔 ${player.name} was arrested and sent to jail!`, '#e74c3c');
+            console.log(` ${player.name} jail status synced: IN JAIL (${playerState.jailTime}s)`);
+            addGlobalChatMessage('System', ` ${player.name} was arrested and sent to jail!`, '#e74c3c');
             broadcastToAll({
                 type: 'player_arrested',
                 playerId: clientId,
@@ -1992,8 +1992,8 @@ function handleJailStatusSync(clientId, message) {
                 jailTime: playerState.jailTime
             });
         } else {
-            console.log(`🔓 ${player.name} jail status synced: RELEASED`);
-            addGlobalChatMessage('System', `🔓 ${player.name} was released from jail!`, '#2ecc71');
+            console.log(` ${player.name} jail status synced: RELEASED`);
+            addGlobalChatMessage('System', ` ${player.name} was released from jail!`, '#2ecc71');
             broadcastToAll({
                 type: 'player_released',
                 playerId: clientId,
@@ -2015,24 +2015,24 @@ function handleJailbreakAttempt(clientId, message) {
     const targetState = gameState.playerStates.get(message.targetPlayerId);
     
     if (!helper || !helperState || !targetState) {
-        console.log('❌ Invalid jailbreak attempt - missing player data');
+        console.log(' Invalid jailbreak attempt - missing player data');
         return;
     }
     
     if (helperState.inJail) {
-        console.log(`❌ ${helper.name} tried to help jailbreak while in jail themselves`);
+        console.log(` ${helper.name} tried to help jailbreak while in jail themselves`);
         return;
     }
     
     const targetName = targetState.name || (gameState.players.get(message.targetPlayerId)?.name) || 'Unknown';
     if (!targetState.inJail) {
-        console.log(`❌ ${helper.name} tried to break out ${targetName} who isn't in jail`);
+        console.log(` ${helper.name} tried to break out ${targetName} who isn't in jail`);
         return;
     }
     
     gameState.serverStats.jailbreakAttempts++;
     
-    console.log(`🔓 ${helper.name} attempting to break out ${targetName}`);
+    console.log(` ${helper.name} attempting to break out ${targetName}`);
     
     // Calculate success chance (server authoritative)
     const baseSuccessChance = 25;
@@ -2049,7 +2049,7 @@ function handleJailbreakAttempt(clientId, message) {
         
         gameState.serverStats.successfulJailbreaks++;
         
-        console.log(`✅ Jailbreak successful! ${helper.name} freed ${targetName}`);
+        console.log(` Jailbreak successful! ${helper.name} freed ${targetName}`);
         
         // Notify target player if they're online
         const targetClient = clients.get(message.targetPlayerId);
@@ -2072,7 +2072,7 @@ function handleJailbreakAttempt(clientId, message) {
             success: true
         });
         
-        addGlobalChatMessage('System', `🎉 ${helper.name} successfully broke ${targetName} out of jail!`, '#2ecc71');
+        addGlobalChatMessage('System', ` ${helper.name} successfully broke ${targetName} out of jail!`, '#2ecc71');
     } else {
         // Failed jailbreak
         const arrestChance = 30; // 30% chance helper gets arrested
@@ -2082,7 +2082,7 @@ function handleJailbreakAttempt(clientId, message) {
             helperState.jailTime = 15 + Math.floor(Math.random() * 10); // 15-24 seconds
             helperState.wantedLevel = (helperState.wantedLevel || 0) + 2;
             
-            console.log(`💀 Jailbreak failed! ${helper.name} was arrested`);
+            console.log(` Jailbreak failed! ${helper.name} was arrested`);
             
             // Notify helper
             const helperClient = clients.get(clientId);
@@ -2094,11 +2094,11 @@ function handleJailbreakAttempt(clientId, message) {
                 }));
             }
             
-            addGlobalChatMessage('System', `💀 ${helper.name} failed to break out ${targetName} and was arrested!`, '#e74c3c');
+            addGlobalChatMessage('System', ` ${helper.name} failed to break out ${targetName} and was arrested!`, '#e74c3c');
         } else {
-            console.log(`💀 Jailbreak failed but ${helper.name} escaped`);
+            console.log(` Jailbreak failed but ${helper.name} escaped`);
             
-            addGlobalChatMessage('System', `💀 ${helper.name} failed to break out ${targetName} but escaped undetected.`, '#f39c12');
+            addGlobalChatMessage('System', ` ${helper.name} failed to break out ${targetName} but escaped undetected.`, '#f39c12');
         }
         
         // Broadcast failed jailbreak
@@ -2248,7 +2248,7 @@ function handleJailbreakBot(clientId, message) {
         const cashReward = bot.difficulty * 75 + 50;
         helperState.reputation = (helperState.reputation || 0) + Math.floor(bot.difficulty * 1.5);
 
-        console.log(`✅ Bot jailbreak: ${helper.name} freed ${bot.name}`);
+        console.log(` Bot jailbreak: ${helper.name} freed ${bot.name}`);
 
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
@@ -2261,7 +2261,7 @@ function handleJailbreakBot(clientId, message) {
             }));
         }
 
-        addGlobalChatMessage('System', `🎉 ${helper.name} busted ${bot.name} out of jail!`, '#2ecc71');
+        addGlobalChatMessage('System', ` ${helper.name} busted ${bot.name} out of jail!`, '#2ecc71');
 
         broadcastToAll({
             type: 'jailbreak_attempt',
@@ -2283,7 +2283,7 @@ function handleJailbreakBot(clientId, message) {
             helperState.jailTime = 15 + Math.floor(Math.random() * 10);
             helperState.wantedLevel = (helperState.wantedLevel || 0) + 1;
 
-            console.log(`💀 Bot jailbreak failed: ${helper.name} was arrested`);
+            console.log(` Bot jailbreak failed: ${helper.name} was arrested`);
 
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
@@ -2295,10 +2295,10 @@ function handleJailbreakBot(clientId, message) {
                 }));
             }
 
-            addGlobalChatMessage('System', `💀 ${helper.name} was caught trying to break out ${bot.name}!`, '#e74c3c');
+            addGlobalChatMessage('System', ` ${helper.name} was caught trying to break out ${bot.name}!`, '#e74c3c');
             updateJailBots(); // Recheck — new real player in jail
         } else {
-            console.log(`💀 Bot jailbreak failed: ${helper.name} escaped`);
+            console.log(` Bot jailbreak failed: ${helper.name} escaped`);
 
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
@@ -2309,7 +2309,7 @@ function handleJailbreakBot(clientId, message) {
                 }));
             }
 
-            addGlobalChatMessage('System', `💀 ${helper.name} failed to break out ${bot.name} but escaped.`, '#f39c12');
+            addGlobalChatMessage('System', ` ${helper.name} failed to break out ${bot.name} but escaped.`, '#f39c12');
         }
 
         broadcastToAll({
@@ -2384,8 +2384,8 @@ function handleSendGift(senderId, message) {
         }));
     }
 
-    addGlobalChatMessage('System', `💰 ${sender.name} sent a $${amount.toLocaleString()} gift to ${targetPlayer.name}!`, '#c0a062');
-    console.log(`💰 Gift: ${sender.name} -> ${targetPlayer.name}: $${amount}`);
+    addGlobalChatMessage('System', ` ${sender.name} sent a $${amount.toLocaleString()} gift to ${targetPlayer.name}!`, '#c0a062');
+    console.log(` Gift: ${sender.name} -> ${targetPlayer.name}: $${amount}`);
 }
 
 // ==================== JOB INTENT HANDLER (SERVER AUTHORITATIVE) ====================
@@ -2523,7 +2523,7 @@ function handleJobIntent(clientId, message) {
             playerName: player.name,
             jailTime: ps.jailTime
         }, clientId);
-        addGlobalChatMessage('System', `🚔 ${player.name} was arrested after a ${jobId} job!`, '#e74c3c');
+        addGlobalChatMessage('System', ` ${player.name} was arrested after a ${jobId} job!`, '#e74c3c');
     }
 
     broadcastPlayerStates();
@@ -2600,7 +2600,7 @@ function broadcastPlayerStates() {
 
 // Execute heist — uses difficulty-based success rate
 function executeHeist(heist) {
-    console.log(`🎯 Executing heist: ${heist.target} (${heist.participants.length} crew)`);
+    console.log(` Executing heist: ${heist.target} (${heist.participants.length} crew)`);
     
     // Use difficulty-based success rate from heist data, fallback to 60%
     const baseSuccess = (heist.successBase || 60) / 100;
@@ -2641,7 +2641,7 @@ function executeHeist(heist) {
                     repGain: repGain,
                     target: heist.target,
                     crewSize: heist.participants.length,
-                    worldMessage: `💰 Heist on ${heist.target} was successful! Crew: ${participantNames}`
+                    worldMessage: ` Heist on ${heist.target} was successful! Crew: ${participantNames}`
                 }));
             }
         });
@@ -2652,10 +2652,10 @@ function executeHeist(heist) {
             heistId: heist.id,
             success: true,
             involved: false,
-            worldMessage: `💰 Heist on ${heist.target} was successful! Crew: ${participantNames}`
+            worldMessage: ` Heist on ${heist.target} was successful! Crew: ${participantNames}`
         });
         
-        addGlobalChatMessage('System', `🎉 Heist successful! ${heist.target} netted $${heist.reward.toLocaleString()}!`, '#2ecc71');
+        addGlobalChatMessage('System', ` Heist successful! ${heist.target} netted $${heist.reward.toLocaleString()}!`, '#2ecc71');
         persistedLeaderboard = generateLeaderboard();
         broadcastToAll({ type: 'player_ranked', leaderboard: persistedLeaderboard });
         scheduleWorldSave();
@@ -2680,7 +2680,7 @@ function executeHeist(heist) {
                     repLoss: repLoss,
                     target: heist.target,
                     crewSize: heist.participants.length,
-                    worldMessage: `🚔 Heist on ${heist.target} failed! The crew barely escaped.`
+                    worldMessage: ` Heist on ${heist.target} failed! The crew barely escaped.`
                 }));
             }
         });
@@ -2691,10 +2691,10 @@ function executeHeist(heist) {
             heistId: heist.id,
             success: false,
             involved: false,
-            worldMessage: `🚔 Heist on ${heist.target} failed! The crew barely escaped.`
+            worldMessage: ` Heist on ${heist.target} failed! The crew barely escaped.`
         });
         
-        addGlobalChatMessage('System', `💀 Heist failed! ${heist.target} was too well defended.`, '#e74c3c');
+        addGlobalChatMessage('System', ` Heist failed! ${heist.target} was too well defended.`, '#e74c3c');
         persistedLeaderboard = generateLeaderboard();
         broadcastToAll({ type: 'player_ranked', leaderboard: persistedLeaderboard });
         scheduleWorldSave();
@@ -2736,7 +2736,7 @@ function serverChangeWeather() {
     if (chosen !== gameState.currentWeather) {
         gameState.currentWeather = chosen;
         broadcastToAll({ type: 'weather_update', weather: chosen, season: gameState.currentSeason });
-        console.log(`🌤️ Weather changed to: ${chosen}`);
+        console.log(` Weather changed to: ${chosen}`);
     }
 }
 
@@ -2802,7 +2802,7 @@ function handlePlayerDeath(clientId, message) {
     };
 
     // Send chat announcement
-    addGlobalChatMessage('The Daily Racketeer', `📰 EXTRA! EXTRA! Read all about it! ${sanitized.name} is DEAD! "${sanitized.causeOfDeath}" — Click to read the full story!`, '#c0a040');
+    addGlobalChatMessage('The Daily Racketeer', ` EXTRA! EXTRA! Read all about it! ${sanitized.name} is DEAD! "${sanitized.causeOfDeath}" — Click to read the full story!`, '#c0a040');
 
     // Broadcast the newspaper data to all connected clients so they can view the popup
     broadcastToAll({
@@ -2816,12 +2816,12 @@ function handleAdminKillPlayer(clientId, message) {
     // Validate the auth token to confirm this is an admin
     const authToken = message.authToken;
     if (!authToken) {
-        console.log(`⚠️ Admin kill rejected: no auth token from ${clientId}`);
+        console.log(` Admin kill rejected: no auth token from ${clientId}`);
         return;
     }
     const username = userDB.validateToken(authToken);
     if (!username || !isAdmin(username)) {
-        console.log(`⚠️ Admin kill rejected: ${username || 'unknown'} is not admin`);
+        console.log(` Admin kill rejected: ${username || 'unknown'} is not admin`);
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
             ws.send(JSON.stringify({ type: 'system_message', message: 'You do not have admin privileges.', color: '#e74c3c' }));
@@ -2845,7 +2845,7 @@ function handleAdminKillPlayer(clientId, message) {
         return;
     }
 
-    console.log(`☠️ ADMIN KILL: ${username} executed ${targetPlayer.name} (${targetPlayerId}) — "${causeOfDeath}"`);
+    console.log(` ADMIN KILL: ${username} executed ${targetPlayer.name} (${targetPlayerId}) — "${causeOfDeath}"`);
 
     // Send kill command to the target client — includes basic player info for newspaper
     targetWs.send(JSON.stringify({
@@ -2875,7 +2875,7 @@ function handleAdminKillPlayer(clientId, message) {
     };
 
     // Announce in world chat
-    addGlobalChatMessage('The Daily Racketeer', `📰 EXTRA! EXTRA! Read all about it! ${targetPlayer.name} is DEAD! "${causeOfDeath}" — Click to read the full story!`, '#c0a040');
+    addGlobalChatMessage('The Daily Racketeer', ` EXTRA! EXTRA! Read all about it! ${targetPlayer.name} is DEAD! "${causeOfDeath}" — Click to read the full story!`, '#c0a040');
 
     // Broadcast the newspaper to ALL clients so everyone sees the death popup
     broadcastToAll({
@@ -2888,7 +2888,7 @@ function handleAdminKillPlayer(clientId, message) {
         type: 'global_chat',
         playerId: 'SYSTEM',
         playerName: 'The Daily Racketeer',
-        message: `📰 EXTRA! EXTRA! ${targetPlayer.name} is DEAD! "${causeOfDeath}" — Click to read the full story!`,
+        message: ` EXTRA! EXTRA! ${targetPlayer.name} is DEAD! "${causeOfDeath}" — Click to read the full story!`,
         timestamp: Date.now(),
         color: '#c0a040'
     });
@@ -3100,11 +3100,11 @@ function handleAssassinationAttempt(clientId, message) {
             if (tData.owner === target.name) {
                 tData.owner = attacker.name;
                 territoriesSeized.push(tId);
-                console.log(`👑 TERRITORY SEIZED: ${attacker.name} took ${tId} from ${target.name} via assassination`);
+                console.log(` TERRITORY SEIZED: ${attacker.name} took ${tId} from ${target.name} via assassination`);
             }
         }
         if (territoriesSeized.length > 0) {
-            addGlobalChatMessage('System', `👑 ${attacker.name} seized ${territoriesSeized.length} territory(s) from ${target.name}!`, '#d4af37');
+            addGlobalChatMessage('System', ` ${attacker.name} seized ${territoriesSeized.length} territory(s) from ${target.name}!`, '#d4af37');
             broadcastToAll({
                 type: 'territory_ownership_changed',
                 territories: gameState.territories,
@@ -3117,7 +3117,7 @@ function handleAssassinationAttempt(clientId, message) {
             scheduleWorldSave();
         }
 
-        console.log(`🎯 ASSASSINATION: ${attacker.name} killed ${target.name} and stole $${stolenAmount.toLocaleString()} (${stealPercent}%) | HP -${healthDamage} | ${gangMembersLost} gang lost`);
+        console.log(` ASSASSINATION: ${attacker.name} killed ${target.name} and stole $${stolenAmount.toLocaleString()} (${stealPercent}%) | HP -${healthDamage} | ${gangMembersLost} gang lost`);
 
         // Notify attacker
         const atkWs = clients.get(clientId);
@@ -3155,7 +3155,7 @@ function handleAssassinationAttempt(clientId, message) {
         }
 
         // Broadcast to everyone
-        addGlobalChatMessage('System', `🎯 ${attacker.name} successfully assassinated ${target.name} and stole $${stolenAmount.toLocaleString()}!`, '#8b0000');
+        addGlobalChatMessage('System', ` ${attacker.name} successfully assassinated ${target.name} and stole $${stolenAmount.toLocaleString()}!`, '#8b0000');
 
         persistedLeaderboard = generateLeaderboard();
         broadcastToAll({ type: 'player_ranked', leaderboard: persistedLeaderboard });
@@ -3179,7 +3179,7 @@ function handleAssassinationAttempt(clientId, message) {
             updateJailBots();
         }
 
-        console.log(`🎯 ASSASSINATION FAILED: ${attacker.name} failed to kill ${target.name}${arrested ? ' and was ARRESTED' : ''} | HP -${healthDamage} | ${gangMembersLost} gang lost`);
+        console.log(` ASSASSINATION FAILED: ${attacker.name} failed to kill ${target.name}${arrested ? ' and was ARRESTED' : ''} | HP -${healthDamage} | ${gangMembersLost} gang lost`);
 
         // Notify attacker
         const atkWs = clients.get(clientId);
@@ -3215,7 +3215,7 @@ function handleAssassinationAttempt(clientId, message) {
 
         // Broadcast
         if (arrested) {
-            addGlobalChatMessage('System', `🎯 ${attacker.name} botched a hit on ${target.name} and was arrested!`, '#8b0000');
+            addGlobalChatMessage('System', ` ${attacker.name} botched a hit on ${target.name} and was arrested!`, '#8b0000');
         }
     }
 
@@ -3265,7 +3265,7 @@ function handleWarBet(clientId, message) {
 
     if (ps) { ps.money = player.money; ps.lastUpdate = Date.now(); }
 
-    console.log(`🎰 WAR BET: ${player.name} bet $${betAmount} on ${side} in ${district} — ${won ? 'WON' : 'LOST'} ($${payout})`);
+    console.log(` WAR BET: ${player.name} bet $${betAmount} on ${side} in ${district} — ${won ? 'WON' : 'LOST'} ($${payout})`);
 
     if (ws && ws.readyState === 1) {
         ws.send(JSON.stringify({
@@ -3306,7 +3306,7 @@ function handleAllianceCreate(clientId, message) {
     if (findPlayerAlliance(clientId)) return fail('You are already in an alliance. Leave first.');
 
     const name = (message.name || '').trim().substring(0, 24);
-    const tag  = (message.tag  || '').trim().substring(0, 4).toUpperCase();
+    const tag = (message.tag || '').trim().substring(0, 4).toUpperCase();
     if (!name || name.length < 3) return fail('Alliance name must be 3-24 characters.');
     if (!tag || tag.length < 2) return fail('Alliance tag must be 2-4 characters.');
 
@@ -3336,13 +3336,13 @@ function handleAllianceCreate(clientId, message) {
     };
     gameState.alliances.set(allianceId, alliance);
 
-    console.log(`🤝 ALLIANCE CREATED: [${tag}] ${name} by ${player.name}`);
+    console.log(` ALLIANCE CREATED: [${tag}] ${name} by ${player.name}`);
 
     if (ws && ws.readyState === 1) {
         ws.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'created', alliance: sanitizeAlliance(alliance) }));
     }
 
-    addGlobalChatMessage('System', `🤝 ${player.name} founded the alliance [${tag}] ${name}!`, '#c0a062');
+    addGlobalChatMessage('System', ` ${player.name} founded the alliance [${tag}] ${name}!`, '#c0a062');
     broadcastPlayerStates();
     scheduleWorldSave();
 }
@@ -3398,7 +3398,7 @@ function handleAllianceJoin(clientId, message) {
 
     alliance.members.push(clientId);
 
-    console.log(`🤝 ${player.name} joined [${alliance.tag}] ${alliance.name}`);
+    console.log(` ${player.name} joined [${alliance.tag}] ${alliance.name}`);
 
     // Notify all alliance members
     alliance.members.forEach(mId => {
@@ -3408,7 +3408,7 @@ function handleAllianceJoin(clientId, message) {
         }
     });
 
-    addGlobalChatMessage('System', `🤝 ${player.name} joined [${alliance.tag}] ${alliance.name}!`, '#c0a062');
+    addGlobalChatMessage('System', ` ${player.name} joined [${alliance.tag}] ${alliance.name}!`, '#c0a062');
     scheduleWorldSave();
 }
 
@@ -3426,12 +3426,12 @@ function handleAllianceLeave(clientId, message) {
     if (alliance.members.length === 0) {
         // Alliance dissolved
         gameState.alliances.delete(alliance.id);
-        addGlobalChatMessage('System', `💔 [${alliance.tag}] ${alliance.name} has been dissolved.`, '#e74c3c');
+        addGlobalChatMessage('System', ` [${alliance.tag}] ${alliance.name} has been dissolved.`, '#e74c3c');
     } else if (alliance.leader === clientId) {
         // Transfer leadership to next member
         alliance.leader = alliance.members[0];
         const newLeaderName = gameState.players.get(alliance.leader)?.name || 'Unknown';
-        addGlobalChatMessage('System', `👑 ${newLeaderName} is now leader of [${alliance.tag}] ${alliance.name}.`, '#c0a062');
+        addGlobalChatMessage('System', ` ${newLeaderName} is now leader of [${alliance.tag}] ${alliance.name}.`, '#c0a062');
     }
 
     // Notify remaining members
@@ -3446,7 +3446,7 @@ function handleAllianceLeave(clientId, message) {
         ws.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'left', allianceName: alliance.name }));
     }
 
-    console.log(`🚪 ${player.name} left [${alliance.tag}] ${alliance.name}`);
+    console.log(` ${player.name} left [${alliance.tag}] ${alliance.name}`);
     scheduleWorldSave();
 }
 
@@ -3483,7 +3483,7 @@ function handleAllianceKick(clientId, message) {
         }
     });
 
-    addGlobalChatMessage('System', `🚫 ${message.targetPlayer} was kicked from [${alliance.tag}] ${alliance.name}.`, '#e74c3c');
+    addGlobalChatMessage('System', ` ${message.targetPlayer} was kicked from [${alliance.tag}] ${alliance.name}.`, '#e74c3c');
     scheduleWorldSave();
 }
 
@@ -3491,24 +3491,24 @@ function handleAllianceKick(clientId, message) {
 const DISCIPLINE_TYPES = {
     warning: {
         name: 'Formal Warning',
-        icon: '⚠️',
+        icon: '',
         color: '#f39c12',
         broadcastTemplate: (leader, target, alliance, reason) =>
-            `⚠️ ALLIANCE NOTICE — ${leader}, leader of [${alliance.tag}] ${alliance.name}, has issued a FORMAL WARNING to ${target}.${reason ? ` Reason: "${reason}"` : ''} — Watch yourself.`,
+            ` ALLIANCE NOTICE — ${leader}, leader of [${alliance.tag}] ${alliance.name}, has issued a FORMAL WARNING to ${target}.${reason ? ` Reason: "${reason}"` : ''} — Watch yourself.`,
     },
     humiliation: {
         name: 'Public Humiliation',
-        icon: '🤡',
+        icon: '',
         color: '#e74c3c',
         broadcastTemplate: (leader, target, alliance, reason) =>
-            `🤡 PUBLIC HUMILIATION — ${target} of [${alliance.tag}] ${alliance.name} has been publicly shamed by ${leader}.${reason ? ` "${reason}"` : ''} — The streets are watching.`,
+            ` PUBLIC HUMILIATION — ${target} of [${alliance.tag}] ${alliance.name} has been publicly shamed by ${leader}.${reason ? ` "${reason}"` : ''} — The streets are watching.`,
     },
     punishment: {
         name: 'Serious Punishment',
-        icon: '🩸',
+        icon: '',
         color: '#8b0000',
         broadcastTemplate: (leader, target, alliance, reason) =>
-            `🩸 PUNISHMENT DEALT — ${leader} of [${alliance.tag}] ${alliance.name} has made an example of ${target}.${reason ? ` "${reason}"` : ''} — Let this be a lesson to all.`,
+            ` PUNISHMENT DEALT — ${leader} of [${alliance.tag}] ${alliance.name} has made an example of ${target}.${reason ? ` "${reason}"` : ''} — Let this be a lesson to all.`,
     }
 };
 
@@ -3610,7 +3610,7 @@ function handleAllianceDiscipline(clientId, message) {
         }
     });
 
-    console.log(`⚖️ Alliance discipline: ${player.name} → ${targetName} (${message.disciplineType}) in [${alliance.tag}]`);
+    console.log(` Alliance discipline: ${player.name} → ${targetName} (${message.disciplineType}) in [${alliance.tag}]`);
 }
 
 // ==================== POLITICAL SYSTEM — TOP DON ====================
@@ -3618,11 +3618,11 @@ function handleAllianceDiscipline(clientId, message) {
 // the "Top Don" and can set server-wide policies that affect all players.
 
 const POLICY_LIMITS = {
-    worldTaxRate: { min: 5, max: 25, label: 'World Tax Rate', unit: '%', icon: '💰' },
-    marketFee:    { min: 0, max: 15, label: 'Market Fee', unit: '%', icon: '🏪' },
-    crimeBonus:   { min: 0, max: 20, label: 'Crime Bonus', unit: '%', icon: '🔫' },
-    jailTimeMod:  { min: -30, max: 30, label: 'Jail Time Modifier', unit: '%', icon: '⛓️' },
-    heistBonus:   { min: 0, max: 25, label: 'Heist Bonus', unit: '%', icon: '💎' }
+    worldTaxRate: { min: 5, max: 25, label: 'World Tax Rate', unit: '%', icon: '' },
+    marketFee: { min: 0, max: 15, label: 'Market Fee', unit: '%', icon: '' },
+    crimeBonus: { min: 0, max: 20, label: 'Crime Bonus', unit: '%', icon: '' },
+    jailTimeMod: { min: -30, max: 30, label: 'Jail Time Modifier', unit: '%', icon: '' },
+    heistBonus: { min: 0, max: 25, label: 'Heist Bonus', unit: '%', icon: '' }
 };
 const POLICY_CHANGE_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes between policy changes
 const MIN_TERRITORIES_FOR_TOP_DON = 1; // Need at least 1 territory to qualify
@@ -3737,11 +3737,11 @@ function recalcTopDon() {
     // Announce if Top Don changed
     if (gameState.politics.topDonName && gameState.politics.topDonName !== oldTopDon) {
         const allianceStr = gameState.politics.isAlliance ? ` ([${gameState.politics.allianceTag}] ${gameState.politics.allianceName})` : '';
-        addGlobalChatMessage('System', `👑 ${gameState.politics.topDonName}${allianceStr} has risen to Top Don with ${gameState.politics.territoryCount} territories! They now control the city's policies.`, '#ffd700');
-        console.log(`👑 Top Don changed: ${oldTopDon || 'None'} → ${gameState.politics.topDonName}`);
+        addGlobalChatMessage('System', ` ${gameState.politics.topDonName}${allianceStr} has risen to Top Don with ${gameState.politics.territoryCount} territories! They now control the city's policies.`, '#ffd700');
+        console.log(` Top Don changed: ${oldTopDon || 'None'} → ${gameState.politics.topDonName}`);
     } else if (!gameState.politics.topDonName && oldTopDon) {
-        addGlobalChatMessage('System', `👑 The city has no Top Don — all territories are under NPC control. Conquer to rule!`, '#888');
-        console.log(`👑 Top Don vacated (was ${oldTopDon})`);
+        addGlobalChatMessage('System', ` The city has no Top Don — all territories are under NPC control. Conquer to rule!`, '#888');
+        console.log(` Top Don vacated (was ${oldTopDon})`);
     }
 }
 
@@ -3790,7 +3790,7 @@ function handlePoliticsSetPolicy(clientId, message) {
     gameState.politics.policyChangedAt = now;
 
 
-    console.log(`🏛️ Policy changed: ${limits.label} ${oldValue}→${numVal} by ${player.name}`);
+    console.log(` Policy changed: ${limits.label} ${oldValue}→${numVal} by ${player.name}`);
 
     // Notify the Top Don
     if (ws && ws.readyState === 1) {
@@ -3806,8 +3806,8 @@ function handlePoliticsSetPolicy(clientId, message) {
 
     // Broadcast to everyone
     const changeMsg = numVal > oldValue
-        ? `📜 Top Don ${player.name} raised ${limits.label} from ${oldValue}${limits.unit} to ${numVal}${limits.unit}!`
-        : `📜 Top Don ${player.name} lowered ${limits.label} from ${oldValue}${limits.unit} to ${numVal}${limits.unit}!`;
+        ? ` Top Don ${player.name} raised ${limits.label} from ${oldValue}${limits.unit} to ${numVal}${limits.unit}!`
+        : ` Top Don ${player.name} lowered ${limits.label} from ${oldValue}${limits.unit} to ${numVal}${limits.unit}!`;
     addGlobalChatMessage('System', changeMsg, '#ffd700');
 
     // Broadcast updated politics to all
@@ -3890,7 +3890,7 @@ function handleAllianceDeposit(clientId, message) {
         }
     });
 
-    console.log(`💰 ${player.name} deposited $${amount} into [${alliance.tag}] treasury`);
+    console.log(` ${player.name} deposited $${amount} into [${alliance.tag}] treasury`);
     scheduleWorldSave();
 }
 
@@ -3969,7 +3969,7 @@ function handlePostBounty(clientId, message) {
     };
     gameState.bounties.push(bounty);
 
-    console.log(`💀 BOUNTY POSTED: ${player.name} placed $${reward.toLocaleString()} bounty on ${targetName}`);
+    console.log(` BOUNTY POSTED: ${player.name} placed $${reward.toLocaleString()} bounty on ${targetName}`);
 
     if (ws && ws.readyState === 1) {
         ws.send(JSON.stringify({ type: 'bounty_result', success: true, action: 'posted', bounty: bounty, newMoney: player.money }));
@@ -3985,7 +3985,7 @@ function handlePostBounty(clientId, message) {
         }));
     }
 
-    addGlobalChatMessage('System', `💀 ${player.name} placed a $${reward.toLocaleString()} bounty on ${targetName}! Reason: "${reason}"`, '#ff6600');
+    addGlobalChatMessage('System', ` ${player.name} placed a $${reward.toLocaleString()} bounty on ${targetName}! Reason: "${reason}"`, '#ff6600');
     broadcastPlayerStates();
     scheduleWorldSave();
 }
@@ -4012,7 +4012,7 @@ function handleCancelBounty(clientId, message) {
         ws.send(JSON.stringify({ type: 'bounty_result', success: true, action: 'cancelled', refund: refund, newMoney: player.money }));
     }
 
-    console.log(`❌ ${player.name} cancelled bounty on ${bounty.targetName} (refund: $${refund})`);
+    console.log(` ${player.name} cancelled bounty on ${bounty.targetName} (refund: $${refund})`);
     scheduleWorldSave();
 }
 
@@ -4060,7 +4060,7 @@ function autoClaimBounty(winnerId, loserId) {
         winner.money = (winner.money || 0) + totalReward;
         const ps = gameState.playerStates.get(winnerId);
         if (ps) { ps.money = winner.money; ps.lastUpdate = Date.now(); }
-        console.log(`💰 BOUNTY CLAIMED: ${winner.name} collected $${totalReward} in bounties`);
+        console.log(` BOUNTY CLAIMED: ${winner.name} collected $${totalReward} in bounties`);
         return { reward: totalReward, count: claimed.length };
     }
     return null;
@@ -4077,7 +4077,7 @@ function pruneExpiredBounties() {
             poster.money = (poster.money || 0) + b.reward;
             const ps = gameState.playerStates.get(b.posterId);
             if (ps) { ps.money = poster.money; ps.lastUpdate = Date.now(); }
-            console.log(`⏰ Bounty on ${b.targetName} expired — refunded $${b.reward} to ${poster.name}`);
+            console.log(` Bounty on ${b.targetName} expired — refunded $${b.reward} to ${poster.name}`);
         }
     });
 
@@ -4091,11 +4091,11 @@ function pruneExpiredBounties() {
 
 const ELO_K = 32;
 const ELO_TIERS = [
-    { name: 'Bronze',  min: 0,    icon: '🥉' },
-    { name: 'Silver',  min: 1000, icon: '🥈' },
-    { name: 'Gold',    min: 1500, icon: '🥇' },
-    { name: 'Diamond', min: 2000, icon: '💎' },
-    { name: 'Kingpin', min: 2500, icon: '👑' }
+    { name: 'Bronze', min: 0, icon: '' },
+    { name: 'Silver', min: 1000, icon: '' },
+    { name: 'Gold', min: 1500, icon: '' },
+    { name: 'Diamond', min: 2000, icon: '' },
+    { name: 'Kingpin', min: 2500, icon: '' }
 ];
 
 function getOrCreateRating(playerId) {
@@ -4116,21 +4116,21 @@ function updateElo(winnerId, loserId, isRanked) {
     if (!isRanked) return;
 
     const winnerRating = getOrCreateRating(winnerId);
-    const loserRating  = getOrCreateRating(loserId);
+    const loserRating = getOrCreateRating(loserId);
 
     // Standard ELO calculation
     const expectedWinner = 1 / (1 + Math.pow(10, (loserRating.elo - winnerRating.elo) / 400));
-    const expectedLoser  = 1 / (1 + Math.pow(10, (winnerRating.elo - loserRating.elo) / 400));
+    const expectedLoser = 1 / (1 + Math.pow(10, (winnerRating.elo - loserRating.elo) / 400));
 
     winnerRating.elo = Math.max(0, Math.round(winnerRating.elo + ELO_K * (1 - expectedWinner)));
-    loserRating.elo  = Math.max(0, Math.round(loserRating.elo  + ELO_K * (0 - expectedLoser)));
+    loserRating.elo = Math.max(0, Math.round(loserRating.elo + ELO_K * (0 - expectedLoser)));
 
     winnerRating.wins++;
     loserRating.losses++;
 
     // Update tiers
     winnerRating.tier = getEloTier(winnerRating.elo).name;
-    loserRating.tier  = getEloTier(loserRating.elo).name;
+    loserRating.tier = getEloTier(loserRating.elo).name;
 }
 
 function getEloChange(playerId) {
@@ -4177,7 +4177,7 @@ function checkSeasonRotation() {
     if (Date.now() < gameState.season.endsAt) return;
 
     // Season over — record results and start new season
-    console.log(`🏆 Season ${gameState.season.number} ended!`);
+    console.log(` Season ${gameState.season.number} ended!`);
 
     // Broadcast season end
     const topRatings = [];
@@ -4189,7 +4189,7 @@ function checkSeasonRotation() {
     const champion = topRatings[0];
 
     if (champion) {
-        addGlobalChatMessage('System', `🏆 Season ${gameState.season.number} is over! Champion: ${champion.name} (${champion.elo} ELO, ${champion.tier})!`, '#ffd700');
+        addGlobalChatMessage('System', ` Season ${gameState.season.number} is over! Champion: ${champion.name} (${champion.elo} ELO, ${champion.tier})!`, '#ffd700');
     }
 
     // Soft reset: regress all ELOs toward 1200
@@ -4217,7 +4217,7 @@ function checkSeasonRotation() {
 // Enhanced territory control: fortify territories, multi-phase siege attacks.
 
 const FORTIFY_COST_PER_POINT = 500; // $500 per defense point
-const FORTIFY_MAX = 200;            // Max fortification bonus
+const FORTIFY_MAX = 200; // Max fortification bonus
 const SIEGE_ENERGY_COST = 60;
 const SIEGE_MONEY_COST = 5000;
 const SIEGE_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
@@ -4294,7 +4294,7 @@ function handleSiegeDeclare(clientId, message) {
         // Notify defender
         notifySiegeDefender(terr.owner, districtId, attacker.name, false);
 
-        addGlobalChatMessage('System', `🏰 ${attacker.name}'s siege on ${districtId.replace(/_/g, ' ')} was repelled!`, '#27ae60');
+        addGlobalChatMessage('System', ` ${attacker.name}'s siege on ${districtId.replace(/_/g, ' ')} was repelled!`, '#27ae60');
         broadcastPlayerStates();
         scheduleWorldSave();
         return;
@@ -4353,7 +4353,7 @@ function handleSiegeDeclare(clientId, message) {
         // Update ELO if both players are online
         if (defenderId) updateElo(clientId, defenderId, true);
 
-        console.log(`🏰 SIEGE SUCCESS: ${attacker.name} conquered ${districtId} from ${oldOwner}`);
+        console.log(` SIEGE SUCCESS: ${attacker.name} conquered ${districtId} from ${oldOwner}`);
 
         if (ws && ws.readyState === 1) {
             ws.send(JSON.stringify({
@@ -4372,7 +4372,7 @@ function handleSiegeDeclare(clientId, message) {
             attacker: attacker.name, defender: oldOwner, seized: [districtId], method: 'siege'
         });
 
-        addGlobalChatMessage('System', `🏰 ${attacker.name} laid siege to ${districtId.replace(/_/g, ' ')} and conquered it from ${oldOwner}!`, '#8b0000');
+        addGlobalChatMessage('System', ` ${attacker.name} laid siege to ${districtId.replace(/_/g, ' ')} and conquered it from ${oldOwner}!`, '#8b0000');
         recalcTopDon();
     } else {
         terr.defenseRating = Math.min(300, (terr.defenseRating || 100) + 15);
@@ -4390,7 +4390,7 @@ function handleSiegeDeclare(clientId, message) {
             jailed = true;
         }
 
-        console.log(`🏰 SIEGE FAILED: ${attacker.name} failed to siege ${districtId}${jailed ? ' — ARRESTED' : ''}`);
+        console.log(` SIEGE FAILED: ${attacker.name} failed to siege ${districtId}${jailed ? ' — ARRESTED' : ''}`);
 
         if (ws && ws.readyState === 1) {
             ws.send(JSON.stringify({
@@ -4402,7 +4402,7 @@ function handleSiegeDeclare(clientId, message) {
 
         notifySiegeDefender(terr.owner, districtId, attacker.name, false);
 
-        addGlobalChatMessage('System', `🏰 ${attacker.name}'s siege on ${districtId.replace(/_/g, ' ')} failed!${jailed ? ' Arrested!' : ''}`, '#e74c3c');
+        addGlobalChatMessage('System', ` ${attacker.name}'s siege on ${districtId.replace(/_/g, ' ')} failed!${jailed ? ' Arrested!' : ''}`, '#e74c3c');
     }
 
     broadcastPlayerStates();
@@ -4452,7 +4452,7 @@ function handleSiegeFortify(clientId, message) {
     const ps = gameState.playerStates.get(clientId);
     if (ps) { ps.money = player.money; ps.lastUpdate = Date.now(); }
 
-    console.log(`🏗️ ${player.name} fortified ${districtId} +${actualPoints} (now ${terr.fortification})`);
+    console.log(` ${player.name} fortified ${districtId} +${actualPoints} (now ${terr.fortification})`);
 
     if (ws && ws.readyState === 1) {
         ws.send(JSON.stringify({
@@ -4504,7 +4504,7 @@ function handleMarketplaceList(clientId, message) {
     
     gameState.marketplace.push(listing);
     
-    console.log(`🏪 ${seller.name} listed ${vehicleName} for $${price.toLocaleString()}`);
+    console.log(` ${seller.name} listed ${vehicleName} for $${price.toLocaleString()}`);
     
     // Confirm to seller
     if (ws.readyState === WebSocket.OPEN) {
@@ -4517,7 +4517,7 @@ function handleMarketplaceList(clientId, message) {
     }
     
     // Broadcast to all connected players
-    addGlobalChatMessage('System', `🏪 ${seller.name} listed a ${vehicleName} for $${price.toLocaleString()} on the marketplace!`, '#a08850');
+    addGlobalChatMessage('System', ` ${seller.name} listed a ${vehicleName} for $${price.toLocaleString()} on the marketplace!`, '#a08850');
 }
 
 function handleMarketplaceBuy(clientId, message) {
@@ -4561,7 +4561,7 @@ function handleMarketplaceBuy(clientId, message) {
     // Remove the listing
     gameState.marketplace.splice(listingIdx, 1);
     
-    console.log(`🏪 ${buyer.name} bought ${listing.vehicleName} from ${listing.sellerName} for $${listing.price.toLocaleString()}`);
+    console.log(` ${buyer.name} bought ${listing.vehicleName} from ${listing.sellerName} for $${listing.price.toLocaleString()}`);
     
     // Notify buyer — vehicle transfer
     if (ws.readyState === WebSocket.OPEN) {
@@ -4593,7 +4593,7 @@ function handleMarketplaceBuy(clientId, message) {
         }));
     }
     
-    addGlobalChatMessage('System', `🏪 ${buyer.name} bought ${listing.vehicleName} from ${listing.sellerName} for $${listing.price.toLocaleString()}!`, '#27ae60');
+    addGlobalChatMessage('System', ` ${buyer.name} bought ${listing.vehicleName} from ${listing.sellerName} for $${listing.price.toLocaleString()}!`, '#27ae60');
     scheduleWorldSave();
 }
 
@@ -4615,7 +4615,7 @@ function handleMarketplaceCancel(clientId, message) {
     const listing = gameState.marketplace[listingIdx];
     gameState.marketplace.splice(listingIdx, 1);
     
-    console.log(`🏪 ${player.name} cancelled listing for ${listing.vehicleName}`);
+    console.log(` ${player.name} cancelled listing for ${listing.vehicleName}`);
     
     // Return vehicle to seller
     if (ws.readyState === WebSocket.OPEN) {
@@ -4712,11 +4712,11 @@ server.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
     // Initialize jail bots on startup
     updateJailBots();
-    console.log(`🔒 Jail bots initialized: ${gameState.jailBots.length} inmates`);
+    console.log(` Jail bots initialized: ${gameState.jailBots.length} inmates`);
     // Calculate Top Don on startup based on existing territories
     recalcTopDon();
     if (gameState.politics.topDonName) {
-        console.log(`👑 Top Don: ${gameState.politics.topDonName} (${gameState.politics.territoryCount} territories)`);
+        console.log(` Top Don: ${gameState.politics.topDonName} (${gameState.politics.territoryCount} territories)`);
     }
 });
 
@@ -4726,15 +4726,15 @@ process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
 function gracefulShutdown() {
-    console.log('\n🛑 Server shutting down gracefully...');
+    console.log('\n Server shutting down gracefully...');
     
     // Flush any pending world state changes
     try {
         flushWorldState();
         userDB.flushDB();
-        console.log('💾 World state & user DB flushed to disk');
+        console.log(' World state & user DB flushed to disk');
     } catch (err) {
-        console.error('⚠️ Error flushing data:', err.message);
+        console.error(' Error flushing data:', err.message);
     }
     
     // Notify all connected clients
@@ -4754,13 +4754,13 @@ function gracefulShutdown() {
     
     // Close the server
     server.close(() => {
-        console.log('👋 Server shut down successfully');
+        console.log(' Server shut down successfully');
         process.exit(0);
     });
     
     // Force exit after 10 seconds if graceful shutdown fails
     setTimeout(() => {
-        console.error('⚠️ Forced shutdown after timeout');
+        console.error(' Forced shutdown after timeout');
         process.exit(1);
     }, 10000);
 }

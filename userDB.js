@@ -20,14 +20,14 @@ function loadDB() {
             const raw = fs.readFileSync(DB_FILE, 'utf8');
             db = JSON.parse(raw);
             if (!db.users) db.users = {};
-            console.log(`✅ User DB loaded — ${Object.keys(db.users).length} accounts`);
+            console.log(` User DB loaded — ${Object.keys(db.users).length} accounts`);
         } else {
             db = { users: {} };
             saveDBImmediate();
-            console.log('📄 Created new user DB');
+            console.log(' Created new user DB');
         }
     } catch (err) {
-        console.error('❌ Failed to load user DB:', err.message);
+        console.error(' Failed to load user DB:', err.message);
         db = { users: {} };
     }
 }
@@ -47,7 +47,7 @@ function saveDBImmediate() {
         fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
         isDirty = false;
     } catch (err) {
-        console.error('❌ Failed to save user DB:', err.message);
+        console.error(' Failed to save user DB:', err.message);
     }
 }
 
@@ -121,11 +121,11 @@ function createUser(username, password) {
     if (!/^[a-zA-Z0-9_]+$/.test(username)) return { ok: false, error: 'Username can only contain letters, numbers, and underscores' };
 
     db.users[key] = {
-        username: username,           // preserve original casing
+        username: username, // preserve original casing
         passwordHash: hashPassword(password),
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
-        saveData: null                // cloud save slot
+        saveData: null // cloud save slot
     };
     saveDB();
     return { ok: true };

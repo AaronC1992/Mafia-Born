@@ -7,7 +7,7 @@
 // - Stored at project root as world-state.json
 // Extensibility:
 // - Future long-lived world data (factions, economy modifiers, crime heat) should be added
-//   to the object returned by loadWorldState() and passed to saveWorldState(). Keep it small.
+// to the object returned by loadWorldState() and passed to saveWorldState(). Keep it small.
 
 const fs = require('fs');
 const path = require('path');
@@ -38,7 +38,7 @@ let saveTimer = null;
 function loadWorldState() {
   try {
     if (!fs.existsSync(WORLD_STATE_PATH)) {
-      console.log('📋 No world-state.json found, using defaults');
+      console.log(' No world-state.json found, using defaults');
       return { ...DEFAULT_STATE };
     }
     const raw = fs.readFileSync(WORLD_STATE_PATH, 'utf-8');
@@ -49,10 +49,10 @@ function loadWorldState() {
       cityEvents: Array.isArray(parsed.cityEvents) ? parsed.cityEvents : [...DEFAULT_STATE.cityEvents],
       leaderboard: Array.isArray(parsed.leaderboard) ? parsed.leaderboard : []
     };
-    console.log('💾 World state loaded from world-state.json');
+    console.log(' World state loaded from world-state.json');
     return merged;
   } catch (err) {
-    console.error('⚠️ Failed to load world-state.json, using defaults:', err.message);
+    console.error(' Failed to load world-state.json, using defaults:', err.message);
     return { ...DEFAULT_STATE };
   }
 }
@@ -61,9 +61,9 @@ function saveWorldStateImmediate(state) {
   try {
     const data = JSON.stringify(state, null, 2);
     fs.writeFileSync(WORLD_STATE_PATH, data, 'utf-8');
-    console.log('💾 World state saved to world-state.json');
+    console.log(' World state saved to world-state.json');
   } catch (err) {
-    console.error('⚠️ Error saving world-state.json:', err.message);
+    console.error(' Error saving world-state.json:', err.message);
   }
 }
 
