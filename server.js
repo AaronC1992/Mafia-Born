@@ -995,6 +995,34 @@ function handleClientMessage(clientId, message, ws) {
 function handlePlayerConnect(clientId, message, ws) {
     // Sanitize and enforce uniqueness on desired name
     const desiredName = sanitizePlayerName(message.playerName || `Player_${clientId.slice(-4)}`);
+
+    // ── Stale-connection cleanup ──────────────────────────────────
+    // On mobile, minimizing the app may open a new WebSocket before the old one
+    // has fully closed.  If a player with the exact same name already exists under
+    // a *different* clientId, evict that ghost entry so the reconnecting player
+    // gets their real name instead of "Name#2".
+    for (const [existingId, existingPlayer] of gameState.players.entries()) {
+        if (existingId !== clientId && existingPlayer.name === desiredName) {
+            const oldWs = clients.get(existingId);
+            // Silently tear down the stale connection
+            if (oldWs) {
+                try { oldWs.close(); } catch (_) { /* already closed */ }
+                clients.delete(existingId);
+                sessions.delete(oldWs);
+            }
+            // Remove from territory residents
+            if (existingPlayer.currentTerritory && gameState.territories[existingPlayer.currentTerritory]) {
+                const residents = gameState.territories[existingPlayer.currentTerritory].residents;
+                const idx = residents.indexOf(existingPlayer.name);
+                if (idx !== -1) residents.splice(idx, 1);
+            }
+            gameState.players.delete(existingId);
+            gameState.playerStates.delete(existingId);
+            console.log(` Evicted stale connection for "${desiredName}" (old ID: ${existingId})`);
+            break; // only one ghost expected
+        }
+    }
+
     const finalName = ensureUniqueName(desiredName);
     // Persist on session for reference
     const sess = sessions.get(ws);
