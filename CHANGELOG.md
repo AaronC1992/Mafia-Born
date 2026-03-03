@@ -5,6 +5,41 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-03-03
+
+### Fixed — Bug Audit Round 3 (11 issues)
+- **Deep-copy save/load** — `JSON.parse(JSON.stringify())` prevents state bleed between save slots
+- **buyItem underground rep** — reputation boost now fires correctly after all purchase type branches
+- **selectPortrait parsing** — handles Stylized portrait paths and strips `profile_pics/` prefix
+- **Quest timer leak** — `stopQuestTimerTick()` integrated into `clearAllGameplayIntervals()`
+- **hideAllScreens rewrite** — data-driven array loop covering 28 screens with null guards
+- **upgradeNode double-spend** — removed duplicate 100ms setTimeout race condition
+- **Courthouse null guard** — `updateCourtHouseCost()` checks resetButton exists before updating
+- **PvP countdown leak** — `clearInterval` called before each new `setInterval`
+- **Fence pricing cache** — `getFenceMultiplier()` cached with 60-second TTL
+- **Heist double-credit** — results now use server-sent `newMoney`/`newReputation` totals
+- **Vehicle marketplace rollback** — stored rollback data restored on `marketplace_error`
+
+### Changed — UI Cleanup
+- **86 bracket abbreviation icons removed** — `[WPN]`, `[ARM]`, `[VEH]`, etc. stripped from all items and factions
+- **Server cloud-save default version** updated from 1.7.2 to 1.12.0
+
+### Fixed — Mobile Responsiveness (13 issues)
+- **Safehouse scroll** — removed restrictive `max-height` from `.menu-grid`; added `#safehouse` to mobile padding override
+- **Store buy buttons** — flex-wrap and full-width buttons on mobile; grid collapses to single column; category tabs scroll horizontally
+- **Save slot grids** — collapse to single column on mobile via `.save-slot-grid` class
+- **Save management row** — full-width buttons on mobile via `.save-manage-row` class
+- **Gang top grid** — collapses to single column on mobile via `.gang-top-grid` class
+- **Recruitment level guide** — `repeat(auto-fit, minmax(200px, 1fr))` for small screens
+- **Business/laundry/garage grids** — min-width reduced from 320-350px to 260px
+- **Character showcase, gang members, training, rival kingpins** — min-width reduced from 300px to 240px
+- **Level-up overlay text** — responsive `clamp()` sizing instead of fixed `6em`/`3em`
+- **Blackjack cards** — `clamp(50px,15vw,70px)` width for viewport scaling
+- **320px breakpoint** — padding now accounts for stats bar height with `calc()`
+- **Tablet padding** — simplified to single `.game-screen` catch-all rule
+- **Obituary stats** — grid collapses to 1fr at 480px breakpoint
+- **Vehicle images** — responsive width with `aspect-ratio: 220/165`
+
 ## [1.11.8] - 2026-03-02
 
 ### Fixed — Skills & Buffs Audit: 6 Dead Systems Wired

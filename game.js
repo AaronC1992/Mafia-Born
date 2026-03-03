@@ -229,6 +229,7 @@ function clearAllGameplayIntervals() {
   while (gameplayIntervals.length > 0) {
     clearInterval(gameplayIntervals.pop());
   }
+  stopQuestTimerTick();
 }
 
 // Save / load related functions that are used via inline onclick handlers
@@ -1310,7 +1311,7 @@ const TURF_ZONES = [
     {
         id: "little_italy",
         name: "Little Italy",
-        icon: "[ITA]",
+        icon: '',
         description: "Old-world streets lined with trattorias and back-room card games. The Torrino Family's ancestral stronghold.",
         baseIncome: 4000,
         defenseRequired: 180,
@@ -1325,7 +1326,7 @@ const TURF_ZONES = [
     {
         id: "redlight_district",
         name: "Redlight District",
-        icon: "[RED]",
+        icon: '',
         description: "Neon-soaked blocks of vice parlors, strip clubs, and underground dens. Morales Cartel territory.",
         baseIncome: 5500,
         defenseRequired: 200,
@@ -1340,7 +1341,7 @@ const TURF_ZONES = [
     {
         id: "chinatown",
         name: "Chinatown",
-        icon: "[CHN]",
+        icon: '',
         description: "A labyrinth of narrow alleys, tea houses, and hidden parlors. The Chen Triad rules from the shadows.",
         baseIncome: 4500,
         defenseRequired: 190,
@@ -1355,7 +1356,7 @@ const TURF_ZONES = [
     {
         id: "harbor_row",
         name: "Harbor Row",
-        icon: "[HBR]",
+        icon: '',
         description: "Fog-cloaked wharves where containers vanish overnight. The Kozlov Bratva's smuggling nerve center.",
         baseIncome: 5000,
         defenseRequired: 210,
@@ -1370,7 +1371,7 @@ const TURF_ZONES = [
     {
         id: "the_slums",
         name: "The Slums",
-        icon: "[SLM]",
+        icon: '',
         description: "Crumbling tenements and burned-out lots. No single family controls it -- gangs fight for every block.",
         baseIncome: 1500,
         defenseRequired: 120,
@@ -1385,7 +1386,7 @@ const TURF_ZONES = [
     {
         id: "midtown_heights",
         name: "Midtown Heights",
-        icon: "[MID]",
+        icon: '',
         description: "Glass towers and penthouse suites. White-collar crime thrives behind boardroom doors.",
         baseIncome: 6000,
         defenseRequired: 250,
@@ -1400,7 +1401,7 @@ const TURF_ZONES = [
     {
         id: "old_quarter",
         name: "The Old Quarter",
-        icon: '[OLD]',
+        icon: '',
         description: "Historic cobblestone streets with speakeasies and antique shops hiding contraband.",
         baseIncome: 3000,
         defenseRequired: 140,
@@ -1415,7 +1416,7 @@ const TURF_ZONES = [
     {
         id: "the_sprawl",
         name: "The Sprawl",
-        icon: "[SPR]",
+        icon: '',
         description: "Endless suburban strip malls and quiet cul-de-sacs. Prescription drugs and suburban rackets.",
         baseIncome: 2500,
         defenseRequired: 120,
@@ -1435,7 +1436,7 @@ const TURF_ZONES = [
 const RIVAL_FAMILIES = {
     torrino: {
         name: "Torrino Family",
-        icon: "[TOR]",
+        icon: '',
         ethnicity: "Italian",
         color: "#8b0000",
         motto: "Blood is thicker than wine.",
@@ -1464,7 +1465,7 @@ const RIVAL_FAMILIES = {
     },
     kozlov: {
         name: "Kozlov Bratva",
-        icon: "[KOZ]",
+        icon: '',
         ethnicity: "Russian",
         color: "#4169e1",
         motto: "Strength is the only law.",
@@ -1491,7 +1492,7 @@ const RIVAL_FAMILIES = {
     },
     chen: {
         name: "Chen Triad",
-        icon: "[CHN]",
+        icon: '',
         ethnicity: "Chinese",
         color: "#2e8b57",
         motto: "Patience is the sharpest blade.",
@@ -1518,7 +1519,7 @@ const RIVAL_FAMILIES = {
     },
     morales: {
         name: "Morales Cartel",
-        icon: "[MOR]",
+        icon: '',
         ethnicity: "South American",
         color: "#ff8c00",
         motto: "Fear is the foundation of empire.",
@@ -2444,6 +2445,12 @@ window.completeSideQuestStep = completeSideQuestStep;
 
 // -- Quest timer tick -- updates the quest screen countdown every second --
 let _questTimerInterval = null;
+function stopQuestTimerTick() {
+  if (_questTimerInterval) {
+    clearInterval(_questTimerInterval);
+    _questTimerInterval = null;
+  }
+}
 function startQuestTimerTick() {
   if (_questTimerInterval) return; // already running
   _questTimerInterval = setInterval(() => {
@@ -3605,7 +3612,7 @@ function buildBusinessesHTML() {
           Collect All Income
         </button>
       </div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin: 20px 0;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin: 20px 0;">
         ${player.businesses.map((business, index) => {
           const businessType = businessTypes.find(bt => bt.id === business.type);
           const currentIncome = Math.floor(businessType.baseIncome * Math.pow(businessType.incomeMultiplier, business.level - 1));
@@ -3709,7 +3716,7 @@ function buildBusinessesHTML() {
     <div style="margin: 10px 0 15px 0; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid #8b3a3a; border-radius: 8px; color: #e67e22;">
       You must live in a district to purchase businesses. Use the Turf HUD to relocate.
     </div>`}
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin: 20px 0;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin: 20px 0;">
       ${businessTypes.map(businessType => {
         const owned = player.businesses && player.businesses.some(b => b.type === businessType.id);
         const slotsFull = curSlots > 0 && usedSlots >= curSlots;
@@ -4149,7 +4156,7 @@ function showMoneyLaundering() {
   } else if (player.dirtyMoney > 0) {
     launderHTML += `
       <h3>Laundering Methods</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin: 20px 0;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin: 20px 0;">
         ${launderingMethods.map(method => {
           const canUse = checkLaunderingEligibility(method);
           const estimatedClean = Math.floor(Math.min(player.dirtyMoney, method.maxAmount) * method.cleanRate);
@@ -4503,7 +4510,7 @@ function showGang() {
     <h2>Gang Management</h2>
     <p>Command your criminal organization and assign specialists to operations.</p>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+    <div class="gang-top-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
 
       <!-- Gang Overview -->
       <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; border: 2px solid #c0a062;">
@@ -4758,7 +4765,7 @@ function generateGangMembersHTML() {
     return '<p>No gang members yet. <button onclick="showRecruitment()">Recruit your first member</button></p>';
   }
 
-  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">';
+  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">';
 
   player.gang.gangMembers.forEach((member, index) => {
     const role = specialistRoles.find(r => r.id === member.specialization);
@@ -4803,7 +4810,7 @@ function generateGangMembersHTML() {
 
 // Generate training programs HTML
 function generateTrainingProgramsHTML() {
-  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">';
+  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">';
 
   trainingPrograms.forEach(program => {
     const availableMembers = getAvailableMembersForTraining(program.availableFor);
@@ -8417,41 +8424,20 @@ function hideAllScreens() {
   // Remove .screen-active from all game screens so their fixed page-headers hide properly
   document.querySelectorAll('.game-screen.screen-active').forEach(s => s.classList.remove('screen-active'));
 
-  document.getElementById("menu").style.display = "none";
-  document.getElementById("jobs-screen").style.display = "none";
-  document.getElementById("store-screen").style.display = "none";
-  document.getElementById("real-estate-screen").style.display = "none";
-  document.getElementById("gang-screen").style.display = "none";
-  document.getElementById("jail-screen").style.display = "none";
-  document.getElementById("court-house-screen").style.display = "none";
-  document.getElementById("inventory-screen").style.display = "none";
-  document.getElementById("hospital-screen").style.display = "none";
-  document.getElementById("death-screen").style.display = "none";
-  document.getElementById("achievements-screen").style.display = "none";
-  document.getElementById("jailbreak-screen").style.display = "none";
-  document.getElementById("recruitment-screen").style.display = "none";
-  document.getElementById("casino-screen").style.display = "none";
-  // mini-games-screen merged into casino-screen as a tab
-  document.getElementById("missions-screen").style.display = "none";
-  document.getElementById("business-screen").style.display = "none";
-  const loanSharkScreen = document.getElementById("loan-shark-screen");
-  if (loanSharkScreen) loanSharkScreen.style.display = "none";
-  document.getElementById("money-laundering-screen").style.display = "none";
-  // Fence merged into Black Market -- no separate screen
-  document.getElementById("territory-control-screen").style.display = "none";
-  const territoriesScreen = document.getElementById("territories-screen");
-  if (territoriesScreen) territoriesScreen.style.display = "none";
-  document.getElementById("events-screen").style.display = "none";
-  document.getElementById("map-screen").style.display = "none";
-  document.getElementById("calendar-screen").style.display = "none";
-  document.getElementById("statistics-screen").style.display = "none";
-  document.getElementById("options-screen").style.display = "none";
-  const playerStatsScreen = document.getElementById("player-stats-screen");
-  if (playerStatsScreen) playerStatsScreen.style.display = "none";
-  const cmdCenter = document.getElementById("safehouse");
-  if (cmdCenter) cmdCenter.style.display = "none";
-  const multiplayerScreen = document.getElementById("multiplayer-screen");
-  if (multiplayerScreen) multiplayerScreen.style.display = "none";
+  // Hide all game screens with null guards to prevent crashes if element doesn't exist
+  const screenIds = [
+    "menu", "jobs-screen", "store-screen", "real-estate-screen", "gang-screen",
+    "jail-screen", "court-house-screen", "inventory-screen", "hospital-screen",
+    "death-screen", "achievements-screen", "jailbreak-screen", "recruitment-screen",
+    "casino-screen", "missions-screen", "business-screen", "loan-shark-screen",
+    "money-laundering-screen", "territory-control-screen", "territories-screen",
+    "events-screen", "map-screen", "calendar-screen", "statistics-screen",
+    "options-screen", "player-stats-screen", "safehouse", "multiplayer-screen"
+  ];
+  screenIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
 }
 
 // ==================== TUTORIAL SYSTEM ====================
@@ -8760,7 +8746,7 @@ const HELP_TOPICS = [
       <li>Open <strong>Settings > Help</strong> any time for detailed guides.</li>
     </ol>
   `},
-  { id: 'ui-guide', icon: '[UI]', title: 'UI Guide (HUD)', content: `
+  { id: 'ui-guide', icon: '', title: 'UI Guide (HUD)', content: `
     <p>Understanding the on-screen interface.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Status Bar (Top of Screen)</h4>
     <p>The bar at the very top displays your vital stats in real time:</p>
@@ -8795,7 +8781,7 @@ const HELP_TOPICS = [
     <h4 style="color:#c0a062; margin:14px 0 6px;">Navigation Buttons</h4>
     <p>The main SafeHouse screen has buttons for every area of the game. Buttons are locked (greyed out) until you reach the required level. Hover over a locked button to see what level unlocks it.</p>
   `},
-  { id: 'safehouse-help', icon: '[HOME]', title: 'SafeHouse', content: `
+  { id: 'safehouse-help', icon: '', title: 'SafeHouse', content: `
     <p>Your home base and central hub. All navigation starts here.</p>
     <ul>
       <li><strong>Navigation</strong> -- Tap any unlocked button to visit that area. Buttons unlock as you level up through Jobs and Missions.</li>
@@ -8805,7 +8791,7 @@ const HELP_TOPICS = [
       <li><strong>Portrait</strong> -- Your character portrait is shown in the top-left. You can change it from Settings.</li>
     </ul>
   `},
-  { id: 'jobs-help', icon: '[JOB]', title: 'Jobs', content: `
+  { id: 'jobs-help', icon: '', title: 'Jobs', content: `
     <p>Your main source of income and XP, especially early on.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">How Jobs Work</h4>
     <ul>
@@ -8822,7 +8808,7 @@ const HELP_TOPICS = [
       <li>Buy Coffee or Energy Drinks from the quick-buy panel to keep grinding without waiting.</li>
     </ul>
   `},
-  { id: 'store-help', icon: '[SHOP]', title: 'Black Market', content: `
+  { id: 'store-help', icon: '', title: 'Black Market', content: `
     <p>Three tabs for all your shopping needs: <strong>Buy</strong>, <strong>The Fence</strong>, and <strong>Player Market</strong>.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Buy Tab</h4>
     <ul>
@@ -8841,7 +8827,7 @@ const HELP_TOPICS = [
       <li>List your vehicles for a price, or browse listings to find a deal.</li>
     </ul>
   `},
-  { id: 'missions-help', icon: '[MSN]', title: 'Missions & Story', content: `
+  { id: 'missions-help', icon: '', title: 'Missions & Story', content: `
     <p>The narrative heart of the game -- follow your crime family's story from street-level nobody to untouchable Don.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Family Story</h4>
     <ul>
@@ -8860,7 +8846,7 @@ const HELP_TOPICS = [
       <li>They add choices, consequences, and atmospheric flavour to your quests.</li>
     </ul>
   `},
-  { id: 'gang-help', icon: '[GANG]', title: 'The Family (Gang)', content: `
+  { id: 'gang-help', icon: '', title: 'The Family (Gang)', content: `
     <p>Crime families are the social and multiplayer system of Mafia Born.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Creating or Joining</h4>
     <ul>
@@ -8885,7 +8871,7 @@ const HELP_TOPICS = [
       <li>Better crew = better odds in combat and territory control.</li>
     </ul>
   `},
-  { id: 'properties-help', icon: '[PROP]', title: 'Properties & Fronts', content: `
+  { id: 'properties-help', icon: '', title: 'Properties & Fronts', content: `
     <p>Two tabs: <strong>Properties</strong> and <strong>Fronts</strong> -- your path to passive income and money laundering.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Properties</h4>
     <ul>
@@ -8900,7 +8886,7 @@ const HELP_TOPICS = [
       <li>You <em>must</em> have fronts to convert dirty money -- it's useless otherwise.</li>
     </ul>
   `},
-  { id: 'casino-help', icon: '[BET]', title: 'Casino & Mini Games', content: `
+  { id: 'casino-help', icon: '', title: 'Casino & Mini Games', content: `
     <p>High risk, high reward entertainment with your hard-earned cash.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Casino Games</h4>
     <ul>
@@ -8916,7 +8902,7 @@ const HELP_TOPICS = [
     </ul>
     <p style="color:#8b3a3a; font-style:italic;">Warning: The Casino uses your real in-game Cash. There is no guaranteed win -- gamble responsibly!</p>
   `},
-  { id: 'stash-help', icon: '[STASH]', title: 'Stash & Motor Pool', content: `
+  { id: 'stash-help', icon: '', title: 'Stash & Motor Pool', content: `
     <p>Your inventory and vehicle garage.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Stash (Inventory)</h4>
     <ul>
@@ -8931,7 +8917,7 @@ const HELP_TOPICS = [
       <li>Sell unwanted vehicles on the Player Market, or buy new rides there.</li>
     </ul>
   `},
-  { id: 'hospital-help', icon: '[MED]', title: 'Hospital', content: `
+  { id: 'hospital-help', icon: '', title: 'Hospital', content: `
     <p>The underground doctor keeps you patched up -- for a price.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Healing Options</h4>
     <ul>
@@ -8946,7 +8932,7 @@ const HELP_TOPICS = [
       <li>Medkits (from the Black Market) can restore health outside the Hospital.</li>
     </ul>
   `},
-  { id: 'skills-help', icon: '[SKILL]', title: 'Talents & Skills', content: `
+  { id: 'skills-help', icon: '', title: 'Talents & Skills', content: `
     <p>Invest skill points into 6 permanent talent trees to customise your playstyle.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Skill Trees</h4>
     <ul>
@@ -8963,7 +8949,7 @@ const HELP_TOPICS = [
       <li>Spend them from the <strong>Skills</strong> screen. Each node is permanent once purchased.</li>
     </ul>
   `},
-  { id: 'territory-help', icon: '[TURF]', title: 'Territory Control', content: `
+  { id: 'territory-help', icon: '', title: 'Territory Control', content: `
     <p>Dominate the city district by district. The turf system is your path to real power -- but expanding your empire paints a bigger target on your back.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Claiming Territory</h4>
     <ul>
@@ -9003,7 +8989,7 @@ const HELP_TOPICS = [
       <li>Reduce turf heat to maximize your weekly income -- high heat cuts income by up to 70%.</li>
     </ul>
   `},
-  { id: 'stats-help', icon: '[STAT]', title: 'Stats & Empire', content: `
+  { id: 'stats-help', icon: '', title: 'Stats & Empire', content: `
     <p>Track every detail of your criminal career.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Player Stats</h4>
     <ul>
@@ -9022,7 +9008,7 @@ const HELP_TOPICS = [
       <li>Great for seeing the big picture of your criminal empire's growth.</li>
     </ul>
   `},
-  { id: 'heat-help', icon: '[HEAT]', title: 'Heat (Wanted Level)', content: `
+  { id: 'heat-help', icon: '', title: 'Heat (Wanted Level)', content: `
     <p><strong>Heat</strong> is your wanted level -- a number from 0 to 100 representing how much the police are watching you.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Heat Levels</h4>
     <ul>
@@ -9047,7 +9033,7 @@ const HELP_TOPICS = [
       <li><strong>Stealth Skills</strong> -- The Stealth skill tree has nodes that reduce heat gain and increase decay speed.</li>
     </ul>
   `},
-  { id: 'energy-help', icon: '[NRG]', title: 'Energy System', content: `
+  { id: 'energy-help', icon: '', title: 'Energy System', content: `
     <p><strong>Energy</strong> is the fuel for almost everything you do in Mafia Born.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">How Energy Works</h4>
     <ul>
@@ -9068,7 +9054,7 @@ const HELP_TOPICS = [
       <li>The quick-buy buttons on the Quick Actions bar let you buy energy items without visiting the store.</li>
     </ul>
   `},
-  { id: 'combat-help', icon: '[FIGHT]', title: 'Combat & Equipment', content: `
+  { id: 'combat-help', icon: '', title: 'Combat & Equipment', content: `
     <p>Understanding how fights work and how to gear up for them.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Attack & Defence</h4>
     <ul>
@@ -9089,7 +9075,7 @@ const HELP_TOPICS = [
       <li>PvP increases Heat: the more you fight, the more wanted you become.</li>
     </ul>
   `},
-  { id: 'dirty-money-help', icon: '[CASH]', title: 'Dirty Money & Laundering', content: `
+  { id: 'dirty-money-help', icon: '', title: 'Dirty Money & Laundering', content: `
     <p>Not all money is created equal -- dirty money needs to be cleaned before you can spend it.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">What is Dirty Money?</h4>
     <ul>
@@ -9104,7 +9090,7 @@ const HELP_TOPICS = [
       <li>Better fronts launder more per cycle -- invest in upgrades when you can.</li>
     </ul>
   `},
-  { id: 'seasons-help', icon: '[SZN]', title: 'Seasons & Weather', content: `
+  { id: 'seasons-help', icon: '', title: 'Seasons & Weather', content: `
     <p>The game world has dynamic seasons and weather that affect gameplay.</p>
     <ul>
       <li><strong>Seasons</strong> -- Cycle through Spring, Summer, Autumn, and Winter. Each season can influence events, job availability, and NPC behaviour.</li>
@@ -9112,7 +9098,7 @@ const HELP_TOPICS = [
       <li>Both are shown on the Status Bar and update automatically during gameplay.</li>
     </ul>
   `},
-  { id: 'multiplayer-help', icon: '[MP]', title: 'Multiplayer & Cloud', content: `
+  { id: 'multiplayer-help', icon: '', title: 'Multiplayer & Cloud', content: `
     <p>Play with others and sync your progress across devices.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Online Features</h4>
     <ul>
@@ -9128,7 +9114,7 @@ const HELP_TOPICS = [
       <li>Your local saves are always available even without internet.</li>
     </ul>
   `},
-  { id: 'saving-help', icon: '[SAVE]', title: 'Saving & Loading', content: `
+  { id: 'saving-help', icon: '', title: 'Saving & Loading', content: `
     <p>Never lose your progress -- multiple save options keep you covered.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Save Options</h4>
     <ul>
@@ -11157,7 +11143,6 @@ function upgradeNode(treeName, nodeId) {
     renderSkillTreeUI();
   }
 
-  setTimeout(() => { window.upgradingSkill = false; }, 100);
   setTimeout(() => { window.upgradingSkill = false; }, 1000);
 }
 
@@ -11678,7 +11663,7 @@ const seasonalEvents = {
         duration: 3 * 24 * 60 * 60 * 1000 // 3 days
       },
       probability: 0.3,
-      icon: '[SPR]'
+      icon: ''
     },
     {
       id: "tax_season",
@@ -11704,7 +11689,7 @@ const seasonalEvents = {
         duration: 2 * 7 * 24 * 60 * 60 * 1000 // 2 weeks
       },
       probability: 0.5,
-      icon: '[SUN]'
+      icon: ''
     },
     {
       id: "heat_wave",
@@ -11717,7 +11702,7 @@ const seasonalEvents = {
         duration: 5 * 24 * 60 * 60 * 1000 // 5 days
       },
       probability: 0.3,
-      icon: '[HOT]'
+      icon: ''
     }
   ],
   autumn: [
@@ -11731,7 +11716,7 @@ const seasonalEvents = {
         duration: 4 * 24 * 60 * 60 * 1000 // 4 days
       },
       probability: 0.35,
-      icon: '[HRV]'
+      icon: ''
     },
     {
       id: "back_to_school",
@@ -11743,7 +11728,7 @@ const seasonalEvents = {
         duration: 2 * 7 * 24 * 60 * 60 * 1000 // 2 weeks
       },
       probability: 0.4,
-      icon: '[SCH]'
+      icon: ''
     }
   ],
   winter: [
@@ -11758,7 +11743,7 @@ const seasonalEvents = {
         duration: 3 * 7 * 24 * 60 * 60 * 1000 // 3 weeks
       },
       probability: 0.6,
-      icon: '[HOL]'
+      icon: ''
     },
     {
       id: "cold_snap",
@@ -11771,7 +11756,7 @@ const seasonalEvents = {
         duration: 1 * 7 * 24 * 60 * 60 * 1000 // 1 week
       },
       probability: 0.25,
-      icon: '[BRR]'
+      icon: ''
     }
   ]
 };
@@ -11782,7 +11767,7 @@ const weatherEffects = {
     name: "Clear Skies",
     description: "Perfect conditions for operations",
     effects: {},
-    icon: '[CLR]'
+    icon: ''
   },
   overcast: {
     name: "Overcast",
@@ -11791,7 +11776,7 @@ const weatherEffects = {
       witnessReduction: 0.1,
       stealthBonus: 0.05
     },
-    icon: '[CLD]'
+    icon: ''
   },
   rain: {
     name: "Rain",
@@ -11802,7 +11787,7 @@ const weatherEffects = {
       witnessReduction: 0.2,
       energyCost: 1.1
     },
-    icon: '[RN]'
+    icon: ''
   },
   drizzle: {
     name: "Light Drizzle",
@@ -11811,7 +11796,7 @@ const weatherEffects = {
       stealthBonus: 0.08,
       witnessReduction: 0.1
     },
-    icon: '[DRZ]'
+    icon: ''
   },
   snow: {
     name: "Snow",
@@ -11822,7 +11807,7 @@ const weatherEffects = {
       heatingCosts: 1.3,
       carDamage: 1.2
     },
-    icon: '[SNW]'
+    icon: ''
   },
   blizzard: {
     name: "Blizzard",
@@ -11835,7 +11820,7 @@ const weatherEffects = {
       businessDisruption: 0.5,
       movementSpeed: -0.35
     },
-    icon: '[BLZ]'
+    icon: ''
   },
   sleet: {
     name: "Sleet",
@@ -11846,7 +11831,7 @@ const weatherEffects = {
       witnessReduction: 0.25,
       energyCost: 1.2
     },
-    icon: '[SLT]'
+    icon: ''
   },
   fog: {
     name: "Fog",
@@ -11857,7 +11842,7 @@ const weatherEffects = {
       carAccidents: 0.15,
       jobSuccessBonus: 0.1
     },
-    icon: '[FOG]'
+    icon: ''
   },
   storm: {
     name: "Storm",
@@ -11869,7 +11854,7 @@ const weatherEffects = {
       energyCost: 1.3,
       businessDisruption: 0.4
     },
-    icon: '[STM]'
+    icon: ''
   },
   heatwave: {
     name: "Heatwave",
@@ -11879,7 +11864,7 @@ const weatherEffects = {
       energyCost: 1.25,
       witnessReduction: 0.15
     },
-    icon: '[HOT]'
+    icon: ''
   },
   humid: {
     name: "Humid & Muggy",
@@ -11888,7 +11873,7 @@ const weatherEffects = {
       energyCost: 1.15,
       movementSpeed: -0.1
     },
-    icon: '[HMD]'
+    icon: ''
   }
 };
 
@@ -11946,7 +11931,7 @@ const newsEvents = [
     },
     probability: 0.1,
     category: "law_enforcement",
-    icon: '[NEWS]'
+    icon: ''
   },
   {
     id: "new_police_chief",
@@ -11960,7 +11945,7 @@ const newsEvents = [
     },
     probability: 0.08,
     category: "law_enforcement",
-    icon: "[COP]"
+    icon: ''
   },
   {
     id: "economic_boom",
@@ -12002,7 +11987,7 @@ const newsEvents = [
     },
     probability: 0.2,
     category: "social",
-    icon: "[EVT]"
+    icon: ''
   },
   {
     id: "tech_surveillance",
@@ -12016,7 +12001,7 @@ const newsEvents = [
     },
     probability: 0.06,
     category: "technology",
-    icon: "[CAM]"
+    icon: ''
   }
 ];
 
@@ -12046,7 +12031,7 @@ const crackdownTypes = [
     },
     triggers: ["high_drug_activity", "public_pressure"],
     severity: "high",
-    icon: "[DEA]"
+    icon: ''
   },
   {
     id: "gang_crackdown",
@@ -12060,7 +12045,7 @@ const crackdownTypes = [
     },
     triggers: ["territory_violence", "gang_visibility"],
     severity: "extreme",
-    icon: "[SWAT]"
+    icon: ''
   },
   {
     id: "vehicle_crackdown",
@@ -12074,7 +12059,7 @@ const crackdownTypes = [
     },
     triggers: ["car_theft_reports", "insurance_pressure"],
     severity: "medium",
-    icon: "[AUTO]"
+    icon: ''
   },
   {
     id: "corruption_investigation",
@@ -12088,7 +12073,7 @@ const crackdownTypes = [
     },
     triggers: ["corruption_exposure", "political_pressure"],
     severity: "extreme",
-    icon: "[FBI]"
+    icon: ''
   }
 ];
 
@@ -13086,7 +13071,7 @@ function buildCharacterShowcaseHTML() {
       </div>
 
       <!-- Stats Grid -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
         <div style="background: rgba(138, 154, 106, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8a9a6a;">
           <h3 style="color: #8a9a6a; margin: 0 0 15px 0;">Financial Empire</h3>
           <div style="display: grid; gap: 8px;">
@@ -13361,7 +13346,7 @@ function showRecruitment() {
 
     <div style="margin-bottom: 25px; padding: 20px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(192, 160, 98, 0.3);">
       <h4 style="color: #c0a062; margin-top: 0; font-family: 'Georgia', serif;">Experience Level Guide:</h4>
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
+      <div class="recruit-level-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
         <div style="padding: 10px; background: rgba(149, 165, 166, 0.2); border: 1px solid #8a7a5a; border-radius: 5px;">
           <strong style="color: #8a7a5a;">Levels 1-3: Rookies</strong><br>
           <small>Common (85% chance)<br>Standard tribute</small>
@@ -13545,14 +13530,14 @@ let _currentBlackMarketTab = 'buy';
 
 // Store item category definitions
 const storeCategories = [
-  { id: 'all', label: 'All', icon: '[ALL]', types: null },
-  { id: 'weapons', label: 'Weapons', icon: '[WPN]', types: ['weapon'] },
-  { id: 'armor', label: 'Armor', icon: '[ARM]', types: ['armor'] },
-  { id: 'vehicles', label: 'Vehicles', icon: '[CAR]', types: ['vehicle'] },
-  { id: 'supplies', label: 'Supplies', icon: '[SUP]', types: ['ammo', 'gas'] },
-  { id: 'energy', label: 'Energy', icon: '[NRG]', types: ['energy'] },
-  { id: 'utility', label: 'Utility', icon: '[UTL]', types: ['utility'] },
-  { id: 'trade', label: 'Trade Goods', icon: '[TRD]', types: ['highLevelDrug'] }
+  { id: 'all', label: 'All', icon: '', types: null },
+  { id: 'weapons', label: 'Weapons', icon: '', types: ['weapon'] },
+  { id: 'armor', label: 'Armor', icon: '', types: ['armor'] },
+  { id: 'vehicles', label: 'Vehicles', icon: '', types: ['vehicle'] },
+  { id: 'supplies', label: 'Supplies', icon: '', types: ['ammo', 'gas'] },
+  { id: 'energy', label: 'Energy', icon: '', types: ['energy'] },
+  { id: 'utility', label: 'Utility', icon: '', types: ['utility'] },
+  { id: 'trade', label: 'Trade Goods', icon: '', types: ['highLevelDrug'] }
 ];
 
 function showStore(activeTab) {
@@ -13677,7 +13662,7 @@ function buildBuyTabContent() {
     <div id="store-tabs" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; padding: 10px 0; border-bottom: 2px solid #333;">
       ${tabsHTML}
     </div>
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 10px;">
+    <div id="store-layout-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 10px;">
       <div class="content-card">
         <h3 id="store-section-title">Available Goods</h3>
         <ul id="item-list" style="list-style: none; padding: 0;"></ul>
@@ -14077,12 +14062,6 @@ async function buyItem(index) {
       // Energy drinks take a toll on your health
       player.health = Math.max(player.health - 1, 0);
       // Reset timer if energy is now full
-
-    // Black market purchases boost underground rep (you're a regular customer)
-    if (player.streetReputation && (item.type === 'weapon' || item.type === 'armor' || item.type === 'highLevelDrug' || item.type === 'ammo')) {
-      player.streetReputation.underground = Math.min(100, (player.streetReputation.underground || 0) + 1);
-    }
-
       if (player.energy >= player.maxEnergy) {
         player.energyRegenTimer = 0;
       }
@@ -14106,6 +14085,11 @@ async function buyItem(index) {
       if (item.type === "vehicle") {
         showVehiclePurchaseResult(itemCopy, finalPrice);
       }
+    }
+
+    // Black market purchases boost underground rep (you're a regular customer)
+    if (player.streetReputation && (item.type === 'weapon' || item.type === 'armor' || item.type === 'highLevelDrug' || item.type === 'ammo')) {
+      player.streetReputation.underground = Math.min(100, (player.streetReputation.underground || 0) + 1);
     }
 
     if (item.type !== "energy" && item.type !== "vehicle" && item.type !== "utility") {
@@ -14272,11 +14256,11 @@ function showLevelUpEffects() {
   // Create level up content
   levelUpOverlay.innerHTML = `
     <div style="text-align: center; color: white;">
-      <div style="font-size: 6em; font-weight: bold; color: #c0a040; text-shadow: 0 0 30px #c0a040;
+      <div style="font-size: clamp(2.5em, 12vw, 6em); font-weight: bold; color: #c0a040; text-shadow: 0 0 30px #c0a040;
             animation: levelUpPulse 1s ease-in-out infinite alternate, levelUpGlow 2s ease-in-out infinite;">
         LEVEL UP!
       </div>
-      <div style="font-size: 3em; margin: 20px 0; color: #8b3a3a; text-shadow: 0 0 20px #7a2a2a;">
+      <div style="font-size: clamp(1.8em, 8vw, 3em); margin: 20px 0; color: #8b3a3a; text-shadow: 0 0 20px #7a2a2a;">
         Level ${player.level}
       </div>
       <div style="font-size: 1.5em; margin: 15px 0; color: #f5e6c8;">
@@ -15104,9 +15088,15 @@ function selectPortrait(portraitFile, portraitLabel) {
   player.portrait = portraitFile;
 
   // Parse gender and ethnicity from filename for internal tracking only
-  const parts = portraitFile.toLowerCase().replace('.png', '').split(' ');
-  player.ethnicity = parts[0]; // white, black, asian, mexican
-  player.gender = parts[1]; // male, female
+  const parts = portraitFile.replace('profile_pics/', '').toLowerCase().replace('.png', '').split(' ');
+  // Handle "Stylized White Male 1" (4 parts) vs "White Male 1" (3 parts)
+  if (parts.length >= 4 && parts[0] === 'stylized') {
+    player.ethnicity = parts[1];
+    player.gender = parts[2];
+  } else {
+    player.ethnicity = parts[0]; // white, black, asian, mexican
+    player.gender = parts[1]; // male, female
+  }
 
   // Set default current slot for new character (slot 1)
   SAVE_SYSTEM.currentSlot = 1;
@@ -15928,8 +15918,37 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.11.8";
+const CURRENT_VERSION = "1.12.0";
 const VERSION_UPDATES = {
+  "1.12.0": {
+    title: "Bug Fixes, UI Cleanup & Mobile Overhaul",
+    date: "March 2026",
+    changes: [
+      "Deep-copy fix for save/load -- prevents state bleed between save slots",
+      "Underground rep boost in buyItem now fires correctly for all purchase types",
+      "Portrait selection parsing fixed for Stylized portraits",
+      "Quest timer leak plugged -- timers now clear on screen change",
+      "hideAllScreens rewritten as data-driven loop with null guards (28 screens)",
+      "upgradeNode double-spend race condition fixed",
+      "Courthouse reset button null guard added",
+      "PvP countdown interval leak fixed -- clearInterval before new setInterval",
+      "Fence pricing now cached (60-second TTL) to avoid per-frame recalculation",
+      "Heist results use server-sent totals to prevent double-credit",
+      "Vehicle marketplace rollback on server error",
+      "Removed 86 bracket abbreviation icons ([WPN], [ARM], etc.) from items and factions",
+      "Mobile: safehouse scroll fixed, store buy buttons no longer overflow",
+      "Mobile: save slot grids, gang layout, recruitment guide collapse to single column",
+      "Mobile: business/laundry/garage grids reduced to 260px min for small screens",
+      "Mobile: character showcase, gang members, training, rival kingpin grids reduced to 240px min",
+      "Mobile: level-up overlay text uses responsive clamp() sizing",
+      "Mobile: blackjack cards scale with viewport width",
+      "Mobile: 320px breakpoint padding accounts for stats bar height",
+      "Mobile: tablet padding simplified to catch-all .game-screen rule",
+      "Mobile: obituary stats grid collapses at 480px",
+      "Mobile: vehicle images use responsive width with aspect-ratio",
+      "Server cloud-save default version updated to 1.12.0",
+    ]
+  },
   "1.11.8": {
     title: "Skills & Buffs Audit - 6 Dead Systems Wired",
     date: "March 2026",
@@ -16916,7 +16935,7 @@ function showCourtHouse() {
 function updateCourtHouseCost() {
   const cost = player.wantedLevel * 500; // Cost based on wanted level
   const resetButton = document.getElementById("reset-wanted-level-court-house");
-  resetButton.innerText = `Reset Wanted Level for $${cost}`;
+  if (resetButton) resetButton.innerText = `Reset Wanted Level for $${cost}`;
 }
 
 // Function to reset wanted level via Court House
@@ -17106,7 +17125,7 @@ function buildMotorPoolHTML() {
     `;
   } else {
     carsHTML += `
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin: 25px 0;">
+      <div class="garage-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; margin: 25px 0;">
         ${player.stolenCars.map((car, index) => {
           let conditionText = car.damagePercentage <= 15 ? 'PRISTINE' :
                    car.damagePercentage <= 50 ? 'DAMAGED' : 'HEAVILY DAMAGED';
@@ -17118,7 +17137,7 @@ function buildMotorPoolHTML() {
             <div style="background: rgba(20, 18, 10, 0.8); border-radius: 15px; padding: 25px; border: 2px solid #1a1610; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); transition: transform 0.3s ease;">
               <div style="text-align: center; margin-bottom: 20px;">
                 <img src="${carImageSrc}" alt="${car.name}"
-                   style="width: 220px; height: 165px; border-radius: 12px; object-fit: cover;
+                   style="max-width: 220px; width: 100%; height: auto; border-radius: 12px; object-fit: cover; aspect-ratio: 220/165;
                       border: 3px solid #f5e6c8; margin-bottom: 15px; transition: transform 0.3s ease;"
                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIwIiBoZWlnaHQ9IjE2NSIgdmlld0JveD0iMCAwIDIyMCAxNjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIyMCIgaGVpZ2h0PSIxNjUiIGZpbGw9IiM3ZjhjOGQiLz48dGV4dCB4PSIxMTAiIHk9IjgyLjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0iI2VjZjBmMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+VmVoaWNsZSBJbWFnZTwvdGV4dD48L3N2Zz4=';" />
                 <h3 style="color: #f5e6c8; margin: 15px 0; font-size: 1.3em;">${car.name}</h3>
@@ -17273,7 +17292,17 @@ function sellStolenCar(index) { scrapStolenCar(index); }
 // Dedicated screen for selling stolen goods, contraband, and inventory at premium rates
 
 // Fence price multiplier fluctuates based on various factors
+// Cached to ensure display price matches transaction price within the same window
+let _cachedFenceRates = null;
+let _fenceRatesCachedAt = 0;
+const FENCE_CACHE_DURATION = 60000; // Refresh every 60 seconds
+
 function getFenceMultiplier() {
+  const now = Date.now();
+  if (_cachedFenceRates && (now - _fenceRatesCachedAt) < FENCE_CACHE_DURATION) {
+    return _cachedFenceRates;
+  }
+
   const baseRate = 0.55; // Base 55% of item value (vs 40% at regular sell)
   let bonus = 0;
 
@@ -17290,7 +17319,7 @@ function getFenceMultiplier() {
   // Random market fluctuation (-5% to +10%)
   const marketFlux = -0.05 + Math.random() * 0.15;
 
-  return {
+  _cachedFenceRates = {
     items: Math.max(0.35, baseRate + bonus - heatPenalty + marketFlux),
     cars: Math.max(0.45, baseRate + bonus + chopBonus - heatPenalty + marketFlux),
     drugs: Math.max(0.50, 0.65 + bonus - heatPenalty + marketFlux), // Drugs sell at premium
@@ -17298,6 +17327,8 @@ function getFenceMultiplier() {
     heatPenalty: heatPenalty,
     marketCondition: marketFlux > 0.05 ? 'Hot' : marketFlux > -0.02 ? 'Normal' : 'Cold'
   };
+  _fenceRatesCachedAt = now;
+  return _cachedFenceRates;
 }
 
 function showFence() {
@@ -17804,13 +17835,13 @@ function showAchievements() {
 
   // Group achievements by category
   const categories = [
-    { name: 'Early Game', icon: '[NEW]', ids: ['first_job','first_blood','wheels','armed_dangerous','property_owner'] },
+    { name: 'Early Game', icon: '', ids: ['first_job','first_blood','wheels','armed_dangerous','property_owner'] },
     { name: 'Money Milestones', icon: '[$]', ids: ['millionaire','half_mil','true_millionaire','multi_millionaire','billionaire'] },
-    { name: 'Gang & Social', icon: '[FAM]', ids: ['first_recruit','gang_leader','crime_family','army','faction_friend','faction_ally'] },
+    { name: 'Gang & Social', icon: '', ids: ['first_recruit','gang_leader','crime_family','army','faction_friend','faction_ally'] },
     { name: 'Combat & Crime', icon: '[!!]', ids: ['jail_break','most_wanted','ghost','boss_slayer'] },
-    { name: 'Progression', icon: '[LVL]', ids: ['reputation_max','level_10','level_25','level_50','skill_master'] },
-    { name: 'Empire', icon: '[EMP]', ids: ['territory_3','territory_10','business_owner','jobs_50','jobs_200'] },
-    { name: 'Mini-Games', icon: '[GAME]', ids: ['lucky_streak','gambler','snake_king','quick_draw'] }
+    { name: 'Progression', icon: '', ids: ['reputation_max','level_10','level_25','level_50','skill_master'] },
+    { name: 'Empire', icon: '', ids: ['territory_3','territory_10','business_owner','jobs_50','jobs_200'] },
+    { name: 'Mini-Games', icon: '', ids: ['lucky_streak','gambler','snake_king','quick_draw'] }
   ];
 
   let achievementsHTML = `
@@ -18501,7 +18532,7 @@ function renderLoadSlotCards(saves, onClickFn) {
        onclick="${onClickFn(save)}"
        onmouseover="this.style.background='rgba(52, 152, 219, 0.3)'; this.style.borderColor='#8a9a6a';"
        onmouseout="this.style.background='rgba(20, 18, 10, 0.8)'; this.style.borderColor='#c0a062';">
-      <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
+      <div class="save-slot-grid" style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
         <div>
           <h3 style="color: #c0a062; margin: 0; font-size: 1.1em;">
             ${save.slotNumber === 0 ? 'Auto-Save' : `Slot ${save.slotNumber}`}
@@ -18923,7 +18954,7 @@ function showDeleteSelectionInterface(saves) {
              onmouseover="this.style.background='rgba(231, 76, 60, 0.3)'; this.style.borderColor='#7a2a2a';"
              onmouseout="this.style.background='rgba(20, 18, 10, 0.8)'; this.style.borderColor='#8b3a3a';">
 
-            <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
+            <div class="save-slot-grid" style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
               <div>
                 <h3 style="color: #8b3a3a; margin: 0; font-size: 1.1em;">
                   ${save.slotNumber === 0 ? 'Auto-Save' : `Slot ${save.slotNumber}`}
@@ -20380,13 +20411,12 @@ function importSaveData() {
 }
 
 function createSaveData() {
+  // Deep-copy player to prevent shared references between save slots
+  const playerSnapshot = JSON.parse(JSON.stringify(player));
+  playerSnapshot.lastSaved = Date.now();
   const saveData = {
     // Core player data
-    player: {
-      ...player,
-      // Add save timestamp
-      lastSaved: Date.now()
-    },
+    player: playerSnapshot,
 
     // Global game state
     achievements: achievements.map(a => ({
@@ -20427,8 +20457,9 @@ function applySaveData(saveData) {
   for (const key of Object.keys(player)) {
     delete player[key];
   }
-  // Apply saved player data onto clean player object
-  Object.assign(player, saveData.player);
+  // Deep-copy saved data to prevent reference sharing between save slots and live state
+  const loadedPlayer = JSON.parse(JSON.stringify(saveData.player));
+  Object.assign(player, loadedPlayer);
 
   // Apply achievements
   if (saveData.achievements) {
@@ -20731,7 +20762,7 @@ function showSaveSystem() {
               const borderColor = isAutoSave ? '#c0a040' : isCurrent ? '#8a9a6a' : '#c0a062';
 
               return `
-                <div style="padding: 20px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 2px solid ${borderColor}; display: grid; grid-template-columns: 1fr auto auto auto; gap: 15px; align-items: center;">
+                <div class="save-manage-row" style="padding: 20px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 2px solid ${borderColor}; display: grid; grid-template-columns: 1fr auto auto auto; gap: 15px; align-items: center;">
                   <div>
                     <h4 style="color: #f5e6c8; margin: 0 0 5px 0;">
                       ${isAutoSave ? '' : ''}${slot.saveName}
@@ -20999,11 +21030,11 @@ const COMPETITION_SYSTEM = {
   leaderboardCategories: [
     { id: 'empire', name: 'Empire Rating', icon: '[#1]', description: 'Overall criminal power and influence' },
     { id: 'wealth', name: 'Criminal Wealth', icon: '[$]', description: 'Total money accumulated' },
-    { id: 'reputation', name: 'Street Reputation', icon: '[REP]', description: 'Respect in the criminal underworld' },
-    { id: 'territory', name: 'Turf Control', icon: '[MAP]', description: 'Turf zones under your family\'s control' },
-    { id: 'gang', name: 'Gang Power', icon: '[FAM]', description: 'Size and strength of criminal organization' },
-    { id: 'business', name: 'Business Empire', icon: '[BIZ]', description: 'Number of criminal enterprises' },
-    { id: 'longevity', name: 'Career Longevity', icon: '[VET]', description: 'Time survived in the criminal world' }
+    { id: 'reputation', name: 'Street Reputation', icon: '', description: 'Respect in the criminal underworld' },
+    { id: 'territory', name: 'Turf Control', icon: '', description: 'Turf zones under your family\'s control' },
+    { id: 'gang', name: 'Gang Power', icon: '', description: 'Size and strength of criminal organization' },
+    { id: 'business', name: 'Business Empire', icon: '', description: 'Number of criminal enterprises' },
+    { id: 'longevity', name: 'Career Longevity', icon: '', description: 'Time survived in the criminal world' }
   ],
   maxLeaderboardEntries: 50,
   submissionCooldown: 60000, // 1 minute
@@ -21033,7 +21064,7 @@ const WEEKLY_CHALLENGES = {
       id: 'job_master',
       name: 'Job Master',
       description: 'Complete {target} jobs successfully',
-      icon: '[JOB]',
+      icon: '',
       targets: { easy: 10, medium: 25, hard: 50, extreme: 100 },
       checkProgress: (target) => player.statistics.jobsCompleted >= target
     },
@@ -21041,7 +21072,7 @@ const WEEKLY_CHALLENGES = {
       id: 'empire_builder',
       name: 'Empire Builder',
       description: 'Reach empire rating of {target}',
-      icon: '[EMP]',
+      icon: '',
       targets: { easy: 2000, medium: 4000, hard: 6000, extreme: 8000 },
       checkProgress: (target) => calculateEmpireRating().totalScore >= target
     },
@@ -21049,7 +21080,7 @@ const WEEKLY_CHALLENGES = {
       id: 'gang_leader',
       name: 'Gang Leader',
       description: 'Recruit {target} gang members',
-      icon: '[BOSS]',
+      icon: '',
       targets: { easy: 5, medium: 15, hard: 30, extreme: 50 },
       checkProgress: (target) => (player.gang.gangMembers ? player.gang.gangMembers.length : player.gang.members) >= target
     },
@@ -21057,7 +21088,7 @@ const WEEKLY_CHALLENGES = {
       id: 'territory_king',
       name: 'Territory King',
       description: 'Control {target} territories',
-      icon: '[TURF]',
+      icon: '',
       targets: { easy: 3, medium: 8, hard: 15, extreme: 25 },
       checkProgress: (target) => player.territory >= target
     },
@@ -21065,7 +21096,7 @@ const WEEKLY_CHALLENGES = {
       id: 'business_mogul',
       name: 'Business Mogul',
       description: 'Own {target} businesses',
-      icon: '[BIZ]',
+      icon: '',
       targets: { easy: 2, medium: 5, hard: 10, extreme: 20 },
       checkProgress: (target) => (player.businesses ? player.businesses.length : 0) >= target
     },
@@ -21073,7 +21104,7 @@ const WEEKLY_CHALLENGES = {
       id: 'escape_artist',
       name: 'Escape Artist',
       description: 'Escape from jail {target} times',
-      icon: '[RUN]',
+      icon: '',
       targets: { easy: 2, medium: 5, hard: 10, extreme: 20 },
       checkProgress: (target) => player.statistics.timesEscaped >= target
     },
@@ -21081,7 +21112,7 @@ const WEEKLY_CHALLENGES = {
       id: 'car_thief',
       name: 'Car Thief',
       description: 'Steal {target} vehicles',
-      icon: '[CAR]',
+      icon: '',
       targets: { easy: 10, medium: 25, hard: 50, extreme: 100 },
       checkProgress: (target) => player.statistics.carsStolen >= target
     }
@@ -21457,7 +21488,7 @@ function displayImportedShowcase(showcase) {
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
         <div style="background: rgba(138, 154, 106, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8a9a6a;">
           <h3 style="color: #8a9a6a; margin: 0 0 15px 0;">Financial Empire</h3>
           <div style="display: grid; gap: 8px;">
@@ -21603,7 +21634,7 @@ function showRivalsTab() {
     <div>
       <h3 style="color: #f5e6c8; margin-bottom: 15px; text-align: center;">Track your AI competitors and plan your moves</h3>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
         ${rivals.map(rival => {
           const playerRespect = player.relationships?.[rival.id] || 0;
           const respectColor = playerRespect > 20 ? '#8a9a6a' : playerRespect < -20 ? '#8b3a3a' : '#6a5a3a';

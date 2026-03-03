@@ -739,15 +739,27 @@ function showHeistResult(result) {
     document.body.appendChild(modal);
     
     // Sync player money/rep from server
+    // Server already credited the reward server-side; apply delta to local state
+    // so the UI updates immediately while waiting for the next full sync.
     if (isSuccess && result.reward) {
         if (typeof player !== 'undefined') {
-            player.money = (player.money || 0) + result.reward;
-            player.reputation = (player.reputation || 0) + (result.repGain || 0);
+            // Only update if server sent explicit new totals, otherwise apply delta
+            if (result.newMoney !== undefined) {
+                player.money = result.newMoney;
+                player.reputation = result.newReputation || player.reputation;
+            } else {
+                player.money = (player.money || 0) + result.reward;
+                player.reputation = (player.reputation || 0) + (result.repGain || 0);
+            }
             if (typeof updateUI === 'function') updateUI();
         }
     } else if (!isSuccess && result.repLoss) {
         if (typeof player !== 'undefined') {
-            player.reputation = Math.max(0, (player.reputation || 0) - (result.repLoss || 0));
+            if (result.newReputation !== undefined) {
+                player.reputation = result.newReputation;
+            } else {
+                player.reputation = Math.max(0, (player.reputation || 0) - (result.repLoss || 0));
+            }
             if (typeof updateUI === 'function') updateUI();
         }
     }
@@ -1791,6 +1803,7 @@ function handleMarketplaceMessage(message) {
         case 'marketplace_listed':
             if (typeof showBriefNotification === 'function') showBriefNotification(`${message.vehicleName} is now listed on the marketplace!`, 'success');
             marketplaceListings = message.listings || marketplaceListings;
+            window._pendingMarketplaceListing = null; // Clear rollback data on success
             break;
             
         case 'marketplace_sold':
@@ -1844,6 +1857,14 @@ function handleMarketplaceMessage(message) {
             
         case 'marketplace_error':
             if (typeof showBriefNotification === 'function') showBriefNotification(message.error || 'Marketplace error!', 'error');
+            // Rollback optimistic vehicle removal if listing was rejected
+            if (window._pendingMarketplaceListing) {
+                const rollback = window._pendingMarketplaceListing;
+                player.stolenCars.splice(rollback.index, 0, rollback.car);
+                player.selectedCar = rollback.previousSelectedCar;
+                window._pendingMarketplaceListing = null;
+                if (typeof updateUI === 'function') updateUI();
+            }
             // If a buy failed, refresh listings
             requestMarketplaceListings();
             break;
@@ -2938,9 +2959,8 @@ function showOnlineWorld(activeTab) {
     if (tab === 'territories' || tab === 'overview') {
         // Start territory income countdown
         updatePVPCountdown();
-        if (!window.pvpCountdownInterval) {
-            window.pvpCountdownInterval = setInterval(updatePVPCountdown, 1000);
-        }
+        if (window.pvpCountdownInterval) clearInterval(window.pvpCountdownInterval);
+        window.pvpCountdownInterval = setInterval(updatePVPCountdown, 1000);
     }
     if (tab === 'chat') {
         loadWorldActivityFeed();
@@ -3114,10 +3134,21 @@ function listVehicleForSale(carIndex) {
         price: askingPrice
     }));
     
-    // Remove the car from local inventory immediately (server will confirm)
+    // Store car data for rollback if server rejects
+    const removedCar = player.stolenCars[carIndex];
+    const previousSelectedCar = player.selectedCar;
+    
+    // Remove the car from local inventory optimistically (server will confirm)
     if (player.selectedCar === carIndex) player.selectedCar = null;
     else if (player.selectedCar > carIndex) player.selectedCar--;
     player.stolenCars.splice(carIndex, 1);
+    
+    // Store rollback data on window in case server rejects
+    window._pendingMarketplaceListing = {
+        car: removedCar,
+        index: carIndex,
+        previousSelectedCar: previousSelectedCar
+    };
     
     if (typeof showBriefNotification === 'function') showBriefNotification(`Listed ${car.name} for $${askingPrice.toLocaleString()}!`, 'success');
     if (typeof logAction === 'function') logAction(`Listed ${car.name} on the marketplace for $${askingPrice.toLocaleString()}.`);
