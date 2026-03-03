@@ -7,45 +7,45 @@
  */
 
 // Job options with risk categories, jail chances, wanted level gains, health loss, required items, and reputation requirements
-// v1.11.0 Rebalance: Energy costs increased, early payouts reduced — Omerta-style slow grind
+// v1.12.0 Rebalance: Energy costs lowered across the board — Street Soldier starts at 1
 export const jobs = [
     // Entry Level Job — tight early-game grind
-    { name: "Street Soldier", payout: [40, 180], risk: "low", jailChance: 20, wantedLevelGain: 1, healthLoss: 0, requiredItems: [], reputation: 0, energyCost: 3 },
+    { name: "Street Soldier", payout: [40, 180], risk: "low", jailChance: 20, wantedLevelGain: 1, healthLoss: 0, requiredItems: [], reputation: 0, energyCost: 1 },
     
     // Car Stealing Job (Special mechanic)
-    { name: "Boost a Ride", payout: [0, 0], risk: "medium", jailChance: 40, wantedLevelGain: 3, healthLoss: 5, requiredItems: [], reputation: 0, special: "car_theft", energyCost: 8 },
+    { name: "Boost a Ride", payout: [0, 0], risk: "medium", jailChance: 40, wantedLevelGain: 3, healthLoss: 5, requiredItems: [], reputation: 0, special: "car_theft", energyCost: 3 },
     
     // Higher Risk Job
-    { name: "Store Heist", payout: [800, 2200], risk: "high", jailChance: 30, wantedLevelGain: 4, healthLoss: 10, requiredItems: [], reputation: 10, energyCost: 14 },
+    { name: "Store Heist", payout: [800, 2200], risk: "high", jailChance: 30, wantedLevelGain: 4, healthLoss: 10, requiredItems: [], reputation: 10, energyCost: 5 },
     
     // Drug dealing jobs
-    { name: "Bootleg Run", payout: [2500, 6000], risk: "high", jailChance: 25, wantedLevelGain: 3, healthLoss: 5, requiredItems: ["Crate Moonshine"], reputation: 15, energyCost: 16 },
-    { name: "Speakeasy Supply", payout: [5000, 11000], risk: "very high", jailChance: 35, wantedLevelGain: 5, healthLoss: 8, requiredItems: ["Bag of Mary Jane"], reputation: 25, energyCost: 20 },
-    { name: "White Powder Distribution", payout: [10000, 22000], risk: "extreme", jailChance: 45, wantedLevelGain: 8, healthLoss: 15, requiredItems: ["Pure Cocaine"], reputation: 40, energyCost: 26 },
+    { name: "Bootleg Run", payout: [2500, 6000], risk: "high", jailChance: 25, wantedLevelGain: 3, healthLoss: 5, requiredItems: ["Crate Moonshine"], reputation: 15, energyCost: 7 },
+    { name: "Speakeasy Supply", payout: [5000, 11000], risk: "very high", jailChance: 35, wantedLevelGain: 5, healthLoss: 8, requiredItems: ["Bag of Mary Jane"], reputation: 25, energyCost: 9 },
+    { name: "White Powder Distribution", payout: [10000, 22000], risk: "extreme", jailChance: 45, wantedLevelGain: 8, healthLoss: 15, requiredItems: ["Pure Cocaine"], reputation: 40, energyCost: 12 },
     
     // Weapon-based jobs
-    { name: "Protection Collection", payout: [500, 1400], risk: "medium", jailChance: 20, wantedLevelGain: 3, healthLoss: 8, requiredItems: ["Brass Knuckles"], reputation: 12, energyCost: 12 },
-    { name: "Bank Job", payout: [7000, 18000], risk: "extreme", jailChance: 50, wantedLevelGain: 10, healthLoss: 20, requiredItems: ["Tommy Gun", "Bullets"], reputation: 35, energyCost: 30, paysDirty: true },
-    { name: "Hit on a Rival", payout: [4000, 9000], risk: "very high", jailChance: 40, wantedLevelGain: 6, healthLoss: 25, requiredItems: ["Pistol", "Bullets"], reputation: 30, energyCost: 22 },
+    { name: "Protection Collection", payout: [500, 1400], risk: "medium", jailChance: 20, wantedLevelGain: 3, healthLoss: 8, requiredItems: ["Brass Knuckles"], reputation: 12, energyCost: 6 },
+    { name: "Bank Job", payout: [7000, 18000], risk: "extreme", jailChance: 50, wantedLevelGain: 10, healthLoss: 20, requiredItems: ["Tommy Gun", "Bullets"], reputation: 35, energyCost: 15, paysDirty: true },
+    { name: "Hit on a Rival", payout: [4000, 9000], risk: "very high", jailChance: 40, wantedLevelGain: 6, healthLoss: 25, requiredItems: ["Pistol", "Bullets"], reputation: 30, energyCost: 10 },
     
     // High-tech/Vehicle jobs
-    { name: "Luxury Car Ring", payout: [5000, 11000], risk: "high", jailChance: 30, wantedLevelGain: 4, healthLoss: 5, requiredItems: ["Luxury Automobile"], reputation: 20, energyCost: 20 },
-    { name: "Cross-Border Smuggling", payout: [7500, 18000], risk: "extreme", jailChance: 35, wantedLevelGain: 7, healthLoss: 10, requiredItems: ["Private Airplane", "Gasoline"], reputation: 50, energyCost: 35 },
+    { name: "Luxury Car Ring", payout: [5000, 11000], risk: "high", jailChance: 30, wantedLevelGain: 4, healthLoss: 5, requiredItems: ["Luxury Automobile"], reputation: 20, energyCost: 9 },
+    { name: "Cross-Border Smuggling", payout: [7500, 18000], risk: "extreme", jailChance: 35, wantedLevelGain: 7, healthLoss: 10, requiredItems: ["Private Airplane", "Gasoline"], reputation: 50, energyCost: 16 },
     
     // Gang-based jobs
-    { name: "Turf War", payout: [2500, 7000], risk: "very high", jailChance: 45, wantedLevelGain: 5, healthLoss: 30, requiredItems: ["Gang Recruit"], reputation: 25, energyCost: 25 },
-    { name: "Underground Boxing", payout: [2000, 5000], risk: "high", jailChance: 25, wantedLevelGain: 2, healthLoss: 40, requiredItems: ["Brass Knuckles"], reputation: 18, energyCost: 16 },
+    { name: "Turf War", payout: [2500, 7000], risk: "very high", jailChance: 45, wantedLevelGain: 5, healthLoss: 30, requiredItems: ["Gang Recruit"], reputation: 25, energyCost: 12 },
+    { name: "Underground Boxing", payout: [2000, 5000], risk: "high", jailChance: 25, wantedLevelGain: 2, healthLoss: 40, requiredItems: ["Brass Knuckles"], reputation: 18, energyCost: 8 },
     
     // Property-based jobs
-    { name: "Illegal Gambling Den", payout: [5000, 11000], risk: "very high", jailChance: 30, wantedLevelGain: 4, healthLoss: 5, requiredItems: ["Criminal Safehouse"], reputation: 35, energyCost: 28 },
-    { name: "Money Laundering", payout: [6000, 15000], risk: "high", jailChance: 20, wantedLevelGain: 3, healthLoss: 0, requiredItems: ["Basement Hideout", "Luxury Automobile"], reputation: 45, energyCost: 30, special: "launder_money" },
+    { name: "Illegal Gambling Den", payout: [5000, 11000], risk: "very high", jailChance: 30, wantedLevelGain: 4, healthLoss: 5, requiredItems: ["Criminal Safehouse"], reputation: 35, energyCost: 14 },
+    { name: "Money Laundering", payout: [6000, 15000], risk: "high", jailChance: 20, wantedLevelGain: 3, healthLoss: 0, requiredItems: ["Basement Hideout", "Luxury Automobile"], reputation: 45, energyCost: 15, special: "launder_money" },
     
     // Counterfeiting job (pays dirty money only)
-    { name: "Counterfeiting Money", payout: [6000, 18000], risk: "extreme", jailChance: 45, wantedLevelGain: 8, healthLoss: 0, requiredItems: ["Basement Hideout", "Fake ID Kit"], reputation: 40, energyCost: 26, paysDirty: true },
+    { name: "Counterfeiting Money", payout: [6000, 18000], risk: "extreme", jailChance: 45, wantedLevelGain: 8, healthLoss: 0, requiredItems: ["Basement Hideout", "Fake ID Kit"], reputation: 40, energyCost: 13, paysDirty: true },
     
     // Elite endgame jobs
-    { name: "International Arms Trade", payout: [18000, 40000], risk: "legendary", jailChance: 60, wantedLevelGain: 12, healthLoss: 10, requiredItems: ["Private Airplane", "Tommy Gun", "Bulletproof Vest"], reputation: 60, energyCost: 42 },
-    { name: "Take Over the City", payout: [50000, 125000], risk: "legendary", jailChance: 70, wantedLevelGain: 15, healthLoss: 20, requiredItems: ["Gang Recruit", "Underground Bunker", "Tommy Gun", "Luxury Automobile"], reputation: 80, energyCost: 50 }
+    { name: "International Arms Trade", payout: [18000, 40000], risk: "legendary", jailChance: 60, wantedLevelGain: 12, healthLoss: 10, requiredItems: ["Private Airplane", "Tommy Gun", "Bulletproof Vest"], reputation: 60, energyCost: 20 },
+    { name: "Take Over the City", payout: [50000, 125000], risk: "legendary", jailChance: 70, wantedLevelGain: 15, healthLoss: 20, requiredItems: ["Gang Recruit", "Underground Bunker", "Tommy Gun", "Luxury Automobile"], reputation: 80, energyCost: 25 }
 ];
 
 // Stolen car types with base values and damage probabilities
