@@ -15921,8 +15921,27 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.12.0";
+const CURRENT_VERSION = "1.12.1";
 const VERSION_UPDATES = {
+  "1.12.1": {
+    title: "Save System Hardening & Tutorial Accuracy",
+    date: "March 2026",
+    changes: [
+      "Cloud save now deleted on permadeath -- prevents resurrection via page refresh",
+      "Auto-save re-enabled after permadeath restart (was permanently stuck off)",
+      "Slot 0 falsy bug fixed -- currentSlot || 1 changed to ?? 1 (nullish coalescing)",
+      "Server sessions persisted to users.json -- logins survive server restarts",
+      "Cloud auto-load skipped when local save is newer (timestamp comparison)",
+      "Cloud save failures now show a user-visible warning (throttled to 5-min cooldown)",
+      "DELETE /api/save endpoint added for cloud save wipe on death",
+      "Tutorial & help text: 'black out' replaced with permadeath messaging (5 instances)",
+      "Tutorial & help text: family names corrected to Torrino, Kozlov, Chen, Morales",
+      "Tutorial & help text: casino games updated (removed Poker, added Dice & Horse Racing)",
+      "Tutorial & help text: mini games updated to TikTakToe, Number Guessing, RPS, Snake",
+      "Help text: auto-save description corrected (saves to current slot, not Slot 0)",
+      "Server cloud-save default version updated to 1.12.1",
+    ]
+  },
   "1.12.0": {
     title: "Bug Fixes, UI Cleanup & Mobile Overhaul",
     date: "March 2026",

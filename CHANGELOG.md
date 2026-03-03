@@ -5,6 +5,24 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.1] - 2026-03-03
+
+### Fixed — Save/Load System (6 issues)
+- **Permadeath cloud wipe** — cloud save now deleted on death via `DELETE /api/save`; prevents resurrection by refreshing
+- **Auto-save re-enabled after restart** — `restartGame()` re-enables auto-save, resets to slot 1, and re-activates gameplay systems
+- **Slot 0 falsy bug** — `currentSlot || 1` changed to `?? 1` in 3 places so slot 0 is no longer treated as "no slot"
+- **Session persistence** — server sessions now stored in `users.json` and restored on startup; logins survive Render cold starts
+- **Cloud auto-load safety** — `initAuth()` compares timestamps; skips cloud load when local save is newer
+- **Cloud save failure notification** — user-visible "Cloud save failed" warning (throttled to once per 5 minutes)
+
+### Changed — Tutorial & Help Text
+- **Permadeath messaging** — all 5 "black out" references replaced with permanent death language
+- **Crime families** — "Corleone, Moretti, etc." → "Torrino, Kozlov, Chen, or Morales" (2 instances)
+- **Casino games** — removed Poker, added Dice and Horse Racing in tutorial and help
+- **Mini games** — replaced "Lockpicking and Number Cracking" with TikTakToe, Number Guessing, Rock Paper Scissors, Snake
+- **Auto-save help** — corrected "saves to Slot 0" to "saves to your current slot"
+- **Server cloud-save default version** updated to 1.12.1
+
 ## [1.12.0] - 2026-03-03
 
 ### Fixed — Bug Audit Round 3 (11 issues)
