@@ -161,7 +161,7 @@ export function startBlackjack() {
   const gameArea = document.getElementById('casino-game-area');
   gameArea.innerHTML = `
     <div style="background: rgba(30, 50, 20,0.5); padding: 25px; border-radius: 15px; border: 2px solid #7a8a5a; text-align: center;">
-      <h3 style="color: #c0a040; margin-bottom: 15px;">🃏 Blackjack</h3>
+      <h3 style="color: #c0a040; margin-bottom: 15px;">Blackjack</h3>
       <p style="color: #d4c4a0;">Place your bet:</p>
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:15px 0;">
         <button onclick="document.getElementById('bj-bet-input').value=Math.max(100,parseInt(document.getElementById('bj-bet-input').value||0)-100)" style="background:#8b3a3a;color:white;border:none;border-radius:5px;padding:8px 14px;cursor:pointer;font-size:1.1em;">−</button>
