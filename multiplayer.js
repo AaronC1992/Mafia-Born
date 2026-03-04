@@ -1442,6 +1442,10 @@ async function handleServerMessage(message) {
                 onlineWorldState.playerId = message.playerId;
             }
             loadGlobalLeaderboard();
+            // Request current bullet stock from server
+            if (onlineWorldState.socket && onlineWorldState.socket.readyState === WebSocket.OPEN) {
+                onlineWorldState.socket.send(JSON.stringify({ type: 'get_bullet_stock' }));
+            }
             break;
 
         case 'heist_broadcast':
@@ -1766,6 +1770,19 @@ async function handleServerMessage(message) {
             handleMarketplaceMessage(message);
             break;
 
+        // -- Bullet Shop & Ammo Marketplace messages --
+        case 'bullets_purchased':
+        case 'bullets_error':
+        case 'bullet_stock_update':
+        case 'ammo_market_listings':
+        case 'ammo_market_listed':
+        case 'ammo_market_sold':
+        case 'ammo_market_purchased':
+        case 'ammo_market_cancelled':
+        case 'ammo_market_error':
+            handleBulletMarketMessage(message);
+            break;
+
         // -- Player connect / disconnect notifications --
         case 'player_connect':
             console.log(`[multiplayer] Player connected: ${message.playerName}`);
@@ -1869,6 +1886,198 @@ function handleMarketplaceMessage(message) {
             requestMarketplaceListings();
             break;
     }
+}
+
+// ==================== BULLET SHOP & AMMO MARKETPLACE HANDLER ====================
+
+function handleBulletMarketMessage(message) {
+    switch (message.type) {
+        case 'bullets_purchased':
+            // Server confirmed bullet purchase — complete the transaction
+            player.ammo++;
+            window._serverBulletStock = message.remaining;
+            window._pendingBulletPurchase = null;
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Bought 1 Bullet! ${message.remaining} left in today's server supply.`, 'success');
+            if (typeof logAction === 'function') logAction(`The dealer slides a single round across the table. ${message.remaining} bullets remain in today's citywide supply.`);
+            // Boost underground rep
+            if (player.streetReputation) {
+                player.streetReputation.underground = Math.min(100, (player.streetReputation.underground || 0) + 1);
+            }
+            if (typeof updateUI === 'function') updateUI();
+            if (typeof refreshStoreAfterPurchase === 'function') refreshStoreAfterPurchase();
+            break;
+
+        case 'bullets_error':
+            // Server rejected bullet purchase — refund money
+            if (window._pendingBulletPurchase) {
+                player.money += window._pendingBulletPurchase.price;
+                window._pendingBulletPurchase = null;
+            }
+            if (typeof showBriefNotification === 'function') showBriefNotification(message.error || 'Bullet purchase failed!', 'danger');
+            if (typeof updateUI === 'function') updateUI();
+            if (typeof refreshStoreAfterPurchase === 'function') refreshStoreAfterPurchase();
+            break;
+
+        case 'bullet_stock_update':
+            // Server broadcasting current bullet stock
+            window._serverBulletStock = message.remaining;
+            // Refresh store if viewing it
+            if (typeof refreshStoreAfterPurchase === 'function') refreshStoreAfterPurchase();
+            break;
+
+        case 'ammo_market_listings':
+            ammoMarketListings = message.listings || [];
+            if (document.querySelector('[onclick="showOnlineWorld(\'market\')"]')?.style?.background?.includes('#c0a062')) {
+                showOnlineWorld('market');
+            }
+            break;
+
+        case 'ammo_market_listed':
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Listed ${message.quantity} bullet(s) on the Ammo Exchange!`, 'success');
+            ammoMarketListings = message.listings || ammoMarketListings;
+            window._pendingAmmoListing = null;
+            if (typeof updateUI === 'function') updateUI();
+            break;
+
+        case 'ammo_market_sold':
+            // We sold ammo — receive money
+            player.money += message.amount;
+            if (typeof showBriefNotification === 'function') showBriefNotification(`${message.buyerName} bought ${message.quantity} bullet(s) from you for $${message.amount.toLocaleString()}!`, 'success');
+            if (typeof logAction === 'function') logAction(`${message.buyerName} purchased ${message.quantity} bullet(s) from your ammo listing for $${message.amount.toLocaleString()}!`);
+            if (typeof playNotificationSound === 'function') playNotificationSound('cash');
+            ammoMarketListings = message.listings || ammoMarketListings;
+            if (typeof updateUI === 'function') updateUI();
+            break;
+
+        case 'ammo_market_purchased':
+            // We bought ammo — add to inventory
+            player.ammo = (player.ammo || 0) + message.quantity;
+            player.money -= message.totalPrice;
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Bought ${message.quantity} bullet(s) from ${message.sellerName} for $${message.totalPrice.toLocaleString()}!`, 'success');
+            if (typeof logAction === 'function') logAction(`Purchased ${message.quantity} bullet(s) from ${message.sellerName} on the Ammo Exchange for $${message.totalPrice.toLocaleString()}.`);
+            if (typeof playNotificationSound === 'function') playNotificationSound('cash');
+            ammoMarketListings = message.listings || ammoMarketListings;
+            if (typeof updateUI === 'function') updateUI();
+            showOnlineWorld('market');
+            break;
+
+        case 'ammo_market_cancelled':
+            // Our listing was cancelled — return bullets
+            player.ammo = (player.ammo || 0) + message.quantity;
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Listing cancelled. ${message.quantity} bullet(s) returned to your stash.`, 'success');
+            ammoMarketListings = message.listings || ammoMarketListings;
+            if (typeof updateUI === 'function') updateUI();
+            showOnlineWorld('market');
+            break;
+
+        case 'ammo_market_error':
+            if (typeof showBriefNotification === 'function') showBriefNotification(message.error || 'Ammo Exchange error!', 'error');
+            // Rollback optimistic ammo removal if listing was rejected
+            if (window._pendingAmmoListing) {
+                player.ammo = (player.ammo || 0) + window._pendingAmmoListing.quantity;
+                window._pendingAmmoListing = null;
+                if (typeof updateUI === 'function') updateUI();
+            }
+            break;
+    }
+}
+
+// ==================== AMMO MARKETPLACE FUNCTIONS ====================
+
+function listAmmoForSale(quantity, pricePerBullet) {
+    if (!onlineWorldState.isConnected || !onlineWorldState.socket || onlineWorldState.socket.readyState !== WebSocket.OPEN) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Not connected to server!', 'error');
+        return;
+    }
+
+    quantity = parseInt(quantity);
+    pricePerBullet = parseInt(pricePerBullet);
+
+    if (!quantity || quantity < 1) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Enter a valid quantity!', 'error');
+        return;
+    }
+    if (quantity > (player.ammo || 0)) {
+        if (typeof showBriefNotification === 'function') showBriefNotification(`You only have ${player.ammo || 0} bullets!`, 'error');
+        return;
+    }
+    if (quantity > 100) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Max 100 bullets per listing!', 'error');
+        return;
+    }
+    if (!pricePerBullet || pricePerBullet < 10000) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Minimum price is $10,000 per bullet!', 'error');
+        return;
+    }
+    if (pricePerBullet > 1000000) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Maximum price is $1,000,000 per bullet!', 'error');
+        return;
+    }
+
+    // Optimistically remove ammo
+    player.ammo -= quantity;
+    window._pendingAmmoListing = { quantity: quantity };
+
+    onlineWorldState.socket.send(JSON.stringify({
+        type: 'ammo_market_list',
+        quantity: quantity,
+        pricePerBullet: pricePerBullet
+    }));
+
+    if (typeof showBriefNotification === 'function') showBriefNotification(`Listing ${quantity} bullet(s) at $${pricePerBullet.toLocaleString()}/ea...`, 'info');
+    if (typeof logAction === 'function') logAction(`Listed ${quantity} bullet(s) on the Ammo Exchange at $${pricePerBullet.toLocaleString()} each.`);
+    if (typeof updateUI === 'function') updateUI();
+
+    setTimeout(() => showOnlineWorld('market'), 500);
+}
+
+function buyAmmoListing(listingId) {
+    if (!onlineWorldState.isConnected || !onlineWorldState.socket || onlineWorldState.socket.readyState !== WebSocket.OPEN) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Not connected to server!', 'error');
+        return;
+    }
+
+    const listing = ammoMarketListings.find(l => l.id === listingId);
+    if (!listing) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Listing no longer available!', 'error');
+        return;
+    }
+
+    if (player.money < listing.totalPrice) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Not enough money!', 'error');
+        return;
+    }
+
+    onlineWorldState.socket.send(JSON.stringify({
+        type: 'ammo_market_buy',
+        listingId: listingId
+    }));
+
+    if (typeof showBriefNotification === 'function') showBriefNotification(`Purchasing ${listing.quantity} bullet(s)...`, 'info');
+}
+
+function cancelAmmoListing(listingId) {
+    if (!onlineWorldState.isConnected || !onlineWorldState.socket || onlineWorldState.socket.readyState !== WebSocket.OPEN) {
+        if (typeof showBriefNotification === 'function') showBriefNotification('Not connected to server!', 'error');
+        return;
+    }
+
+    onlineWorldState.socket.send(JSON.stringify({
+        type: 'ammo_market_cancel',
+        listingId: listingId
+    }));
+
+    if (typeof showBriefNotification === 'function') showBriefNotification('Cancelling ammo listing...', 'info');
+}
+
+function requestAmmoMarketListings() {
+    if (!onlineWorldState.isConnected || !onlineWorldState.socket || onlineWorldState.socket.readyState !== WebSocket.OPEN) {
+        return;
+    }
+
+    onlineWorldState.socket.send(JSON.stringify({
+        type: 'ammo_market_get_listings'
+    }));
 }
 
 // Update jail visibility — no longer renders a separate section.
@@ -2967,6 +3176,7 @@ function showOnlineWorld(activeTab) {
     }
     if (tab === 'market') {
         requestMarketplaceListings();
+        requestAmmoMarketListings();
     }
     
     // Request updated world state from server
@@ -2983,14 +3193,17 @@ function showOnlineWorld(activeTab) {
 // In-memory cache of marketplace listings
 let marketplaceListings = [];
 
+// In-memory cache of ammo market listings
+let ammoMarketListings = [];
+
 function renderMarketplaceTab() {
     const myListings = marketplaceListings.filter(l => l.sellerId === onlineWorldState.playerId);
     const otherListings = marketplaceListings.filter(l => l.sellerId !== onlineWorldState.playerId);
     const playerCars = (typeof player !== 'undefined' && player.stolenCars) ? player.stolenCars : [];
     
     let html = `
-        <h3 style="color: #a08850; text-align: center; font-family: 'Georgia', serif; margin-top: 0;">Vehicle Marketplace</h3>
-        <p style="color: #ccc; text-align: center; margin: 0 0 20px 0;">List your vehicles for sale or buy from other players. All sales are final.</p>
+        <h3 style="color: #a08850; text-align: center; font-family: 'Georgia', serif; margin-top: 0;">Player Marketplace</h3>
+        <p style="color: #ccc; text-align: center; margin: 0 0 20px 0;">Trade vehicles and ammunition with other players. All sales are final.</p>
     `;
     
     // === LIST A VEHICLE SECTION ===
@@ -3087,12 +3300,112 @@ function renderMarketplaceTab() {
     }
     html += `</div>`;
     
+    // ==================== AMMO EXCHANGE SECTION ====================
+    html += `<hr style="border: 1px solid #333; margin: 25px 0;">`;
+    html += `<h3 style="color: #e67e22; text-align: center; font-family: 'Georgia', serif; margin-top: 0;">🔫 Ammo Exchange</h3>`;
+    html += `<p style="color: #ccc; text-align: center; margin: 0 0 20px 0;">Buy and sell bullets with other players. Bullets are scarce — only 10 hit the streets each day.</p>`;
+
+    // === LIST BULLETS FOR SALE ===
+    const playerAmmo = (typeof player !== 'undefined') ? (player.ammo || 0) : 0;
+    html += `
+        <div style="background: rgba(230, 126, 34, 0.15); padding: 15px; border-radius: 12px; border: 1px solid #e67e22; margin-bottom: 20px;">
+            <h4 style="color: #e67e22; margin: 0 0 10px 0;">🔫 Sell Your Bullets</h4>
+    `;
+
+    if (playerAmmo === 0) {
+        html += `<p style="color: #6a5a3a; text-align: center;">You don't have any bullets to sell.</p>`;
+    } else {
+        html += `
+            <div style="padding: 10px; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid #1a1610;">
+                <div style="margin-bottom: 8px;">
+                    <strong style="color: #f5e6c8;">Your Stash:</strong> <span style="color: #e67e22; font-weight: bold;">${playerAmmo} bullet${playerAmmo > 1 ? 's' : ''}</span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <label style="color: #d4c4a0; font-size: 0.85em;">Qty:</label><br>
+                        <input type="number" id="ammo-sell-qty" value="1" min="1" max="${Math.min(playerAmmo, 100)}"
+                            style="width: 60px; padding: 6px; border-radius: 5px; border: 1px solid #e67e22; background: #222; color: #f5e6c8; font-size: 0.9em;">
+                    </div>
+                    <div>
+                        <label style="color: #d4c4a0; font-size: 0.85em;">Price/bullet:</label><br>
+                        <input type="number" id="ammo-sell-price" value="150000" min="10000" max="1000000" step="10000"
+                            style="width: 120px; padding: 6px; border-radius: 5px; border: 1px solid #e67e22; background: #222; color: #f5e6c8; font-size: 0.9em;">
+                    </div>
+                    <div style="padding-top: 16px;">
+                        <button onclick="listAmmoForSale(document.getElementById('ammo-sell-qty').value, document.getElementById('ammo-sell-price').value)"
+                                style="background: #e67e22; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; white-space: nowrap;">
+                            List for Sale
+                        </button>
+                    </div>
+                </div>
+                <small style="color: #8a7a5a; margin-top: 6px; display: block;">Min $10K/bullet, Max $1M/bullet. Max 100 per listing.</small>
+            </div>`;
+    }
+    html += `</div>`;
+
+    // === YOUR ACTIVE AMMO LISTINGS ===
+    const myAmmoListings = ammoMarketListings.filter(l => l.sellerId === onlineWorldState.playerId);
+    if (myAmmoListings.length > 0) {
+        html += `
+            <div style="background: rgba(230, 126, 34, 0.1); padding: 15px; border-radius: 12px; border: 1px solid #c0a040; margin-bottom: 20px;">
+                <h4 style="color: #c0a040; margin: 0 0 10px 0;">Your Ammo Listings (${myAmmoListings.length})</h4>
+                <div style="display: grid; gap: 8px;">
+        `;
+        myAmmoListings.forEach(listing => {
+            html += `<div style="padding: 10px; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid #c0a040; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div>
+                    <strong style="color: #f5e6c8;">🔫 ${listing.quantity} Bullet${listing.quantity > 1 ? 's' : ''}</strong><br>
+                    <small style="color: #d4c4a0;">$${listing.pricePerBullet.toLocaleString()}/ea — Total: <span style="color: #8a9a6a; font-weight: bold;">$${listing.totalPrice.toLocaleString()}</span></small>
+                </div>
+                <button onclick="cancelAmmoListing('${listing.id}')"
+                        style="background: #7a2a2a; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                    Cancel
+                </button>
+            </div>`;
+        });
+        html += `</div></div>`;
+    }
+
+    // === AVAILABLE AMMO FROM OTHER PLAYERS ===
+    const otherAmmoListings = ammoMarketListings.filter(l => l.sellerId !== onlineWorldState.playerId);
+    html += `
+        <div style="background: rgba(138, 154, 106, 0.1); padding: 15px; border-radius: 12px; border: 1px solid #8a9a6a; margin-bottom: 20px;">
+            <h4 style="color: #8a9a6a; margin: 0 0 10px 0;">🔫 Bullets for Sale (${otherAmmoListings.length})</h4>
+    `;
+
+    if (otherAmmoListings.length === 0) {
+        html += `<p style="color: #6a5a3a; text-align: center;">No bullets listed by other players. The streets are dry!</p>`;
+    } else {
+        html += `<div style="display: grid; gap: 8px;">`;
+        otherAmmoListings.forEach(listing => {
+            const canAfford = (typeof player !== 'undefined') && player.money >= listing.totalPrice;
+            html += `<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid ${canAfford ? '#8a9a6a' : '#6a5a3a'}; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div>
+                    <strong style="color: #f5e6c8;">🔫 ${listing.quantity} Bullet${listing.quantity > 1 ? 's' : ''}</strong>
+                    <span style="color: #6a5a3a; font-size: 0.85em;"> — from ${escapeHTML(listing.sellerName)}</span><br>
+                    <small style="color: #d4c4a0;">
+                        $${listing.pricePerBullet.toLocaleString()}/ea
+                    </small><br>
+                    <small style="color: #8a9a6a; font-weight: bold; font-size: 1.05em;">Total: $${listing.totalPrice.toLocaleString()}</small>
+                </div>
+                <button onclick="buyAmmoListing('${listing.id}')"
+                        ${!canAfford ? 'disabled' : ''}
+                        style="background: ${canAfford ? '#7a8a5a' : '#6a5a3a'}; color: white; border: none; padding: 10px 18px; border-radius: 8px;
+                               cursor: ${canAfford ? 'pointer' : 'not-allowed'}; font-weight: bold; white-space: nowrap; font-size: 1em;">
+                    ${canAfford ? 'Buy' : "Can't Afford"}
+                </button>
+            </div>`;
+        });
+        html += `</div>`;
+    }
+    html += `</div>`;
+    
     // Refresh button
     html += `
         <div style="text-align: center; margin-top: 10px;">
-            <button onclick="requestMarketplaceListings()" 
+            <button onclick="requestMarketplaceListings(); requestAmmoMarketListings();"
                     style="background: rgba(52, 152, 219, 0.3); color: #c0a062; border: 1px solid #c0a062; padding: 8px 20px; border-radius: 6px; cursor: pointer;">
-                Refresh Listings
+                Refresh All Listings
             </button>
         </div>
     `;

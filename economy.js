@@ -31,8 +31,8 @@ export const storeItems = [
     { name: "Luxury Automobile", price: 500000, power: 50, type: "vehicle", durability: 45, maxDurability: 45, description: "Travel in style and power. +50 power. Requires Gasoline. Boosts respect." },
     { name: "Private Airplane", price: 1800000, power: 200, type: "vehicle", durability: 30, maxDurability: 30, description: "Leave the country at a moment's notice. +200 power. Requires Gasoline. Unlocks escape options." },
     // === Supplies ===
-    { name: "Bullets", price: 3000, power: 0, type: "ammo", description: "Standard ammunition. Required to use firearms in combat. Stock up before a fight." },
-    { name: "Gasoline", price: 5000, power: 0, type: "gas", description: "Fuel for your vehicles. Required to operate cars and planes. Consumed per use." },
+    { name: "Bullets", price: 100000, power: 0, type: "ammo", description: "Premium black-market ammunition. Extremely scarce — only 10 rounds hit the streets each day. Required for firearms." },
+    { name: "Gasoline", price: 50000, power: 0, type: "gas", description: "Fuel for your vehicles. Hard to come by on the black market. Required to operate cars and planes. Consumed per use." },
     // === Energy Items — v1.11.0: significantly more expensive to prevent energy-buy spam ===
     { name: "Strong Coffee", price: 2500, power: 0, type: "energy", energyRestore: 15, description: "Cheap caffeine boost. Restores 15 energy instantly. No side effects." },
     { name: "Energy Drink", price: 6000, power: 0, type: "energy", energyRestore: 30, description: "Chemical energy, slight health risk. Restores 30 energy instantly. (-1 health)" },

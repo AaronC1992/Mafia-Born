@@ -13801,7 +13801,7 @@ function showStore(activeTab) {
   const topTabs = [
     { id: 'buy', label: 'Buy', tip: 'Browse weapons, armor & supplies' },
     { id: 'fence', label: 'The Fence', tip: 'Sell stolen goods at premium rates' },
-    { id: 'market', label: 'Player Market', tip: 'Trade vehicles with other players' }
+    { id: 'market', label: 'Player Market', tip: 'Trade vehicles & bullets with other players' }
   ];
   const topTabsHTML = topTabs.map(tab => {
     const isActive = tab.id === _currentBlackMarketTab;
@@ -14052,14 +14052,15 @@ function buildPlayerMarketTabContent() {
   return `
     <div class="content-card" style="text-align: center; padding: 40px 20px;">
       <h3 style="color: #a08850; margin-bottom: 15px;">Player Marketplace</h3>
-      <p style="color: #d4c4a0; margin-bottom: 20px;">Trade vehicles with other players in real-time through The Commission's underground network.</p>
+      <p style="color: #d4c4a0; margin-bottom: 20px;">Trade vehicles and ammunition with other players in real-time through The Commission's underground network.</p>
       <div style="background: rgba(41, 128, 185, 0.15); padding: 20px; border-radius: 12px; border: 1px solid #a08850; margin-bottom: 20px;">
         <p style="color: #f5e6c8; margin: 0 0 15px 0;"><strong>Features:</strong></p>
         <ul style="color: #d4c4a0; text-align: left; list-style: none; padding: 0;">
-          <li style="margin: 8px 0;">List your stolen vehicles for sale to other players</li>
-          <li style="margin: 8px 0;">Set your own asking prices</li>
-          <li style="margin: 8px 0;">Browse and buy vehicles from other players</li>
-          <li style="margin: 8px 0;">Real-time market listings</li>
+          <li style="margin: 8px 0;">🚗 List your stolen vehicles for sale to other players</li>
+          <li style="margin: 8px 0;">🔫 <strong style="color: #e67e22;">Sell bullets on the Ammo Exchange</strong> — set your own price</li>
+          <li style="margin: 8px 0;">🔫 <strong style="color: #e67e22;">Buy bullets from other players</strong> — bypass the daily shop limit</li>
+          <li style="margin: 8px 0;">💰 Set your own asking prices</li>
+          <li style="margin: 8px 0;">📊 Real-time market listings</li>
         </ul>
       </div>
       <p style="color: #c0a040; margin-bottom: 20px;">You must be connected to The Commission to access the Player Market.</p>
@@ -14150,8 +14151,36 @@ function renderStoreTab(tabId) {
     // One-of-each: disable purchase for already-owned weapon/armor/vehicle
     const equipTypes = ['weapon', 'armor', 'vehicle'];
     const isEquipType = equipTypes.includes(item.type);
-    const canBuy = player.money >= finalPrice && requirementMet && !(isEquipType && alreadyOwned);
-    const btnText = isEquipType && alreadyOwned ? 'Already Owned' : (player.money >= finalPrice ? 'Purchase' : 'Too Expensive');
+
+    // Bullet stock indicator (server-wide or offline daily limit)
+    let bulletStockHTML = '';
+    let bulletSoldOut = false;
+    if (item.type === 'ammo') {
+      const MAX_BULLETS_PER_DAY = 10;
+      const isConnected = typeof onlineWorldState !== 'undefined' && onlineWorldState && onlineWorldState.isConnected;
+      let remaining = MAX_BULLETS_PER_DAY;
+      if (isConnected && typeof window._serverBulletStock !== 'undefined') {
+        remaining = window._serverBulletStock;
+      } else {
+        // Offline: check per-player counter
+        const today = new Date();
+        const dayKey = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+        if (player.dailyCounters && player.dailyCounters.bulletsBoughtDay === dayKey) {
+          remaining = MAX_BULLETS_PER_DAY - (player.dailyCounters.bulletsBought || 0);
+        }
+      }
+      remaining = Math.max(0, remaining);
+      bulletSoldOut = remaining <= 0;
+      const stockColor = remaining === 0 ? '#8b3a3a' : remaining <= 3 ? '#e67e22' : '#8a9a6a';
+      bulletStockHTML = `<div style="margin-top: 5px; padding: 4px 10px; background: rgba(0,0,0,0.3); border-radius: 6px; display: inline-block;">
+        <span style="color: ${stockColor}; font-weight: bold;">📦 ${remaining}/${MAX_BULLETS_PER_DAY} in stock today</span>
+        ${remaining === 0 ? '<span style="color: #8b3a3a; margin-left: 8px;">— SOLD OUT</span>' : ''}
+        ${isConnected ? '<span style="color: #6a5a3a; font-size: 0.8em; margin-left: 6px;">(server-wide)</span>' : ''}
+      </div>`;
+    }
+
+    const canBuy = player.money >= finalPrice && requirementMet && !(isEquipType && alreadyOwned) && !bulletSoldOut;
+    const btnText = isEquipType && alreadyOwned ? 'Already Owned' : bulletSoldOut ? 'Sold Out' : (player.money >= finalPrice ? 'Purchase' : 'Too Expensive');
 
     // Category-specific border color
     const borderColorMap = { weapon: '#8b3a3a', armor: '#c0a062', vehicle: '#c0a040', ammo: '#8a7a5a', gas: '#8a7a5a', energy: '#8a9a6a', utility: '#8b6a4a', highLevelDrug: '#e67e22' };
@@ -14180,6 +14209,7 @@ function renderStoreTab(tabId) {
           ${item.description ? `<div style="margin-bottom: 6px; color: #a0b0c0; font-size: 0.88em; font-style: italic;">${item.description}</div>` : ''}
           ${comparisonHTML}
           ${requirementText}
+          ${bulletStockHTML}
           <div id="store-price-${index}" data-base-price="${item.price}" style="color: #c0a040; font-weight: bold; font-size: 1.1em;">
             $${finalPrice.toLocaleString()}${discountText}
           </div>
@@ -14299,10 +14329,49 @@ async function buyItem(index) {
       if (!confirmed) return;
     }
 
-    player.money -= finalPrice;
+    // ── Bullet daily limit (server-wide 10/day, offline per-player 10/day) ──
     if (item.type === "ammo") {
-      player.ammo++;
-    } else if (item.type === "gas") {
+      const MAX_BULLETS_PER_DAY = 10;
+      const isConnected = typeof onlineWorldState !== 'undefined' && onlineWorldState && onlineWorldState.isConnected
+          && onlineWorldState.socket && onlineWorldState.socket.readyState === WebSocket.OPEN;
+
+      if (isConnected) {
+        // Route through server for server-wide limit enforcement
+        player.money -= finalPrice;
+        onlineWorldState.socket.send(JSON.stringify({ type: 'buy_bullets', price: finalPrice }));
+        // Server will respond with bullets_purchased or bullets_error
+        // If error, money is refunded in the message handler
+        window._pendingBulletPurchase = { price: finalPrice };
+        showBriefNotification('Requesting bullet from today\'s supply...', 'info');
+        updateUI();
+        return;
+      } else {
+        // Offline fallback: per-player daily limit
+        const today = new Date();
+        const dayKey = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+        if (!player.dailyCounters) player.dailyCounters = {};
+        if (player.dailyCounters.bulletsBoughtDay !== dayKey) {
+          player.dailyCounters.bulletsBoughtDay = dayKey;
+          player.dailyCounters.bulletsBought = 0;
+        }
+        if ((player.dailyCounters.bulletsBought || 0) >= MAX_BULLETS_PER_DAY) {
+          showBriefNotification(`Today's bullet supply is SOLD OUT! Only ${MAX_BULLETS_PER_DAY} bullets are available per day. Try again tomorrow.`, 'danger');
+          return;
+        }
+        player.dailyCounters.bulletsBought = (player.dailyCounters.bulletsBought || 0) + 1;
+        const remaining = MAX_BULLETS_PER_DAY - player.dailyCounters.bulletsBought;
+        player.money -= finalPrice;
+        player.ammo++;
+        showBriefNotification(`Bought 1 Bullet for $${finalPrice.toLocaleString()}. ${remaining} left in today's supply.`, 'success');
+        logAction(`You slide the cash across the counter. The dealer hands over a single round — ${remaining} bullets left today.`);
+        updateUI();
+        refreshStoreAfterPurchase();
+        return;
+      }
+    }
+
+    player.money -= finalPrice;
+    if (item.type === "gas") {
       player.gas++;
     } else if (item.type === "health") {
       player.health = Math.min(player.health + item.healthRestore, 100);

@@ -506,6 +506,10 @@ const gameState = {
     territories: {},
     // Vehicle Marketplace — player-to-player vehicle trading
     marketplace: [], // { id, sellerId, sellerName, vehicleName, baseValue, currentValue, damagePercentage, image, usageCount, price, listedAt }
+    // Ammo Marketplace — player-to-player bullet trading
+    ammoMarket: [], // { id, sellerId, sellerName, quantity, pricePerBullet, listedAt }
+    // Server-wide daily bullet shop limit (10 per day for entire server)
+    bulletShop: { soldToday: 0, resetDate: '' },
     // Phase C: Competitive Features
     alliances: new Map(), // id -> { id, name, tag, leader, members[], createdAt, treasury, motto }
     bounties: [], // { id, posterId, posterName, targetId, targetName, reward, reason, postedAt, expiresAt }
@@ -984,6 +988,28 @@ function handleClientMessage(clientId, message, ws) {
             break;
         case 'marketplace_get_listings':
             handleMarketplaceGetListings(clientId);
+            break;
+
+        // ==================== BULLET SHOP (server-enforced daily limit) ====================
+        case 'buy_bullets':
+            handleBuyBullets(clientId, message);
+            break;
+        case 'get_bullet_stock':
+            handleGetBulletStock(clientId);
+            break;
+
+        // ==================== AMMO MARKETPLACE (player-to-player) ====================
+        case 'ammo_market_list':
+            handleAmmoMarketList(clientId, message);
+            break;
+        case 'ammo_market_buy':
+            handleAmmoMarketBuy(clientId, message);
+            break;
+        case 'ammo_market_cancel':
+            handleAmmoMarketCancel(clientId, message);
+            break;
+        case 'ammo_market_get_listings':
+            handleAmmoMarketGetListings(clientId);
             break;
 
         case 'player_death':
@@ -4767,6 +4793,242 @@ function handleMarketplaceGetListings(clientId) {
     ws.send(JSON.stringify({
         type: 'marketplace_listings',
         listings: gameState.marketplace
+    }));
+}
+
+// ==================== BULLET SHOP — Server-wide 10/day limit ====================
+
+function resetBulletShopIfNewDay() {
+    const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+    if (gameState.bulletShop.resetDate !== today) {
+        gameState.bulletShop.soldToday = 0;
+        gameState.bulletShop.resetDate = today;
+    }
+}
+
+function handleBuyBullets(clientId, message) {
+    const buyer = gameState.players.get(clientId);
+    const ws = clients.get(clientId);
+    if (!buyer || !ws) return;
+
+    const fail = (err) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'bullets_error', error: err }));
+        }
+    };
+
+    resetBulletShopIfNewDay();
+
+    const MAX_BULLETS_PER_DAY = 10;
+    if (gameState.bulletShop.soldToday >= MAX_BULLETS_PER_DAY) {
+        return fail(`Today's supply is sold out! All ${MAX_BULLETS_PER_DAY} bullets have been bought. Check the Player Market or try again tomorrow.`);
+    }
+
+    const price = parseInt(message.price) || 0;
+    if (price <= 0) return fail('Invalid price.');
+
+    // Don't validate buyer money server-side for store purchases -- client handles economy
+    // Just enforce the daily stock limit
+    gameState.bulletShop.soldToday++;
+    const remaining = MAX_BULLETS_PER_DAY - gameState.bulletShop.soldToday;
+
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            type: 'bullets_purchased',
+            remaining: remaining,
+            totalToday: gameState.bulletShop.soldToday
+        }));
+    }
+
+    // Broadcast stock update to all connected players
+    for (const [cId, cWs] of clients) {
+        if (cWs.readyState === WebSocket.OPEN) {
+            cWs.send(JSON.stringify({
+                type: 'bullet_stock_update',
+                remaining: remaining,
+                soldToday: gameState.bulletShop.soldToday
+            }));
+        }
+    }
+
+    if (remaining <= 3 && remaining > 0) {
+        addGlobalChatMessage('System', `⚠ Only ${remaining} bullet${remaining === 1 ? '' : 's'} left in today's supply!`, '#e67e22');
+    } else if (remaining === 0) {
+        addGlobalChatMessage('System', `🔒 Today's bullet supply is SOLD OUT! Trade on the Player Market or wait until tomorrow.`, '#8b3a3a');
+    }
+
+    console.log(`🔫 ${buyer.name} bought a bullet from the shop (${gameState.bulletShop.soldToday}/${MAX_BULLETS_PER_DAY} sold today)`);
+    scheduleWorldSave();
+}
+
+function handleGetBulletStock(clientId) {
+    const ws = clients.get(clientId);
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+    resetBulletShopIfNewDay();
+    const MAX_BULLETS_PER_DAY = 10;
+    const remaining = MAX_BULLETS_PER_DAY - gameState.bulletShop.soldToday;
+
+    ws.send(JSON.stringify({
+        type: 'bullet_stock_update',
+        remaining: remaining,
+        soldToday: gameState.bulletShop.soldToday
+    }));
+}
+
+// ==================== AMMO MARKETPLACE — Player-to-player bullet trading ====================
+
+function handleAmmoMarketList(clientId, message) {
+    const seller = gameState.players.get(clientId);
+    const ws = clients.get(clientId);
+    if (!seller || !ws) return;
+
+    const fail = (err) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'ammo_market_error', error: err }));
+        }
+    };
+
+    const quantity = parseInt(message.quantity);
+    const pricePerBullet = parseInt(message.pricePerBullet);
+    if (!quantity || quantity < 1 || quantity > 100) return fail('List 1-100 bullets at a time.');
+    if (!pricePerBullet || pricePerBullet < 10000) return fail('Minimum price is $10,000 per bullet.');
+    if (pricePerBullet > 1000000) return fail('Maximum price is $1,000,000 per bullet.');
+
+    // Limit active ammo listings per player to 5
+    const existingListings = gameState.ammoMarket.filter(l => l.sellerId === clientId);
+    if (existingListings.length >= 5) return fail('Max 5 active ammo listings at a time.');
+
+    const listing = {
+        id: `ammo_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        sellerId: clientId,
+        sellerName: seller.name,
+        quantity: quantity,
+        pricePerBullet: pricePerBullet,
+        totalPrice: quantity * pricePerBullet,
+        listedAt: Date.now()
+    };
+
+    gameState.ammoMarket.push(listing);
+    console.log(`🔫 ${seller.name} listed ${quantity} bullet(s) at $${pricePerBullet.toLocaleString()}/ea on the ammo market`);
+
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            type: 'ammo_market_listed',
+            quantity: quantity,
+            pricePerBullet: pricePerBullet,
+            listings: gameState.ammoMarket
+        }));
+    }
+
+    addGlobalChatMessage('System', `🔫 ${seller.name} listed ${quantity} bullet${quantity > 1 ? 's' : ''} on the Ammo Exchange at $${pricePerBullet.toLocaleString()}/ea!`, '#a08850');
+    scheduleWorldSave();
+}
+
+function handleAmmoMarketBuy(clientId, message) {
+    const buyer = gameState.players.get(clientId);
+    const ws = clients.get(clientId);
+    if (!buyer || !ws) return;
+
+    const fail = (err) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'ammo_market_error', error: err }));
+        }
+    };
+
+    const listingId = message.listingId;
+    const listingIdx = gameState.ammoMarket.findIndex(l => l.id === listingId);
+    if (listingIdx === -1) return fail('Listing no longer available.');
+
+    const listing = gameState.ammoMarket[listingIdx];
+    if (listing.sellerId === clientId) return fail("You can't buy your own listing!");
+
+    // Remove the listing
+    gameState.ammoMarket.splice(listingIdx, 1);
+
+    // Market fee applies
+    const marketFeeRate = (gameState.politics.policies.marketFee || 5) / 100;
+    const feeAmount = Math.floor(listing.totalPrice * marketFeeRate);
+    const sellerReceives = listing.totalPrice - feeAmount;
+
+    // Credit seller
+    const sellerPlayer = gameState.players.get(listing.sellerId);
+    if (sellerPlayer) {
+        sellerPlayer.money = (sellerPlayer.money || 0) + sellerReceives;
+        const sellerState = gameState.playerStates.get(listing.sellerId);
+        if (sellerState) { sellerState.money = sellerPlayer.money; sellerState.lastUpdate = Date.now(); }
+    }
+
+    console.log(`🔫 ${buyer.name} bought ${listing.quantity} bullet(s) from ${listing.sellerName} for $${listing.totalPrice.toLocaleString()}`);
+
+    // Notify buyer
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            type: 'ammo_market_purchased',
+            quantity: listing.quantity,
+            totalPrice: listing.totalPrice,
+            sellerName: listing.sellerName,
+            listings: gameState.ammoMarket
+        }));
+    }
+
+    // Notify seller
+    const sellerWs = clients.get(listing.sellerId);
+    if (sellerWs && sellerWs.readyState === WebSocket.OPEN) {
+        sellerWs.send(JSON.stringify({
+            type: 'ammo_market_sold',
+            quantity: listing.quantity,
+            buyerName: buyer.name,
+            amount: sellerReceives,
+            listings: gameState.ammoMarket
+        }));
+    }
+
+    addGlobalChatMessage('System', `🔫 ${buyer.name} bought ${listing.quantity} bullet${listing.quantity > 1 ? 's' : ''} from ${listing.sellerName} for $${listing.totalPrice.toLocaleString()}!`, '#27ae60');
+    scheduleWorldSave();
+}
+
+function handleAmmoMarketCancel(clientId, message) {
+    const player = gameState.players.get(clientId);
+    const ws = clients.get(clientId);
+    if (!player || !ws) return;
+
+    const fail = (err) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'ammo_market_error', error: err }));
+        }
+    };
+
+    const listingId = message.listingId;
+    const listingIdx = gameState.ammoMarket.findIndex(l => l.id === listingId && l.sellerId === clientId);
+    if (listingIdx === -1) return fail('Listing not found or not yours.');
+
+    const listing = gameState.ammoMarket[listingIdx];
+    gameState.ammoMarket.splice(listingIdx, 1);
+
+    console.log(`🔫 ${player.name} cancelled ammo listing (${listing.quantity} bullets)`);
+
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            type: 'ammo_market_cancelled',
+            quantity: listing.quantity,
+            listings: gameState.ammoMarket
+        }));
+    }
+}
+
+function handleAmmoMarketGetListings(clientId) {
+    const ws = clients.get(clientId);
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+    // Clean expired listings (24h)
+    const now = Date.now();
+    const expiry = 24 * 60 * 60 * 1000;
+    gameState.ammoMarket = gameState.ammoMarket.filter(l => (now - l.listedAt) < expiry);
+
+    ws.send(JSON.stringify({
+        type: 'ammo_market_listings',
+        listings: gameState.ammoMarket
     }));
 }
 
