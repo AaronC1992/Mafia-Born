@@ -1066,11 +1066,14 @@ async function handleServerMessage(message) {
                 const selfPs = onlineWorldState.playerStates[onlineWorldState.playerId];
                 if (selfPs) {
                     if (window._jailTimerActive) {
-                        // Local timer is running — sync to server's authoritative
-                        // jail time to prevent drift / early release.
-                        // Use the server value so both timers stay aligned.
+                        // Local timer is running — only sync if server value
+                        // differs by more than 2s to avoid fighting the local
+                        // countdown (which causes visible flicker every 5s).
                         if (typeof selfPs.jailTime === 'number') {
-                            player.jailTime = selfPs.jailTime;
+                            const drift = Math.abs(player.jailTime - selfPs.jailTime);
+                            if (drift > 2) {
+                                player.jailTime = selfPs.jailTime;
+                            }
                         }
                         // If server says we're no longer in jail, honour that
                         if (!selfPs.inJail) {

@@ -7586,8 +7586,11 @@ function updateUI() {
   updateRightPanelExtras();
   updateQuickActions();
 
+  // If player is in jail, just update the jail-specific UI elements (timer, buttons)
+  // without calling showJailScreen() which does hideAllScreens() → scrollTo(0,0).
+  // showJailScreen() is called explicitly by sendToJail() and game-load only.
   if (player.inJail) {
-    showJailScreen(); // Ensure jail screen is shown when in jail
+    updateJailUI();
   }
 
   // Refresh current screen if it depends on energy/money/stats
@@ -8589,12 +8592,14 @@ function hasRequiredItems(requiredItems) {
 }
 
 // Function to hide all screens
-function hideAllScreens() {
-  // Always scroll to top on screen transitions
-  window.scrollTo(0, 0);
-
-  // Reset scroll position of all game screen containers (they have overflow-y: auto on mobile)
-  document.querySelectorAll('.game-screen, #menu').forEach(s => { s.scrollTop = 0; });
+// Pass skipScroll=true when called from timer-driven refreshes to preserve scroll position.
+function hideAllScreens(skipScroll) {
+  if (!skipScroll) {
+    // Only scroll to top on user-initiated screen transitions
+    window.scrollTo(0, 0);
+    // Reset scroll position of all game screen containers (they have overflow-y: auto on mobile)
+    document.querySelectorAll('.game-screen, #menu').forEach(s => { s.scrollTop = 0; });
+  }
 
   // Remove .screen-active from all game screens so their fixed page-headers hide properly
   document.querySelectorAll('.game-screen.screen-active').forEach(s => s.classList.remove('screen-active'));
@@ -17244,7 +17249,6 @@ function updateJailTimer() {
     }
 
     if (player.jailTime > 0) {
-      updateJailUI();
       player.jailTime--;
 
       if (window.EventBus) {
@@ -18732,7 +18736,9 @@ function startGangTributeTimer() {
 
 // Function to refresh current screen with live timers
 function startScreenRefreshTimer() {
-  // --- Fast timer (1 s) - only screens with visible per-second countdowns ---
+  // --- Fast timer (5 s) - prisoner list refreshes (full innerHTML rebuilds).
+  // Reduced from 1 s to 5 s to avoid DOM thrashing / hover-flash on buttons.
+  // The player's own jail countdown is handled separately by updateJailTimer().
   gameplayIntervals.push(setInterval(() => {
     if (document.getElementById("jail-screen").style.display === "block") {
       updatePrisonerList(); // Update jail prisoner countdown
@@ -18740,7 +18746,7 @@ function startScreenRefreshTimer() {
     if (document.getElementById("jailbreak-screen").style.display === "block") {
       updateJailbreakPrisonerTimers(); // Update jailbreak prisoner countdown
     }
-  }, 1000));
+  }, 5000));
 
   // --- Slow timer (30 s) - screens that only need occasional data refresh ---
   // Full innerHTML rebuilds on a 1-second loop destroy DOM elements mid-hover,
