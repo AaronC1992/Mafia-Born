@@ -16242,8 +16242,21 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.13.0";
+const CURRENT_VERSION = "1.14.0";
 const VERSION_UPDATES = {
+  "1.14.0": {
+    title: "Unified Player Market",
+    date: "March 2026",
+    changes: [
+      "Merged Vehicle Marketplace & Ammo Exchange into a single Player Market",
+      "Players can now list vehicles, weapons, armor, ammo, gas, utility items, and trade goods",
+      "Unified server handlers: market_list, market_buy, market_cancel, market_get_listings",
+      "Browse available items grouped by category with category icons & colors",
+      "Old marketplace and ammo market data auto-migrated on first load",
+      "Legacy ammo_market_* messages forwarded for backwards compatibility",
+      "Server cloud-save default version updated to 1.14.0",
+    ]
+  },
   "1.13.0": {
     title: "Mobile QoL, Gang Timers & Offline Progress",
     date: "March 2026",
