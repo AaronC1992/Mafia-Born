@@ -16359,8 +16359,20 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.16.2";
+const CURRENT_VERSION = "1.16.3";
 const VERSION_UPDATES = {
+  "1.16.3": {
+    title: "Chance-Based Turf Attacks & Bug Fixes",
+    date: "March 2026",
+    changes: [
+      "Turf attacks are now chance-based — every zone is always attackable",
+      "Win chance scales with your Attack Power vs zone Defense (50% at equal, min 1%, max 99%)",
+      "Color-coded win chance displayed on each zone card",
+      "Fixed 7 remaining encoding issues in story missions (São Paulo, Juárez, Medellín, etc.)",
+      "99 mission job objectives clarified — now say 'Complete N jobs (any type)'",
+      "Fixed broken icons in multiplayer territory requirements",
+    ]
+  },
   "1.16.2": {
     title: "Gameplay & UI Improvements",
     date: "March 2026",
