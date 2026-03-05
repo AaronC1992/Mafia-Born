@@ -1,6 +1,6 @@
 # Mafia Born
 
-**v1.14.1** | A deep criminal empire-building browser game where you rise from street thug to legendary kingpin. Build your crew, claim territory, run businesses, and outmanoeuvre rival crime families — all from your browser.
+**v1.14.2** | A deep criminal empire-building browser game where you rise from street thug to legendary kingpin. Build your crew, claim territory, run businesses, and outmanoeuvre rival crime families — all from your browser.
 
 ## **[PLAY NOW](https://mafiaborn.com/)**
 
@@ -114,7 +114,7 @@ Compatible with Chrome, Firefox, Safari, Edge, and their mobile counterparts.
 
 ---
 
-## Recent Changes (v1.14.1)
+## Recent Changes (v1.14.2)
 
 - **Unified Player Market** — merged Vehicle Marketplace & Ammo Exchange into a single market supporting all item types
 - **Audit & dead code cleanup** — removed ~440 lines of dead server/client handlers, unused exports, and stale systems

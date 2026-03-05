@@ -9933,6 +9933,19 @@ async function startJob(index) {
     logAction(`The current atmosphere makes people more aggressive - perfect for violent jobs!`);
   }
 
+  // Equipped vehicle condition bonus
+  let vehicleBonus = 0;
+  if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
+    const veh = player.equippedVehicle;
+    const durPct = (typeof veh.durability === 'number' && typeof veh.maxDurability === 'number' && veh.maxDurability > 0)
+      ? veh.durability / veh.maxDurability : 1;
+    // Base bonus scales with vehicle power; condition scales it down
+    vehicleBonus = Math.floor((veh.power || 0) * 0.5 * durPct);
+    if (vehicleBonus > 0) {
+      logAction(`Your ${veh.name} is in ${Math.round(durPct * 100)}% condition, boosting your odds (+${vehicleBonus}% success).`);
+    }
+  }
+
   // Utility item: Lockpick Set gives +10% success on all jobs
   let utilityBonus = 0;
   if (hasUtilityItem('Lockpick Set')) {
@@ -9955,17 +9968,17 @@ async function startJob(index) {
   }
 
   if (job.risk === "low") {
-    successChance = 30 + player.power * 0.3 + skillBonus + carBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
+    successChance = 30 + player.power * 0.3 + skillBonus + carBonus + vehicleBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
   } else if (job.risk === "medium") {
-    successChance = 20 + player.power * 0.2 + skillBonus + carBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
+    successChance = 20 + player.power * 0.2 + skillBonus + carBonus + vehicleBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
   } else if (job.risk === "high") {
-    successChance = 10 + player.power * 0.1 + skillBonus + carBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
+    successChance = 10 + player.power * 0.1 + skillBonus + carBonus + vehicleBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
   } else if (job.risk === "very high") {
-    successChance = 5 + player.power * 0.08 + skillBonus + carBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
+    successChance = 5 + player.power * 0.08 + skillBonus + carBonus + vehicleBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
   } else if (job.risk === "extreme") {
-    successChance = 3 + player.power * 0.05 + skillBonus + carBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
+    successChance = 3 + player.power * 0.05 + skillBonus + carBonus + vehicleBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
   } else if (job.risk === "legendary") {
-    successChance = 1 + player.power * 0.03 + skillBonus + carBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
+    successChance = 1 + player.power * 0.03 + skillBonus + carBonus + vehicleBonus + advancedBonus + eventBonus + utilityBonus + approachBonus;
   }
 
   // Cap success chance at 95%
@@ -16281,8 +16294,20 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.14.1";
+const CURRENT_VERSION = "1.14.2";
 const VERSION_UPDATES = {
+  "1.14.2": {
+    title: "Vehicle Condition & Mini Game Balance",
+    date: "March 2026",
+    changes: [
+      "Equipped vehicle condition now affects job success chance (power × 0.5 × durability%)",
+      "Vehicle cards in inventory now show Condition label and Job Success bonus",
+      "Equip log message shows the vehicle's current job success bonus",
+      "Removed XP rewards from all 6 mini games (TikTakToe, Number Guessing, RPS, Memory Match, Snake, Quick Draw)",
+      "Updated mini game reward descriptions to reflect cash/stamina-only rewards",
+      "Server cloud-save default version updated to 1.14.2",
+    ]
+  },
   "1.14.1": {
     title: "Audit Fixes & Content Updates",
     date: "March 2026",
@@ -17480,12 +17505,21 @@ function buildStashHTML() {
       const durPct = hasDurability ? Math.round((item.durability / item.maxDurability) * 100) : 100;
       const durColor = durPct > 60 ? '#8a9a6a' : durPct > 30 ? '#c0a040' : '#8b3a3a';
       const durBar = hasDurability ? `<div style="margin-top:4px;width:120px;height:6px;background:#555;border-radius:3px;"><div style="width:${durPct}%;height:100%;background:${durColor};border-radius:3px;"></div></div><small style="color:${durColor};">${item.durability}/${item.maxDurability}</small>` : '';
+      // Vehicle condition bonus preview
+      let vehicleBonusInfo = '';
+      if (item.type === 'vehicle') {
+        const vDurPct = hasDurability && item.maxDurability > 0 ? item.durability / item.maxDurability : 1;
+        const vBonus = Math.floor((item.power || 0) * 0.5 * vDurPct);
+        const condLabel = durPct > 75 ? 'Excellent' : durPct > 50 ? 'Good' : durPct > 25 ? 'Worn' : 'Critical';
+        const condColor = durPct > 75 ? '#8a9a6a' : durPct > 50 ? '#c0a040' : durPct > 25 ? '#e67e22' : '#8b3a3a';
+        vehicleBonusInfo = `<br><small style="color:${condColor};">Condition: ${condLabel} (${durPct}%) | Job Success: <strong>+${vBonus}%</strong></small>`;
+      }
       const isEquippable = item.type === 'weapon' || item.type === 'armor' || item.type === 'vehicle';
       s += `<div style="padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:2px solid ${equipped ? '#8a9a6a' : '#1a1610'};display:flex;justify-content:space-between;align-items:center;">
         <div>
           <strong style="color:${equipped ? '#8a9a6a' : '#f5e6c8'};">${item.name} ${equipped ? ' EQUIPPED' : ''}</strong><br>
           <small style="color:#d4c4a0;">Power: +${item.power || 0}${item.price ? ` | Value: $${sellPrice.toLocaleString()}` : ''}</small>
-          ${durBar}
+          ${durBar}${vehicleBonusInfo}
         </div>
         <div style="display:flex;gap:8px;">
           ${isEquippable && !equipped ?
@@ -17624,7 +17658,10 @@ function equipItem(index) {
   } else if (item.type === 'vehicle') {
     player.equippedVehicle = item;
     recalculatePower();
-    logAction(`Equipped ${item.name} (Durability: ${item.durability || '?'}/${item.maxDurability || '?'}).`);
+    const vDur = (typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.maxDurability > 0)
+      ? item.durability / item.maxDurability : 1;
+    const vBonus = Math.floor((item.power || 0) * 0.5 * vDur);
+    logAction(`Equipped ${item.name} (Durability: ${item.durability || '?'}/${item.maxDurability || '?'}) — Job Success +${vBonus}%.`);
   }
   showInventory();
 }

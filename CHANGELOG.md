@@ -5,6 +5,20 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.2] - 2026-03-04
+
+### Added — Vehicle Condition Job Bonus
+- Equipped vehicle condition (durability %) now contributes to job success chance
+- Formula: `power × 0.5 × (durability / maxDurability)` — damaged vehicles give less bonus
+- Inventory vehicle cards now display Condition label (Excellent/Good/Worn/Critical) and Job Success bonus
+- Equip log message shows the vehicle's current job success percentage
+
+### Changed — Mini Game Balance
+- Removed XP rewards from all 6 mini games: TikTakToe, Number Guessing, Rock Paper Scissors, Memory Match, Snake, Quick Draw
+- Mini games now award cash, stamina, and combat reflex bonuses only
+- Updated Memory Match reward text from "Stealth & Planning XP boost" to "Cash bonuses for speed & personal bests"
+- Updated Snake reward text from "Stamina & Endurance boost" to "Cash & Stamina boost"
+
 ## [1.14.1] - 2026-03-04
 
 ### Fixed — Audit & Dead Code Cleanup

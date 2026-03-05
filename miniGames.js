@@ -1,7 +1,7 @@
 // miniGames.js — Mini-games module (TTT engine, Number Guessing, RPS, Memory, Snake, Quick Draw)
 // Extracted from game.js for structural clarity.
 
-import { player, gainExperience } from './player.js';
+import { player } from './player.js';
 
 // ── Dependencies (injected from game.js via initMiniGames) ───────────
 let _hideAllScreens, _updateUI, _alert, _logAction, _updateStatistic;
@@ -79,12 +79,11 @@ const tttContexts = {
     onStart: () => {},
     onWin: () => {
       player.money += 100;
-      gainExperience(50);
       _updateStatistic('miniGamesWon');
       _updateStatistic('totalMoneyEarned', 100);
       _updateUI();
-      const msg = `Victory! You've proven your strategic superiority and earned $100! Your mind is as sharp as your criminal instincts! (Intelligence +50 XP)`;
-      _logAction(`TikTakToe victory! Your strategic thinking pays off with $100 earned and increased Intelligence.`);
+      const msg = `Victory! You've proven your strategic superiority and earned $100! Your mind is as sharp as your criminal instincts!`;
+      _logAction(`TikTakToe victory! Your strategic thinking pays off with $100 earned.`);
       return msg;
     },
     onLose: () => {
@@ -442,14 +441,13 @@ export function makeGuess() {
     const attemptBonus = Math.max(0, (10 - numberGuessingAttempts) * Math.floor(baseReward * 0.1));
     const totalReward = baseReward + attemptBonus;
     player.money += totalReward;
-    gainExperience(50);
 
     _updateStatistic('miniGamesWon');
     _updateStatistic('totalMoneyEarned', totalReward);
 
     _updateUI();
-    document.getElementById('guess-feedback').innerHTML = `<span style="color: #8a9a6a;">Correct! You found ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}! (Luck +50 XP)</span>`;
-    _logAction(`Number Hunter victory! Found the target ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}. Your intuition is razor-sharp. (Luck +50 XP)`);
+    document.getElementById('guess-feedback').innerHTML = `<span style="color: #8a9a6a;">Correct! You found ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}!</span>`;
+    _logAction(`Number Hunter victory! Found the target ${numberGuessingTarget} in ${numberGuessingAttempts} attempts and earned $${totalReward.toLocaleString()}. Your intuition is razor-sharp.`);
     setTimeout(() => startNumberGuessing(), 3000);
   } else if (guess < numberGuessingTarget) {
     document.getElementById('guess-feedback').innerHTML = '<span style="color: #c0a040;">Too low! Go higher!</span>';
@@ -556,9 +554,8 @@ export function playRPS(playerChoice) {
     if (rpsPlayerScore >= 3) {
       const rpsReward = 100 + (player.level * 50);
       player.money += rpsReward;
-      gainExperience(50);
       _updateUI();
-      _logAction(`Rock Paper Scissors champion! Your tactical mind proves superior in this classic game of psychology and earned $${rpsReward.toLocaleString()}. (Charisma +50 XP)`);
+      _logAction(`Rock Paper Scissors champion! Your tactical mind proves superior in this classic game of psychology and earned $${rpsReward.toLocaleString()}.`);
     } else if (rpsAIScore >= 3) {
       _logAction("The AI outplays you in Rock Paper Scissors. Sometimes the algorithms know best.");
     }
@@ -583,7 +580,7 @@ export function startMemoryMatch() {
 
   let cardHTML = '<h3 style="color: #c0a040; text-align: center; margin-bottom: 20px;">Memory Match</h3>';
   cardHTML += '<p style="text-align: center; margin-bottom: 10px;">Find all pairs in under 60s for $100! Beat your best time for $500!</p>';
-  cardHTML += '<p style="text-align: center; margin-bottom: 5px; color: #8b6a4a; font-weight: bold;">Rewards: Stealth & Planning XP boost</p>';
+  cardHTML += '<p style="text-align: center; margin-bottom: 5px; color: #8b6a4a; font-weight: bold;">Rewards: Cash bonuses for speed & personal bests</p>';
   cardHTML += `<p style="text-align: center; margin-bottom: 10px; color: #c0a040; font-weight: bold;">${bestTimeText}</p>`;
   cardHTML += '<p style="text-align: center; margin-bottom: 20px;">Time: <span id="memory-timer" style="color: #8b3a3a; font-weight: bold;">60</span>s | Pairs: <span id="memory-score">0</span>/8</p>';
   cardHTML += '<div style="display: grid; grid-template-columns: repeat(4, 80px); gap: 10px; justify-content: center; margin: 20px auto;">';
@@ -672,10 +669,6 @@ export function flipMemoryCard(index) {
             player.money += memoryBaseReward;
           }
 
-          gainExperience(totalTime <= 40 ? 60 : (totalTime <= 60 ? 40 : 20));
-          gainExperience(totalTime <= 40 ? 60 : (totalTime <= 60 ? 40 : 20));
-          gainExperience(50);
-
           if (totalEarned > 0) {
             _updateUI();
           }
@@ -684,13 +677,13 @@ export function flipMemoryCard(index) {
 
           if (earnedPersonalBest && earnedTimeBonus) {
             bonusMessage = ` NEW PERSONAL BEST! You earned $600 total ($500 + $100)!`;
-            _logAction(`Memory Match master! New personal best of ${totalTime}s under the time limit, earning you $600 total + Stealth/Planning XP for exceptional memory skills!`);
+            _logAction(`Memory Match master! New personal best of ${totalTime}s under the time limit, earning you $600 total for exceptional memory skills!`);
           } else if (earnedPersonalBest) {
             bonusMessage = ` NEW PERSONAL BEST! You earned $500!`;
             _logAction(`Memory Match: New personal best of ${totalTime}s! Your improving memory earned you $500!`);
           } else if (earnedTimeBonus) {
             bonusMessage = ` You completed it in time and earned $100!`;
-            _logAction(`Memory Match completed in ${totalTime}s under the time limit, earning you $100 + Stealth/Planning XP for your sharp criminal intellect!`);
+            _logAction(`Memory Match completed in ${totalTime}s under the time limit, earning you $100 for your sharp criminal intellect!`);
           } else {
             _logAction(`Memory Match completed in ${totalTime}s. Good memory, but you needed to be faster for bonuses.`);
           }
@@ -722,7 +715,7 @@ export function startSnakeGame() {
   document.getElementById("minigame-content").innerHTML = `
     <h3 style="color: #8b6a4a; text-align: center; margin-bottom: 20px;">Snake</h3>
     <div style="text-align: center;">
-      <p style="margin-bottom: 5px; color: #7a8a5a; font-weight: bold;">Rewards: Stamina & Endurance boost</p>
+      <p style="margin-bottom: 5px; color: #7a8a5a; font-weight: bold;">Rewards: Cash & Stamina boost</p>
       <p>Score: <span id="snake-score">0</span></p>
       <canvas id="snake-canvas" width="400" height="400"
           style="border: 2px solid #8b6a4a; background: #14120a; margin: 20px auto; display: block; cursor: crosshair;"></canvas>
@@ -922,16 +915,11 @@ export function gameOverSnake() {
   if (!player.maxEnergy) player.maxEnergy = 100;
   player.maxEnergy = Math.min(120, player.maxEnergy + staminaBonus);
 
-  const enduranceXP = Math.floor(snakeGame.score * 2);
-  if (enduranceXP > 0) {
-    gainExperience(enduranceXP);
-  }
-
   if (snakeGame.score > 0) {
     player.money += earnings;
     _updateUI();
-    bonusMessage = ` You earned $${earnings.toLocaleString()} ($${perFoodReward} per food)${staminaBonus > 0 ? ` + ${staminaBonus} max energy` : ''}! (Endurance +${enduranceXP} XP)`;
-    _logAction(`Snake game over! Final score: ${snakeGame.score}. Your reflexes earned you $${earnings.toLocaleString()}${staminaBonus > 0 ? ' + stamina boost' : ''}! (Endurance +${enduranceXP} XP)`);
+    bonusMessage = ` You earned $${earnings.toLocaleString()} ($${perFoodReward} per food)${staminaBonus > 0 ? ` + ${staminaBonus} max energy` : ''}!`;
+    _logAction(`Snake game over! Final score: ${snakeGame.score}. Your reflexes earned you $${earnings.toLocaleString()}${staminaBonus > 0 ? ' + stamina boost' : ''}!`);
   } else {
     _logAction(`Snake game over! Final score: ${snakeGame.score}. Your reflexes were tested and measured.`);
   }
@@ -1071,10 +1059,6 @@ export function handleReactionClick() {
   const reflexBonus = reactionTime < 200 ? 3 : (reactionTime < 300 ? 2 : 1);
   player.combatReflexBonus = Math.min(20, player.combatReflexBonus + reflexBonus);
 
-  if (reactionTime < 500) {
-    gainExperience(50);
-  }
-
   if (totalEarned > 0) {
     _updateUI();
   }
@@ -1083,22 +1067,22 @@ export function handleReactionClick() {
 
   let bonusText = '';
   if (personalBestBonus && earnedMoney) {
-    bonusText = `<br><span style="color: #8a9a6a;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #8a9a6a;">Sub-300ms reflexes! +$100!</span><br><span style="color: #c0a040;">Total earned: $${totalEarned}</span><br><span style="color: #8b3a3a;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #8a9a6a;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #8a9a6a;">Sub-300ms reflexes! +$100!</span><br><span style="color: #c0a040;">Total earned: $${totalEarned}</span>`;
   } else if (personalBestBonus) {
-    bonusText = `<br><span style="color: #8a9a6a;">NEW PERSONAL BEST! +$500!</span><br><span style="color: #8b3a3a;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #8a9a6a;">NEW PERSONAL BEST! +$500!</span>`;
   } else if (earnedMoney) {
-    bonusText = `<br><span style="color: #8a9a6a;">Sub-300ms reflexes! +$100!</span><br><span style="color: #8b3a3a;">Violence +50 XP</span>`;
+    bonusText = `<br><span style="color: #8a9a6a;">Sub-300ms reflexes! +$100!</span>`;
   }
 
   document.getElementById('reaction-result').innerHTML =
     `<span style="color: ${color};">${message}</span><br>Reaction Time: ${reactionTime}ms<br>Personal Best: ${quickDrawPersonalBest}ms${bonusText}`;
 
   if (personalBestBonus && earnedMoney) {
-    _logAction(`Quick Draw: ${reactionTime}ms - NEW PERSONAL BEST! Lightning reflexes earned you $600 total + Combat Reflex boost! (Violence +50 XP)`);
+    _logAction(`Quick Draw: ${reactionTime}ms - NEW PERSONAL BEST! Lightning reflexes earned you $600 total + Combat Reflex boost!`);
   } else if (personalBestBonus) {
-    _logAction(`Quick Draw: ${reactionTime}ms - NEW PERSONAL BEST! You earned $500 + Combat Reflex boost! (Violence +50 XP)`);
+    _logAction(`Quick Draw: ${reactionTime}ms - NEW PERSONAL BEST! You earned $500 + Combat Reflex boost!`);
   } else if (earnedMoney) {
-    _logAction(`Quick Draw: ${reactionTime}ms - Sub-300ms reflexes earned you $100 + Combat Reflex boost! (Violence +50 XP)`);
+    _logAction(`Quick Draw: ${reactionTime}ms - Sub-300ms reflexes earned you $100 + Combat Reflex boost!`);
   } else {
     _logAction(`Quick Draw: ${reactionTime}ms - ${message.replace(/[]/g, '').trim()} Combat Reflex improved slightly.`);
   }
