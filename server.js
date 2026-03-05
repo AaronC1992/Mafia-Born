@@ -555,8 +555,6 @@ const gameState = {
     heistQueue: [], // { playerId, playerName, level, joinedAt }
     // Crews — player-created social groups
     crews: new Map(), // crewId -> { id, name, tag, motto, emblem, leader, officers[], members[], createdAt }
-    // Anonymous hit contracts (dark board)
-    hitContracts: [], // { id, clientId, posterName, targetName, reward, anonymous, postedAt, expiresAt, claimedBy, completedBy }
     // Player gambling tables
     gamblingTables: new Map(), // tableId -> { id, type, hostId, hostName, guestId, guestName, bet, state, gameData, createdAt }
     // Seasonal events
@@ -1096,20 +1094,6 @@ function handleClientMessage(clientId, message, ws) {
             break;
         case 'crew_update':
             handleCrewUpdate(clientId, message);
-            break;
-
-        // Hit contracts (dark board)
-        case 'hit_contract_post':
-            handleHitContractPost(clientId, message);
-            break;
-        case 'hit_contract_claim':
-            handleHitContractClaim(clientId, message);
-            break;
-        case 'hit_contract_complete':
-            handleHitContractComplete(clientId, message);
-            break;
-        case 'hit_contract_list':
-            handleHitContractList(clientId);
             break;
 
         // Player gambling
@@ -4051,10 +4035,12 @@ function handlePostBounty(clientId, message) {
     const targetName = (message.targetPlayer || '').trim();
     const reward = Math.max(0, Math.min(parseInt(message.reward) || 0, BOUNTY_MAX));
     const reason = (message.reason || 'Wanted dead or alive.').substring(0, 60);
+    const anonymous = !!message.anonymous;
+    const totalCost = anonymous ? reward * 2 : reward;
 
     if (!targetName) return fail('Specify a target player.');
     if (reward < BOUNTY_MIN) return fail(`Minimum bounty is $${BOUNTY_MIN.toLocaleString()}.`);
-    if ((player.money || 0) < reward) return fail('Not enough cash for the bounty.');
+    if ((player.money || 0) < totalCost) return fail(anonymous ? `Not enough cash. Anonymous bounties cost 2x ($${totalCost.toLocaleString()}).` : 'Not enough cash for the bounty.');
 
     // Find target
     let targetId = null;
@@ -4072,8 +4058,8 @@ function handlePostBounty(clientId, message) {
 
     if (gameState.bounties.length >= MAX_ACTIVE_BOUNTIES) return fail('Bounty board is full. Try again later.');
 
-    // Deduct money upfront
-    player.money -= reward;
+    // Deduct money upfront (anonymous costs 2x)
+    player.money -= totalCost;
     const ps = gameState.playerStates.get(clientId);
     if (ps) { ps.money = player.money; ps.lastUpdate = Date.now(); }
 
@@ -4085,6 +4071,7 @@ function handlePostBounty(clientId, message) {
         targetName: targetName,
         reward: reward,
         reason: reason,
+        anonymous: anonymous,
         postedAt: Date.now(),
         expiresAt: Date.now() + BOUNTY_DURATION_MS
     };
@@ -4102,11 +4089,15 @@ function handlePostBounty(clientId, message) {
         tgtWs.send(JSON.stringify({
             type: 'bounty_alert',
             bounty: bounty,
-            message: `${player.name} put a $${reward.toLocaleString()} bounty on your head!`
+            message: anonymous
+                ? `Someone put a $${reward.toLocaleString()} bounty on your head! Watch your back...`
+                : `${player.name} put a $${reward.toLocaleString()} bounty on your head!`
         }));
     }
 
-    addGlobalChatMessage('System', ` ${player.name} placed a $${reward.toLocaleString()} bounty on ${targetName}! Reason: "${reason}"`, '#ff6600');
+    addGlobalChatMessage('System', anonymous
+        ? `An anonymous $${reward.toLocaleString()} bounty has been placed on ${targetName}! Reason: "${reason}"`
+        : `${player.name} placed a $${reward.toLocaleString()} bounty on ${targetName}! Reason: "${reason}"`, '#ff6600');
     broadcastPlayerStates();
     scheduleWorldSave();
 }
@@ -4147,7 +4138,8 @@ function handleBountyList(clientId, message) {
         type: 'bounty_list_result',
         bounties: gameState.bounties.map(b => ({
             id: b.id,
-            posterName: b.posterName,
+            posterName: b.anonymous ? 'Anonymous' : b.posterName,
+            anonymous: !!b.anonymous,
             targetName: b.targetName,
             reward: b.reward,
             reason: b.reason,
@@ -4971,117 +4963,6 @@ function handleCrewUpdate(clientId, message) {
     
     ws.send(JSON.stringify({ type: 'crew_result', success: true, action: 'updated', crew: playerCrew }));
     scheduleWorldSave();
-}
-
-// ==================== HIT CONTRACTS (DARK BOARD) ====================
-
-function handleHitContractPost(clientId, message) {
-    const ws = clients.get(clientId);
-    const player = gameState.players.get(clientId);
-    if (!ws || !player) return;
-    
-    const targetName = (message.targetName || '').trim();
-    const reward = parseInt(message.reward) || 0;
-    
-    if (!targetName) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Must specify a target.' }));
-    if (targetName === player.name) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Cannot put a hit on yourself.' }));
-    if (reward < 5000) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Minimum bounty is $5,000.' }));
-    if (reward > 1000000) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Maximum bounty is $1,000,000.' }));
-    if (gameState.hitContracts.length >= 30) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'The Dark Board is full. Try again later.' }));
-    
-    // Verify target exists
-    let targetFound = false;
-    for (const [, p] of gameState.players) {
-        if (p.name === targetName) { targetFound = true; break; }
-    }
-    if (!targetFound) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Target not found.' }));
-    
-    const contract = {
-        id: 'hit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-        clientId: clientId,
-        posterName: player.name,
-        targetName: targetName,
-        reward: reward,
-        anonymous: true,
-        postedAt: Date.now(),
-        expiresAt: Date.now() + (48 * 60 * 60 * 1000), // 48h
-        claimedBy: null,
-        completedBy: null
-    };
-    gameState.hitContracts.push(contract);
-    
-    ws.send(JSON.stringify({ type: 'hit_contract_result', success: true, action: 'posted', contract }));
-    
-    // Warn the target anonymously
-    for (const [id, p] of gameState.players) {
-        if (p.name === targetName) {
-            const tWs = clients.get(id);
-            if (tWs && tWs.readyState === WebSocket.OPEN) {
-                tWs.send(JSON.stringify({ type: 'hit_contract_warning', message: 'Someone has put a price on your head. Watch your back...' }));
-            }
-            break;
-        }
-    }
-    
-    addGlobalChatMessage('The Dark Board', `A new anonymous contract has been posted. $${reward.toLocaleString()} for a hit on ${targetName}.`, '#8b0000');
-    scheduleWorldSave();
-}
-
-function handleHitContractClaim(clientId, message) {
-    const ws = clients.get(clientId);
-    const player = gameState.players.get(clientId);
-    if (!ws || !player) return;
-    
-    const contract = gameState.hitContracts.find(c => c.id === message.contractId);
-    if (!contract) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Contract not found.' }));
-    if (contract.claimedBy) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Contract already claimed.' }));
-    if (contract.clientId === clientId) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Cannot claim your own contract.' }));
-    
-    contract.claimedBy = clientId;
-    contract.claimedByName = player.name;
-    
-    ws.send(JSON.stringify({ type: 'hit_contract_result', success: true, action: 'claimed', contract }));
-    scheduleWorldSave();
-}
-
-function handleHitContractComplete(clientId, message) {
-    const ws = clients.get(clientId);
-    const player = gameState.players.get(clientId);
-    if (!ws || !player) return;
-    
-    const contract = gameState.hitContracts.find(c => c.id === message.contractId);
-    if (!contract) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'Contract not found.' }));
-    if (contract.claimedBy !== clientId) return ws.send(JSON.stringify({ type: 'hit_contract_result', success: false, error: 'You did not claim this contract.' }));
-    
-    contract.completedBy = clientId;
-    // Remove from active list
-    gameState.hitContracts = gameState.hitContracts.filter(c => c.id !== contract.id);
-    
-    ws.send(JSON.stringify({ type: 'hit_contract_result', success: true, action: 'completed', reward: contract.reward }));
-    addGlobalChatMessage('The Dark Board', `A contract on ${contract.targetName} has been fulfilled. The streets grow colder...`, '#8b0000');
-    scheduleWorldSave();
-}
-
-function handleHitContractList(clientId) {
-    const ws = clients.get(clientId);
-    if (!ws) return;
-    
-    // Clean expired contracts
-    const now = Date.now();
-    gameState.hitContracts = gameState.hitContracts.filter(c => now < c.expiresAt);
-    
-    // Send sanitized list (hide poster identity since contracts are anonymous)
-    const contracts = gameState.hitContracts.map(c => ({
-        id: c.id,
-        targetName: c.targetName,
-        reward: c.reward,
-        postedAt: c.postedAt,
-        expiresAt: c.expiresAt,
-        claimed: !!c.claimedBy,
-        claimedByYou: c.claimedBy === clientId
-    }));
-    
-    ws.send(JSON.stringify({ type: 'hit_contract_list_result', contracts }));
 }
 
 // ==================== PLAYER GAMBLING ====================

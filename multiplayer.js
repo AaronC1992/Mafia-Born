@@ -1131,7 +1131,7 @@ async function handleServerMessage(message) {
                 if (isDeathAnnouncement) {
                     messageDiv.style.cssText = 'margin: 8px 0; padding: 10px; background: rgba(30, 26, 16, 0.6); border-radius: 2px; border: 1px solid #8b7355; border-left: 3px solid #c0a040; cursor: pointer;';
                     messageDiv.innerHTML = `
-                        <div style="font-family: var(--font-heading); color: #c0a040; font-size: 1.05em; letter-spacing: 1px;">?? THE DAILY RACKETEER � EXTRA!</div>
+                        <div style="font-family: var(--font-heading); color: #c0a040; font-size: 1.05em; letter-spacing: 1px;">THE DAILY RACKETEER</div>
                         <div style="color: #f5e6c8; margin: 4px 0;">${escapeHTML(chatMessage.message)}</div>
                         <div class="newspaper-chat-link" style="margin-top: 4px;">&#128240; Click to read the full obituary</div>
                         <small style="color: #8a7a5a; float: right;">${chatMessage.time}</small>
@@ -1164,7 +1164,7 @@ async function handleServerMessage(message) {
                 lastReceivedDeathNewspaper = message.newspaperData;
                 // Add to ledger with a special marker so user knows they can click
                 if (typeof logAction === 'function') {
-                    _safeLogAction(`?? EXTRA! EXTRA! ${message.newspaperData.name} is DEAD! "${message.newspaperData.causeOfDeath}" � Click the chat message to read the full obituary!`, 'chat');
+                    _safeLogAction(`EXTRA! EXTRA! ${message.newspaperData.name} is DEAD! "${message.newspaperData.causeOfDeath}" � Click the chat message to read the full obituary!`, 'chat');
                 }
                 // If world chat is open, add a clickable newspaper link
                 const deathChatArea = document.getElementById('global-chat-area');
@@ -1173,7 +1173,7 @@ async function handleServerMessage(message) {
                     const deathDiv = document.createElement('div');
                     deathDiv.style.cssText = 'margin: 8px 0; padding: 10px; background: rgba(30, 26, 16, 0.6); border-radius: 2px; border-left: 3px solid #c0a040; border: 1px solid #8b7355; cursor: pointer;';
                     deathDiv.innerHTML = `
-                        <div style="font-family: var(--font-heading); color: #c0a040; font-size: 1.05em; letter-spacing: 1px;">?? THE DAILY RACKETEER � EXTRA!</div>
+                        <div style="font-family: var(--font-heading); color: #c0a040; font-size: 1.05em; letter-spacing: 1px;">THE DAILY RACKETEER</div>
                         <div style="color: #f5e6c8; margin: 4px 0;"><strong>${escapeHTML(nd.name)}</strong> is DEAD!</div>
                         <div style="color: #8a7a5a; font-style: italic; font-size: 0.9em;">"${escapeHTML(nd.causeOfDeath)}"</div>
                         <div class="newspaper-chat-link" style="margin-top: 6px;">&#128240; Click to read the full obituary</div>
@@ -1191,7 +1191,7 @@ async function handleServerMessage(message) {
 
         case 'admin_killed':
             // Admin has executed this player � trigger full permadeath
-            console.log('?? You have been killed by admin:', message.causeOfDeath);
+            console.log('You have been killed by admin:', message.causeOfDeath);
             if (typeof showDeathScreen === 'function') {
                 showDeathScreen(message.causeOfDeath || 'Executed by order of the Don');
             } else if (typeof window.showDeathScreen === 'function') {
@@ -1841,18 +1841,6 @@ async function handleServerMessage(message) {
             if (typeof showBriefNotification === 'function') showBriefNotification(`You were kicked from ${message.crewName}.`, 'error');
             player.crewId = null;
             player.crewRole = null;
-            break;
-
-        // Hit contracts
-        case 'hit_contract_result':
-            handleHitContractResult(message);
-            break;
-        case 'hit_contract_warning':
-            if (typeof showBriefNotification === 'function') showBriefNotification('⚠️ ' + message.message, 'error');
-            if (typeof logAction === 'function') _safeLogAction('⚠️ ' + message.message, 'combat');
-            break;
-        case 'hit_contract_list_result':
-            handleHitContractListResult(message);
             break;
 
         // Player gambling
@@ -2727,7 +2715,7 @@ function generateChatHTML() {
         if (isDeathAnnouncement) {
             return `
                 <div onclick="if(lastReceivedDeathNewspaper && typeof showDeathNewspaper==='function') showDeathNewspaper(lastReceivedDeathNewspaper);" style="margin: 8px 0; padding: 10px; background: rgba(30, 26, 16, 0.6); border-radius: 2px; border: 1px solid #8b7355; border-left: 3px solid #c0a040; cursor: pointer;">
-                    <div style="font-family: var(--font-heading); color: #c0a040; font-size: 1.05em; letter-spacing: 1px;">?? THE DAILY RACKETEER � EXTRA!</div>
+                    <div style="font-family: var(--font-heading); color: #c0a040; font-size: 1.05em; letter-spacing: 1px;">THE DAILY RACKETEER</div>
                     <div style="color: #f5e6c8; margin: 4px 0;">${escapeHTML(msg.message)}</div>
                     <div class="newspaper-chat-link" style="margin-top: 4px;">&#128240; Click to read the full obituary</div>
                     <small style="color: #8a7a5a; float: right;">${msg.time}</small>
@@ -2962,7 +2950,6 @@ function showOnlineWorld(activeTab) {
             <button onclick="showOnlineWorld('politics')" style="${tabStyle('politics')}">Politics</button>
             <button onclick="showOnlineWorld('activities')" style="${tabStyle('activities')}">Activities</button>
             <button onclick="showOnlineWorld('crew')" style="${tabStyle('crew')}">Crew</button>
-            <button onclick="showOnlineWorld('darkboard')" style="${tabStyle('darkboard')}">Dark Board</button>
             <button onclick="showOnlineWorld('market')" style="${tabStyle('market')}">Market</button>
             <button onclick="showOnlineWorld('chat')" style="${tabStyle('chat')}">Chat</button>
         </div>
@@ -3204,11 +3191,6 @@ function showOnlineWorld(activeTab) {
         worldHTML += `<div id="crew-content"><p style="color:#8a7a5a;">Loading crew data...</p></div>`;
     }
 
-    // -- DARK BOARD TAB --
-    if (tab === 'darkboard') {
-        worldHTML += `<div id="hit-contracts-content"><p style="color:#8a7a5a;">Loading contracts...</p></div>`;
-    }
-    
     // -- MARKETPLACE TAB --
     if (tab === 'market') {
         worldHTML += renderMarketplaceTab();
@@ -3289,9 +3271,7 @@ function showOnlineWorld(activeTab) {
     if (tab === 'crew') {
         sendMP({ type: 'crew_info' });
     }
-    if (tab === 'darkboard') {
-        sendMP({ type: 'hit_contract_list' });
-    }
+
     
     // Request updated world state from server
     if (onlineWorldState.socket && onlineWorldState.socket.readyState === WebSocket.OPEN) {
@@ -4635,7 +4615,7 @@ function participateInEvent(eventType, district) {
     const eventOutcomes = {
         police_raid: {
             title: 'Police Raid',
-            icon: '??',
+            icon: '',
             scenarios: [
                 { text: 'You slipped through the police barricade and looted an evidence lockup.', moneyMin: 800, moneyMax: 3000, xp: 30, repGain: 3, successChance: 0.5, riskText: 'But a detective spotted you fleeing the scene.', healthLoss: 15, wantedGain: 1 },
                 { text: 'Chaos erupted and you picked pockets in the confusion.', moneyMin: 300, moneyMax: 1200, xp: 15, repGain: 1, successChance: 0.65, riskText: 'A stray baton caught you across the ribs.', healthLoss: 10, wantedGain: 0 },
@@ -4644,7 +4624,7 @@ function participateInEvent(eventType, district) {
         },
         market_crash: {
             title: 'Market Crash',
-            icon: '??',
+            icon: '',
             scenarios: [
                 { text: 'You bought seized assets at rock-bottom prices and flipped them.', moneyMin: 1500, moneyMax: 5000, xp: 35, repGain: 2, successChance: 0.6, riskText: 'Turns out the assets were flagged � you lost some to seizure.', healthLoss: 0, wantedGain: 1 },
                 { text: 'You shorted a corrupt businessman\'s portfolio through your contacts.', moneyMin: 2000, moneyMax: 6000, xp: 40, repGain: 4, successChance: 0.45, riskText: 'The businessman sent enforcers to collect.', healthLoss: 15, wantedGain: 0 },
@@ -4653,7 +4633,7 @@ function participateInEvent(eventType, district) {
         },
         gang_meeting: {
             title: 'Gang Meeting',
-            icon: '??',
+            icon: '',
             scenarios: [
                 { text: 'You impressed the bosses and received a cut of their operation.', moneyMin: 600, moneyMax: 2500, xp: 30, repGain: 6, successChance: 0.5, riskText: 'A rival at the meeting took offense and jumped you after.', healthLoss: 20, wantedGain: 0 },
                 { text: 'You brokered a deal between two factions and took a commission.', moneyMin: 1000, moneyMax: 3500, xp: 35, repGain: 8, successChance: 0.45, riskText: 'One side felt you favored the other � they want payback.', healthLoss: 10, wantedGain: 0 },
@@ -4862,7 +4842,7 @@ function handleAllianceInfoResult(message) {
                     <button onclick="allianceDeposit()" style="background: #8a9a6a; color: #000; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Deposit</button>
                     ${isLeader ? `<button onclick="allianceInvitePrompt()" style="background: #c0a062; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Invite</button>` : ''}
                     ${isLeader ? `<button onclick="allianceKickPrompt()" style="background: #8b3a3a; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Kick</button>` : ''}
-                    ${isLeader ? `<button onclick="showDisciplinePanel()" style="background: #8b0000; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">?? Discipline</button>` : ''}
+                    ${isLeader ? `<button onclick="showDisciplinePanel()" style="background: #8b0000; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Discipline</button>` : ''}
                     <button onclick="allianceLeave()" style="background: #666; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Leave</button>
                 </div>
             </div>
@@ -5117,7 +5097,7 @@ function showDisciplinePanel() {
     modal.className = 'popup-overlay';
     modal.innerHTML = `
         <div class="popup-card" style="max-width:520px; background: #0d0d0d; border: 2px solid #8b0000;">
-            <h2 style="color: #8b0000; font-family: Georgia, serif; margin: 0 0 5px; text-align: center;">?? Discipline a Member</h2>
+            <h2 style="color: #8b0000; font-family: Georgia, serif; margin: 0 0 5px; text-align: center;">Discipline a Member</h2>
             <p style="color: #888; text-align: center; font-size: 0.85em; margin-bottom: 18px;">As leader of [${escapeHTML(myAlliance.tag)}] ${escapeHTML(myAlliance.name)}, bring order to your ranks.<br>All punishments are broadcast live to every player.</p>
 
             <div style="margin-bottom: 14px;">
@@ -5134,21 +5114,21 @@ function showDisciplinePanel() {
                     <label onclick="document.getElementById('discipline-type-warning').checked = true" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: rgba(243,156,18,0.1); border: 2px solid rgba(243,156,18,0.3); border-radius: 8px; cursor: pointer; transition: border-color 0.2s;">
                         <input type="radio" name="discipline-type" id="discipline-type-warning" value="warning" checked style="margin-top: 3px;">
                         <div>
-                            <div style="color: #c0a040; font-weight: bold;">?? Formal Warning</div>
+                            <div style="color: #c0a040; font-weight: bold;">Formal Warning</div>
                             <div style="color: #888; font-size: 0.8em;">A public notice that this member is on thin ice. A slap on the wrist � everyone sees it.</div>
                         </div>
                     </label>
                     <label onclick="document.getElementById('discipline-type-humiliation').checked = true" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: rgba(231,76,60,0.1); border: 2px solid rgba(231,76,60,0.3); border-radius: 8px; cursor: pointer; transition: border-color 0.2s;">
                         <input type="radio" name="discipline-type" id="discipline-type-humiliation" value="humiliation" style="margin-top: 3px;">
                         <div>
-                            <div style="color: #8b3a3a; font-weight: bold;">?? Public Humiliation</div>
+                            <div style="color: #8b3a3a; font-weight: bold;">Public Humiliation</div>
                             <div style="color: #888; font-size: 0.8em;">Drag their name through the mud in front of the entire city. Maximum embarrassment.</div>
                         </div>
                     </label>
                     <label onclick="document.getElementById('discipline-type-punishment').checked = true" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: rgba(139,0,0,0.15); border: 2px solid rgba(139,0,0,0.4); border-radius: 8px; cursor: pointer; transition: border-color 0.2s;">
                         <input type="radio" name="discipline-type" id="discipline-type-punishment" value="punishment" style="margin-top: 3px;">
                         <div>
-                            <div style="color: #ff4444; font-weight: bold;">?? Serious Punishment</div>
+                            <div style="color: #ff4444; font-weight: bold;">Serious Punishment</div>
                             <div style="color: #888; font-size: 0.8em;">Make an example of them. The whole server sees this � a message to anyone who steps out of line.</div>
                         </div>
                     </label>
@@ -5281,6 +5261,11 @@ function showBountyBoard() {
                 <input id="bounty-target-input" type="text" placeholder="Target player name" style="padding: 10px; background: #222; color: #ff6600; border: 1px solid #ff6600; border-radius: 6px;">
                 <input id="bounty-reward-input" type="number" placeholder="Reward ($5,000 - $500,000)" min="5000" max="500000" style="padding: 10px; background: #222; color: #ff6600; border: 1px solid #ff6600; border-radius: 6px;">
                 <input id="bounty-reason-input" type="text" placeholder="Reason (optional)" maxlength="60" style="padding: 10px; background: #222; color: #ff6600; border: 1px solid #ff6600; border-radius: 6px;">
+                <label style="display: flex; align-items: center; gap: 10px; padding: 8px; background: rgba(139,0,0,0.2); border: 1px solid #8b0000; border-radius: 6px; cursor: pointer;">
+                    <input id="bounty-anonymous-input" type="checkbox" style="width: 18px; height: 18px; accent-color: #8b0000; cursor: pointer;">
+                    <span style="color: #ff4444; font-weight: bold;">Post Anonymously</span>
+                    <span style="color: #888; font-size: 0.85em;">(2x cost — your name stays hidden)</span>
+                </label>
             </div>
             <button onclick="postBounty()" style="background: #ff6600; color: #000; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%; margin-top: 10px;">Post Bounty (money deducted upfront)</button>
         </div>
@@ -5300,9 +5285,10 @@ function postBounty() {
     const target = document.getElementById('bounty-target-input')?.value?.trim();
     const reward = parseInt(document.getElementById('bounty-reward-input')?.value);
     const reason = document.getElementById('bounty-reason-input')?.value?.trim();
+    const anonymous = document.getElementById('bounty-anonymous-input')?.checked || false;
     if (!target) { showSystemMessage('Enter a target name.', '#8b3a3a'); return; }
     if (!reward || reward < 5000) { showSystemMessage('Minimum bounty is $5,000.', '#8b3a3a'); return; }
-    sendMP({ type: 'post_bounty', targetPlayer: target, reward, reason });
+    sendMP({ type: 'post_bounty', targetPlayer: target, reward, reason, anonymous });
 }
 
 function handleBountyResult(message) {
@@ -5352,7 +5338,7 @@ function handleBountyListResult(message) {
                             <strong style="color: #ff6600; font-size: 1.1em;">${escapeHTML(b.targetName)}</strong>
                             ${isOnMe ? '<span style="color:#ff0000;font-weight:bold;margin-left:8px;">THAT\'S YOU!</span>' : ''}
                             <div style="color: #888; font-size: 0.85em;">${escapeHTML(b.reason || 'Wanted dead or alive.')}</div>
-                            <div style="color: #666; font-size: 0.8em;">Posted by: ${escapeHTML(b.posterName)} | Expires in ${timeLeft} min</div>
+                            <div style="color: #666; font-size: 0.8em;">Posted by: ${b.anonymous ? '<span style="color:#8b0000;font-style:italic;">Anonymous</span>' : escapeHTML(b.posterName)} | Expires in ${timeLeft} min</div>
                         </div>
                         <div style="text-align: right;">
                             <div style="color: #8a9a6a; font-size: 1.3em; font-weight: bold;">$${b.reward.toLocaleString()}</div>
@@ -5396,11 +5382,11 @@ function handleSeasonInfoResult(message) {
     const daysLeft = Math.max(0, Math.ceil(season.timeLeft / (24 * 60 * 60 * 1000)));
 
     const tiers = [
-        { name: 'Bronze', min: 0, color: '#cd7f32', icon: '??' },
-        { name: 'Silver', min: 1000, color: '#c0c0c0', icon: '??' },
-        { name: 'Gold', min: 1500, color: '#ffd700', icon: '??' },
-        { name: 'Diamond', min: 2000, color: '#b9f2ff', icon: '??' },
-        { name: 'Kingpin', min: 2500, color: '#ff4500', icon: '??' }
+        { name: 'Bronze', min: 0, color: '#cd7f32', icon: 'III' },
+        { name: 'Silver', min: 1000, color: '#c0c0c0', icon: 'II' },
+        { name: 'Gold', min: 1500, color: '#ffd700', icon: 'I' },
+        { name: 'Diamond', min: 2000, color: '#b9f2ff', icon: '*' },
+        { name: 'Kingpin', min: 2500, color: '#ff4500', icon: 'K' }
     ];
 
     const currentTier = tiers.find(t => t.name === myRating.tier) || tiers[0];
@@ -5517,19 +5503,19 @@ function renderPoliticsTab() {
         const allianceStr = pol.isAlliance ? `<div style="color: #c0a062; font-size: 0.9em; margin-top: 3px;">[${escapeHTML(pol.allianceTag)}] ${escapeHTML(pol.allianceName)}</div>` : '';
         html += `
             <div style="background: linear-gradient(180deg, rgba(255,215,0,0.15) 0%, rgba(0,0,0,0.9) 100%); padding: 25px; border-radius: 15px; border: 2px solid #ffd700; margin-bottom: 20px; text-align: center;">
-                <div style="font-size: 2.5em;">??</div>
+                <div style="font-size: 2.5em;">&#9813;</div>
                 <div style="color: #ffd700; font-size: 1.8em; font-weight: bold; font-family: 'Georgia', serif; text-shadow: 2px 2px 8px rgba(255,215,0,0.4);">${escapeHTML(pol.topDonName)}</div>
                 ${allianceStr}
                 <div style="color: #c0a062; font-size: 0.95em; margin-top: 8px;">Top Don of the City</div>
                 <div style="display: inline-block; background: rgba(255,215,0,0.1); padding: 6px 18px; border-radius: 20px; border: 1px solid #ffd700; margin-top: 10px;">
-                    <span style="color: #ffd700; font-weight: bold;">?? ${pol.territoryCount}</span> <span style="color: #ccc;">Territories Controlled</span>
+                    <span style="color: #ffd700; font-weight: bold;">${pol.territoryCount}</span> <span style="color: #ccc;">Territories Controlled</span>
                 </div>
             </div>
         `;
     } else {
         html += `
             <div style="background: rgba(100,100,100,0.15); padding: 25px; border-radius: 15px; border: 2px dashed #555; margin-bottom: 20px; text-align: center;">
-                <div style="font-size: 2.5em; opacity: 0.4;">??</div>
+                <div style="font-size: 2.5em; opacity: 0.4;">&#9813;</div>
                 <div style="color: #888; font-size: 1.3em; font-family: 'Georgia', serif;">No Top Don</div>
                 <p style="color: #666; margin: 10px 0 0 0;">All territories are under NPC control. Conquer territory to become the Top Don!</p>
             </div>
@@ -5539,7 +5525,7 @@ function renderPoliticsTab() {
     // Current Policies
     html += `
         <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 12px; border: 1px solid #c0a062; margin-bottom: 20px;">
-            <h4 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif; text-align: center;">?? City Policies</h4>
+            <h4 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif; text-align: center;">City Policies</h4>
             <div id="politics-policies-list" style="display: grid; gap: 12px;">
     `;
 
@@ -5547,7 +5533,7 @@ function renderPoliticsTab() {
         const limits = pol.policyLimits || {};
         for (const [key, value] of Object.entries(pol.policies)) {
             const lim = limits[key] || {};
-            const icon = lim.icon || '??';
+            const icon = lim.icon || '';
             const label = lim.label || key;
             const unit = lim.unit || '';
             const desc = policyDescriptions[key] || '';
@@ -5632,7 +5618,7 @@ function renderTopDonControls(pol) {
 
     let html = `
         <div style="background: linear-gradient(180deg, rgba(255,215,0,0.08) 0%, rgba(0,0,0,0.8) 100%); padding: 20px; border-radius: 12px; border: 2px solid #ffd700; margin-bottom: 20px;">
-            <h4 style="color: #ffd700; margin: 0 0 5px 0; font-family: 'Georgia', serif; text-align: center;">?? Top Don Controls</h4>
+            <h4 style="color: #ffd700; margin: 0 0 5px 0; font-family: 'Georgia', serif; text-align: center;">Top Don Controls</h4>
             <p style="color: #c0a062; text-align: center; margin: 0 0 15px 0; font-size: 0.85em;">You are the Top Don. Set policies for the entire city.</p>
             ${cooldownActive ? `<div style="text-align: center; color: #8b3a3a; margin-bottom: 12px; font-size: 0.9em;">? Policy changes on cooldown � ${cooldownMin} min remaining</div>` : ''}
             <div style="display: grid; gap: 12px;">
@@ -5640,7 +5626,7 @@ function renderTopDonControls(pol) {
 
     for (const [key, value] of Object.entries(pol.policies)) {
         const lim = pol.policyLimits[key] || {};
-        const icon = lim.icon || '??';
+        const icon = lim.icon || '';
         const label = lim.label || key;
         const unit = lim.unit || '';
         const min = lim.min !== undefined ? lim.min : 0;
@@ -5694,7 +5680,7 @@ function handlePoliticsPolicyResult(message) {
         const lim = (_politicsCache && _politicsCache.policyLimits) ? _politicsCache.policyLimits[message.policy] : {};
         const label = (lim && lim.label) || message.policy;
         const unit = (lim && lim.unit) || '';
-        window.ui.toast(`?? ${label} set to ${message.newValue}${unit} (was ${message.oldValue}${unit})`, 'success');
+        window.ui.toast(`${label} set to ${message.newValue}${unit} (was ${message.oldValue}${unit})`, 'success');
 
         // Update cooldown
         _politicsCooldown = message.cooldownRemaining || 0;
@@ -5987,92 +5973,6 @@ window.crewAcceptInvite = function() {
         window._pendingCrewInvite = null;
     }
 };
-
-// ==================== HIT CONTRACTS CLIENT ====================
-
-let _hitContractsCache = [];
-
-function handleHitContractResult(message) {
-    if (message.success) {
-        if (message.action === 'posted') {
-            if (typeof showBriefNotification === 'function') showBriefNotification(`Contract posted on ${message.contract.targetName} for $${message.contract.reward.toLocaleString()}.`, 'success');
-        } else if (message.action === 'claimed') {
-            if (typeof showBriefNotification === 'function') showBriefNotification(`You claimed the contract on ${message.contract.targetName}. Hunt them down.`, 'success');
-        } else if (message.action === 'completed') {
-            if (typeof showBriefNotification === 'function') showBriefNotification(`Contract completed! +$${message.reward.toLocaleString()}`, 'success');
-            player.money += message.reward;
-            // Track for achievement
-            if (!player._hitContractsCompleted) player._hitContractsCompleted = 0;
-            player._hitContractsCompleted++;
-            _safeUpdateUI();
-        }
-        sendMP({ type: 'hit_contract_list' });
-    } else {
-        if (typeof showBriefNotification === 'function') showBriefNotification(message.error || 'Contract action failed.', 'error');
-    }
-}
-
-function handleHitContractListResult(message) {
-    _hitContractsCache = message.contracts || [];
-    const container = document.getElementById('hit-contracts-content');
-    if (container) renderHitContracts(container);
-}
-
-function renderHitContracts(container) {
-    const style = 'style="background:rgba(20,18,10,0.4);border:1px solid #3a3520;border-radius:8px;padding:16px;margin:10px 0;"';
-    let html = `<p style="color:#8a7a5a;font-style:italic;margin-bottom:12px;">Anonymous hit contracts. The poster's identity is never revealed.</p>`;
-
-    // Post new contract form
-    html += `<div ${style}>
-        <h4 style="color:#c0a062;">Post a Contract</h4>
-        <div style="display:grid;gap:8px;margin:8px 0;">
-            <input type="text" id="hit-target-input" placeholder="Target player name" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
-            <input type="number" id="hit-reward-input" placeholder="Reward ($5,000 — $1,000,000)" min="5000" max="1000000" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
-            <button onclick="window.postHitContract()" style="background:linear-gradient(135deg,#8b0000,#660000);color:#f5e6c8;border:none;padding:10px;border-radius:6px;cursor:pointer;font-weight:bold;">Post Anonymous Contract</button>
-        </div>
-    </div>`;
-
-    // Active contracts
-    if (_hitContractsCache.length > 0) {
-        html += `<h4 style="color:#c0a062;margin:12px 0 6px;">Active Contracts</h4>`;
-        _hitContractsCache.forEach(c => {
-            const timeLeft = Math.max(0, Math.floor((c.expiresAt - Date.now()) / 3600000));
-            html += `<div ${style} style="border-color:${c.claimedByYou ? '#d4af37' : '#3a3520'};">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div>
-                        <strong style="color:#e74c3c;">Target: ${escapeHTML(c.targetName)}</strong>
-                        <p style="color:#d4af37;margin:4px 0;">Reward: $${c.reward.toLocaleString()}</p>
-                        <small style="color:#8a7a5a;">Expires in ${timeLeft}h</small>
-                    </div>
-                    <div>
-                        ${c.claimed ? (c.claimedByYou ? '<span style="color:#d4af37;font-weight:bold;">YOUR CONTRACT</span>' : '<span style="color:#8a7a5a;">Claimed</span>') : `<button onclick="window.claimHitContract('${c.id}')" style="background:#8b0000;color:#f5e6c8;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:bold;">Claim Contract</button>`}
-                    </div>
-                </div>
-            </div>`;
-        });
-    } else {
-        html += `<p style="color:#8a7a5a;text-align:center;margin:20px 0;">No active contracts. The streets are quiet... for now.</p>`;
-    }
-
-    container.innerHTML = html;
-}
-
-window.postHitContract = function() {
-    const target = document.getElementById('hit-target-input')?.value?.trim();
-    const reward = parseInt(document.getElementById('hit-reward-input')?.value) || 0;
-    if (!target || reward < 5000) {
-        if (typeof showBriefNotification === 'function') showBriefNotification('Enter a valid target and reward ($5,000+).', 'error');
-        return;
-    }
-    if (player.money < reward) {
-        if (typeof showBriefNotification === 'function') showBriefNotification('Not enough cash for the bounty.', 'error');
-        return;
-    }
-    player.money -= reward;
-    _safeUpdateUI();
-    sendMP({ type: 'hit_contract_post', targetName: target, reward });
-};
-window.claimHitContract = function(id) { sendMP({ type: 'hit_contract_claim', contractId: id }); };
 
 // ==================== PLAYER GAMBLING CLIENT ====================
 

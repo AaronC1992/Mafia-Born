@@ -22852,11 +22852,6 @@ function showCrewScreen() {
   showOnlineWorld('crew');
 }
 
-// ==================== HIT CONTRACTS SCREEN ====================
-function showHitContracts() {
-  showOnlineWorld('darkboard');
-}
-
 // ==================== PLAYER GAMBLING SCREEN ====================
 function showPlayerGambling() {
   showCasino('backroom');
@@ -23117,7 +23112,7 @@ function respecSkillTree() {
 const NEW_TUTORIAL_CONTENT = {
   friends: { title: 'Friends & Social', tip: 'Add friends to see when they\'re online. You can invite friends to Superboss fights and crew activities.' },
   crew: { title: 'Crews', tip: 'Create or join a crew of up to 10 players. Leaders can invite members, set mottos, and promote officers.' },
-  hitcontracts: { title: 'The Dark Board', tip: 'Post anonymous hit contracts on other players. Claim a contract to hunt the target. Rewards are paid on completion.' },
+  hitcontracts: { title: 'Bounty Board', tip: 'Place bounties on rival players. Post anonymously for 2x the cost to keep your identity hidden. Kill the target in PvP to auto-collect the reward.' },
   playergambling: { title: 'The Back Room', tip: 'Gamble against other players with dice, coin flip, or high card. The server resolves all games fairly.' },
   superboss: { title: 'Superboss Fights', tip: 'Challenge legendary crime lords. Invite up to 4 friends to help. Higher level bosses drop better rewards and unique buffs.' },
   dailylogin: { title: 'Daily Rewards', tip: 'Log in every day to earn increasing rewards. Keep your streak going for 7 days to earn the best prizes!' }
@@ -23589,7 +23584,6 @@ window.showAuthModal = showAuthModal;
 // New Feature Screens
 window.showFriendsScreen = showFriendsScreen;
 window.showCrewScreen = showCrewScreen;
-window.showHitContracts = showHitContracts;
 window.showPlayerGambling = showPlayerGambling;
 window.showSuperbossScreen = showSuperbossScreen;
 
