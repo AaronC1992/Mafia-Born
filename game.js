@@ -15289,11 +15289,6 @@ function createCharacter() {
   player.name = name;
   player.portrait = selectedPortraitFile;
 
-  // 🐔 Easter egg for Eric
-  if (/^(eric|sooner)$/i.test(name.trim())) {
-    await showChickenButtEasterEgg();
-  }
-
   // Set default current slot for new character
   SAVE_SYSTEM.currentSlot = 1;
   saveSaveSystemPrefs();
@@ -15307,8 +15302,12 @@ function createCharacter() {
   // Log character creation
   logAction(`${player.name} emerges from the shadows - ready to conquer the criminal underworld.`);
 
-  // Show intro narrative
-  showIntroNarrative();
+  // 🐔 Easter egg for Eric — show popup before intro narrative
+  if (/^(eric|sooner)$/i.test(name)) {
+    showChickenButtEasterEgg().then(() => showIntroNarrative());
+  } else {
+    showIntroNarrative();
+  }
 }
 
 // Function to go back to intro/title screen from character creation
