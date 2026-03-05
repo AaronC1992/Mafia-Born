@@ -338,18 +338,34 @@ async function showMissions() {
     missionsHTML = renderStoryChapter();
   }
 
-  document.getElementById("missions-content").innerHTML = missionsHTML;
+  document.getElementById("missions-content").innerHTML = `
+    <div style="display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid #c0a062;padding-bottom:0;">
+      <button id="ops-tab-story" class="ops-tab active" onclick="switchOpsTab('story', this)" style="background:#c0a062;color:#000;padding:10px 18px;border:1px solid #c0a062;border-bottom:none;border-radius:8px 8px 0 0;cursor:pointer;font-family:'Georgia',serif;font-weight:bold;font-size:0.95em;">Story</button>
+      <button id="ops-tab-superboss" class="ops-tab" onclick="switchOpsTab('superboss', this)" style="background:#222;color:#c0a062;padding:10px 18px;border:1px solid #c0a062;border-bottom:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-family:'Georgia',serif;font-weight:normal;font-size:0.95em;">💀 Superboss</button>
+    </div>
+    <div id="ops-panel-story" class="ops-panel active">${missionsHTML}</div>
+    <div id="ops-panel-superboss" class="ops-panel" style="display:none;"><div id="superboss-content"><p style="color:#8a7a5a;">Loading superboss data...</p></div></div>
+  `;
   hideAllScreens();
   document.getElementById("missions-screen").style.display = "block";
 }
 
 // Switch between Operations tabs
 function switchOpsTab(tabId, btn) {
-  document.querySelectorAll('.ops-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.ops-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.ops-panel').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+  document.querySelectorAll('.ops-tab').forEach(t => {
+    t.classList.remove('active');
+    t.style.background = '#222'; t.style.color = '#c0a062'; t.style.fontWeight = 'normal'; t.style.borderBottom = '1px solid #c0a062';
+  });
   const panel = document.getElementById('ops-panel-' + tabId);
-  if (panel) panel.classList.add('active');
-  if (btn) btn.classList.add('active');
+  if (panel) { panel.classList.add('active'); panel.style.display = 'block'; }
+  if (btn) {
+    btn.classList.add('active');
+    btn.style.background = '#c0a062'; btn.style.color = '#000'; btn.style.fontWeight = 'bold'; btn.style.borderBottom = 'none';
+  }
+  if (tabId === 'superboss') {
+    if (typeof sendMP === 'function') sendMP({ type: 'superboss_list' });
+  }
 }
 
 // Toggle a family section open/closed
@@ -8643,7 +8659,7 @@ function hideAllScreens(skipScroll) {
     "money-laundering-screen", "territory-control-screen", "territories-screen",
     "events-screen", "map-screen", "calendar-screen", "statistics-screen",
     "options-screen", "player-stats-screen", "safehouse", "multiplayer-screen",
-    "friends-screen", "superboss-screen"
+    "friends-screen"
   ];
   screenIds.forEach(id => {
     const el = document.getElementById(id);
@@ -12786,7 +12802,6 @@ const menuUnlockConfig = [
   { id: 'worldchat', fn: 'showWorldChat()', label: 'World Chat', tip: 'Chat with other players online', level: 0 },
   { id: 'onlineworld', fn: 'showOnlineWorld()', label: 'The Commission', tip: 'Enter the online underworld', level: 5 },
   { id: 'friends', fn: 'showFriendsScreen()', label: 'Friends', tip: 'Friends list, blocked list & social', level: 0 },
-  { id: 'superboss', fn: 'showSuperbossScreen()', label: 'Superboss', tip: 'Challenge legendary crime lords', level: 15 },
 
   // === SETTINGS (Always last) ===
   { id: 'options', fn: 'showOptions()', label: 'Settings', tip: 'Save, load & game options', level: 0 },
@@ -22849,13 +22864,11 @@ function showPlayerGambling() {
 
 // ==================== SUPERBOSS SCREEN ====================
 function showSuperbossScreen() {
-  hideAllScreens();
-  const screen = document.getElementById('superboss-screen');
-  if (!screen) return;
-  screen.style.display = 'block';
-
-  // Request boss list from server
-  if (typeof sendMP === 'function') sendMP({ type: 'superboss_list' });
+  showMissions();
+  setTimeout(() => {
+    const btn = document.getElementById('ops-tab-superboss');
+    if (btn) switchOpsTab('superboss', btn);
+  }, 50);
 }
 
 // ==================== ECONOMY SINKS: DAILY UPKEEP ====================

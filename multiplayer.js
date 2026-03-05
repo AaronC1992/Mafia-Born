@@ -6339,7 +6339,6 @@ function renderSuperbossScreen() {
         sendMP({ type: 'superboss_list' });
     }
 
-    html += `<button onclick="goBackToMainMenu()" style="background:#3a3520;color:#d4c4a0;border:1px solid #5a4a30;padding:10px 20px;border-radius:6px;cursor:pointer;margin-top:12px;">← Back to SafeHouse</button>`;
     container.innerHTML = html;
 }
 
