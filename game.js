@@ -414,7 +414,7 @@ function renderStoryFamilyPicker() {
         <h3 class="story-family-story-title">"${fam.storyTitle}"</h3>
         <p class="story-family-tagline">${fam.tagline}</p>
         ${buff ? `<div class="story-family-buff">${buff.name}: ${buff.description}</div>` : ''}
-        <div class="story-family-chapters">8 Chapters &middot; 4 Acts</div>
+        <div class="story-family-chapters">25 Chapters &middot; 5 Acts</div>
         <button class="story-pledge-btn" style="background:linear-gradient(135deg,${fam.color},${fam.color}cc);" onclick="beginFamilyStory('${famKey}')">
           Begin This Story
         </button>
@@ -436,7 +436,7 @@ async function beginFamilyStory(familyKey) {
   const confirmed = await ui.confirm(
     `Begin "${fam.storyTitle}" with the ${rivalFam?.name || familyKey}?\n\n` +
     `${fam.tagline}\n\n` +
-    `This is permanent! You will play through this family's 8-chapter story.`
+    `This is permanent! You will play through this family's 25-chapter story.`
   );
 
   if (!confirmed) return;
