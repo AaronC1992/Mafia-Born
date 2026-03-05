@@ -5,18 +5,17 @@ const onlineWorld = {
     maxPlayersPerServer: 100,
     // WebSocket server URL
     // Local dev -> ws://localhost:3000
-    // Production -> auto-detect from current domain (or override via window.__MULTIPLAYER_SERVER_URL__)
+    // Production -> Render.com WebSocket server (game served from mafiaborn.com via cPanel)
     serverUrl: (function(){
         try {
             if (window.__MULTIPLAYER_SERVER_URL__) return window.__MULTIPLAYER_SERVER_URL__;
             const hostname = window.location.hostname;
             const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
             if (isLocal) return 'ws://localhost:3000';
-            // Production: connect via wss on the same domain
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            return protocol + '//' + window.location.host;
+            // Production: always connect to Render for WebSocket/multiplayer
+            return 'wss://mafia-born.onrender.com';
         } catch (e) {
-            return 'wss://mafiaborn.com';
+            return 'wss://mafia-born.onrender.com';
         }
     })(),
     updateInterval: 2000, // 2 second update interval for world state
