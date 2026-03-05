@@ -11171,6 +11171,10 @@ function attemptBreakout() {
     goBackToMainMenu();
   } else {
     player.jailTime += 10; // Add 10 seconds to jail time on failed breakout attempt
+
+    // Sync extended time to server so it doesn't overwrite with the old shorter value
+    if (typeof syncJailStatus === 'function') syncJailStatus(true, player.jailTime);
+
     updateUI();
     showBriefNotification(`${getRandomNarration('jailBreakoutFailure')} Additional time has been added to your sentence.`, 'danger');
     logAction("The guard's flashlight catches you red-handed! Alarms blare as they drag you back to your cell. Some lessons are learned the hard way.");
@@ -17374,6 +17378,11 @@ function updateJailTimer() {
         }
       }));
     } else {
+      // Guard against duplicate release (server may have already freed us)
+      if (!player.inJail) {
+        stopJailTimer();
+        return;
+      }
       stopJailTimer();
       player.inJail = false;
       player.jailTime = 0;

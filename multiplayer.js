@@ -1744,6 +1744,8 @@ async function handleServerMessage(message) {
         case 'player_released':
             // Server says our sentence is served
             if (message.playerId === onlineWorldState.playerId) {
+                // Guard against duplicate release (local timer may have already freed us)
+                if (!player.inJail) break;
                 if (typeof stopJailTimer === 'function') stopJailTimer();
                 window._jailTimerActive = false;
                 player.inJail = false;
