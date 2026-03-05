@@ -55,7 +55,8 @@ function casinoWin(winnings) {
 // ── Tab config ───────────────────────────────────────────────────────
 const CASINO_TAB_CONFIG = {
   gambling:  { panel: 'panel-gambling',  btn: 'casino-tab-gambling',  activeColor: '#d4af37' },
-  minigames: { panel: 'panel-minigames', btn: 'casino-tab-minigames', activeColor: '#c0a062' }
+  minigames: { panel: 'panel-minigames', btn: 'casino-tab-minigames', activeColor: '#c0a062' },
+  backroom:  { panel: 'panel-backroom',  btn: 'casino-tab-backroom',  activeColor: '#b8962e' }
 };
 
 // ── Show Casino ──────────────────────────────────────────────────────
@@ -111,6 +112,11 @@ export function showCasinoTab(tab) {
     if (ttt) ttt.style.display = 'none';
     const other = document.getElementById('other-minigames');
     if (other) other.style.display = 'none';
+  } else if (tab === 'backroom') {
+    // Request multiplayer gambling tables from server
+    const content = document.getElementById('player-gambling-content');
+    if (content) content.innerHTML = '<p style="color:#8a7a5a;">Loading tables...</p>';
+    if (typeof sendMP === 'function') sendMP({ type: 'gambling_list_tables' });
   }
 }
 

@@ -6145,7 +6145,6 @@ function renderPlayerGambling(container) {
     }
 
     html += `<button onclick="sendMP({type:'gambling_list_tables'})" style="background:#3a3520;color:#d4c4a0;border:1px solid #5a4a30;padding:8px 16px;border-radius:6px;cursor:pointer;margin-top:8px;">Refresh Tables</button>`;
-    html += ` <button onclick="goBackToMainMenu()" style="background:#3a3520;color:#d4c4a0;border:1px solid #5a4a30;padding:10px 20px;border-radius:6px;cursor:pointer;margin-top:12px;">← Back to SafeHouse</button>`;
     container.innerHTML = html;
 }
 

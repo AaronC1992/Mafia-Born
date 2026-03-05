@@ -8643,8 +8643,7 @@ function hideAllScreens(skipScroll) {
     "money-laundering-screen", "territory-control-screen", "territories-screen",
     "events-screen", "map-screen", "calendar-screen", "statistics-screen",
     "options-screen", "player-stats-screen", "safehouse", "multiplayer-screen",
-    "friends-screen", "crew-screen", "superboss-screen", "hit-contracts-screen",
-    "player-gambling-screen"
+    "friends-screen", "crew-screen", "superboss-screen", "hit-contracts-screen"
   ];
   screenIds.forEach(id => {
     const el = document.getElementById(id);
@@ -12789,7 +12788,6 @@ const menuUnlockConfig = [
   { id: 'friends', fn: 'showFriendsScreen()', label: 'Friends', tip: 'Friends list, blocked list & social', level: 0 },
   { id: 'crew', fn: 'showCrewScreen()', label: 'Crew', tip: 'Create or manage your crew', level: 5 },
   { id: 'hitcontracts', fn: 'showHitContracts()', label: 'Dark Board', tip: 'Anonymous hit contracts on players', level: 10 },
-  { id: 'playergambling', fn: 'showPlayerGambling()', label: 'Back Room', tip: 'Gamble against other players', level: 5 },
   { id: 'superboss', fn: 'showSuperbossScreen()', label: 'Superboss', tip: 'Challenge legendary crime lords', level: 15 },
 
   // === SETTINGS (Always last) ===
@@ -22866,16 +22864,7 @@ function showHitContracts() {
 
 // ==================== PLAYER GAMBLING SCREEN ====================
 function showPlayerGambling() {
-  hideAllScreens();
-  const screen = document.getElementById('player-gambling-screen');
-  if (!screen) return;
-  screen.style.display = 'block';
-
-  const container = document.getElementById('player-gambling-content');
-  if (container) container.innerHTML = '<p style="color:#8a7a5a;">Loading tables...</p>';
-
-  // Request available tables
-  if (typeof sendMP === 'function') sendMP({ type: 'gambling_list_tables' });
+  showCasino('backroom');
 }
 
 // ==================== SUPERBOSS SCREEN ====================
