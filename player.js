@@ -317,8 +317,8 @@ export function gainExperience(amount) {
  * Check if player has enough XP to level up and process the level up
  */
 export function checkLevelUp() {
-  // v1.12 Rebalance: Lowered XP curve for faster level-ups
-  let requiredXP = Math.floor(player.level * 350 + Math.pow(player.level, 2) * 75 + Math.pow(player.level, 3) * 5);
+  // v1.16.2 Rebalance: Further lowered XP curve for faster level-ups
+  let requiredXP = Math.floor(player.level * 200 + Math.pow(player.level, 2) * 40 + Math.pow(player.level, 3) * 2);
   if (player.experience >= requiredXP) {
     player.level++;
     player.experience -= requiredXP;
@@ -470,12 +470,12 @@ export const SKILL_TREE_DEFS = {
     color: "#c0a062",
     desc: "Outsmart, outplan, outmaneuver. The mind is the deadliest weapon.",
     nodes: {
+      mastermind:  { tier: 1, name: "Mastermind",     icon: "🎯", maxRank: 5,  desc: "The brain behind every operation", effect: "+10% XP gain per rank", prereqs: [] },
       quick_study: { tier: 1, name: "Quick Study",   icon: "📚", maxRank: 10, desc: "A sharp mind that learns from every job", effect: "+4% job success per rank", prereqs: [] },
       awareness:   { tier: 1, name: "Awareness",     icon: "🔍", maxRank: 10, desc: "Nothing escapes your notice", effect: "+2% luck-based outcomes per rank", prereqs: [] },
       hacking:     { tier: 2, name: "Hacking",       icon: "💻", maxRank: 10, desc: "Master of digital infiltration", effect: "+7% cyber job success per rank", prereqs: [{ node: "quick_study", rank: 3 }] },
       planning:    { tier: 2, name: "Planning",       icon: "📋", maxRank: 10, desc: "Every detail accounted for", effect: "+4% heist success per rank", prereqs: [{ node: "quick_study", rank: 3 }] },
-      forensics:   { tier: 3, name: "Forensics",     icon: "🔬", maxRank: 5,  desc: "Clean up evidence like a professional", effect: "8% chance per rank to reduce wanted", prereqs: [{ node: "planning", rank: 5 }] },
-      mastermind:  { tier: 3, name: "Mastermind",     icon: "🎯", maxRank: 5,  desc: "The brain behind every operation", effect: "+10% XP gain per rank", prereqs: [{ node: "hacking", rank: 5 }] }
+      forensics:   { tier: 3, name: "Forensics",     icon: "🔬", maxRank: 5,  desc: "Clean up evidence like a professional", effect: "8% chance per rank to reduce wanted", prereqs: [{ node: "planning", rank: 5 }] }
     }
   },
   luck: {

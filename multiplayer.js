@@ -2543,12 +2543,14 @@ function syncJailStatus(inJail, jailTime) {
 }
 
 // ==================== GLOBAL CHAT SYSTEM ====================
-// Helper to calculate attack power for display
+// Helper to calculate attack power for display — uses unified game.js function
 function calculateAttackPower() {
+    if (typeof window.calculateTurfAttackPower === 'function') {
+        return window.calculateTurfAttackPower();
+    }
+    // Fallback if game.js hasn't loaded yet
     return (player.level * 10) + 
-           ((player.skillTree?.stealth?.shadow_step || 0) * 8) + 
            ((player.skillTree?.combat?.brawler || 0) * 12) + 
-           ((player.skillTree?.intelligence?.quick_study || 0) * 6) + 
            ((player.power || 0) * 2);
 }
 
@@ -3065,15 +3067,15 @@ function showOnlineWorld(activeTab) {
             </div>
             
             <!-- PVP Stats -->
-            <div style="background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #555;">
-                <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif; text-align: center;">Your PVP Stats</h3>
+            <div style="background: rgba(139, 58, 58, 0.15); padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #8b3a3a;">
+                <h3 style="color: #c0a062; margin: 0 0 15px 0; font-family: 'Georgia', serif; text-align: center;">Your Combat Strength</h3>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center;">
                     <div>
-                        <div style="color: #888; font-size: 0.85em;">Attack Power</div>
+                        <div style="color: #888; font-size: 0.85em;">Your Attack</div>
                         <div style="color: #fff; font-weight: bold; font-size: 1.3em;">${calculateAttackPower()}</div>
                     </div>
                     <div>
-                        <div style="color: #888; font-size: 0.85em;">Defense Power</div>
+                        <div style="color: #888; font-size: 0.85em;">Your Defense</div>
                         <div style="color: #fff; font-weight: bold; font-size: 1.3em;">${calculateDefensePower()}</div>
                     </div>
                     <div>
@@ -3085,6 +3087,7 @@ function showOnlineWorld(activeTab) {
                         <div style="color: #c0a062; font-weight: bold; font-size: 1.3em;">${(player.gang && player.gang.members) || 0}</div>
                     </div>
                 </div>
+                <p style="color: #aaa; text-align: center; margin: 10px 0 0 0; font-size: 0.75em;">Your Attack must match or exceed a territory's Defense to wage war.</p>
             </div>
         `;
     }
@@ -3129,7 +3132,7 @@ function showOnlineWorld(activeTab) {
                                     <p style="color: #999; margin: 0 0 8px 0; font-size: 0.85em;">${escapeHTML(d.description)}</p>
                                     <div style="font-size: 0.85em; color: #ccc; line-height: 1.8;">
                                         <div>Owner: <span style="color: ${tData.owner ? (isNPC ? '#8b4513' : '#7a8a5a') : '#666'};">${isNPC ? '' : ''}${escapeHTML(tData.owner || 'Unclaimed')}</span>${isNPC ? ' <span style="background: #8b4513; color: #fff; padding: 1px 6px; border-radius: 3px; font-size: 0.75em;">RIVAL BOSS</span>' : ''}</div>
-                                        <div>Residents: <span style="color: #c0a062;">${residentCount}</span> | Defense: <span style="color: #8b3a3a;">${tData.defenseRating}</span></div>
+                                        <div>Residents: <span style="color: #c0a062;">${residentCount}</span> | Their Defense: <span style="color: #8b3a3a;">${tData.defenseRating}</span></div>
                                         <div>Tax Collected: <span style="color: #7a8a5a;">$${(tData.taxCollected || 0).toLocaleString()}</span> | Move Cost: <span style="color: #c0a040;">$${d.moveCost.toLocaleString()}</span></div>
                                     </div>
                                 </div>

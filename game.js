@@ -5637,8 +5637,25 @@ function showTurfMap() {
   const fam = player.chosenFamily;
   const alliedZones = fam ? (RIVAL_FAMILIES[fam]?.turfZones || []) : [];
 
+  const playerAtkPower = typeof calculateTurfAttackPower === 'function' ? calculateTurfAttackPower() : (player.turf.power || 100);
+  const activeGangCount = (player.gang?.gangMembers || []).filter(m => m.status === 'active').length;
+
   let html = `
     <h2 style="color:#7a8a5a; text-align:center; margin-bottom:25px; font-size:2.2em;">Turf Map</h2>
+    <div style="background:rgba(139,58,58,0.15); padding:18px; border-radius:12px; margin-bottom:20px; border:2px solid #8b3a3a;">
+      <h3 style="color:#c0a062; margin:0 0 10px 0; text-align:center;">Your Combat Strength</h3>
+      <div style="display:flex; justify-content:center; align-items:center; gap:30px; flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-size:2em; font-weight:bold; color:#f5e6c8;">${playerAtkPower}</div>
+          <div style="font-size:0.85em; color:#d4c4a0;">Attack Power</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.4em; font-weight:bold; color:#c0a062;">${activeGangCount}</div>
+          <div style="font-size:0.85em; color:#d4c4a0;">Active Crew</div>
+        </div>
+      </div>
+      <p style="color:#aaa; text-align:center; margin:10px 0 0 0; font-size:0.8em;">You need Attack Power \u2265 a zone's Defense to attack it. Zones you can take are highlighted green.</p>
+    </div>
     <div style="background:rgba(52,152,219,0.2);padding:15px;border-radius:10px;margin-bottom:20px;">
       <h3 style="color:#c0a062; margin:0 0 10px 0;">Legend</h3>
       <div style="display:flex; flex-wrap:wrap; gap:15px; font-size:0.9em; color:#d4c4a0;">
@@ -5690,13 +5707,12 @@ function showTurfMap() {
     } else if (isAllied) {
       html += `<div style="color:#c0a062;font-size:0.9em;padding:10px;">Allied territory</div>`;
     } else {
-      const canAttack = (player.turf.power || 100) >= zone.defenseRequired;
-      const atkPower = typeof calculateTurfAttackPower === 'function' ? calculateTurfAttackPower() : (player.turf.power || 100);
-      const activeGang = (player.gang?.gangMembers || []).filter(m => m.status === 'active');
+      const canAttack = playerAtkPower >= zone.defenseRequired;
+      const defColor = canAttack ? '#2ecc71' : '#e74c3c';
       html += `
         <div style="margin-bottom:8px;font-size:0.8em;text-align:center;">
-          <div style="color:#8b6a4a;">Defense: ${zone.defenseRequired}</div>
-          <div style="font-size:0.75em;color:#d4c4a0;">(Attack power: ${atkPower}${activeGang.length ? ' ' + activeGang.length + ' crew' : ' solo'})</div>
+          <div style="color:${defColor};font-weight:bold;">Defense: ${zone.defenseRequired}</div>
+          <div style="font-size:0.7em;color:#888;">${canAttack ? '✓ You can attack' : '✗ Need more power'}</div>
         </div>
         <button onclick="attackTurfZone('${zone.id}')"
           style="width:100%;padding:10px;background:linear-gradient(135deg,#8b3a3a,#7a2a2a);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;${!canAttack?'opacity:0.6;cursor:not-allowed;':''}">
@@ -5756,6 +5772,7 @@ function calculateTurfAttackPower() {
 
   return Math.floor(power);
 }
+window.calculateTurfAttackPower = calculateTurfAttackPower;
 
 // -- Process casualties among gang members after a turf fight --
 // deathChance / injuryChance are base rates; actual chance per member is randomised.
@@ -6683,13 +6700,13 @@ function generateTurfOverviewHTML() {
     } else if (isAllied) {
       html += `<div style="color:#c0a062; font-size:0.9em; padding:10px;">Allied territory</div>`;
     } else {
-      const canAttack = (player.turf.power || 100) >= zone.defenseRequired;
       const atkPower = typeof calculateTurfAttackPower === 'function' ? calculateTurfAttackPower() : (player.turf.power || 100);
-      const activeGang = (player.gang?.gangMembers || []).filter(m => m.status === 'active');
+      const canAttack = atkPower >= zone.defenseRequired;
+      const defColor = canAttack ? '#2ecc71' : '#e74c3c';
       html += `
         <div style="margin-bottom:8px; font-size:0.8em; text-align:center;">
-          <div style="color:#8b6a4a;">Defense: ${zone.defenseRequired}</div>
-          <div style="font-size:0.75em; color:#d4c4a0;">(Attack power: ${atkPower}${activeGang.length ? ' ' + activeGang.length + ' crew' : ' solo'})</div>
+          <div style="color:${defColor};font-weight:bold;">Defense: ${zone.defenseRequired}</div>
+          <div style="font-size:0.7em;color:#888;">${canAttack ? '✓ You can attack' : '✗ Need more power'}</div>
         </div>
         <button onclick="attackTurfZone('${zone.id}')"
           style="width:100%;padding:10px;background:linear-gradient(135deg,#8b3a3a,#7a2a2a);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;${!canAttack ? 'opacity:0.6;cursor:not-allowed;' : ''}">
@@ -16331,8 +16348,19 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.16.1";
+const CURRENT_VERSION = "1.16.2";
 const VERSION_UPDATES = {
+  "1.16.2": {
+    title: "Gameplay & UI Improvements",
+    date: "March 2026",
+    changes: [
+      "Mastermind skill (Intellect) moved to tier 1 — unlock XP boost from the start",
+      "Unified attack power: solo and multiplayer now use the same formula",
+      "Lowered XP curve for faster level-ups across all levels",
+      "Turf map redesign: your attack power shown at the top, zones color-coded green/red by attackability",
+      "Commission territories now label 'Your Attack' vs 'Their Defense' for clarity",
+    ]
+  },
   "1.16.1": {
     title: "Encoding Bug Fixes",
     date: "March 2026",
