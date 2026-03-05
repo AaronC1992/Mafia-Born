@@ -17,7 +17,7 @@ export function initCasino({ hideAllScreens, updateUI, alert, logAction, showBri
 // ── Casino-session state ─────────────────────────────────────────────
 let _casinoWins = 0;
 export function getCasinoWins() { return _casinoWins; }
-export function resetCasinoWins() { _casinoWins = 0; }
+function resetCasinoWins() { _casinoWins = 0; }
 
 // Game-specific transient state (replaces old window._bjState / window._rouletteState)
 let _bjState = null;

@@ -165,7 +165,7 @@ export const DISTRICTS = [
 // NPC TERRITORY BOSSES — each district starts controlled by a rival NPC
 // ────────────────────────────────────────────────────────────────────────
 
-export const NPC_TERRITORY_BOSSES = {
+const NPC_TERRITORY_BOSSES = {
   residential_low:        { name: "Vinnie 'The Rat' Morello",    defenseRating: 80  },
   residential_middle:     { name: "Fat Tony Deluca",             defenseRating: 120 },
   residential_upscale:    { name: "Don Castellano",              defenseRating: 180 },
@@ -220,7 +220,7 @@ export function getBusinessMultiplier(districtId) {
  * Get the laundering capacity multiplier for a district.
  * Returns the `benefits.laundering` value, defaulting to 1.0.
  */
-export function getLaunderingMultiplier(districtId) {
+function getLaunderingMultiplier(districtId) {
   const d = DISTRICTS.find(dd => dd.id === districtId);
   return (d && d.benefits && d.benefits.laundering) || 1.0;
 }
@@ -240,7 +240,7 @@ export function getDistrict(districtId) {
 }
 
 /** Get all district IDs */
-export function getDistrictIds() {
+function getDistrictIds() {
   return DISTRICTS.map(d => d.id);
 }
 
@@ -249,7 +249,7 @@ export function getDistrictIds() {
  * Called once when the server starts with no persisted world data.
  * Each district tracks its owner and the set of player IDs living there.
  */
-export function buildInitialTerritoryState() {
+function buildInitialTerritoryState() {
   const state = {};
   for (const d of DISTRICTS) {
     const boss = NPC_TERRITORY_BOSSES[d.id];

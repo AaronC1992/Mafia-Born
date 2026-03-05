@@ -9896,6 +9896,11 @@ async function startJob(index) {
     approachLabel = 'Briefed';
   }
 
+  // TODO: When server JOB_DEFS covers all jobs, send { type: 'job_intent', jobId }
+  // to the server and let handleJobIntent compute rewards authoritatively.
+  // The client handler for 'job_result' is already wired in multiplayer.js.
+  // For now, proceed with local simulation to support the full perk/skill system.
+
   // OFFLINE / FALLBACK: proceed with legacy local simulation
   player.energy -= actualEnergyCost;
   startEnergyRegenTimer(); // Start the regeneration timer

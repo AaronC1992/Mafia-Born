@@ -1105,10 +1105,7 @@ export const familyStories = {
 //  LEGACY EXPORTS (kept for backwards compatibility)
 // ================================================================
 
-export const storyCampaigns = {};
 export const factionMissions = { torrino: [], kozlov: [], chen: [], morales: [] };
-export const turfMissions = [];
-export const bossBattles = [];
 export const missionProgress = {
   activeCampaign: null,
   completedCampaigns: [],

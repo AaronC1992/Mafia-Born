@@ -829,10 +829,6 @@ function handleClientMessage(clientId, message, ws) {
             handleGlobalChat(clientId, message);
             break;
             
-        case 'territory_claim':
-            handleTerritoryClaim(clientId, message);
-            break;
-            
         case 'territory_spawn':
             handleTerritorySpawn(clientId, message);
             break;
@@ -843,10 +839,6 @@ function handleClientMessage(clientId, message, ws) {
 
         case 'territory_info':
             handleTerritoryInfo(clientId, message, ws);
-            break;
-
-        case 'territory_claim_ownership':
-            handleTerritoryClaimOwnership(clientId, message);
             break;
 
         case 'territory_war':
@@ -925,10 +917,6 @@ function handleClientMessage(clientId, message, ws) {
             handleBusinessIncomeTax(clientId, message);
             break;
 
-        case 'war_bet':
-            handleWarBet(clientId, message);
-            break;
-
         // ==================== PHASE C: COMPETITIVE FEATURES ====================
         case 'alliance_create':
             handleAllianceCreate(clientId, message);
@@ -975,13 +963,6 @@ function handleClientMessage(clientId, message, ws) {
         case 'season_info':
             handleSeasonInfo(clientId, message);
             break;
-        case 'siege_declare':
-            handleSiegeDeclare(clientId, message);
-            break;
-        case 'siege_fortify':
-            handleSiegeFortify(clientId, message);
-            break;
-
         // ==================== UNIFIED PLAYER MARKET ====================
         case 'market_list':
             handleMarketList(clientId, message);
@@ -1216,46 +1197,6 @@ function handleGlobalChat(clientId, message) {
     });
 }
 
-// Territory claim handler
-function handleTerritoryClaim(clientId, message) {
-    const player = gameState.players.get(clientId);
-    if (!player) return;
-    
-    const district = message.district;
-    if (!district || !gameState.cityDistricts[district]) return;
-    const cost = 50000 + (gameState.cityDistricts[district].crimeLevel * 1000);
-    
-    if (player.money >= cost) {
-        player.money -= cost;
-        player.territory += 1;
-        gameState.cityDistricts[district].controlledBy = player.name;
-        // Keep authoritative playerStates map in sync
-        const ps = gameState.playerStates.get(clientId);
-        if (ps) {
-            ps.money = player.money;
-            ps.territory = player.territory;
-            ps.lastUpdate = Date.now();
-        }
-        
-        console.log(` ${player.name} claimed ${district} for $${cost}`);
-        
-        // Broadcast territory change with authoritative numeric state
-        broadcastToAll({
-            type: 'territory_taken',
-            district: district,
-            playerName: player.name,
-            playerId: clientId,
-            money: player.money,
-            territory: player.territory
-        });
-        
-        // Add to global chat
-        addGlobalChatMessage('System', ` ${player.name} claimed ${district} district!`, '#e74c3c');
-        broadcastPlayerStates();
-        scheduleWorldSave();
-    }
-}
-
 // ==================== UNIFIED TERRITORY HANDLERS ====================
 
 // Called once during character creation — player picks their starting district
@@ -1386,70 +1327,6 @@ function handleTerritoryInfo(clientId, message, ws) {
 }
 
 // ==================== PHASE 2: TERRITORY OWNERSHIP CLAIM ====================
-// A player who meets MIN_CLAIM_LEVEL, lives in the district, and whose district
-// has no current owner can claim ownership. Costs money based on district index.
-const CLAIM_COSTS = [10000, 20000, 50000, 40000, 25000, 30000, 80000, 35000];
-const MIN_CLAIM_LVL = 10;
-
-function handleTerritoryClaimOwnership(clientId, message) {
-    const player = gameState.players.get(clientId);
-    const ps = gameState.playerStates.get(clientId);
-    if (!player || !ps) return;
-    const ws = clients.get(clientId);
-    const fail = (err) => { if (ws) ws.send(JSON.stringify({ type: 'territory_claim_ownership_result', success: false, error: err })); };
-
-    const districtId = message.district;
-    if (!districtId || !TERRITORY_IDS.includes(districtId)) return fail('Invalid district.');
-
-    const terr = gameState.territories[districtId];
-    if (!terr) return fail('Territory data missing.');
-    // If owned by NPC or another player, redirect to war path
-    if (terr.owner) return fail(`This district is controlled by ${terr.owner}. Challenge them for control!`);
-
-    // Must live in the district
-    if (player.currentTerritory !== districtId) return fail('You must live in this district to claim it.');
-
-    // Level check
-    if ((player.level || 1) < MIN_CLAIM_LVL) return fail(`You need to be at least level ${MIN_CLAIM_LVL} to claim a territory.`);
-
-    // Cost check
-    const idx = TERRITORY_IDS.indexOf(districtId);
-    const cost = CLAIM_COSTS[idx] || 25000;
-    if ((player.money || 0) < cost) return fail(`Not enough money. Claiming costs $${cost.toLocaleString()}.`);
-
-    // ---- Claim the territory ----
-    player.money -= cost;
-    ps.money = player.money;
-    terr.owner = player.name;
-
-    console.log(` ${player.name} claimed ownership of ${districtId} for $${cost.toLocaleString()}`);
-
-    if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
-            type: 'territory_claim_ownership_result',
-            success: true,
-            district: districtId,
-            cost: cost,
-            money: player.money,
-            territories: gameState.territories
-        }));
-    }
-
-    broadcastToAll({
-        type: 'territory_ownership_changed',
-        territories: gameState.territories,
-        attacker: player.name,
-        defender: null,
-        seized: [districtId],
-        method: 'claim'
-    });
-
-    addGlobalChatMessage('System', ` ${player.name} claimed ownership of ${districtId.replace(/_/g, ' ')}!`, '#d4af37');
-    recalcTopDon();
-    broadcastPlayerStates();
-    scheduleWorldSave();
-}
-
 // ==================== PHASE 2: TERRITORY WAR (GANG WAR CONQUEST) ====================
 // A player attacks a district owned by another player. Server-authoritative power comparison.
 // Requires: ≥5 gang members, 40 energy, and target district must have an owner.
@@ -3377,67 +3254,6 @@ function handleAssassinationAttempt(clientId, message) {
     scheduleWorldSave();
 }
 
-// ==================== WAR BETTING (SERVER-AUTHORITATIVE) ====================
-// Server deducts the bet, generates a sealed outcome, and sends it back.
-// Client animates the war to match, then the server resolves the payout.
-function handleWarBet(clientId, message) {
-    const player = gameState.players.get(clientId);
-    const ps = gameState.playerStates.get(clientId);
-    if (!player || !ps) return;
-    const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'war_bet_result', success: false, error: err })); };
-
-    const { district, side, amount } = message;
-    if (!district || !side || !amount) return fail('Invalid bet.');
-    if (side !== 'attacker' && side !== 'defender') return fail('Invalid side.');
-
-    const betAmount = Math.max(0, Math.min(parseInt(amount) || 0, 10000)); // Cap at $10k
-    if (betAmount < 100) return fail('Minimum bet is $100.');
-    if (player.money < betAmount) return fail('Not enough cash.');
-
-    // Deduct bet
-    player.money -= betAmount;
-    if (ps) { ps.money = player.money; ps.lastUpdate = Date.now(); }
-
-    // Generate sealed outcome — ~50/50 with slight defender advantage
-    const attackerWinChance = 0.48;
-    const roll = Math.random();
-    const winningSide = roll < attackerWinChance ? 'attacker' : 'defender';
-
-    // Calculate payout (1.9x — slight house edge)
-    let payout = 0;
-    let won = false;
-    if (winningSide === side) {
-        payout = Math.floor(betAmount * 1.9);
-        player.money += payout;
-        won = true;
-    } else if (winningSide === 'stalemate') {
-        // Refund on stalemate (rare)
-        player.money += betAmount;
-        payout = betAmount;
-    }
-
-    if (ps) { ps.money = player.money; ps.lastUpdate = Date.now(); }
-
-    console.log(` WAR BET: ${player.name} bet $${betAmount} on ${side} in ${district} — ${won ? 'WON' : 'LOST'} ($${payout})`);
-
-    if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({
-            type: 'war_bet_result',
-            success: true,
-            won: won,
-            winningSide: winningSide,
-            betAmount: betAmount,
-            payout: payout,
-            newMoney: player.money,
-            district: district
-        }));
-    }
-
-    broadcastPlayerStates();
-    scheduleWorldSave();
-}
-
 // ==================== PHASE C: ALLIANCE SYSTEM ====================
 // Player-created alliances (max 4 members). Server-authoritative.
 
@@ -4366,259 +4182,6 @@ function checkSeasonRotation() {
 
     scheduleWorldSave();
 }
-
-// ==================== PHASE C: TERRITORY SIEGE & FORTIFICATION ====================
-// Enhanced territory control: fortify territories, multi-phase siege attacks.
-
-const FORTIFY_COST_PER_POINT = 500; // $500 per defense point
-const FORTIFY_MAX = 200; // Max fortification bonus
-const SIEGE_ENERGY_COST = 60;
-const SIEGE_MONEY_COST = 5000;
-const SIEGE_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
-const siegeCooldowns = new Map();
-
-function handleSiegeDeclare(clientId, message) {
-    const attacker = gameState.players.get(clientId);
-    const attackerState = gameState.playerStates.get(clientId);
-    if (!attacker || !attackerState) return;
-    const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'siege_result', success: false, error: err })); };
-
-    // Cooldown
-    const lastSiege = siegeCooldowns.get(clientId) || 0;
-    const now = Date.now();
-    if (now - lastSiege < SIEGE_COOLDOWN_MS) {
-        const remaining = Math.ceil((SIEGE_COOLDOWN_MS - (now - lastSiege)) / 60000);
-        return fail(`Siege cooldown — wait ${remaining} more minute(s).`);
-    }
-
-    const districtId = message.district;
-    if (!districtId || !TERRITORY_IDS.includes(districtId)) return fail('Invalid district.');
-    const terr = gameState.territories[districtId];
-    if (!terr) return fail('Territory data missing.');
-    if (!terr.owner) return fail('No owner — claim it instead.');
-    if (terr.owner === attacker.name) return fail('You own this territory.');
-
-    // Jail check
-    if (attackerState.inJail) return fail('Can\'t siege from jail.');
-
-    // Resource checks
-    if ((attackerState.energy || 0) < SIEGE_ENERGY_COST) return fail(`Not enough energy (${SIEGE_ENERGY_COST} required).`);
-    if ((attacker.money || 0) < SIEGE_MONEY_COST) return fail(`Siege costs $${SIEGE_MONEY_COST.toLocaleString()}.`);
-
-    const gangMembers = Math.max(0, Math.min(message.gangMembers || 0, 100));
-    const attackPower = Math.max(0, Math.min(message.power || 0, 5000));
-    if (gangMembers < 8) return fail('Need at least 8 gang members for a siege.');
-
-    // Deduct resources
-    attackerState.energy = Math.max(0, (attackerState.energy || 100) - SIEGE_ENERGY_COST);
-    attacker.money -= SIEGE_MONEY_COST;
-    const ps = gameState.playerStates.get(clientId);
-    if (ps) { ps.money = attacker.money; ps.lastUpdate = Date.now(); }
-
-    siegeCooldowns.set(clientId, now);
-
-    // === MULTI-PHASE SIEGE CALCULATION ===
-    // Phase 1: Breach (attacker power vs fortification)
-    const fortScore = (terr.defenseRating || 100) + (terr.fortification || 0);
-    const breachPower = attackPower + (gangMembers * 12) + Math.floor(Math.random() * 150);
-    const breachSuccess = breachPower > fortScore;
-
-    if (!breachSuccess) {
-        // Siege repelled at the walls
-        const repLoss = 8 + Math.floor(Math.random() * 8);
-        attacker.reputation = Math.max(0, (attacker.reputation || 0) - repLoss);
-        if (ps) ps.reputation = attacker.reputation;
-
-        const healthDmg = 20 + Math.floor(Math.random() * 20);
-        attackerState.health = Math.max(1, (attackerState.health || 100) - healthDmg);
-        attackerState.wantedLevel = Math.min(100, (attackerState.wantedLevel || 0) + 15);
-
-        // Fortification slightly damaged even on defense success
-        terr.fortification = Math.max(0, (terr.fortification || 0) - 10);
-
-        if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({
-                type: 'siege_result', success: true, victory: false, phase: 'breach_failed',
-                district: districtId, owner: terr.owner, repLoss, healthDamage: healthDmg,
-                energy: attackerState.energy, money: attacker.money
-            }));
-        }
-
-        // Notify defender
-        notifySiegeDefender(terr.owner, districtId, attacker.name, false);
-
-        addGlobalChatMessage('System', ` ${attacker.name}'s siege on ${districtId.replace(/_/g, ' ')} was repelled!`, '#27ae60');
-        broadcastPlayerStates();
-        scheduleWorldSave();
-        return;
-    }
-
-    // Phase 2: Assault (attacker vs defender combat strength)
-    let defenseScore = (terr.defenseRating || 100);
-    let defenderId = null;
-    for (const [id, p] of gameState.players.entries()) {
-        if (p.name === terr.owner) {
-            defenderId = id;
-            const defState = gameState.playerStates.get(id);
-            defenseScore += (p.level || 1) * 15;
-            defenseScore += Math.floor((p.reputation || 0) * 0.5);
-            break;
-        }
-    }
-    if (!defenderId) defenseScore += 150; // Offline bonus
-
-    // Alliance defense bonus during siege
-    if (defenderId) {
-        const defAlliance = findPlayerAlliance(defenderId);
-        if (defAlliance) {
-            const onlineAllies = defAlliance.members.filter(mId => mId !== defenderId && clients.has(mId));
-            defenseScore += onlineAllies.length * 50; // Each online ally adds +50 defense
-        }
-    }
-
-    const assaultScore = attackPower + (gangMembers * 15) + (attacker.level || 1) * 8 + Math.floor(Math.random() * 200);
-    defenseScore += Math.floor(Math.random() * 200);
-    const siegeVictory = assaultScore > defenseScore;
-
-    // Casualties
-    let membersLost = 0;
-    const casualtyRate = siegeVictory ? 0.15 : 0.35;
-    for (let i = 0; i < gangMembers; i++) {
-        if (Math.random() < casualtyRate) membersLost++;
-    }
-
-    const healthDmg = siegeVictory
-        ? 15 + Math.floor(Math.random() * 20)
-        : 30 + Math.floor(Math.random() * 30);
-    attackerState.health = Math.max(1, (attackerState.health || 100) - healthDmg);
-    attackerState.wantedLevel = Math.min(100, (attackerState.wantedLevel || 0) + (siegeVictory ? 25 : 15));
-
-    if (siegeVictory) {
-        const oldOwner = terr.owner;
-        terr.owner = attacker.name;
-        terr.defenseRating = Math.max(50, (terr.defenseRating || 100) - 30);
-        terr.fortification = Math.max(0, (terr.fortification || 0) - Math.floor((terr.fortification || 0) * 0.5));
-
-        const repGain = 20 + Math.floor(Math.random() * 15);
-        attacker.reputation = (attacker.reputation || 0) + repGain;
-        if (ps) ps.reputation = attacker.reputation;
-
-        // Update ELO if both players are online
-        if (defenderId) updateElo(clientId, defenderId, true);
-
-        console.log(` SIEGE SUCCESS: ${attacker.name} conquered ${districtId} from ${oldOwner}`);
-
-        if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({
-                type: 'siege_result', success: true, victory: true, phase: 'conquered',
-                district: districtId, oldOwner, repGain, membersLost, healthDamage: healthDmg,
-                energy: attackerState.energy, money: attacker.money,
-                territories: gameState.territories
-            }));
-        }
-
-        notifySiegeDefender(oldOwner, districtId, attacker.name, true);
-
-        broadcastToAll({
-            type: 'territory_ownership_changed',
-            territories: gameState.territories,
-            attacker: attacker.name, defender: oldOwner, seized: [districtId], method: 'siege'
-        });
-
-        addGlobalChatMessage('System', ` ${attacker.name} laid siege to ${districtId.replace(/_/g, ' ')} and conquered it from ${oldOwner}!`, '#8b0000');
-        recalcTopDon();
-    } else {
-        terr.defenseRating = Math.min(300, (terr.defenseRating || 100) + 15);
-
-        const repLoss = 10 + Math.floor(Math.random() * 10);
-        attacker.reputation = Math.max(0, (attacker.reputation || 0) - repLoss);
-        if (ps) ps.reputation = attacker.reputation;
-
-        // 40% arrest chance on siege failure
-        let jailed = false, jailTime = 0;
-        if (Math.random() < 0.40) {
-            jailTime = 20 + Math.floor(Math.random() * 25);
-            attackerState.inJail = true;
-            attackerState.jailTime = jailTime;
-            jailed = true;
-        }
-
-        console.log(` SIEGE FAILED: ${attacker.name} failed to siege ${districtId}${jailed ? ' — ARRESTED' : ''}`);
-
-        if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({
-                type: 'siege_result', success: true, victory: false, phase: 'assault_failed',
-                district: districtId, owner: terr.owner, repLoss, membersLost, healthDamage: healthDmg,
-                energy: attackerState.energy, money: attacker.money, jailed, jailTime
-            }));
-        }
-
-        notifySiegeDefender(terr.owner, districtId, attacker.name, false);
-
-        addGlobalChatMessage('System', ` ${attacker.name}'s siege on ${districtId.replace(/_/g, ' ')} failed!${jailed ? ' Arrested!' : ''}`, '#e74c3c');
-    }
-
-    broadcastPlayerStates();
-    scheduleWorldSave();
-}
-
-function notifySiegeDefender(ownerName, districtId, attackerName, lost) {
-    for (const [id, p] of gameState.players.entries()) {
-        if (p.name === ownerName) {
-            const defWs = clients.get(id);
-            if (defWs && defWs.readyState === 1) {
-                defWs.send(JSON.stringify({
-                    type: lost ? 'territory_war_defense_lost' : 'territory_war_defense_held',
-                    district: districtId,
-                    attackerName: attackerName,
-                    method: 'siege',
-                    territories: lost ? gameState.territories : undefined
-                }));
-            }
-            break;
-        }
-    }
-}
-
-function handleSiegeFortify(clientId, message) {
-    const player = gameState.players.get(clientId);
-    if (!player) return;
-    const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'fortify_result', success: false, error: err })); };
-
-    const districtId = message.district;
-    if (!districtId || !TERRITORY_IDS.includes(districtId)) return fail('Invalid district.');
-    const terr = gameState.territories[districtId];
-    if (!terr) return fail('Territory data missing.');
-    if (terr.owner !== player.name) return fail('You don\'t own this territory.');
-
-    const points = Math.max(1, Math.min(parseInt(message.points) || 1, 50)); // Max 50 points at once
-    const currentFort = terr.fortification || 0;
-    if (currentFort >= FORTIFY_MAX) return fail(`Territory already at maximum fortification (${FORTIFY_MAX}).`);
-
-    const actualPoints = Math.min(points, FORTIFY_MAX - currentFort);
-    const cost = actualPoints * FORTIFY_COST_PER_POINT;
-    if ((player.money || 0) < cost) return fail(`Not enough cash. ${actualPoints} points costs $${cost.toLocaleString()}.`);
-
-    player.money -= cost;
-    terr.fortification = currentFort + actualPoints;
-    const ps = gameState.playerStates.get(clientId);
-    if (ps) { ps.money = player.money; ps.lastUpdate = Date.now(); }
-
-    console.log(` ${player.name} fortified ${districtId} +${actualPoints} (now ${terr.fortification})`);
-
-    if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({
-            type: 'fortify_result', success: true,
-            district: districtId, fortification: terr.fortification,
-            cost: cost, money: player.money
-        }));
-    }
-
-    scheduleWorldSave();
-}
-
 // ==================== UNIFIED PLAYER MARKET HANDLERS ====================
 // Supports categories: vehicle, ammo, gas, weapon, armor, utility, drug
 
