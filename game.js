@@ -8643,7 +8643,7 @@ function hideAllScreens(skipScroll) {
     "money-laundering-screen", "territory-control-screen", "territories-screen",
     "events-screen", "map-screen", "calendar-screen", "statistics-screen",
     "options-screen", "player-stats-screen", "safehouse", "multiplayer-screen",
-    "friends-screen", "crew-screen", "superboss-screen", "hit-contracts-screen"
+    "friends-screen", "superboss-screen"
   ];
   screenIds.forEach(id => {
     const el = document.getElementById(id);
@@ -12786,8 +12786,6 @@ const menuUnlockConfig = [
   { id: 'worldchat', fn: 'showWorldChat()', label: 'World Chat', tip: 'Chat with other players online', level: 0 },
   { id: 'onlineworld', fn: 'showOnlineWorld()', label: 'The Commission', tip: 'Enter the online underworld', level: 5 },
   { id: 'friends', fn: 'showFriendsScreen()', label: 'Friends', tip: 'Friends list, blocked list & social', level: 0 },
-  { id: 'crew', fn: 'showCrewScreen()', label: 'Crew', tip: 'Create or manage your crew', level: 5 },
-  { id: 'hitcontracts', fn: 'showHitContracts()', label: 'Dark Board', tip: 'Anonymous hit contracts on players', level: 10 },
   { id: 'superboss', fn: 'showSuperbossScreen()', label: 'Superboss', tip: 'Challenge legendary crime lords', level: 15 },
 
   // === SETTINGS (Always last) ===
@@ -22836,30 +22834,12 @@ function showFriendsScreen() {
 
 // ==================== CREW SCREEN ====================
 function showCrewScreen() {
-  hideAllScreens();
-  const screen = document.getElementById('crew-screen');
-  if (!screen) return;
-  screen.style.display = 'block';
-
-  const container = document.getElementById('crew-content');
-  if (container) container.innerHTML = '<p style="color:#8a7a5a;">Loading crew data...</p>';
-
-  // Request crew info from server
-  if (typeof sendMP === 'function') sendMP({ type: 'crew_info' });
+  showOnlineWorld('crew');
 }
 
 // ==================== HIT CONTRACTS SCREEN ====================
 function showHitContracts() {
-  hideAllScreens();
-  const screen = document.getElementById('hit-contracts-screen');
-  if (!screen) return;
-  screen.style.display = 'block';
-
-  const container = document.getElementById('hit-contracts-content');
-  if (container) container.innerHTML = '<p style="color:#8a7a5a;">Loading contracts...</p>';
-
-  // Request hit contract list from server
-  if (typeof sendMP === 'function') sendMP({ type: 'hit_contract_list' });
+  showOnlineWorld('darkboard');
 }
 
 // ==================== PLAYER GAMBLING SCREEN ====================

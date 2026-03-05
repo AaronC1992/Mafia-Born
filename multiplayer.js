@@ -2961,6 +2961,8 @@ function showOnlineWorld(activeTab) {
             <button onclick="showOnlineWorld('territories')" style="${tabStyle('territories')}">Territories</button>
             <button onclick="showOnlineWorld('politics')" style="${tabStyle('politics')}">??? Politics</button>
             <button onclick="showOnlineWorld('activities')" style="${tabStyle('activities')}">Activities</button>
+            <button onclick="showOnlineWorld('crew')" style="${tabStyle('crew')}">Crew</button>
+            <button onclick="showOnlineWorld('darkboard')" style="${tabStyle('darkboard')}">Dark Board</button>
             <button onclick="showOnlineWorld('market')" style="${tabStyle('market')}">Market</button>
             <button onclick="showOnlineWorld('chat')" style="${tabStyle('chat')}">Chat</button>
         </div>
@@ -3197,6 +3199,16 @@ function showOnlineWorld(activeTab) {
     if (tab === 'politics') {
         worldHTML += renderPoliticsTab();
     }
+
+    // -- CREW TAB --
+    if (tab === 'crew') {
+        worldHTML += `<div id="crew-content"><p style="color:#8a7a5a;">Loading crew data...</p></div>`;
+    }
+
+    // -- DARK BOARD TAB --
+    if (tab === 'darkboard') {
+        worldHTML += `<div id="hit-contracts-content"><p style="color:#8a7a5a;">Loading contracts...</p></div>`;
+    }
     
     // -- MARKETPLACE TAB --
     if (tab === 'market') {
@@ -3274,6 +3286,12 @@ function showOnlineWorld(activeTab) {
     }
     if (tab === 'market') {
         requestMarketListings();
+    }
+    if (tab === 'crew') {
+        sendMP({ type: 'crew_info' });
+    }
+    if (tab === 'darkboard') {
+        sendMP({ type: 'hit_contract_list' });
     }
     
     // Request updated world state from server
@@ -5945,7 +5963,6 @@ function renderCrewScreen(container, data) {
         html += '</div>';
     }
 
-    html += `<button onclick="goBackToMainMenu()" style="background:#3a3520;color:#d4c4a0;border:1px solid #5a4a30;padding:10px 20px;border-radius:6px;cursor:pointer;margin-top:12px;">← Back to SafeHouse</button>`;
     container.innerHTML = html;
 }
 
@@ -6039,7 +6056,6 @@ function renderHitContracts(container) {
         html += `<p style="color:#8a7a5a;text-align:center;margin:20px 0;">No active contracts. The streets are quiet... for now.</p>`;
     }
 
-    html += `<button onclick="goBackToMainMenu()" style="background:#3a3520;color:#d4c4a0;border:1px solid #5a4a30;padding:10px 20px;border-radius:6px;cursor:pointer;margin-top:12px;">← Back to SafeHouse</button>`;
     container.innerHTML = html;
 }
 
