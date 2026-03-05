@@ -54,7 +54,7 @@ let onlineWorldState = {
     },
     nearbyPlayers: [],
     globalChat: [],
-    // Multiplayer area-control zones � controlled by real players or NPC gangs.
+    // Multiplayer area-control zones — controlled by real players or NPC gangs.
     // These are broad city zones for PvP territory control, separate from the
     // economic districtTypes in game.js (single-player neighborhoods) and the
     // EXPANDED_TERRITORIES in game.js (single-player gang war zones).
@@ -126,10 +126,10 @@ let onlineWorldState = {
 // Territory income tracking
 let territoryIncomeNextCollection = Date.now() + (7 * 24 * 60 * 60 * 1000); // Next weekly collection
 
-// Sound system removed � playNotificationSound kept as no-op stub so call sites don't error
+// Sound system removed — playNotificationSound kept as no-op stub so call sites don't error
 function playNotificationSound() {}
 
-// Safe wrappers � game.js module may not be loaded when early WebSocket messages arrive
+// Safe wrappers — game.js module may not be loaded when early WebSocket messages arrive
 const _safeUpdateUI = () => { if (typeof updateUI === 'function') updateUI(); };
 const _safeLogAction = (...args) => { if (typeof logAction === 'function') logAction(...args); };
 
@@ -169,7 +169,7 @@ function syncMultiplayerTerritoriesToPlayer() {
         // Server territories override local
         console.log('[multiplayer] Syncing territories from server');
     }
-    // No-op if offline � local territories are already on player object
+    // No-op if offline — local territories are already on player object
 }
 
 // Count territories the player controls
@@ -200,7 +200,7 @@ function showWhackRivalDon() {
     content.innerHTML = `
         <div style="background: rgba(0,0,0,0.95); padding: 30px; border-radius: 15px; border: 3px solid #c0a062;">
             <h2 style="color: #c0a062; text-align: center; font-family: 'Georgia', serif;">Whack Rival Don</h2>
-            <p style="color: #ccc; text-align: center; font-style: italic;">A casual PvP brawl between Dons. No permadeath � just bragging rights.</p>
+            <p style="color: #ccc; text-align: center; font-style: italic;">A casual PvP brawl between Dons. No permadeath — just bragging rights.</p>
             <div style="background: rgba(192, 160, 98, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #c0a062;">
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
                     <div>
@@ -217,7 +217,7 @@ function showWhackRivalDon() {
                     </div>
                 </div>
             </div>
-            <p style="color: #888; text-align: center; font-size: 0.85em; margin: 5px 0 15px 0;">Don Reputation is for fun & ranking only � pick a fight and see who's tougher!</p>
+            <p style="color: #888; text-align: center; font-size: 0.85em; margin: 5px 0 15px 0;">Don Reputation is for fun & ranking only — pick a fight and see who's tougher!</p>
             <div id="online-player-list" style="margin: 20px 0;">
                 <p style="color: #888; text-align: center;">Loading online players...</p>
             </div>
@@ -287,7 +287,7 @@ function showActiveHeists() {
                             <span style="color: #8a9a6a; margin-left: 10px; font-size: 0.9em;">$${(h.reward || 0).toLocaleString()}</span>
                         </div>
                         <div style="color: #ccc; font-size: 0.85em; margin-top: 8px;">
-                            Crew: ${participantCount}/${maxCount} ${crewNames ? '� ' + crewNames : ''}
+                            Crew: ${participantCount}/${maxCount} ${crewNames ? '— ' + crewNames : ''}
                         </div>
                         <div style="color: #888; font-size: 0.8em; margin-top: 4px;">Organized by: ${escapeHTML(h.organizer || 'Unknown')}</div>
                     </div>
@@ -352,7 +352,7 @@ function showActiveHeists() {
     `;
 }
 
-// Show heist creation screen � pick a target
+// Show heist creation screen — pick a target
 function showCreateHeist() {
     if (!onlineWorldState.isConnected) {
         window.ui.toast('You must be connected to the online world to plan a heist.', 'error');
@@ -769,7 +769,7 @@ function showHeistResult(result) {
     }
 }
 
-// showGangWars removed � replaced by Horse Betting in casino
+// showGangWars removed — replaced by Horse Betting in casino
 
 // Show nearby players list
 function showNearbyPlayers() {
@@ -858,7 +858,7 @@ function challengeForTerritory(district) {
     _safeLogAction(`\u2694\uFE0F Challenging for control of ${district}...`);
 }
 
-// Start a heist in a specific district � redirects to heist creation
+// Start a heist in a specific district — redirects to heist creation
 function startDistrictHeist(districtName) {
     if (!onlineWorldState.isConnected || !onlineWorldState.socket) {
         window.ui.toast('You must be connected to the online world to start a heist.', 'error');
@@ -988,7 +988,7 @@ function connectToOnlineWorld() {
                     connectToOnlineWorld();
                 }, onlineWorld.reconnectInterval);
             }
-            // If status is 'error' or 'demo', don't loop � let demo mode handle it
+            // If status is 'error' or 'demo', don't loop — let demo mode handle it
         };
         
         onlineWorldState.socket.onerror = function(error) {
@@ -1013,13 +1013,13 @@ function connectToOnlineWorld() {
     }
 }
 
-// Fallback when server is unavailable � just update status, no fake data
+// Fallback when server is unavailable — just update status, no fake data
 function connectToLocalDemo() {
     onlineWorldState.isConnected = false;
     onlineWorldState.connectionStatus = 'offline';
     onlineWorldState.serverInfo.playerCount = 0;
     updateConnectionStatus();
-    _safeLogAction('Server unavailable � World Chat is offline. Will retry automatically.', 'chat');
+    _safeLogAction('Server unavailable — World Chat is offline. Will retry automatically.', 'chat');
 }
 
 // Handle messages from the server
@@ -1070,7 +1070,7 @@ async function handleServerMessage(message) {
                 const selfPs = onlineWorldState.playerStates[onlineWorldState.playerId];
                 if (selfPs) {
                     if (window._jailTimerActive) {
-                        // Local timer is running � only sync if server value
+                        // Local timer is running — only sync if server value
                         // differs by more than 2s to avoid fighting the local
                         // countdown (which causes visible flicker every 5s).
                         if (typeof selfPs.jailTime === 'number') {
@@ -1090,7 +1090,7 @@ async function handleServerMessage(message) {
                             }
                         }
                     } else {
-                        // No local timer � accept server state wholesale
+                        // No local timer — accept server state wholesale
                         player.inJail = !!selfPs.inJail;
                         player.jailTime = selfPs.jailTime || 0;
                     }
@@ -1159,12 +1159,12 @@ async function handleServerMessage(message) {
             break;
 
         case 'player_death_newspaper':
-            // Another player died � store the newspaper data and add a clickable entry to chat & ledger
+            // Another player died — store the newspaper data and add a clickable entry to chat & ledger
             if (message.newspaperData) {
                 lastReceivedDeathNewspaper = message.newspaperData;
                 // Add to ledger with a special marker so user knows they can click
                 if (typeof logAction === 'function') {
-                    _safeLogAction(`EXTRA! EXTRA! ${message.newspaperData.name} is DEAD! "${message.newspaperData.causeOfDeath}" � Click the chat message to read the full obituary!`, 'chat');
+                    _safeLogAction(`EXTRA! EXTRA! ${message.newspaperData.name} is DEAD! "${message.newspaperData.causeOfDeath}" — Click the chat message to read the full obituary!`, 'chat');
                 }
                 // If world chat is open, add a clickable newspaper link
                 const deathChatArea = document.getElementById('global-chat-area');
@@ -1190,7 +1190,7 @@ async function handleServerMessage(message) {
             break;
 
         case 'admin_killed':
-            // Admin has executed this player � trigger full permadeath
+            // Admin has executed this player — trigger full permadeath
             console.log('You have been killed by admin:', message.causeOfDeath);
             if (typeof showDeathScreen === 'function') {
                 showDeathScreen(message.causeOfDeath || 'Executed by order of the Don');
@@ -1198,7 +1198,7 @@ async function handleServerMessage(message) {
                 window.showDeathScreen(message.causeOfDeath || 'Executed by order of the Don');
             } else {
                 // Fallback: at minimum show newspaper if death screen unavailable
-                console.error('showDeathScreen not available � showing newspaper fallback');
+                console.error('showDeathScreen not available — showing newspaper fallback');
                 if (typeof window.generateDeathNewspaperData === 'function' && typeof window.showDeathNewspaper === 'function') {
                     const nd = window.generateDeathNewspaperData(message.causeOfDeath || 'Executed by order of the Don');
                     window.showDeathNewspaper(nd);
@@ -1273,14 +1273,14 @@ async function handleServerMessage(message) {
             break;
 
         case 'territory_population_update':
-            // Another player moved � update cached territory data
+            // Another player moved — update cached territory data
             if (onlineWorldState.territories) {
                 onlineWorldState.territories = message.territories || onlineWorldState.territories;
             }
             break;
 
         case 'territory_info':
-            // Full territory state response � cache it
+            // Full territory state response — cache it
             onlineWorldState.territories = message.territories || {};
             // Refresh territories management screen if visible
             if (typeof renderTerritoriesScreen === 'function') {
@@ -1427,7 +1427,7 @@ async function handleServerMessage(message) {
             break;
 
         case 'jailbreak_failed_arrested':
-            // We got arrested during jailbreak attempt � go straight to jail
+            // We got arrested during jailbreak attempt — go straight to jail
             player.inJail = true;
             player.jailTime = message.jailTime || 15;
             player.breakoutAttempts = 3;
@@ -1496,7 +1496,7 @@ async function handleServerMessage(message) {
             break;
 
         case 'heist_completed':
-            // Heist finished � show results
+            // Heist finished — show results
             if (message.heistId) {
                 onlineWorldState.activeHeists = onlineWorldState.activeHeists.filter(h => h.id !== message.heistId);
             }
@@ -1582,7 +1582,7 @@ async function handleServerMessage(message) {
             break;
 
         case 'combat_result':
-            // Server-authoritative PvP combat outcome � show result modal
+            // Server-authoritative PvP combat outcome — show result modal
             if (message.error) {
                 showSystemMessage(message.error, '#8b3a3a');
                 break;
@@ -1608,7 +1608,7 @@ async function handleServerMessage(message) {
                     showMPToast(`${message.eloChange.icon} Ranked: ${message.eloChange.elo} Rating (${message.eloChange.tier})`, '#c0a062', 4000);
                 }
             } else {
-                // Spectator � show toast
+                // Spectator — show toast
                 showMPToast(`\u2694\uFE0F ${message.winner} defeated ${message.loser}!`, '#8b0000');
             }
             // Always log in world feed for other spectators
@@ -1648,7 +1648,7 @@ async function handleServerMessage(message) {
             } else {
                 _safeLogAction(`${message.message}`);
                 if (message.arrested) {
-                    // Got caught � go straight to jail, no more breakout attempts
+                    // Got caught — go straight to jail, no more breakout attempts
                     player.inJail = true;
                     player.jailTime = message.jailTime || 15;
                     player.breakoutAttempts = 3;
@@ -1927,7 +1927,7 @@ function handlePlayerMarketMessage(message) {
             break;
 
         case 'market_sold':
-            // We sold something � receive money
+            // We sold something — receive money
             player.money += message.amount;
             if (typeof showBriefNotification === 'function') showBriefNotification(`${message.buyerName} bought your ${message.itemName} for $${message.amount.toLocaleString()}!`, 'success');
             if (typeof logAction === 'function') logAction(`${message.buyerName} purchased your ${message.itemName} from the Player Market for $${message.amount.toLocaleString()}!`);
@@ -1937,7 +1937,7 @@ function handlePlayerMarketMessage(message) {
             break;
 
         case 'market_purchased': {
-            // We bought something � add to inventory
+            // We bought something — add to inventory
             player.money -= message.price;
             const cat = message.category;
 
@@ -1957,7 +1957,7 @@ function handlePlayerMarketMessage(message) {
             } else if (cat === 'gas') {
                 player.gas = (player.gas || 0) + (message.quantity || 1);
             } else {
-                // weapon, armor, utility, drug � add to inventory
+                // weapon, armor, utility, drug — add to inventory
                 const itemObj = Object.assign({}, message.itemData || {});
                 itemObj.name = message.itemName;
                 for (let i = 0; i < (message.quantity || 1); i++) {
@@ -1975,7 +1975,7 @@ function handlePlayerMarketMessage(message) {
         }
 
         case 'market_cancelled': {
-            // Listing cancelled � return item to inventory
+            // Listing cancelled — return item to inventory
             const cat = message.category;
             if (cat === 'vehicle') {
                 const vd = message.itemData || {};
@@ -2111,7 +2111,7 @@ function listItemForSale(category, itemIdentifier, price, quantity, pricePerUnit
         window._pendingMarketListing = { category: category, quantity: quantity };
 
     } else {
-        // weapon, armor, utility, drug � from player.inventory
+        // weapon, armor, utility, drug — from player.inventory
         const invIndex = parseInt(itemIdentifier);
         const item = player.inventory[invIndex];
         if (!item) return;
@@ -2166,7 +2166,7 @@ function requestMarketListings() {
     onlineWorldState.socket.send(JSON.stringify({ type: 'market_get_listings' }));
 }
 
-// Update jail visibility � no longer renders a separate section.
+// Update jail visibility — no longer renders a separate section.
 // The prisoner-list div (game.js updatePrisonerList) handles all display.
 function updateJailVisibility() {
     const jailStatusContainer = document.getElementById('online-jail-status');
@@ -2479,7 +2479,7 @@ function showPvpResultModal(message, isWinner) {
 }
 
 
-// Deferred name correction � retries a few times after connect to push the real name to the server
+// Deferred name correction — retries a few times after connect to push the real name to the server
 let _nameCorrectionAttempts = 0;
 function _scheduleNameCorrection() {
     _nameCorrectionAttempts = 0;
@@ -2895,11 +2895,11 @@ function getConnectionStatusHTML() {
     const status = onlineWorldState.connectionStatus;
     if (onlineWorldState.isConnected || status === 'connected') {
         const count = onlineWorldState.serverInfo.playerCount || 0;
-        return `<span style="color: #8a9a6a; font-family: 'Georgia', serif;">Connected to World Chat � ${count} player${count !== 1 ? 's' : ''} online</span>`;
+        return `<span style="color: #8a9a6a; font-family: 'Georgia', serif;">Connected to World Chat ◆ ${count} player${count !== 1 ? 's' : ''} online</span>`;
     } else if (status === 'demo' || status === 'offline') {
-        return `<span style="color: #8b3a3a; font-family: 'Georgia', serif;">Server offline � retrying automatically...</span>`;
+        return `<span style="color: #8b3a3a; font-family: 'Georgia', serif;">Server offline ◆ retrying automatically...</span>`;
     } else if (status === 'error') {
-        return `<span style="color: #8b3a3a; font-family: 'Georgia', serif;">Server unavailable � retrying...</span>`;
+        return `<span style="color: #8b3a3a; font-family: 'Georgia', serif;">Server unavailable ◆ retrying...</span>`;
     } else {
         return `<span style="color: #c0a040; font-family: 'Georgia', serif;">Connecting to World Chat...</span>`;
     }
@@ -2937,7 +2937,7 @@ function showOnlineWorld(activeTab) {
     // -- Tab bar --
     let worldHTML = `
         <h2 style="color: #c0a062; font-family: 'Georgia', serif; text-shadow: 2px 2px 4px #000; margin-bottom: 5px;">The Commission</h2>
-        <p style="color: #ccc; margin: 0 0 15px 0;">The family's HQ � all multiplayer activities under one roof.</p>
+        <p style="color: #ccc; margin: 0 0 15px 0;">The family's HQ — all multiplayer activities under one roof.</p>
         
         <!-- Connection Status -->
         <div id="world-connection-status" style="background: rgba(0, 0, 0, 0.8); padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #c0a062;"></div>
@@ -3052,7 +3052,7 @@ function showOnlineWorld(activeTab) {
                     <div style="text-align: center;">
                         <div style="font-size: 3.5em; margin-bottom: 10px;"></div>
                         <h3 style="color: #ff4444; margin: 0 0 8px 0; font-family: 'Georgia', serif; font-size: 1.3em;">Assassination</h3>
-                        <p style="color: #ff8888; margin: 0 0 12px 0; font-size: 0.9em;">High-risk hit � steal their cash</p>
+                        <p style="color: #ff8888; margin: 0 0 12px 0; font-size: 0.9em;">High-risk hit — steal their cash</p>
                         <div style="background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px;">
                             <div style="color: #ccc; font-size: 0.8em; line-height: 1.6;">
                                 Requires guns, bullets & vehicle<br>
@@ -3105,7 +3105,7 @@ function showOnlineWorld(activeTab) {
             </div>
             
             <h3 style="color: #c0a040; text-align: center; margin-bottom: 5px; font-family: 'Georgia', serif;">Territories</h3>
-            <p style="color: #aaa; text-align: center; margin: 0 0 15px 0; font-size: 0.85em;">Multiplayer territories � where players live, pay tax, and fight for ownership.</p>
+            <p style="color: #aaa; text-align: center; margin: 0 0 15px 0; font-size: 0.85em;">Multiplayer territories — where players live, pay tax, and fight for ownership.</p>
             
             <div style="display: grid; gap: 12px;">
                 ${districts.map((d, idx) => {
@@ -3247,7 +3247,7 @@ function showOnlineWorld(activeTab) {
     
     const mpContent = document.getElementById("multiplayer-content");
     if (!mpContent) {
-        console.warn("multiplayer-content element not found � skipping showOnlineWorld render");
+        console.warn("multiplayer-content element not found — skipping showOnlineWorld render");
         return;
     }
     mpContent.innerHTML = worldHTML;
@@ -3484,7 +3484,7 @@ function renderMarketplaceTab() {
     return html;
 }
 
-// Legacy convenience function � opens the market tab
+// Legacy convenience function — opens the market tab
 function showVehicleMarketplace() {
     if (!onlineWorldState.isConnected) {
         if (typeof showBriefNotification === 'function') showBriefNotification('Connect to The Commission first!', 'error');
@@ -3578,7 +3578,7 @@ function updateConnectionStatus() {
 
 // Initialize world data after connection
 function initializeWorldData() {
-    // Real data comes from the server � just set up empty defaults
+    // Real data comes from the server — just set up empty defaults
     if (!onlineWorldState.nearbyPlayers) onlineWorldState.nearbyPlayers = [];
     if (!onlineWorldState.globalChat) onlineWorldState.globalChat = [];
     if (!onlineWorldState.serverInfo.cityEvents) onlineWorldState.serverInfo.cityEvents = [];
@@ -3609,7 +3609,7 @@ function startWorldUpdates() {
     }, onlineWorld.updateInterval);
 }
 
-// Update world state � only runs when connected to real server
+// Update world state — only runs when connected to real server
 function updateWorldState() {
     onlineWorldState.lastUpdate = new Date().toLocaleTimeString();
     updateConnectionStatus();
@@ -3893,16 +3893,16 @@ function doDistrictJob(districtName) {
     const districtJobs = {
         downtown: [
             { name: 'Shake Down a Business', baseReward: [800, 2500], xp: 20, jailChance: 0.12, flavor: 'You walked into a shop and made the owner an offer he couldn\'t refuse.' },
-            { name: 'Run a Con on Tourists', baseReward: [500, 1800], xp: 15, jailChance: 0.08, flavor: 'The tourists never saw it coming � wallets, watches, the works.' },
+            { name: 'Run a Con on Tourists', baseReward: [500, 1800], xp: 15, jailChance: 0.08, flavor: 'The tourists never saw it coming — wallets, watches, the works.' },
             { name: 'Intercept a Wire Transfer', baseReward: [2000, 5000], xp: 35, jailChance: 0.2, flavor: 'Your inside man at the bank tipped you off to a fat transfer.' }
         ],
         docks: [
-            { name: 'Hijack a Shipping Container', baseReward: [1500, 4000], xp: 30, jailChance: 0.18, flavor: 'The container was full of electronics � easy money on the black market.' },
+            { name: 'Hijack a Shipping Container', baseReward: [1500, 4000], xp: 30, jailChance: 0.18, flavor: 'The container was full of electronics — easy money on the black market.' },
             { name: 'Smuggle Contraband', baseReward: [1000, 3000], xp: 25, jailChance: 0.15, flavor: 'You slipped the goods past customs in a fishing boat.' },
             { name: 'Bribe a Dock Foreman', baseReward: [600, 1500], xp: 15, jailChance: 0.06, flavor: 'Now you\'ve got eyes and ears on every shipment that comes through.' }
         ],
         suburbs: [
-            { name: 'Burglarize a McMansion', baseReward: [1200, 3500], xp: 25, jailChance: 0.14, flavor: 'Rich family on vacation � their safe wasn\'t as secure as they thought.' },
+            { name: 'Burglarize a McMansion', baseReward: [1200, 3500], xp: 25, jailChance: 0.14, flavor: 'Rich family on vacation — their safe wasn\'t as secure as they thought.' },
             { name: 'Run a Prescription Scam', baseReward: [400, 1200], xp: 12, jailChance: 0.08, flavor: 'Fake prescriptions across three pharmacies. Quick and clean.' },
             { name: 'Steal Luxury Cars', baseReward: [2000, 5000], xp: 30, jailChance: 0.16, flavor: 'Three luxury cars boosted from driveways overnight.' }
         ],
@@ -3914,7 +3914,7 @@ function doDistrictJob(districtName) {
         redlight: [
             { name: 'Collect Protection Money', baseReward: [600, 2000], xp: 18, jailChance: 0.1, flavor: 'The clubs pay on time when you show up with muscle.' },
             { name: 'Run an Underground Card Game', baseReward: [1000, 3500], xp: 22, jailChance: 0.12, flavor: 'You took the house cut and nobody dared complain.' },
-            { name: 'Fence Stolen Goods', baseReward: [800, 2500], xp: 20, jailChance: 0.09, flavor: 'Your fence moved the merch before dawn � cash in hand.' }
+            { name: 'Fence Stolen Goods', baseReward: [800, 2500], xp: 20, jailChance: 0.09, flavor: 'Your fence moved the merch before dawn — cash in hand.' }
         ]
     };
 
@@ -4242,11 +4242,11 @@ async function attemptAssassination(targetName) {
     const confirmHit = await window.ui.confirm(
         `ORDER HIT ON ${targetName}?\n\n` +
         `This will cost:\n` +
-        `� 30 Energy\n` +
-        `� 3-5 Bullets\n` +
-        `� You WILL take heavy health damage\n` +
-        `� Gang members may die in the firefight\n` +
-        `� 10 minute cooldown after attempt\n\n` +
+        `◆ 30 Energy\n` +
+        `◆ 3-5 Bullets\n` +
+        `◆ You WILL take heavy health damage\n` +
+        `◆ Gang members may die in the firefight\n` +
+        `◆ 10 minute cooldown after attempt\n\n` +
         `Success is NOT guaranteed. You could get arrested.\n` +
         `Proceed?`
     );
@@ -4413,7 +4413,7 @@ function handleAssassinationResult(message) {
                 <div style="background: rgba(0,0,0,0.95); padding: 40px; border-radius: 15px; border: 3px solid ${message.arrested ? '#ff0000' : '#ff8800'}; text-align: center;">
                     <div style="font-size: 4em; margin-bottom: 15px;">${message.arrested ? '' : ''}</div>
                     <h2 style="color: ${message.arrested ? '#ff4444' : '#ff8800'}; font-family: 'Georgia', serif; font-size: 2em;">
-                        ${message.arrested ? 'HIT FAILED � ARRESTED!' : 'HIT FAILED � ESCAPED'}
+                        ${message.arrested ? 'HIT FAILED — ARRESTED!' : 'HIT FAILED — ESCAPED'}
                     </h2>
                     <p style="color: #ccc; font-size: 1.1em; margin: 15px 0;">
                         ${escapeHTML(message.error || 'The hit didn\'t go as planned.')}
@@ -4446,7 +4446,7 @@ function handleAssassinationResult(message) {
 }
 
 function handleAssassinationVictim(message) {
-    // You were assassinated by someone � show notification
+    // You were assassinated by someone — show notification
     if (typeof message.newMoney === 'number') player.money = message.newMoney;
     if (typeof updateUI === 'function') updateUI();
 
@@ -4606,7 +4606,7 @@ function saveOnlineWorldData() {
     }
 }
 
-// spectateWar removed � Turf Wars replaced by Horse Betting in casino
+// spectateWar removed — Turf Wars replaced by Horse Betting in casino
 
 function participateInEvent(eventType, district) {
     if (!onlineWorldState.isConnected) {
@@ -4636,7 +4636,7 @@ function participateInEvent(eventType, district) {
             title: 'Market Crash',
             icon: '',
             scenarios: [
-                { text: 'You bought seized assets at rock-bottom prices and flipped them.', moneyMin: 1500, moneyMax: 5000, xp: 35, repGain: 2, successChance: 0.6, riskText: 'Turns out the assets were flagged � you lost some to seizure.', healthLoss: 0, wantedGain: 1 },
+                { text: 'You bought seized assets at rock-bottom prices and flipped them.', moneyMin: 1500, moneyMax: 5000, xp: 35, repGain: 2, successChance: 0.6, riskText: 'Turns out the assets were flagged — you lost some to seizure.', healthLoss: 0, wantedGain: 1 },
                 { text: 'You shorted a corrupt businessman\'s portfolio through your contacts.', moneyMin: 2000, moneyMax: 6000, xp: 40, repGain: 4, successChance: 0.45, riskText: 'The businessman sent enforcers to collect.', healthLoss: 15, wantedGain: 0 },
                 { text: 'You laundered cash through panicking banks while no one was looking.', moneyMin: 1000, moneyMax: 4000, xp: 20, repGain: 1, successChance: 0.55, riskText: 'A suspicious teller flagged the transactions.', healthLoss: 0, wantedGain: 2 }
             ]
@@ -4646,7 +4646,7 @@ function participateInEvent(eventType, district) {
             icon: '',
             scenarios: [
                 { text: 'You impressed the bosses and received a cut of their operation.', moneyMin: 600, moneyMax: 2500, xp: 30, repGain: 6, successChance: 0.5, riskText: 'A rival at the meeting took offense and jumped you after.', healthLoss: 20, wantedGain: 0 },
-                { text: 'You brokered a deal between two factions and took a commission.', moneyMin: 1000, moneyMax: 3500, xp: 35, repGain: 8, successChance: 0.45, riskText: 'One side felt you favored the other � they want payback.', healthLoss: 10, wantedGain: 0 },
+                { text: 'You brokered a deal between two factions and took a commission.', moneyMin: 1000, moneyMax: 3500, xp: 35, repGain: 8, successChance: 0.45, riskText: 'One side felt you favored the other — they want payback.', healthLoss: 10, wantedGain: 0 },
                 { text: 'You gathered intel on upcoming operations while making connections.', moneyMin: 200, moneyMax: 800, xp: 45, repGain: 4, successChance: 0.7, riskText: 'Someone noticed you eavesdropping a bit too much.', healthLoss: 5, wantedGain: 0 }
             ]
         }
@@ -4721,7 +4721,7 @@ function participateInEvent(eventType, district) {
         _safeLogAction(`${eventData.icon} ${eventData.title} in ${district}: earned $${moneyEarned.toLocaleString()}, +${scenario.xp} XP, +${scenario.repGain} rep`);
         addWorldEvent(`${eventData.icon} ${player.name || 'A player'} profited from the ${eventData.title.toLowerCase()} in ${district}!`);
     } else {
-        // Failure � still get partial rewards but take a hit
+        // Failure — still get partial rewards but take a hit
         const partialMoney = Math.floor(scenario.moneyMin * 0.3);
         player.money += partialMoney;
         player.health = Math.max(1, (player.health || 100) - scenario.healthLoss);
@@ -5113,7 +5113,7 @@ function showDisciplinePanel() {
             <div style="margin-bottom: 14px;">
                 <label style="color: #ccc; font-size: 0.9em; display: block; margin-bottom: 5px;">Target Member</label>
                 <select id="discipline-target" style="width: 100%; padding: 10px; background: #1a1a1a; color: #c0a062; border: 1px solid #555; border-radius: 6px; font-family: Georgia, serif;">
-                    <option value="">� Select a member �</option>
+                    <option value="">— Select a member —</option>
                     ${members.map(m => `<option value="${escapeHTML(m)}">${escapeHTML(m)}</option>`).join('')}
                 </select>
             </div>
@@ -5125,7 +5125,7 @@ function showDisciplinePanel() {
                         <input type="radio" name="discipline-type" id="discipline-type-warning" value="warning" checked style="margin-top: 3px;">
                         <div>
                             <div style="color: #c0a040; font-weight: bold;">Formal Warning</div>
-                            <div style="color: #888; font-size: 0.8em;">A public notice that this member is on thin ice. A slap on the wrist � everyone sees it.</div>
+                            <div style="color: #888; font-size: 0.8em;">A public notice that this member is on thin ice. A slap on the wrist — everyone sees it.</div>
                         </div>
                     </label>
                     <label onclick="document.getElementById('discipline-type-humiliation').checked = true" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: rgba(231,76,60,0.1); border: 2px solid rgba(231,76,60,0.3); border-radius: 8px; cursor: pointer; transition: border-color 0.2s;">
@@ -5139,7 +5139,7 @@ function showDisciplinePanel() {
                         <input type="radio" name="discipline-type" id="discipline-type-punishment" value="punishment" style="margin-top: 3px;">
                         <div>
                             <div style="color: #ff4444; font-weight: bold;">Serious Punishment</div>
-                            <div style="color: #888; font-size: 0.8em;">Make an example of them. The whole server sees this � a message to anyone who steps out of line.</div>
+                            <div style="color: #888; font-size: 0.8em;">Make an example of them. The whole server sees this — a message to anyone who steps out of line.</div>
                         </div>
                     </label>
                 </div>
@@ -5225,7 +5225,7 @@ function handleAllianceDisciplineResult(message) {
 
         case 'witnessed':
             // Other alliance members see a toast
-            showMPToast(`${message.icon} ${message.leaderName} disciplined ${message.targetPlayer} � ${message.disciplineName}`, color, 6000);
+            showMPToast(`${message.icon} ${message.leaderName} disciplined ${message.targetPlayer} — ${message.disciplineName}`, color, 6000);
             playNotificationSound('alert');
             break;
     }
@@ -5460,7 +5460,7 @@ let lastReceivedDeathNewspaper = null;
 
 function broadcastDeathNewspaper(newspaperData) {
     if (!onlineWorldState.isConnected || !onlineWorldState.socket || onlineWorldState.socket.readyState !== WebSocket.OPEN) {
-        // Not online � just log locally, no broadcast
+        // Not online — just log locally, no broadcast
         return;
     }
     sendMP({
@@ -5486,7 +5486,7 @@ function ensureConnected() {
     return true;
 }
 
-// ==================== POLITICAL SYSTEM � TOP DON UI ====================
+// ==================== POLITICAL SYSTEM — TOP DON UI ====================
 let _politicsCache = null; // last received politics data
 let _isTopDon = false;
 let _politicsCooldown = 0;
@@ -5587,7 +5587,7 @@ function renderPoliticsTab() {
         <div style="background: rgba(192, 160, 98, 0.1); padding: 12px; border-radius: 8px; border: 1px solid #c0a062;">
             <p style="color: #ccc; margin: 0; font-size: 0.85em; line-height: 1.6;">
                 <strong style="color: #c0a062;">How Politics Work:</strong> The player or alliance controlling the most territories becomes the <strong style="color: #ffd700;">Top Don</strong>. 
-                The Top Don can adjust city-wide policies that affect all players � tax rates, crime bonuses, jail times, and more. 
+                The Top Don can adjust city-wide policies that affect all players — tax rates, crime bonuses, jail times, and more. 
                 Policies have a 10-minute cooldown between changes. Conquer more territory to seize political power!
             </p>
         </div>
@@ -5630,7 +5630,7 @@ function renderTopDonControls(pol) {
         <div style="background: linear-gradient(180deg, rgba(255,215,0,0.08) 0%, rgba(0,0,0,0.8) 100%); padding: 20px; border-radius: 12px; border: 2px solid #ffd700; margin-bottom: 20px;">
             <h4 style="color: #ffd700; margin: 0 0 5px 0; font-family: 'Georgia', serif; text-align: center;">Top Don Controls</h4>
             <p style="color: #c0a062; text-align: center; margin: 0 0 15px 0; font-size: 0.85em;">You are the Top Don. Set policies for the entire city.</p>
-            ${cooldownActive ? `<div style="text-align: center; color: #8b3a3a; margin-bottom: 12px; font-size: 0.9em;">? Policy changes on cooldown � ${cooldownMin} min remaining</div>` : ''}
+            ${cooldownActive ? `<div style="text-align: center; color: #8b3a3a; margin-bottom: 12px; font-size: 0.9em;">? Policy changes on cooldown — ${cooldownMin} min remaining</div>` : ''}
             <div style="display: grid; gap: 12px;">
     `;
 
