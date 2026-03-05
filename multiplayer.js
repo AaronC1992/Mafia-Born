@@ -5887,6 +5887,8 @@ function renderCrewScreen(container, data) {
     let html = '';
     const style = 'style="background:rgba(20,18,10,0.4);border:1px solid #3a3520;border-radius:8px;padding:16px;margin:10px 0;"';
 
+    html += `<p style="color:#8a7a5a;font-style:italic;margin:0 0 10px;">Form a crew with other players to pull off multiplayer heists together. Bigger crews can hit harder targets for bigger payouts.</p>`;
+
     if (data.myCrew) {
         const c = data.myCrew;
         const isLeader = c.leader === onlineWorldState.playerId;
