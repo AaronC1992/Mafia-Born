@@ -15289,6 +15289,11 @@ function createCharacter() {
   player.name = name;
   player.portrait = selectedPortraitFile;
 
+  // 🐔 Easter egg for Eric
+  if (/^(eric|sooner)$/i.test(name.trim())) {
+    await showChickenButtEasterEgg();
+  }
+
   // Set default current slot for new character
   SAVE_SYSTEM.currentSlot = 1;
   saveSaveSystemPrefs();
@@ -15307,6 +15312,36 @@ function createCharacter() {
 }
 
 // Function to go back to intro/title screen from character creation
+// 🐔 Easter egg popup
+function showChickenButtEasterEgg() {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.id = 'chicken-butt-egg';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.95);cursor:pointer;animation:chickenFadeIn 0.3s ease;';
+
+    overlay.innerHTML = `
+      <div style="text-align:center;padding:40px;max-width:500px;">
+        <div style="font-size:100px;margin-bottom:20px;animation:chickenBounce 0.6s ease infinite alternate;">🐔</div>
+        <h1 style="color:#f5e6c8;font-family:'Georgia',serif;font-size:3em;margin:0 0 10px 0;text-shadow:0 0 20px #c0a040;">GUESS WHAT!!</h1>
+        <h1 style="color:#e67e22;font-family:'Georgia',serif;font-size:4em;margin:0 0 30px 0;text-shadow:0 0 30px #e67e22,0 0 60px #e67e22;">CHICKEN BUTT!!</h1>
+        <div style="font-size:60px;margin-bottom:30px;">🍗🍗🍗</div>
+        <p style="color:#8a7a5a;font-size:1em;margin-top:20px;">tap anywhere to continue... if you can stop laughing</p>
+      </div>
+      <style>
+        @keyframes chickenBounce { from{transform:translateY(0)} to{transform:translateY(-20px)} }
+        @keyframes chickenFadeIn { from{opacity:0} to{opacity:1} }
+      </style>
+    `;
+
+    overlay.addEventListener('click', () => {
+      overlay.remove();
+      resolve();
+    });
+
+    document.body.appendChild(overlay);
+  });
+}
+
 function goBackToIntro() {
   const charCreationScreen = document.getElementById('character-creation-screen');
   if (charCreationScreen) {
