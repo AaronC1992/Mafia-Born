@@ -4124,7 +4124,7 @@ function showAssassination() {
     );
 
     const requirementColor = (met) => met ? '#8a9a6a' : '#8b3a3a';
-    const requirementIcon = (met) => met ? '?' : '?';
+    const requirementIcon = (met) => met ? '\u2714' : '\u2718';
 
     let targetListHTML;
     if (onlinePlayers.length === 0) {
@@ -4658,7 +4658,7 @@ function participateInEvent(eventType, district) {
     // Default for unknown event types
     const eventData = eventOutcomes[eventType] || {
         title: eventType.replace(/_/g, ' '),
-        icon: '?',
+        icon: '\u2753',
         scenarios: [
             { text: 'You got involved and made some connections.', moneyMin: 300, moneyMax: 1500, xp: 20, repGain: 2, successChance: 0.55, riskText: 'Things didn\'t go entirely smooth.', healthLoss: 10, wantedGain: 0 }
         ]
