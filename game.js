@@ -17176,8 +17176,20 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.17.0";
+const CURRENT_VERSION = "1.17.1";
 const VERSION_UPDATES = {
+  "1.17.1": {
+    title: "Deep Audit Fixes & Stability Improvements",
+    date: "March 2026",
+    changes: [
+      "Fixed NaN bug with gang member experienceLevel on old saves (3 locations)",
+      "Restored Blackjack card suit symbols broken by emoji removal",
+      "Fixed crash when bounties/marketplace loaded as null from old world saves",
+      "Prevented mobile event listener stacking on repeated calls",
+      "Fixed server memory leak: clientMessageHistory now cleaned on disconnect",
+      "Fixed infinite pingServer retry loop (max 10 attempts)",
+    ]
+  },
   "1.17.0": {
     title: "Gang Operations, Skill Synergies, Side Ops & Jail Revamp",
     date: "March 2026",
