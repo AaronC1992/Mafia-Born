@@ -523,7 +523,9 @@ export function canUnlockNode(treeName, nodeId) {
   if (!nodeDef) return false;
   const currentRank = player.skillTree[treeName][nodeId] || 0;
   if (currentRank >= nodeDef.maxRank) return false;
-  if (player.skillPoints < 1) return false;
+  // Soft cap: ranks above 7 cost 2 skill points
+  const upgradeCost = currentRank >= 7 ? 2 : 1;
+  if (player.skillPoints < upgradeCost) return false;
   // Tier point requirements: tier 2 needs 5 pts in tree, tier 3 needs 20 pts
   const ptsInTree = getTreePointsSpent(treeName);
   if (nodeDef.tier === 2 && ptsInTree < 5) return false;

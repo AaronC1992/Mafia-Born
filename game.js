@@ -339,11 +339,13 @@ async function showMissions() {
   }
 
   document.getElementById("missions-content").innerHTML = `
-    <div style="display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid #c0a062;padding-bottom:0;">
+    <div style="display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid #c0a062;padding-bottom:0;flex-wrap:wrap;">
       <button id="ops-tab-story" class="ops-tab active" onclick="switchOpsTab('story', this)" style="background:#c0a062;color:#000;padding:10px 18px;border:1px solid #c0a062;border-bottom:none;border-radius:8px 8px 0 0;cursor:pointer;font-family:'Georgia',serif;font-weight:bold;font-size:0.95em;">Story</button>
+      <button id="ops-tab-sideops" class="ops-tab" onclick="switchOpsTab('sideops', this)" style="background:#222;color:#c0a062;padding:10px 18px;border:1px solid #c0a062;border-bottom:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-family:'Georgia',serif;font-weight:normal;font-size:0.95em;">Side Ops</button>
       <button id="ops-tab-superboss" class="ops-tab" onclick="switchOpsTab('superboss', this)" style="background:#222;color:#c0a062;padding:10px 18px;border:1px solid #c0a062;border-bottom:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-family:'Georgia',serif;font-weight:normal;font-size:0.95em;">Superboss</button>
     </div>
     <div id="ops-panel-story" class="ops-panel active">${missionsHTML}</div>
+    <div id="ops-panel-sideops" class="ops-panel" style="display:none;"><div id="sideops-content"><p style="color:#8a7a5a;">Loading side operations...</p></div></div>
     <div id="ops-panel-superboss" class="ops-panel" style="display:none;"><div id="superboss-content"><p style="color:#8a7a5a;">Loading superboss data...</p></div></div>
   `;
   hideAllScreens();
@@ -362,6 +364,15 @@ function switchOpsTab(tabId, btn) {
   if (btn) {
     btn.classList.add('active');
     btn.style.background = '#c0a062'; btn.style.color = '#000'; btn.style.fontWeight = 'bold'; btn.style.borderBottom = 'none';
+  }
+  if (tabId === 'sideops') {
+    const sideopsContainer = document.getElementById('sideops-content');
+    if (sideopsContainer) {
+      // Render the side quest screen content inline
+      initSideQuests();
+      sideopsContainer.innerHTML = renderSideOpsContent();
+      startQuestTimerTick();
+    }
   }
   if (tabId === 'superboss') {
     if (typeof sendMP === 'function') sendMP({ type: 'superboss_list' });
@@ -3068,6 +3079,99 @@ function showSideQuestScreen() {
 }
 window.showSideQuestScreen = showSideQuestScreen;
 
+// Render side ops content inline for the missions tab (returns HTML string)
+function renderSideOpsContent() {
+  initSideQuests();
+  const sq = player.sideQuests;
+  let html = `
+    <div style="padding:10px 0;">
+      <h2 style="color:#c0a040;margin:0 0 8px;">Side Operations</h2>
+      <p style="color:#8a7a5a;margin:0 0 15px;font-size:0.9em;">Multi-step operations that build your empire. Each step takes time and triggers events on the streets.</p>`;
+
+  // Active quests
+  const activeQuests = SIDE_QUESTS.filter(q => sq.active.includes(q.id));
+  if (activeQuests.length > 0) {
+    html += `<h3 style="color:#c0a040;margin:15px 0 8px;">Active</h3>`;
+    activeQuests.forEach(quest => {
+      const { step, index } = getActiveQuestStep(quest);
+      if (!step) return;
+      const obj = step.objective;
+      let currentVal = 0;
+      if (obj.type === 'money') currentVal = player.money;
+      else if (obj.type === 'level') currentVal = player.level;
+      else if (obj.type === 'jobs') currentVal = player.missions?.missionStats?.jobsCompleted || 0;
+      else if (obj.type === 'gang') currentVal = player.gang?.members || 0;
+      else if (obj.type === 'properties') currentVal = (player.realEstate?.ownedProperties || []).length;
+      else if (obj.type === 'reputation') currentVal = Math.floor(player.reputation || 0);
+      const objMet = currentVal >= obj.target;
+      const timerDone = isStepTimerComplete(quest.id);
+      const remaining = getStepTimeRemaining(quest.id);
+      const canComplete = objMet && timerDone;
+      html += `
+        <div style="background:rgba(20,18,10,0.6);padding:12px;border-radius:8px;border-left:4px solid #c0a040;margin-bottom:10px;">
+          <h4 style="color:#f5e6c8;margin:0 0 4px;">${quest.icon} ${quest.title} <span style="color:#888;font-size:0.8em;">Step ${index+1}/${quest.steps.length}</span></h4>
+          <p style="color:#ccc;font-size:0.9em;margin:4px 0;">${step.narrative}</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin:8px 0;font-size:0.85em;">
+            <span style="color:${objMet?'#8a9a6a':'#c0a040'};">${objMet?'Done':'Pending'}: ${obj.text} (${currentVal.toLocaleString()}/${obj.target.toLocaleString()})</span>
+            <span data-quest-timer="${quest.id}" style="color:${timerDone?'#8a9a6a':'#c0a040'};">${timerDone?'Ready!':formatTimeRemaining(remaining)}</span>
+          </div>
+          ${canComplete ? `<button onclick="completeSideQuestStep('${quest.id}')" style="background:#c0a040;color:#000;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;">Complete Step</button>` : ''}
+        </div>`;
+    });
+  }
+
+  // Available quests
+  const availableQuests = SIDE_QUESTS.filter(q => getSideQuestState(q.id) === 'available' && canStartSideQuest(q));
+  if (availableQuests.length > 0) {
+    html += `<h3 style="color:#c0a062;margin:15px 0 8px;">Available</h3>`;
+    availableQuests.forEach(quest => {
+      const totalTime = quest.steps.reduce((sum, s) => sum + (s.timerMinutes || 0), 0);
+      html += `
+        <div style="background:rgba(20,18,10,0.4);padding:12px;border-radius:8px;border-left:4px solid #c0a062;margin-bottom:10px;">
+          <h4 style="color:#f5e6c8;margin:0 0 4px;">${quest.icon} ${quest.title}</h4>
+          <p style="color:#ccc;font-size:0.9em;margin:4px 0;">${quest.description}</p>
+          <div style="color:#888;font-size:0.85em;">Level ${quest.minLevel} | ${quest.steps.length} Steps | ~${totalTime}min</div>
+          <button onclick="startSideQuest('${quest.id}')" style="background:linear-gradient(135deg,#c0a062,#a08850);color:#000;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;margin-top:6px;">Accept</button>
+        </div>`;
+    });
+  }
+
+  // Locked quests
+  const lockedQuests = SIDE_QUESTS.filter(q => getSideQuestState(q.id) === 'available' && !canStartSideQuest(q));
+  if (lockedQuests.length > 0) {
+    html += `<h3 style="color:#666;margin:15px 0 8px;">Locked</h3>`;
+    lockedQuests.forEach(quest => {
+      html += `
+        <div style="background:rgba(20,18,10,0.3);padding:10px;border-radius:8px;border-left:4px solid #444;margin-bottom:8px;opacity:0.6;">
+          <h4 style="color:#888;margin:0 0 4px;">${quest.icon} ${quest.title}</h4>
+          <p style="color:#666;font-size:0.85em;">${quest.description}</p>
+          <div style="color:#8b3a3a;font-size:0.85em;">Requires Level ${quest.minLevel}</div>
+        </div>`;
+    });
+  }
+
+  // Completed quests
+  const completedQuests = SIDE_QUESTS.filter(q => sq.completed.includes(q.id));
+  if (completedQuests.length > 0) {
+    html += `<h3 style="color:#8a9a6a;margin:15px 0 8px;">Completed</h3>`;
+    completedQuests.forEach(quest => {
+      html += `
+        <div style="background:rgba(20,18,10,0.3);padding:10px;border-radius:8px;border-left:4px solid #8a9a6a;margin-bottom:8px;opacity:0.7;">
+          <h4 style="color:#8a9a6a;margin:0 0 2px;">${quest.icon} ${quest.title}</h4>
+          <p style="color:#666;font-size:0.85em;font-style:italic;">${quest.completionNarrative.substring(0, 120)}...</p>
+        </div>`;
+    });
+  }
+
+  if (activeQuests.length === 0 && availableQuests.length === 0 && lockedQuests.length === 0 && completedQuests.length === 0) {
+    html += `<p style="color:#8a7a5a;font-style:italic;">No side operations discovered yet. Keep progressing through the story.</p>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+window.renderSideOpsContent = renderSideOpsContent;
+
 // ==================== POST-DON ENDGAME ARCS ====================
 
 function showPostDonArc(arcId) {
@@ -3604,6 +3708,94 @@ const specialistRoles = [
 ];
 
 // Gang Operations - Special missions for specialist gang members
+// Member XP required to reach next level (scales with current level)
+function getMemberXPToLevel(currentLevel) {
+  return Math.floor(100 * Math.pow(1.5, currentLevel - 1));
+}
+
+// Assign a gang member to manage a business (boosts income by 15-40% based on member level)
+function assignMemberToBusiness(memberIndex, businessIndex) {
+  const member = player.gang.gangMembers[memberIndex];
+  const business = (player.businesses || [])[businessIndex];
+  if (!member || !business) return;
+  if (member.onOperation || member.inTraining || member.arrested) {
+    showBriefNotification(`${member.name} is not available right now.`, 'warning');
+    return;
+  }
+  // Remove any previous business assignment from this member
+  (player.businesses || []).forEach(b => { if (b.assignedMember === member.name) b.assignedMember = null; });
+  // Remove any previous member from this business
+  business.assignedMember = member.name;
+  member.assignedTo = 'business_' + businessIndex;
+  const bonus = Math.floor(15 + (member.experienceLevel || 1) * 2.5);
+  showBriefNotification(`${member.name} now manages ${business.name} (+${bonus}% income).`, 'success');
+  logAction(`${member.name} takes over day-to-day operations at ${business.name}. The books have never looked better.`);
+  updateUI();
+}
+window.assignMemberToBusiness = assignMemberToBusiness;
+
+function unassignMemberFromBusiness(businessIndex) {
+  const business = (player.businesses || [])[businessIndex];
+  if (!business || !business.assignedMember) return;
+  const member = player.gang.gangMembers.find(m => m.name === business.assignedMember);
+  if (member) member.assignedTo = null;
+  const name = business.assignedMember;
+  business.assignedMember = null;
+  showBriefNotification(`${name} removed from ${business.name}.`, 'success');
+  updateUI();
+}
+window.unassignMemberFromBusiness = unassignMemberFromBusiness;
+
+// Get business income multiplier from assigned gang member
+function getBusinessMemberBonus(business) {
+  if (!business.assignedMember) return 1.0;
+  const member = player.gang.gangMembers.find(m => m.name === business.assignedMember);
+  if (!member || member.arrested || member.onOperation) return 1.0;
+  // 15% base + 2.5% per member level
+  return 1.0 + (0.15 + (member.experienceLevel || 1) * 0.025);
+}
+
+// Process passive income from idle gang members (called each passive cycle)
+function processGangPassiveIncome() {
+  if (!player.gang || !player.gang.gangMembers) return;
+  const idleMembers = player.gang.gangMembers.filter(m =>
+    !m.onOperation && !m.inTraining && !m.arrested && !m.assignedTo
+  );
+  if (idleMembers.length === 0) return;
+  let totalEarned = 0;
+  idleMembers.forEach(member => {
+    // Each idle member runs small street-level hustles for passive income
+    const memberLevel = member.experienceLevel || 1;
+    const baseIncome = 50 + memberLevel * 30;
+    const earnings = Math.floor(baseIncome * (0.7 + Math.random() * 0.6));
+    totalEarned += earnings;
+    // Small XP gain from street work
+    member.xp = (member.xp || 0) + 5;
+    const xpToLevel = getMemberXPToLevel(memberLevel);
+    if (member.xp >= xpToLevel && memberLevel < 10) {
+      member.experienceLevel = memberLevel + 1;
+      member.xp = 0;
+      if (member.stats) {
+        member.stats.violence = (member.stats.violence || 0) + 1;
+        member.stats.stealth = (member.stats.stealth || 0) + 1;
+        member.stats.intelligence = (member.stats.intelligence || 0) + 1;
+      }
+      member.power = (member.power || 5) + 2;
+      logAction(`${member.name} leveled up to Level ${member.experienceLevel} from street work!`);
+    }
+    // Small arrest risk (2%) during passive hustling
+    if (Math.random() < 0.02) {
+      member.arrested = true;
+      member.arrestTime = Date.now() + (Math.random() * 24 + 12) * 60 * 60 * 1000;
+      logAction(`${member.name} got picked up by the cops while running a hustle. They'll be out in a day or so.`);
+    }
+  });
+  if (totalEarned > 0) {
+    player.dirtyMoney = (player.dirtyMoney || 0) + totalEarned;
+    logAction(`Your idle crew earned $${totalEarned.toLocaleString()} (dirty) from street hustles.`);
+  }
+}
+
 const gangOperations = [
   {
     id: "protection_racket",
@@ -4394,6 +4586,12 @@ async function collectBusinessIncome(businessIndex) {
 
   const hourlyIncome = Math.floor(businessType.baseIncome * Math.pow(businessType.incomeMultiplier, business.level - 1) / 24);
   let grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 48) * bizMultiplier);
+
+  // Gang member manager bonus
+  const memberBonus = getBusinessMemberBonus(business);
+  if (memberBonus > 1.0) {
+    grossIncome = Math.floor(grossIncome * memberBonus);
+  }
 
   // Corruption: contractAccess boosts business income
   const corruptContractBonus = getCorruptionBenefit('contractAccess');
@@ -5302,6 +5500,7 @@ function generateGangMembersHTML() {
     let statusText = member.arrested ? 'Arrested' :
              member.onOperation ? 'On Operation' :
              member.inTraining ? 'In Training' :
+             member.assignedTo && member.assignedTo.startsWith('business_') ? 'Managing Business' :
              'Available';
 
     // Add countdown timer to status
@@ -5330,16 +5529,44 @@ function generateGangMembersHTML() {
 
     const loyaltyColor = '#c0a062';
 
+    // XP/Level progress
+    const memberLevel = Math.floor(member.experienceLevel || 1);
+    const memberXP = member.xp || 0;
+    const xpNeeded = getMemberXPToLevel(memberLevel);
+    const xpPct = memberLevel >= 10 ? 100 : Math.min(100, Math.floor((memberXP / xpNeeded) * 100));
+
+    // Business assignment options
+    const businesses = player.businesses || [];
+    const isManagingBusiness = member.assignedTo && member.assignedTo.startsWith('business_');
+    let businessHTML = '';
+    if (!member.onOperation && !member.inTraining && !member.arrested) {
+      if (isManagingBusiness) {
+        const bIdx = parseInt(member.assignedTo.replace('business_', ''));
+        const biz = businesses[bIdx];
+        businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx})" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
+      } else if (businesses.length > 0) {
+        const unmanaged = businesses.map((b, i) => ({ b, i })).filter(({ b }) => !b.assignedMember);
+        if (unmanaged.length > 0) {
+          businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!=='')assignMemberToBusiness(${index},parseInt(s.value));" style="background:#1abc9c;color:#fff;border:none;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
+        }
+      }
+    }
+
     html += `
       <div style="background: rgba(20, 18, 10, 0.6); padding: 15px; border-radius: 8px; border-left: 4px solid ${loyaltyColor};">
         <h5 style="margin: 0 0 10px 0;">${member.name}</h5>
         <div style="font-size: 0.9em;">
           <strong>Role:</strong> ${roleName}${perkText}<br>
-          <strong>Level:</strong> ${member.experienceLevel}<br>
+          <strong>Level:</strong> ${memberLevel}${memberLevel >= 10 ? ' (MAX)' : ''}<br>
+          <div style="background:#1a1610;border-radius:4px;height:8px;margin:3px 0 5px;overflow:hidden;border:1px solid #3a3520;">
+            <div style="height:100%;width:${xpPct}%;background:${memberLevel >= 10 ? '#d4af37' : '#c0a062'};transition:width 0.3s;"></div>
+          </div>
+          <small style="color:#8a7a5a;">${memberLevel >= 10 ? 'Max Level' : `XP: ${memberXP}/${xpNeeded}`}</small><br>
           <strong>Status:</strong> ${statusText}<br>
           <strong>Tribute:</strong> $${Math.floor(member.tributeMultiplier * 100)}/collection
           <span style="color: ${memberPaysCleanCash(member) ? '#4CAF50' : '#e67e22'}; font-weight: bold;">(${memberPaysCleanCash(member) ? 'Clean' : 'Dirty'})</span>
         </div>
+        ${businessHTML}
 
         <div style="margin-top: 10px;">
           ${!member.onOperation && !member.inTraining ? `
@@ -5512,8 +5739,23 @@ function completeGangOperation(operationData) {
     stealRandomCar();
   }
 
-  // Update member stats
-  member.experienceLevel = Math.min(10, member.experienceLevel + 0.1);
+  // Update member stats -- members gain XP and level up
+  const xpGained = operation.rewards.experience || 50;
+  member.xp = (member.xp || 0) + xpGained;
+  const xpToLevel = getMemberXPToLevel(member.experienceLevel || 1);
+  if (member.xp >= xpToLevel && member.experienceLevel < 10) {
+    member.experienceLevel = Math.min(10, (member.experienceLevel || 1) + 1);
+    member.xp = 0;
+    // Level-up stat boost
+    if (member.stats) {
+      member.stats.violence = (member.stats.violence || 0) + 1;
+      member.stats.stealth = (member.stats.stealth || 0) + 1;
+      member.stats.intelligence = (member.stats.intelligence || 0) + 1;
+    }
+    member.power = (member.power || 5) + 2;
+    showBriefNotification(`${member.name} leveled up to Level ${member.experienceLevel}! Stats improved.`, 'success');
+    logAction(`${member.name} is becoming a more capable operator. Their skills sharpen with every mission (Level ${member.experienceLevel}).`);
+  }
   gainExperience(Math.floor(operation.rewards.experience * 0.7)); // Reduce XP for operations
 
   // Remove from active operations and record cooldown
@@ -11602,6 +11844,9 @@ function attemptBreakout() {
   let adjustedBreakoutChance = player.breakoutChance + (player.skillTree.stealth.shadow_step * 3);
   // Iron Will perk: +10% breakout success
   if (hasPlayerPerk('iron_will')) adjustedBreakoutChance += 10;
+  // Synergy: Survivor (endurance + luck) bonus
+  adjustedBreakoutChance += Math.floor(getSynergyBonus('enduranceLuck') * 100);
+  adjustedBreakoutChance = Math.min(95, adjustedBreakoutChance);
   let success = Math.random() * 100 < adjustedBreakoutChance;
 
   if (success) {
@@ -11648,6 +11893,37 @@ function attemptBreakout() {
 // ---
 // UNIFIED RPG SKILL TREE SYSTEM
 // ---
+
+// Synergy definitions: when 2 trees both have deep investment, grant cross-tree bonuses
+const SKILL_SYNERGIES = [
+  { trees: ['combat', 'stealth'], name: 'Silent Killer', desc: '+12% critical hit damage from stealth attacks', minPts: 10, bonus: { type: 'combatStealth', value: 0.12 } },
+  { trees: ['combat', 'endurance'], name: 'Iron Warrior', desc: '+15% damage resistance in fights', minPts: 10, bonus: { type: 'combatEndurance', value: 0.15 } },
+  { trees: ['stealth', 'intelligence'], name: 'Ghost Protocol', desc: '+20% police evasion chance', minPts: 10, bonus: { type: 'stealthIntel', value: 0.20 } },
+  { trees: ['charisma', 'intelligence'], name: 'Mastermind', desc: '+15% business income and negotiation power', minPts: 10, bonus: { type: 'charismaIntel', value: 0.15 } },
+  { trees: ['luck', 'charisma'], name: 'Silver Tongue', desc: '+10% casino winnings and bribe discounts', minPts: 10, bonus: { type: 'luckCharisma', value: 0.10 } },
+  { trees: ['endurance', 'luck'], name: 'Survivor', desc: '+18% jail breakout chance', minPts: 10, bonus: { type: 'enduranceLuck', value: 0.18 } },
+];
+
+// Calculate which synergies are active
+function getActiveSynergies() {
+  return SKILL_SYNERGIES.filter(syn => {
+    return syn.trees.every(t => getTreePointsSpent(t) >= syn.minPts);
+  });
+}
+
+// Get a specific synergy bonus value (returns 0 if not active)
+function getSynergyBonus(bonusType) {
+  const active = getActiveSynergies();
+  const match = active.find(s => s.bonus.type === bonusType);
+  return match ? match.bonus.value : 0;
+}
+window.getSynergyBonus = getSynergyBonus;
+
+// Soft cap: diminishing returns above rank 7 (each point above 7 costs 2 skill points instead of 1)
+function getUpgradeCost(treeName, nodeId) {
+  const rank = player.skillTree[treeName][nodeId] || 0;
+  return rank >= 7 ? 2 : 1;
+}
 
 // Currently selected tree in the skill UI
 let _activeSkillTree = 'stealth';
@@ -11710,6 +11986,7 @@ function renderSkillTreeUI() {
       const meetsPrereqs = nodeDef.prereqs.every(req => (treeData[req.node] || 0) >= req.rank);
       const isLocked = !tierUnlocked || !meetsPrereqs;
       const pctFill = Math.round((rank / maxRank) * 100);
+      const upgCost = rank >= 7 ? 2 : 1;
 
       // Prereq display
       let prereqText = '';
@@ -11737,7 +12014,7 @@ function renderSkillTreeUI() {
           <p class="rpg-node-effect">${nodeDef.effect}</p>
           ${prereqText ? `<div class="rpg-node-prereqs">Requires: ${prereqText}</div>` : ''}
           <button onclick="upgradeNode('${_activeSkillTree}', '${nodeId}')" class="rpg-node-btn ${canUpgrade ? 'rpg-node-btn-active' : ''}" ${!canUpgrade ? 'disabled' : ''}>
-            ${isMaxed ? ' MAXED' : isLocked ? ' Locked' : canUpgrade ? 'Upgrade (1 pt)' : 'No Points'}
+            ${isMaxed ? ' MAXED' : isLocked ? ' Locked' : canUpgrade ? `Upgrade (${upgCost} pt${upgCost>1?'s':''})${upgCost>1?' [Soft Cap]':''}` : 'No Points'}
           </button>
         </div>
       `;
@@ -11770,6 +12047,26 @@ function renderSkillTreeUI() {
         ${treeNodesHTML}
       </div>
 
+      <div class="rpg-synergy-panel" style="margin-top:20px;padding:15px;background:rgba(20,18,10,0.6);border-radius:10px;border:1px solid #3a3520;">
+        <h3 style="color:#d4af37;margin:0 0 10px;">Cross-Tree Synergies</h3>
+        <p style="color:#8a7a5a;font-size:0.85em;margin:0 0 10px;">Invest 10+ points in two connected trees to unlock powerful synergy bonuses.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+          ${SKILL_SYNERGIES.map(syn => {
+            const pts = syn.trees.map(t => getTreePointsSpent(t));
+            const isActive = pts.every(p => p >= syn.minPts);
+            const progress = pts.map((p, i) => {
+              const tDef = SKILL_TREE_DEFS[syn.trees[i]];
+              return `${tDef.icon} ${tDef.name}: ${p}/${syn.minPts}`;
+            }).join(' + ');
+            return `<div style="padding:10px;border-radius:6px;border:1px solid ${isActive ? '#d4af37' : '#3a3520'};background:${isActive ? 'rgba(212,175,55,0.1)' : 'rgba(20,18,10,0.4)'};">
+              <strong style="color:${isActive ? '#d4af37' : '#8a7a5a'};">${syn.name}</strong>
+              <p style="color:${isActive ? '#f5e6c8' : '#666'};font-size:0.85em;margin:4px 0;">${syn.desc}</p>
+              <small style="color:${isActive ? '#8a9a6a' : '#555'};">${isActive ? 'ACTIVE' : progress}</small>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
       <div style="text-align:center;margin-top:20px;">
         <button class="nav-btn-back" onclick="respecSkillTree()" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;margin-right:8px;font-weight:bold;">Respec Skills ($${(10000 * Math.pow(2, player.respecCount || 0)).toLocaleString()})</button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
@@ -11800,17 +12097,23 @@ function upgradeNode(treeName, nodeId) {
     const rank = player.skillTree[treeName][nodeId] || 0;
     if (rank >= nodeDef.maxRank) {
       showBriefNotification(`${nodeDef.name} is already maxed out!`, 'warning');
-    } else if (player.skillPoints < 1) {
-      showBriefNotification('No skill points available! Level up to earn more.', 'danger');
+    } else if (player.skillPoints < getUpgradeCost(treeName, nodeId)) {
+      showBriefNotification(`Need ${getUpgradeCost(treeName, nodeId)} skill points (soft cap above rank 7)! Level up to earn more.`, 'danger');
     } else {
       showBriefNotification(`Prerequisites not met for ${nodeDef.name}.`, 'warning');
     }
     return;
   }
 
+  const upgradeCost = getUpgradeCost(treeName, nodeId);
+  if (player.skillPoints < upgradeCost) {
+    showBriefNotification(`Need ${upgradeCost} skill points (soft cap above rank 7).`, 'danger');
+    return;
+  }
+
   window.upgradingSkill = true;
   player.skillTree[treeName][nodeId]++;
-  player.skillPoints -= 1;
+  player.skillPoints -= upgradeCost;
 
   const nodeDef = SKILL_TREE_DEFS[treeName].nodes[nodeId];
   const newRank = player.skillTree[treeName][nodeId];
@@ -11836,6 +12139,72 @@ function upgradeNode(treeName, nodeId) {
 
   setTimeout(() => { window.upgradingSkill = false; }, 1000);
 }
+
+// Gang rescue attempt -- send your crew to break you out of jail
+async function attemptGangRescue() {
+  if (!player.inJail) return;
+  const availableMembers = player.gang.gangMembers.filter(m => !m.arrested && !m.onOperation && !m.inTraining);
+  if (availableMembers.length === 0) {
+    showBriefNotification("No available crew members to send!", 'danger');
+    return;
+  }
+
+  const rescueChance = Math.min(90, 20 + availableMembers.length * 10);
+  const rescueCost = Math.floor(2000 + player.level * 300);
+
+  if (player.money < rescueCost) {
+    showBriefNotification(`Need $${rescueCost.toLocaleString()} to fund the rescue operation.`, 'warning');
+    return;
+  }
+
+  if (!await ui.confirm(`<strong>Gang Rescue Operation</strong><br><br>Your crew of ${availableMembers.length} will attempt a jailbreak.<br>Success chance: <strong>${rescueChance}%</strong><br>Cost: <strong>$${rescueCost.toLocaleString()}</strong><br><br>If the rescue fails, some crew members may get arrested.<br><br>Proceed?`)) {
+    return;
+  }
+
+  player.money -= rescueCost;
+  const success = Math.random() * 100 < rescueChance;
+
+  if (success) {
+    player.inJail = false;
+    player.jailTime = 0;
+    player.breakoutAttempts = 3;
+    stopJailTimer();
+
+    if (window.EventBus) {
+      try { EventBus.emit('jailStatusChanged', { inJail: false, jailTime: 0 }); } catch(e) {}
+    }
+    if (typeof syncJailStatus === 'function') syncJailStatus(false, 0);
+
+    // One member gets a small injury/heat
+    const rescuer = availableMembers[Math.floor(Math.random() * availableMembers.length)];
+    rescuer.xp = (rescuer.xp || 0) + 30;
+
+    updateUI();
+    showBriefNotification(`Your crew pulled off the rescue! ${rescuer.name} led the charge.`, 'success');
+    logAction(`A black van screeches up to the prison yard wall. ${rescuer.name} throws a rope over the top. Before the guards react, you're gone. Another day, another miracle.`);
+    goBackToMainMenu();
+  } else {
+    // Failed rescue -- 1-2 members get arrested
+    const arrestCount = Math.min(availableMembers.length, Math.floor(Math.random() * 2) + 1);
+    const arrested = [];
+    for (let i = 0; i < arrestCount; i++) {
+      const unlucky = availableMembers[Math.floor(Math.random() * availableMembers.length)];
+      if (!unlucky.arrested) {
+        unlucky.arrested = true;
+        unlucky.arrestTime = Date.now() + (Math.random() * 36 + 12) * 60 * 60 * 1000;
+        arrested.push(unlucky.name);
+      }
+    }
+
+    player.jailTime += 15; // Extra time for the attempt
+    if (typeof syncJailStatus === 'function') syncJailStatus(true, player.jailTime);
+
+    showBriefNotification(`Rescue failed! ${arrested.join(' and ')} got arrested trying to break you out.`, 'danger');
+    logAction(`The rescue goes sideways fast. Spotlights catch your crew mid-approach. ${arrested.join(' and ')} ${arrested.length > 1 ? 'are' : 'is'} hauled away in cuffs. Your sentence gets extended. Bad night for everyone.`);
+    showJailScreen();
+  }
+}
+window.attemptGangRescue = attemptGangRescue;
 
 // Legacy aliases for onclick handlers
 function showSkillTab() { renderSkillTreeUI(); }
@@ -12134,12 +12503,43 @@ function showJailScreen() {
   // Show player portrait behind bars
   displayPlayerJailPortrait();
 
+  // Calculate escape odds for display
+  let breakoutChance = player.breakoutChance + (player.skillTree.stealth.shadow_step * 3);
+  if (hasPlayerPerk('iron_will')) breakoutChance += 10;
+  // Synergy: Survivor (endurance + luck) bonus
+  breakoutChance += Math.floor(getSynergyBonus('enduranceLuck') * 100);
+  breakoutChance = Math.min(95, breakoutChance);
+
   const breakoutButton = document.getElementById("breakout-button");
   if (player.breakoutAttempts > 0) {
-    breakoutButton.innerText = `Try to Break Out (${player.breakoutAttempts} attempts left)`;
+    breakoutButton.innerText = `Try to Break Out (${player.breakoutAttempts} left)`;
     breakoutButton.style.display = "block";
   } else {
     breakoutButton.style.display = "none";
+  }
+
+  // Escape odds display
+  let oddsEl = document.getElementById("escape-odds-display");
+  if (!oddsEl) {
+    oddsEl = document.createElement("div");
+    oddsEl.id = "escape-odds-display";
+    const breakoutBtn = document.getElementById("breakout-button");
+    if (breakoutBtn && breakoutBtn.parentNode) {
+      breakoutBtn.parentNode.insertBefore(oddsEl, breakoutBtn.nextSibling);
+    }
+  }
+  if (player.breakoutAttempts > 0) {
+    const chanceColor = breakoutChance >= 60 ? '#8a9a6a' : breakoutChance >= 40 ? '#c0a062' : '#8b3a3a';
+    oddsEl.innerHTML = `<div style="text-align:center;margin:8px 0;padding:8px;background:rgba(20,18,10,0.6);border-radius:6px;border:1px solid ${chanceColor};">
+      <strong style="color:${chanceColor};">Escape Odds: ${breakoutChance}%</strong>
+      <div style="background:#1a1610;border-radius:4px;height:10px;margin:5px auto;max-width:200px;overflow:hidden;border:1px solid #3a3520;">
+        <div style="height:100%;width:${breakoutChance}%;background:${chanceColor};transition:width 0.3s;"></div>
+      </div>
+      <small style="color:#8a7a5a;">Base ${player.breakoutChance}% + Stealth ${player.skillTree.stealth.shadow_step * 3}%${hasPlayerPerk('iron_will') ? ' + Iron Will 10%' : ''}${getSynergyBonus('enduranceLuck') > 0 ? ' + Survivor ' + Math.floor(getSynergyBonus('enduranceLuck') * 100) + '%' : ''}</small>
+    </div>`;
+    oddsEl.style.display = "block";
+  } else {
+    oddsEl.style.display = "none";
   }
 
   // Bribe guard button - costs scale with level and wanted level
@@ -12153,6 +12553,38 @@ function showJailScreen() {
     if (bribeCostEl) {
       bribeCostEl.textContent = player.money >= bribeCost ? "Grease some palms and walk free" : `Need $${bribeCost.toLocaleString()} (you have $${Math.floor(player.money).toLocaleString()})`;
     }
+  }
+
+  // Gang rescue button
+  let rescueEl = document.getElementById("gang-rescue-section");
+  if (!rescueEl) {
+    rescueEl = document.createElement("div");
+    rescueEl.id = "gang-rescue-section";
+    const bribeBtn = document.getElementById("bribe-button");
+    if (bribeBtn && bribeBtn.parentNode) {
+      bribeBtn.parentNode.insertBefore(rescueEl, bribeBtn.nextSibling);
+    }
+  }
+  const availableMembers = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.filter(m => !m.arrested && !m.onOperation && !m.inTraining) : [];
+  if (availableMembers.length > 0) {
+    const rescueChance = Math.min(90, 20 + availableMembers.length * 10);
+    const rescueCost = Math.floor(2000 + player.level * 300);
+    rescueEl.innerHTML = `<div style="margin:12px 0;padding:12px;background:rgba(20,18,10,0.6);border-radius:8px;border:1px solid #c0a062;">
+      <strong style="color:#c0a062;">Gang Rescue Operation</strong>
+      <p style="color:#8a7a5a;font-size:0.9em;margin:4px 0;">Send your crew to break you out. More members = better odds, but anyone caught gets arrested too.</p>
+      <div style="margin:6px 0;font-size:0.9em;">
+        <span style="color:#f5e6c8;">Available crew: ${availableMembers.length}</span> |
+        <span style="color:${rescueChance >= 60 ? '#8a9a6a' : '#c0a062'};">Success chance: ${rescueChance}%</span> |
+        <span style="color:#c0a062;">Cost: $${rescueCost.toLocaleString()}</span>
+      </div>
+      <button onclick="attemptGangRescue()" style="background:linear-gradient(135deg,#c0a062,#8b6d2a);color:#000;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:bold;margin-top:6px;${player.money < rescueCost ? 'opacity:0.5;' : ''}">
+        Call in the Crew
+      </button>
+    </div>`;
+    rescueEl.style.display = "block";
+  } else {
+    rescueEl.innerHTML = '';
+    rescueEl.style.display = "none";
   }
 
   // Request fresh jail roster from server
@@ -19194,6 +19626,7 @@ function startPassiveIncomeGenerator() {
     processTerritoryOperations(); // Process territory income and events
     applyDailyPassives(); // Apply faction passives (interest, ammo regen, etc.)
     releaseArrestedGangMembers(); // Check if any arrested members should be released
+    processGangPassiveIncome(); // Idle gang members earn from street hustles
 
     // Auto-collect helpers when Bookie is hired
     if (!player.services) player.services = {};
