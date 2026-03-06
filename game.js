@@ -1688,6 +1688,190 @@ function checkTurfMilestoneUnlocks() {
   });
 }
 
+// ==================== RIVAL FAMILY AI ====================
+// Each rival family (except the player's) is an active AI that grows,
+// attacks player-held turf, and tries to reclaim lost territory.
+
+const RIVAL_AI_PERSONALITY = {
+  torrino: { aggression: 0.6, growth: 1.0, preference: 'reclaim', label: 'methodical' },
+  kozlov:  { aggression: 0.9, growth: 1.2, preference: 'strongest', label: 'aggressive' },
+  chen:    { aggression: 0.4, growth: 0.8, preference: 'weakest', label: 'strategic' },
+  morales: { aggression: 0.75, growth: 1.1, preference: 'reclaim', label: 'expansionist' }
+};
+
+// Initialize rival AI state on player.turf (called once; persists via save)
+function initRivalAI() {
+  if (!player.turf) initTurfZones();
+  if (player.turf.rivalAI) return; // already initialized
+
+  player.turf.rivalAI = {};
+  Object.keys(RIVAL_FAMILIES).forEach(famKey => {
+    if (famKey === player.chosenFamily) return; // player's family is allied
+    const fam = RIVAL_FAMILIES[famKey];
+    // Starting power = average of their bosses' power
+    const bossPowers = [fam.don.power, fam.underboss.power, ...fam.capos.map(c => c.power)];
+    const avgPower = Math.floor(bossPowers.reduce((a, b) => a + b, 0) / bossPowers.length);
+    player.turf.rivalAI[famKey] = {
+      power: avgPower,
+      maxPower: Math.floor(avgPower * 2.5),
+      morale: 100,           // 0-100, drops when they lose zones
+      lastAttackTime: 0,
+      zonesLostToPlayer: 0,  // tracks how many zones player took from them
+      eliminated: false       // true if player defeated their don + took all zones
+    };
+  });
+}
+
+// Get the 3 active rival family keys (excludes player's family)
+function getActiveRivals() {
+  if (!player.turf.rivalAI) initRivalAI();
+  return Object.keys(player.turf.rivalAI).filter(k => !player.turf.rivalAI[k].eliminated);
+}
+
+// Rival AI grows stronger each cycle (simulates them running their own operations)
+function rivalAIGrowth() {
+  if (!player.turf.rivalAI) initRivalAI();
+  const rivals = getActiveRivals();
+  rivals.forEach(famKey => {
+    const ai = player.turf.rivalAI[famKey];
+    const personality = RIVAL_AI_PERSONALITY[famKey];
+    // Count how many zones this family still controls
+    const zonesHeld = (player.turf._zones || []).filter(z => z.controlledBy === famKey).length;
+    // Growth: power increases each cycle based on zones held and personality
+    const growthAmount = Math.floor((5 + zonesHeld * 8) * personality.growth);
+    ai.power = Math.min(ai.maxPower, ai.power + growthAmount);
+    // Morale recovery: slowly recovers if they hold zones
+    if (zonesHeld > 0 && ai.morale < 100) {
+      ai.morale = Math.min(100, ai.morale + 3 + zonesHeld * 2);
+    }
+  });
+}
+
+// Rival AI picks which zone to attack based on personality
+function rivalAIPickTarget(famKey) {
+  const personality = RIVAL_AI_PERSONALITY[famKey];
+  const owned = player.turf.owned || [];
+  if (owned.length === 0) return null;
+  const fam = RIVAL_FAMILIES[famKey];
+
+  // Priority 1: Reclaim their original turf zones that player took
+  if (personality.preference === 'reclaim' || Math.random() < 0.5) {
+    const reclaimTargets = owned.filter(zId => (fam.turfZones || []).includes(zId));
+    if (reclaimTargets.length > 0) {
+      return reclaimTargets[Math.floor(Math.random() * reclaimTargets.length)];
+    }
+  }
+
+  // Priority 2: Based on personality
+  if (personality.preference === 'weakest') {
+    // Attack the player's least-defended zone
+    let weakest = null;
+    let lowestDef = Infinity;
+    owned.forEach(zId => {
+      const zone = (player.turf._zones || []).find(z => z.id === zId);
+      if (zone) {
+        const def = calculateTurfDefense(zone, player);
+        if (def < lowestDef) { lowestDef = def; weakest = zId; }
+      }
+    });
+    return weakest;
+  } else if (personality.preference === 'strongest') {
+    // Kozlov goes for the biggest prize
+    let best = null;
+    let highestIncome = 0;
+    owned.forEach(zId => {
+      const zone = (player.turf._zones || []).find(z => z.id === zId);
+      if (zone && zone.baseIncome > highestIncome) {
+        highestIncome = zone.baseIncome;
+        best = zId;
+      }
+    });
+    return best;
+  }
+
+  // Fallback: random owned zone
+  return owned[Math.floor(Math.random() * owned.length)];
+}
+
+// Main rival AI attack cycle -- replaces the old generic "Rival Gang" attacks
+function processRivalFamilyAttacks() {
+  if (!player.chosenFamily) return;
+  if (!player.turf.rivalAI) initRivalAI();
+
+  const owned = player.turf.owned || [];
+  if (owned.length === 0) return;
+
+  const escalationTier = Math.min(owned.length, 8);
+  const hasChenIntel = player.chosenFamily === 'chen';
+  const chenIntelChance = hasChenIntel ? (getChosenFamilyBuff()?.intelBonus || 0.20) : 0;
+
+  const rivals = getActiveRivals();
+  rivals.forEach(famKey => {
+    const ai = player.turf.rivalAI[famKey];
+    const personality = RIVAL_AI_PERSONALITY[famKey];
+    const fam = RIVAL_FAMILIES[famKey];
+
+    // Attack chance: based on aggression + escalation + morale
+    const moraleFactor = ai.morale / 100;
+    const attackChance = (0.05 + escalationTier * 0.02) * personality.aggression * moraleFactor;
+
+    if (Math.random() >= attackChance) return; // no attack this cycle
+
+    // Pick target zone
+    const targetZoneId = rivalAIPickTarget(famKey);
+    if (!targetZoneId) return;
+
+    const zone = (player.turf._zones || []).find(z => z.id === targetZoneId);
+    if (!zone) return;
+
+    // Chen Triad intel: chance to intercept
+    if (hasChenIntel && Math.random() < chenIntelChance) {
+      logAction(`Your Triad informants intercepted a <strong style="color:${fam.color}">${fam.name}</strong> attack on <strong>${zone.name}</strong> before it began!`);
+      showBriefNotification(`${fam.name} attack on ${zone.name} foiled! Intel intercepted.`, 'success');
+      return;
+    }
+
+    // Calculate attack power: AI base power + variance + escalation bonus
+    const variance = Math.floor(Math.random() * 40) - 20;
+    const attackStrength = Math.floor(ai.power * moraleFactor) + escalationTier * 10 + variance;
+
+    const result = processTurfAttack(zone, famKey, attackStrength, player);
+    ai.lastAttackTime = Date.now();
+
+    if (result.lostTurf) {
+      // The family reclaims the zone
+      zone.controlledBy = famKey;
+      ai.morale = Math.min(100, ai.morale + 15);
+      logAction(`<strong style="color:${fam.color}">${fam.name}</strong> seized <strong>${zone.name}</strong>! Their ${personality.label} assault overwhelmed your defenses.`);
+      showBriefNotification(`${fam.name} took ${zone.name}!`, 'danger');
+    } else {
+      // Failed attack weakens them
+      ai.power = Math.max(30, ai.power - 10);
+      ai.morale = Math.max(10, ai.morale - 5);
+      logAction(`Defended <strong>${zone.name}</strong> from <strong style="color:${fam.color}">${fam.name}</strong> attack! (power: ${attackStrength})`);
+    }
+  });
+}
+
+// Called when player takes a zone from a rival family -- weaken that family's AI
+function onPlayerTookZone(zoneId, previousOwner) {
+  if (!player.turf.rivalAI) return;
+  const ai = player.turf.rivalAI[previousOwner];
+  if (!ai) return;
+  ai.morale = Math.max(0, ai.morale - 20);
+  ai.zonesLostToPlayer++;
+  // Check if family is eliminated (lost all zones + don defeated)
+  const fam = RIVAL_FAMILIES[previousOwner];
+  if (!fam) return;
+  const familyZonesRemaining = (player.turf._zones || []).filter(z => z.controlledBy === previousOwner).length;
+  const donDefeated = (player.turf.donsDefeated || []).includes(fam.don.id);
+  if (familyZonesRemaining === 0 && donDefeated) {
+    ai.eliminated = true;
+    logAction(`<strong style="color:${fam.color}">${fam.name} has been eliminated!</strong> Their empire crumbles.`);
+    showBriefNotification(`${fam.name} ELIMINATED!`, 'success');
+  }
+}
+
 // Assign gang members to defend a turf zone
 function assignMembersToTurf(zoneId, memberIds, player) {
     const zone = getTurfZone(zoneId);
@@ -3583,8 +3767,8 @@ const territoryEvents = [
   },
   {
     id: "rival_encroachment",
-    name: "Rival Gang Encroachment",
-    description: "Another gang is trying to move into your territory",
+    name: "Rival Family Encroachment",
+    description: "A rival family is pushing into your territory",
     effects: {
       incomeReduction: 0.4,
       conflictRisk: 0.6,
@@ -5617,7 +5801,36 @@ function showTurfMap() {
         </div>
       </div>
       <p style="color:#aaa; text-align:center; margin:10px 0 0 0; font-size:0.8em;">You can attack any zone! Higher Attack Power vs Defense = better odds. Match their Defense for ~50% chance.</p>
-    </div>
+    </div>`;
+
+  // Rival Family Intelligence Panel
+  if (player.turf.rivalAI) {
+    html += `<div style="background:rgba(139,58,58,0.1); padding:18px; border-radius:12px; margin-bottom:20px; border:1px solid #6a5a3a;">
+      <h3 style="color:#c0a062; margin:0 0 12px 0; text-align:center;">Rival Family Intelligence</h3>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">`;
+    Object.keys(player.turf.rivalAI).forEach(rKey => {
+      const rAI = player.turf.rivalAI[rKey];
+      const rFam = RIVAL_FAMILIES[rKey];
+      if (!rFam) return;
+      const rPersonality = RIVAL_AI_PERSONALITY[rKey];
+      const zonesHeld = (player.turf._zones || []).filter(z => z.controlledBy === rKey).length;
+      const moraleColor = rAI.morale > 60 ? '#8a9a6a' : rAI.morale > 30 ? '#e67e22' : '#e74c3c';
+      const statusText = rAI.eliminated ? '<span style="color:#e74c3c;">ELIMINATED</span>' : `<span style="color:${moraleColor};">${rAI.morale}%</span>`;
+      html += `
+        <div style="background:rgba(20,18,10,0.6); padding:12px; border-radius:8px; border-left:3px solid ${rFam.color};">
+          <div style="font-weight:bold; color:${rFam.color}; margin-bottom:6px;">${rFam.name}</div>
+          <div style="font-size:0.82em; color:#d4c4a0;">
+            Strength: <span style="color:#f5e6c8;">${rAI.power}</span><br>
+            Morale: ${statusText}<br>
+            Zones: <span style="color:#f5e6c8;">${zonesHeld}</span><br>
+            Style: <span style="color:#aaa;">${rPersonality.label}</span>
+          </div>
+        </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  html += `
     <div style="background:rgba(52,152,219,0.2);padding:15px;border-radius:10px;margin-bottom:20px;">
       <h3 style="color:#c0a062; margin:0 0 10px 0;">Legend</h3>
       <div style="display:flex; flex-wrap:wrap; gap:15px; font-size:0.9em; color:#d4c4a0;">
@@ -5880,6 +6093,7 @@ async function attackTurfZone(zoneId) {
     const { casualties, injured } = processTurfAttackCasualties(true, player.gang?.gangMembers || [], zone.name);
 
     // Take the zone
+    const previousOwner = zone.controlledBy;
     zone.controlledBy = 'player';
     zone.defendingMembers = [];
     if (!player.turf.owned) player.turf.owned = [];
@@ -5892,6 +6106,11 @@ async function attackTurfZone(zoneId) {
     checkFamilyRankUp();
     checkTurfMilestoneUnlocks();
     checkTurfDominance(zone.id);
+
+    // Weaken rival family AI when player takes their zone
+    if (previousOwner && RIVAL_FAMILIES[previousOwner] && previousOwner !== player.chosenFamily) {
+      onPlayerTookZone(zone.id, previousOwner);
+    }
 
     // Rival respect: the faction that owned this zone loses respect for you
     const zoneRivals = (player.rivalKingpins || RIVAL_KINGPINS).filter(r => r.territories && r.territories.includes(zone.id));
@@ -6126,37 +6345,10 @@ function processTurfOperations() {
     player.turf.heat[zId] = Math.max(0, (player.turf.heat[zId] || 0) - heatDecayRate);
   });
 
-  // Rival retaliation - ESCALATES with turf control
-  const escalationTier = Math.min(owned.length, 8);
-  const baseAttackChance = 0.05 + escalationTier * 0.025; // 7.5% at 1 zone -> 25% at 8
-  const baseAttackPower = 40 + escalationTier * 15; // 55 at 1 -> 160 at 8
-  const attackVariance = 30 + escalationTier * 10; // bigger swings at more zones
-
-  // Chen Triad intel bonus: 20% chance to foil rival attacks before they happen
-  const hasChenIntel = player.chosenFamily === 'chen';
-  const chenIntelChance = hasChenIntel ? (getChosenFamilyBuff()?.intelBonus || 0.20) : 0;
-
-  owned.forEach(zId => {
-    if (Math.random() < baseAttackChance) {
-      const zone = (player.turf._zones || []).find(z => z.id === zId);
-      if (!zone) return;
-
-      // Chen Triad intel: chance to intercept and foil the attack entirely
-      if (hasChenIntel && Math.random() < chenIntelChance) {
-        logAction(`Your Triad informants intercepted a rival attack on <strong>${zone.name}</strong> before it began!`);
-        showBriefNotification(`Turf attack on ${zone.name} foiled! Chen Triad intel network intercepted the operation.`, 'success');
-        return; // attack foiled -- skip combat
-      }
-
-      const attackStrength = baseAttackPower + Math.floor(Math.random() * attackVariance);
-      const result = processTurfAttack(zone, 'Rival Gang', attackStrength, player);
-      if (result.lostTurf) {
-        logAction(`Rival gang seized <strong>${zone.name}</strong>! Reinforce your turf.`);
-      } else {
-        logAction(`Defended <strong>${zone.name}</strong> from a rival attack (power: ${attackStrength}).`);
-      }
-    }
-  });
+  // Rival retaliation - FAMILY-BASED AI (3 rival families attack individually)
+  initRivalAI();
+  rivalAIGrowth();
+  processRivalFamilyAttacks();
 
   checkFamilyRankUp();
 }
@@ -7380,13 +7572,18 @@ function generateTerritoryEvent() {
     logAction(`New business opportunities give you +5 territory reputation.`);
   }
   if (evt.effects.conflictRisk && Math.random() < evt.effects.conflictRisk) {
-    // Trigger a bonus rival attack on this zone
+    // Trigger a bonus rival family attack on this zone
+    const rivals = getActiveRivals();
+    const attackingFamily = rivals.length > 0 ? rivals[Math.floor(Math.random() * rivals.length)] : null;
     const attackStrength = 50 + Math.floor(Math.random() * 60);
-    const result = processTurfAttack(zone, 'Encroaching Gang', attackStrength, player);
+    const attackerName = attackingFamily || 'Encroaching Gang';
+    const attackerLabel = attackingFamily ? RIVAL_FAMILIES[attackingFamily]?.name || attackerName : attackerName;
+    const result = processTurfAttack(zone, attackerName, attackStrength, player);
     if (result?.lostTurf) {
-      logAction(`Encroaching gang seized <strong>${zone?.name || 'a zone'}</strong> during territorial unrest!`);
+      if (attackingFamily) zone.controlledBy = attackingFamily;
+      logAction(`<strong>${attackerLabel}</strong> seized <strong>${zone?.name || 'a zone'}</strong> during territorial unrest!`);
     } else {
-      logAction(`You repelled the encroaching gang at <strong>${zone?.name || 'a zone'}</strong>.`);
+      logAction(`You repelled <strong>${attackerLabel}</strong> at <strong>${zone?.name || 'a zone'}</strong>.`);
     }
   }
 
@@ -18683,15 +18880,17 @@ function hireSpecialRecruit() {
 
 function territoryDispute() {
   if ((player.turf?.owned || []).length > 0 && Math.random() < 0.4) {
+    const rivals = getActiveRivals();
+    const attackingFamily = rivals.length > 0 ? rivals[Math.floor(Math.random() * rivals.length)] : null;
+    const attackerLabel = attackingFamily ? (RIVAL_FAMILIES[attackingFamily]?.name || 'A rival family') : 'A rival gang';
     if (player.power + (player.gang.members * 10) > Math.random() * 500) {
       player.reputation += 3;
       showBriefNotification('Territory defended! +3 rep', 3000);
-      logAction('A rival gang tried to move in on your turf, but your crew held the line. +3 reputation.');
+      logAction(`${attackerLabel} tried to move in on your turf, but your crew held the line. +3 reputation.`);
     } else {
-      // Reduce turf power instead of decrementing territory counter
       if (player.turf) player.turf.power = Math.max(0, (player.turf.power || 100) - 15);
-      showBriefNotification('Lost territory to rivals!', 3000);
-      logAction('A rival gang overwhelmed your defenses! You lost turf power.');
+      showBriefNotification(`Lost territory to ${attackerLabel}!`, 3000);
+      logAction(`${attackerLabel} overwhelmed your defenses! You lost turf power.`);
     }
     updateUI();
   }
