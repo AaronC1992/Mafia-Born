@@ -1717,7 +1717,11 @@ function initRivalAI() {
       morale: 100,           // 0-100, drops when they lose zones
       lastAttackTime: 0,
       zonesLostToPlayer: 0,  // tracks how many zones player took from them
-      eliminated: false       // true if player defeated their don + took all zones
+      eliminated: false,      // true after player completes elimination mission
+      atWar: false,           // true when player takes turf from this family
+      warDeclaredTime: 0,     // timestamp when war was declared
+      lastWarAttackTime: 0,   // timestamp of last hourly war attack check
+      eliminationAvailable: false // true when all zones taken, awaiting elimination mission
     };
   });
 }
@@ -1734,6 +1738,8 @@ function rivalAIGrowth() {
   const rivals = getActiveRivals();
   rivals.forEach(famKey => {
     const ai = player.turf.rivalAI[famKey];
+    // Migrate old saves: add war fields if missing
+    if (ai.atWar === undefined) { ai.atWar = false; ai.warDeclaredTime = 0; ai.lastWarAttackTime = 0; ai.eliminationAvailable = false; }
     const personality = RIVAL_AI_PERSONALITY[famKey];
     // Count how many zones this family still controls
     const zonesHeld = (player.turf._zones || []).filter(z => z.controlledBy === famKey).length;
@@ -1804,6 +1810,7 @@ function processRivalFamilyAttacks() {
   const escalationTier = Math.min(owned.length, 8);
   const hasChenIntel = player.chosenFamily === 'chen';
   const chenIntelChance = hasChenIntel ? (getChosenFamilyBuff()?.intelBonus || 0.20) : 0;
+  const now = Date.now();
 
   const rivals = getActiveRivals();
   rivals.forEach(famKey => {
@@ -1811,11 +1818,24 @@ function processRivalFamilyAttacks() {
     const personality = RIVAL_AI_PERSONALITY[famKey];
     const fam = RIVAL_FAMILIES[famKey];
 
-    // Attack chance: based on aggression + escalation + morale
+    // WAR STATE: families at war get a 45% attack chance every hour
+    let warAttackTriggered = false;
+    if (ai.atWar && !ai.eliminationAvailable) {
+      const hourMs = 3600000;
+      if (now - (ai.lastWarAttackTime || 0) >= hourMs) {
+        ai.lastWarAttackTime = now;
+        if (Math.random() < 0.45) {
+          warAttackTriggered = true;
+        }
+      }
+    }
+
+    // Normal attack chance: based on aggression + escalation + morale
     const moraleFactor = ai.morale / 100;
     const attackChance = (0.05 + escalationTier * 0.02) * personality.aggression * moraleFactor;
+    const normalAttack = Math.random() < attackChance;
 
-    if (Math.random() >= attackChance) return; // no attack this cycle
+    if (!warAttackTriggered && !normalAttack) return; // no attack this cycle
 
     // Pick target zone
     const targetZoneId = rivalAIPickTarget(famKey);
@@ -1826,51 +1846,268 @@ function processRivalFamilyAttacks() {
 
     // Chen Triad intel: chance to intercept
     if (hasChenIntel && Math.random() < chenIntelChance) {
-      logAction(`Your Triad informants intercepted a <strong style="color:${fam.color}">${fam.name}</strong> attack on <strong>${zone.name}</strong> before it began!`);
+      logAction(`Your Triad informants intercepted a <strong style="color:${fam.color}">${fam.name}</strong> ${ai.atWar ? 'war' : ''} attack on <strong>${zone.name}</strong> before it began!`);
       showBriefNotification(`${fam.name} attack on ${zone.name} foiled! Intel intercepted.`, 'success');
       return;
     }
 
-    // Calculate attack power: AI base power + variance + escalation bonus
+    // War attacks are stronger
+    const warBonus = warAttackTriggered ? 1.3 : 1.0;
     const variance = Math.floor(Math.random() * 40) - 20;
-    const attackStrength = Math.floor(ai.power * moraleFactor) + escalationTier * 10 + variance;
+    const attackStrength = Math.floor(ai.power * moraleFactor * warBonus) + escalationTier * 10 + variance;
 
     const result = processTurfAttack(zone, famKey, attackStrength, player);
-    ai.lastAttackTime = Date.now();
+    ai.lastAttackTime = now;
+
+    const warTag = ai.atWar ? ' <span style="color:#e74c3c;">[WAR]</span>' : '';
 
     if (result.lostTurf) {
       // The family reclaims the zone
       zone.controlledBy = famKey;
       ai.morale = Math.min(100, ai.morale + 15);
-      logAction(`<strong style="color:${fam.color}">${fam.name}</strong> seized <strong>${zone.name}</strong>! Their ${personality.label} assault overwhelmed your defenses.`);
-      showBriefNotification(`${fam.name} took ${zone.name}!`, 'danger');
+      // If they were cornered with eliminationAvailable, retaking a zone cancels it
+      if (ai.eliminationAvailable) {
+        ai.eliminationAvailable = false;
+        logAction(`<strong style="color:${fam.color}">${fam.name}</strong> recaptured territory -- elimination mission cancelled!`);
+      }
+      logAction(`<strong style="color:${fam.color}">${fam.name}</strong> seized <strong>${zone.name}</strong>!${warTag} Their ${personality.label} assault overwhelmed your defenses.`);
+      showBriefNotification(`${fam.name} took ${zone.name}!${ai.atWar ? ' [WAR]' : ''}`, 'danger');
     } else {
       // Failed attack weakens them
       ai.power = Math.max(30, ai.power - 10);
       ai.morale = Math.max(10, ai.morale - 5);
-      logAction(`Defended <strong>${zone.name}</strong> from <strong style="color:${fam.color}">${fam.name}</strong> attack! (power: ${attackStrength})`);
+      logAction(`Defended <strong>${zone.name}</strong> from <strong style="color:${fam.color}">${fam.name}</strong> attack!${warTag} (power: ${attackStrength})`);
     }
   });
 }
 
-// Called when player takes a zone from a rival family -- weaken that family's AI
+// Called when player takes a zone from a rival family -- triggers war and checks for elimination mission
 function onPlayerTookZone(zoneId, previousOwner) {
   if (!player.turf.rivalAI) return;
   const ai = player.turf.rivalAI[previousOwner];
-  if (!ai) return;
+  if (!ai || ai.eliminated) return;
   ai.morale = Math.max(0, ai.morale - 20);
   ai.zonesLostToPlayer++;
-  // Check if family is eliminated (lost all zones + don defeated)
+
   const fam = RIVAL_FAMILIES[previousOwner];
   if (!fam) return;
+
+  // DECLARE WAR: taking turf from a family is an act of war
+  if (!ai.atWar) {
+    ai.atWar = true;
+    ai.warDeclaredTime = Date.now();
+    ai.lastWarAttackTime = Date.now(); // grace period -- first hourly check starts in 1 hour
+    logAction(`<strong style="color:${fam.color}">${fam.name} has declared WAR!</strong> Expect relentless attacks on your territory.`);
+    showBriefNotification(`${fam.name} declares WAR!`, 'danger');
+  }
+
+  // Check if all zones taken from this family -- trigger elimination mission
   const familyZonesRemaining = (player.turf._zones || []).filter(z => z.controlledBy === previousOwner).length;
-  const donDefeated = (player.turf.donsDefeated || []).includes(fam.don.id);
-  if (familyZonesRemaining === 0 && donDefeated) {
-    ai.eliminated = true;
-    logAction(`<strong style="color:${fam.color}">${fam.name} has been eliminated!</strong> Their empire crumbles.`);
-    showBriefNotification(`${fam.name} ELIMINATED!`, 'success');
+  if (familyZonesRemaining === 0 && !ai.eliminationAvailable) {
+    ai.eliminationAvailable = true;
+    logAction(`<strong style="color:${fam.color}">${fam.name}</strong> has lost all territory! A final elimination mission is now available.`);
+    showBriefNotification(`${fam.name} cornered -- Elimination mission available!`, 'success');
+    // Show the elimination mission popup
+    showEliminationMission(previousOwner);
   }
 }
+
+// Show the elimination mission popup for a cornered rival family
+function showEliminationMission(famKey) {
+  const fam = RIVAL_FAMILIES[famKey];
+  const ai = player.turf.rivalAI[famKey];
+  if (!fam || !ai) return;
+
+  const donName = fam.don.name;
+  const donPower = fam.don.power;
+  const underbossName = fam.underboss.name;
+  const underbossPower = fam.underboss.power;
+  const capoNames = fam.capos.map(c => c.name).join(', ');
+  const totalEnemyPower = donPower + underbossPower + fam.capos.reduce((s, c) => s + c.power, 0);
+
+  const missionHTML = `
+    <div style="text-align:center; margin-bottom:15px;">
+      <div style="font-size:1.4em; color:${fam.color}; font-weight:bold; margin-bottom:8px;">${fam.name}</div>
+      <div style="color:#e74c3c; font-size:1.1em; font-weight:bold;">ELIMINATION MISSION</div>
+    </div>
+    <div style="color:#d4c4a0; line-height:1.6; margin-bottom:15px;">
+      ${fam.name} has been stripped of all territory. Their leadership is cornered and desperate.
+      To end this war permanently, you must strike at their command structure -- eliminate their
+      capos, their underboss, and finally their Don, <strong style="color:${fam.color}">${donName}</strong>.
+    </div>
+    <div style="background:rgba(139,58,58,0.2); padding:12px; border-radius:8px; margin-bottom:15px; border-left:3px solid ${fam.color};">
+      <div style="color:#c0a062; font-weight:bold; margin-bottom:8px;">Mission Targets:</div>
+      <div style="color:#d4c4a0; font-size:0.9em;">
+        Phase 1 -- Capos: <strong>${capoNames}</strong><br>
+        Phase 2 -- Underboss: <strong>${underbossName}</strong> (Power: ${underbossPower})<br>
+        Phase 3 -- Don: <strong style="color:${fam.color}">${donName}</strong> (Power: ${donPower})<br>
+        <div style="margin-top:6px; color:#e67e22;">Combined Enemy Strength: ${totalEnemyPower}</div>
+      </div>
+    </div>
+    <div style="color:#8a7a5a; font-size:0.85em;">
+      Warning: If ${fam.name} retakes any territory before you complete this mission, the operation will be called off.
+    </div>`;
+
+  ui.show('Elimination Mission', missionHTML, [
+    {
+      text: 'Launch Assault',
+      class: 'modal-btn-primary',
+      callback: () => { executeEliminationMission(famKey); return true; }
+    },
+    {
+      text: 'Not Yet',
+      class: 'modal-btn-secondary',
+      callback: () => true
+    }
+  ]);
+}
+window.showEliminationMission = showEliminationMission;
+
+// Execute the multi-phase elimination mission against a cornered rival family
+function executeEliminationMission(famKey) {
+  const fam = RIVAL_FAMILIES[famKey];
+  const ai = player.turf.rivalAI[famKey];
+  if (!fam || !ai) return;
+
+  // Check elimination is still available (family might have retaken turf)
+  if (!ai.eliminationAvailable) {
+    showBriefNotification(`${fam.name} retook territory -- mission cancelled!`, 'danger');
+    return;
+  }
+
+  const attackPower = typeof calculateTurfAttackPower === 'function' ? calculateTurfAttackPower() : (player.turf.power || 100);
+  let totalDamage = 0;
+  let battleLog = [];
+  let missionSuccess = true;
+
+  // Phase 1: Fight the capos
+  for (const capo of fam.capos) {
+    const capoStrength = capo.power + Math.floor(Math.random() * 30) - 15;
+    const playerRoll = attackPower + Math.floor(Math.random() * 40) - 20;
+    if (playerRoll > capoStrength) {
+      battleLog.push(`<span style="color:#8a9a6a;">Eliminated Capo ${capo.name} (Power: ${capo.power})</span>`);
+    } else {
+      const dmg = Math.floor(Math.random() * 15) + 10;
+      totalDamage += dmg;
+      battleLog.push(`<span style="color:#e74c3c;">Capo ${capo.name} fought back fiercely! -${dmg} HP</span>`);
+      // Capo fight failure isn't mission-ending, but costs health
+    }
+  }
+
+  // Phase 2: Fight the underboss
+  const ubStrength = fam.underboss.power + Math.floor(Math.random() * 40) - 20;
+  const ubPlayerRoll = attackPower + Math.floor(Math.random() * 50) - 25;
+  if (ubPlayerRoll > ubStrength) {
+    battleLog.push(`<span style="color:#8a9a6a;">Eliminated Underboss ${fam.underboss.name} (Power: ${fam.underboss.power})</span>`);
+  } else {
+    const dmg = Math.floor(Math.random() * 20) + 15;
+    totalDamage += dmg;
+    battleLog.push(`<span style="color:#e67e22;">Underboss ${fam.underboss.name} dealt heavy damage! -${dmg} HP</span>`);
+    // Check if player can survive to face the don
+    if (player.health - totalDamage <= 0) {
+      missionSuccess = false;
+    }
+  }
+
+  // Phase 3: Fight the Don (only if still standing)
+  if (missionSuccess) {
+    const donStrength = fam.don.power + Math.floor(Math.random() * 50) - 25;
+    // Player is weakened by accumulated damage
+    const wornDown = Math.max(attackPower * 0.6, attackPower - totalDamage);
+    const donPlayerRoll = wornDown + Math.floor(Math.random() * 60) - 30;
+    if (donPlayerRoll > donStrength) {
+      battleLog.push(`<span style="color:#c0a062; font-weight:bold;">DON ${fam.don.name} ELIMINATED!</span>`);
+    } else {
+      const dmg = Math.floor(Math.random() * 25) + 20;
+      totalDamage += dmg;
+      battleLog.push(`<span style="color:#e74c3c; font-weight:bold;">Don ${fam.don.name} overpowered you! -${dmg} HP</span>`);
+      missionSuccess = false;
+    }
+  }
+
+  // Apply damage
+  player.health = Math.max(1, player.health - totalDamage);
+
+  // Process gang casualties from the mission
+  const { casualties, injured } = processTurfAttackCasualties(missionSuccess, player.gang?.gangMembers || [], `${fam.name} Elimination`);
+
+  if (missionSuccess) {
+    // Eliminate the family
+    ai.eliminated = true;
+    ai.atWar = false;
+    ai.eliminationAvailable = false;
+    ai.morale = 0;
+
+    // Mark don as defeated if not already
+    if (!player.turf.donsDefeated) player.turf.donsDefeated = [];
+    if (!player.turf.donsDefeated.includes(fam.don.id)) {
+      player.turf.donsDefeated.push(fam.don.id);
+    }
+    // Mark underboss and capos as defeated bosses too
+    if (!player.turf.bossesDefeated) player.turf.bossesDefeated = [];
+    [fam.underboss, ...fam.capos].forEach(b => {
+      if (!player.turf.bossesDefeated.includes(b.id)) player.turf.bossesDefeated.push(b.id);
+    });
+
+    // Rewards
+    const cashReward = 50000 + Math.floor(Math.random() * 50000);
+    const repReward = 50;
+    player.money += cashReward;
+    player.turf.reputation = (player.turf.reputation || 0) + repReward;
+    player.territoryReputation = (player.territoryReputation || 0) + repReward;
+
+    let resultHTML = `
+      <div style="text-align:center; margin-bottom:12px;">
+        <div style="font-size:1.3em; color:#8a9a6a; font-weight:bold;">MISSION COMPLETE</div>
+        <div style="color:${fam.color}; font-size:1.1em;">${fam.name} Eliminated</div>
+      </div>
+      <div style="border-left:3px solid ${fam.color}; padding:10px; margin-bottom:12px; background:rgba(0,0,0,0.3); border-radius:4px;">
+        ${battleLog.join('<br>')}
+      </div>
+      <div style="color:#d4c4a0;">
+        Rewards: <span style="color:#8a9a6a;">+$${cashReward.toLocaleString()}</span> | <span style="color:#c0a062;">+${repReward} Reputation</span><br>
+        Damage Taken: <span style="color:#e67e22;">${totalDamage} HP</span>
+        ${casualties.length ? `<br>Lost: <span style="color:#e74c3c;">${casualties.join(', ')}</span>` : ''}
+        ${injured.length ? `<br>Injured: <span style="color:#e67e22;">${injured.join(', ')}</span>` : ''}
+      </div>
+      <div style="margin-top:10px; color:#8a7a5a; font-size:0.9em;">
+        ${fam.name} is no more. Their territory, soldiers, and operations have been absorbed. The streets remember.
+      </div>`;
+
+    ui.show(`${fam.name} Destroyed`, resultHTML);
+    logAction(`<strong style="color:${fam.color}">${fam.name} has been ELIMINATED!</strong> Their empire is yours.`);
+    showBriefNotification(`${fam.name} ELIMINATED!`, 'success');
+  } else {
+    // Mission failed
+    ai.morale = Math.min(100, ai.morale + 25); // surviving boosts their morale
+    ai.power = Math.min(ai.maxPower, ai.power + 30); // they regroup
+
+    let failHTML = `
+      <div style="text-align:center; margin-bottom:12px;">
+        <div style="font-size:1.3em; color:#e74c3c; font-weight:bold;">MISSION FAILED</div>
+        <div style="color:${fam.color}; font-size:1.1em;">${fam.name} Survives</div>
+      </div>
+      <div style="border-left:3px solid #e74c3c; padding:10px; margin-bottom:12px; background:rgba(0,0,0,0.3); border-radius:4px;">
+        ${battleLog.join('<br>')}
+      </div>
+      <div style="color:#d4c4a0;">
+        Damage Taken: <span style="color:#e74c3c;">${totalDamage} HP</span>
+        ${casualties.length ? `<br>Lost: <span style="color:#e74c3c;">${casualties.join(', ')}</span>` : ''}
+        ${injured.length ? `<br>Injured: <span style="color:#e67e22;">${injured.join(', ')}</span>` : ''}
+      </div>
+      <div style="margin-top:10px; color:#8a7a5a; font-size:0.9em;">
+        ${fam.name}'s leadership survived the assault. They remain a threat. Regroup and try again while they still hold no territory.
+      </div>`;
+
+    ui.show('Assault Failed', failHTML);
+    logAction(`<strong style="color:${fam.color}">Failed to eliminate ${fam.name}!</strong> Their leadership escaped. They will regroup.`);
+    showBriefNotification(`${fam.name} elimination failed!`, 'danger');
+  }
+
+  updateUI();
+  if (typeof showTurfMap === 'function') showTurfMap();
+}
+window.executeEliminationMission = executeEliminationMission;
 
 // Assign gang members to defend a turf zone
 function assignMembersToTurf(zoneId, memberIds, player) {
@@ -5815,7 +6052,14 @@ function showTurfMap() {
       const rPersonality = RIVAL_AI_PERSONALITY[rKey];
       const zonesHeld = (player.turf._zones || []).filter(z => z.controlledBy === rKey).length;
       const moraleColor = rAI.morale > 60 ? '#8a9a6a' : rAI.morale > 30 ? '#e67e22' : '#e74c3c';
-      const statusText = rAI.eliminated ? '<span style="color:#e74c3c;">ELIMINATED</span>' : `<span style="color:${moraleColor};">${rAI.morale}%</span>`;
+      let statusText;
+      if (rAI.eliminated) {
+        statusText = '<span style="color:#e74c3c;">ELIMINATED</span>';
+      } else if (rAI.eliminationAvailable) {
+        statusText = '<span style="color:#ff4444;">CORNERED -- <a href="#" onclick="showEliminationMission(\'' + rKey + '\'); return false;" style="color:#ff4444; text-decoration:underline;">Eliminate</a></span>';
+      } else {
+        statusText = `<span style="color:${moraleColor};">${rAI.morale}%</span>`;
+      }
       html += `
         <div style="background:rgba(20,18,10,0.6); padding:12px; border-radius:8px; border-left:3px solid ${rFam.color};">
           <div style="font-weight:bold; color:${rFam.color}; margin-bottom:6px;">${rFam.name}</div>
@@ -5823,7 +6067,7 @@ function showTurfMap() {
             Strength: <span style="color:#f5e6c8;">${rAI.power}</span><br>
             Morale: ${statusText}<br>
             Zones: <span style="color:#f5e6c8;">${zonesHeld}</span><br>
-            Style: <span style="color:#aaa;">${rPersonality.label}</span>
+            Style: <span style="color:#aaa;">${rPersonality.label}</span>${rAI.atWar && !rAI.eliminated ? '<br><span style="color:#e74c3c; font-weight:bold;">AT WAR</span>' : ''}
           </div>
         </div>`;
     });
