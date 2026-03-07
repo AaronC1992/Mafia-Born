@@ -17345,11 +17345,7 @@ function showIntroNarrative() {
         </p>
 
         <p style="margin-bottom: 15px; color: #c0a040;">
-          <strong>Your empire awaits:</strong> Start small with street jobs, recruit loyal gang members, buy properties to expand your influence, and rise to become the most feared name in the underworld. Compete with other criminal masterminds and build an empire that will never be forgotten.
-        </p>
-
-        <p style="margin-bottom: 20px; color: #c0a062;">
-          <strong>The game has evolved:</strong> Multiple save slots protect your progress, weekly challenges test your skills, and an objective tracker guides your path to power. Use quick actions for instant navigation, track your missions in real-time, and compete in the online criminal underworld. Your empire awaits.
+          <strong>Getting started:</strong> Head to <strong>Operations</strong> to pull off your first scores, take on <strong>Jobs</strong> to earn cash and build your reputation, and hit the <strong>Training Gym</strong> to sharpen your skills. From there, recruit loyal gang members, buy properties, and rise to become the most feared name in the underworld.
         </p>
 
         <p style="text-align: center; font-style: italic; color: #8a7a5a; margin-bottom: 15px;">
