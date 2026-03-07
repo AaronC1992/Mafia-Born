@@ -9224,7 +9224,7 @@ function hideAllScreens(skipScroll) {
     "money-laundering-screen", "territory-control-screen", "territories-screen",
     "events-screen", "map-screen", "calendar-screen", "statistics-screen",
     "options-screen", "player-stats-screen", "safehouse", "multiplayer-screen",
-    "friends-screen", "bountyboard-screen"
+    "friends-screen", "bountyboard-screen", "skills-screen"
   ];
   screenIds.forEach(id => {
     const el = document.getElementById(id);
@@ -11825,9 +11825,11 @@ function showSkills() {
     showBriefNotification("You can't access skills while you're in jail!", 'danger');
     return;
   }
-  // Redirect to the Skills tab inside the Stats screen
-  showPlayerStats();
-  setTimeout(() => showPlayerStatsTab('skills'), 50);
+  hideAllScreens();
+  const screen = document.getElementById('skills-screen');
+  screen.style.display = 'block';
+  screen.innerHTML = '<div id="skills-content"></div>';
+  renderSkillTreeUI();
 }
 
 function renderSkillTreeUI() {
@@ -13638,6 +13640,7 @@ const menuUnlockConfig = [
 
   // === EARLY GAME (Level 2-3) ===
   { id: 'playerstats', fn: 'showPlayerStats()', label: 'Stats', tip: 'Stats, skills, empire & overview', level: 2 },
+  { id: 'skills', fn: 'showSkills()', label: 'Training Gym', tip: 'Train skills & unlock abilities', level: 2 },
   { id: 'relocate', fn: 'showTerritoryRelocation()', label: 'Relocate', tip: 'Move to a different district', level: 2 },
   { id: 'realestate', fn: 'showRealEstate()', label: 'Properties', tip: 'Real estate & business fronts', level: 3 },
 

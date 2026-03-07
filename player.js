@@ -19,8 +19,8 @@ export const CHARACTER_BACKGROUNDS = [
     icon: '🐀',
     description: 'Grew up in the gutter. You know every alley and shortcut in the city.',
     flavor: 'The streets raised you — and the streets never forget their own.',
-    bonus: { stealth: 2 },
-    bonusText: '+2 Stealth'
+    bonus: { stealth: 2, power: 5 },
+    bonusText: '+2 Stealth, +5 Starting Power'
   },
   {
     id: 'ex_cop',
