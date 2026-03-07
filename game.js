@@ -10678,7 +10678,11 @@ async function startJob(index) {
     return;
   }
 
-
+  // Crew check for risky jobs
+  if (job.risk === 'high' || job.risk === 'very high') {
+    const crewChoice = await checkCrewBeforeAction(job.name, true);
+    if (crewChoice === 'crew' || crewChoice === 'cancel') return;
+  }
 
   // ---- JOB DEPTH: Approach choices for mid & elite tier jobs ----
   let approachBonus = 0;
@@ -17409,8 +17413,20 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.23.0";
+const CURRENT_VERSION = "1.24.0";
 const VERSION_UPDATES = {
+  "1.24.0": {
+    title: "Crew Recruitment & Party Check",
+    date: "March 2026",
+    changes: [
+      "Crew leaders can now toggle their crew Open or Closed for recruitment",
+      "Players without a crew can browse and join open crews from the Crew tab",
+      "All Crews list now shows Open/Closed status",
+      "Party check popup now appears before heists, superboss fights, and high-risk jobs",
+      "Players can choose to go solo, find a crew, or cancel when starting risky actions without a crew",
+      "Joining a crew now checks you're not already in another crew first",
+    ]
+  },
   "1.23.0": {
     title: "Social & Crew Overhaul",
     date: "June 2025",
@@ -23158,6 +23174,32 @@ function formatTimestamp(timestamp) {
   const date = new Date(timestamp);
   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 }
+
+// Check if player is in a crew before a multiplayer-friendly action.
+// Returns 'solo' if the player chooses to go solo, 'crew' if they navigate to crew screen, or 'cancel' to abort.
+// If the player is already in a crew, returns 'proceed' immediately.
+async function checkCrewBeforeAction(actionName, canSolo = true) {
+  if (player.crewId) return 'proceed';
+  const modal = new ModalSystem();
+  const buttons = [];
+  if (canSolo) {
+    buttons.push({ text: 'Go Solo', class: 'modal-btn-secondary', value: 'solo', callback: () => true });
+  }
+  buttons.push({ text: 'Find a Crew', class: 'modal-btn-primary', value: 'crew', callback: () => true });
+  buttons.push({ text: 'Cancel', class: 'modal-btn-secondary', value: 'cancel', callback: () => true });
+  const choice = await modal.show(
+    'No Crew',
+    `<p style="color:#d4c4a0;">You're about to attempt <strong>${actionName}</strong> without a crew.</p>
+     <p style="color:#8a7a5a;">Teaming up with a crew improves your chances and unlocks bigger payouts.${canSolo ? ' You can still attempt this solo if you prefer.' : ' This action requires a crew.'}</p>`,
+    buttons
+  );
+  if (choice === 'crew') {
+    if (typeof showOnlineWorld === 'function') showOnlineWorld('crew');
+    return 'crew';
+  }
+  return choice || 'cancel';
+}
+window.checkCrewBeforeAction = checkCrewBeforeAction;
 
 function showBriefNotification(message, durationOrType = 2000) {
   // Support type strings as second arg: 'success', 'warning', 'danger', or a number for duration

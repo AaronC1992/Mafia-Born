@@ -4839,6 +4839,7 @@ function handleCrewCreate(clientId, message) {
         leaderName: player.name,
         officers: [],
         members: [{ playerId: clientId, name: player.name, role: 'leader', joinedAt: Date.now() }],
+        open: false,
         createdAt: Date.now()
     };
     gameState.crews.set(crewId, crew);
@@ -4883,6 +4884,10 @@ function handleCrewJoin(clientId, message) {
     const crew = gameState.crews.get(message.crewId);
     if (!crew) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Crew not found.' }));
     if (crew.members.length >= 10) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Crew is full.' }));
+    // Check if already in any crew
+    for (const [, c] of gameState.crews) {
+        if (c.members.find(m => m.name === player.name)) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'You are already in a crew. Leave it first.' }));
+    }
     if (crew.members.find(m => m.playerId === clientId)) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Already in this crew.' }));
     
     crew.members.push({ playerId: clientId, name: player.name, role: 'member', joinedAt: Date.now() });
@@ -4977,7 +4982,7 @@ function handleCrewInfo(clientId) {
     // Also send list of all crews
     const allCrews = [];
     for (const [, c] of gameState.crews) {
-        allCrews.push({ id: c.id, name: c.name, tag: c.tag, emblem: c.emblem, memberCount: c.members.length, leaderName: c.leaderName });
+        allCrews.push({ id: c.id, name: c.name, tag: c.tag, emblem: c.emblem, memberCount: c.members.length, leaderName: c.leaderName, open: !!c.open, motto: c.motto || '' });
     }
     
     ws.send(JSON.stringify({ type: 'crew_info_result', myCrew: playerCrew, allCrews }));
@@ -4995,6 +5000,7 @@ function handleCrewUpdate(clientId, message) {
     
     if (message.motto !== undefined) playerCrew.motto = (message.motto || '').substring(0, 64);
     if (message.emblem !== undefined) playerCrew.emblem = (message.emblem || '🔱').substring(0, 4);
+    if (message.open !== undefined) playerCrew.open = !!message.open;
     
     // Promote/demote officers
     if (message.promote) {

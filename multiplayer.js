@@ -415,6 +415,13 @@ async function createHeist(targetId) {
     const target = HEIST_TARGETS.find(t => t.id === targetId);
     if (!target) return;
 
+    // Crew check for heists
+    if (typeof window.checkCrewBeforeAction === 'function') {
+        const canSolo = target.minCrew <= 1;
+        const choice = await window.checkCrewBeforeAction(`a heist on ${target.name}`, canSolo);
+        if (choice === 'crew' || choice === 'cancel') return;
+    }
+
     if ((player.reputation || 0) < target.minReputation) {
         window.ui.toast(`You need ${target.minReputation}+ reputation to plan this heist.`, 'error');
         return;
@@ -5999,10 +6006,12 @@ function renderCrewScreen(container, data) {
     if (data.myCrew) {
         const c = data.myCrew;
         const isLeader = c.leader === onlineWorldState.playerId;
+        const isOpen = !!c.open;
         html += `<div ${style}>
             <h3 style="color:#c0a062;margin:0 0 8px;">${c.emblem} [${escapeHTML(c.tag)}] ${escapeHTML(c.name)}</h3>
             ${c.motto ? `<p style="color:#8a7a5a;font-style:italic;margin:4px 0;">"${escapeHTML(c.motto)}"</p>` : ''}
             <p style="color:#d4c4a0;">Members: ${c.members.length}/10</p>
+            <p style="color:${isOpen ? '#27ae60' : '#8a7a5a'};font-size:0.9em;">Status: ${isOpen ? 'Open — Accepting new members' : 'Closed — Invite only'}</p>
             <div style="margin:8px 0;">
             ${c.members.map(m => `<div style="padding:4px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2518;">
                 <span style="color:#d4c4a0;">${escapeHTML(m.name)} <span style="color:#8a7a5a;font-size:0.85em;">(${m.role})</span></span>
@@ -6010,7 +6019,11 @@ function renderCrewScreen(container, data) {
             </div>`).join('')}
             </div>
             ${isLeader ? `
-            <div style="margin-top:12px;">
+            <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
+                <span style="color:#d4c4a0;">Recruitment:</span>
+                <button onclick="window.crewToggleOpen(${isOpen ? 'false' : 'true'})" style="background:${isOpen ? '#8b3a3a' : '#27ae60'};color:#fff;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;">${isOpen ? 'Close Recruitment' : 'Open to All Players'}</button>
+            </div>
+            <div style="margin-top:8px;">
                 <input type="text" id="crew-motto-input" placeholder="Crew motto..." maxlength="64" value="${escapeHTML(c.motto || '')}" style="width:70%;padding:6px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
                 <button onclick="window.crewUpdateMotto()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Set Motto</button>
             </div>
@@ -6042,6 +6055,25 @@ function renderCrewScreen(container, data) {
                 </div>
             </div>`;
         }
+
+        // Open crews looking for members
+        const openCrews = (data.allCrews || []).filter(c => c.open && c.memberCount < 10);
+        if (openCrews.length > 0) {
+            html += `<div ${style}>
+                <h3 style="color:#c0a062;">Crews Looking for Members</h3>
+                <p style="color:#8a7a5a;font-size:0.9em;margin:0 0 8px;">These crews are open — join one to team up for heists and activities.</p>`;
+            openCrews.forEach(c => {
+                html += `<div style="padding:8px;border-bottom:1px solid #2a2518;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <span style="color:#d4c4a0;font-weight:bold;">${c.emblem} [${escapeHTML(c.tag)}] ${escapeHTML(c.name)}</span>
+                        <span style="color:#8a7a5a;font-size:0.85em;"> (${c.memberCount}/10) -- Led by ${escapeHTML(c.leaderName)}</span>
+                        ${c.motto ? `<br><span style="color:#8a7a5a;font-size:0.85em;font-style:italic;">"${escapeHTML(c.motto)}"</span>` : ''}
+                    </div>
+                    <button onclick="window.crewJoinOpen('${c.id}')" style="background:#27ae60;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold;">Join</button>
+                </div>`;
+            });
+            html += '</div>';
+        }
     }
 
     // All crews list
@@ -6049,7 +6081,8 @@ function renderCrewScreen(container, data) {
         html += `<div ${style}><h3 style="color:#c0a062;">All Crews</h3>`;
         data.allCrews.forEach(c => {
             html += `<div style="padding:6px 8px;border-bottom:1px solid #2a2518;display:flex;justify-content:space-between;align-items:center;">
-                <span style="color:#d4c4a0;">${c.emblem} [${escapeHTML(c.tag)}] ${escapeHTML(c.name)} <span style="color:#8a7a5a;">(${c.memberCount}/10) — Led by ${escapeHTML(c.leaderName)}</span></span>
+                <span style="color:#d4c4a0;">${c.emblem} [${escapeHTML(c.tag)}] ${escapeHTML(c.name)} <span style="color:#8a7a5a;">(${c.memberCount}/10) -- Led by ${escapeHTML(c.leaderName)}</span></span>
+                <span style="color:${c.open ? '#27ae60' : '#8a7a5a'};font-size:0.8em;">${c.open ? 'Open' : 'Closed'}</span>
             </div>`;
         });
         html += '</div>';
@@ -6085,6 +6118,12 @@ window.crewDeclineInvite = function() {
     window._pendingCrewInvite = null;
     if (typeof showBriefNotification === 'function') showBriefNotification('Crew invite declined.', 'info');
     renderCrewScreen();
+};
+window.crewToggleOpen = function(open) {
+    sendMP({ type: 'crew_update', open: open });
+};
+window.crewJoinOpen = function(crewId) {
+    sendMP({ type: 'crew_join', crewId: crewId });
 };
 
 // ==================== PLAYER GAMBLING CLIENT ====================
@@ -6353,7 +6392,13 @@ function renderSuperbossScreen() {
     container.innerHTML = html;
 }
 
-window.startSuperbossFight = function(bossId) { sendMP({ type: 'superboss_start', bossId }); };
+window.startSuperbossFight = async function(bossId) {
+    if (typeof window.checkCrewBeforeAction === 'function') {
+        const choice = await window.checkCrewBeforeAction('a Superboss Fight', true);
+        if (choice === 'crew' || choice === 'cancel') return;
+    }
+    sendMP({ type: 'superboss_start', bossId });
+};
 window.superbossAttack = function() {
     if (_activeSuperbossFight) {
         sendMP({ type: 'superboss_attack', fightId: _activeSuperbossFight.id });
