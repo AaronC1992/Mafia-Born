@@ -6056,12 +6056,12 @@ function renderCrewScreen(container, data) {
             </div>`;
         }
 
-        // Open crews looking for members
+        // Open crews looking for members — always show section
         const openCrews = (data.allCrews || []).filter(c => c.open && c.memberCount < 10);
+        html += `<div ${style}>
+            <h3 style="color:#c0a062;">Crews Looking for Members</h3>`;
         if (openCrews.length > 0) {
-            html += `<div ${style}>
-                <h3 style="color:#c0a062;">Crews Looking for Members</h3>
-                <p style="color:#8a7a5a;font-size:0.9em;margin:0 0 8px;">These crews are open — join one to team up for heists and activities.</p>`;
+            html += `<p style="color:#8a7a5a;font-size:0.9em;margin:0 0 8px;">These crews are open — join one to team up for heists and activities.</p>`;
             openCrews.forEach(c => {
                 html += `<div style="padding:8px;border-bottom:1px solid #2a2518;display:flex;justify-content:space-between;align-items:center;">
                     <div>
@@ -6072,8 +6072,10 @@ function renderCrewScreen(container, data) {
                     <button onclick="window.crewJoinOpen('${c.id}')" style="background:#27ae60;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold;">Join</button>
                 </div>`;
             });
-            html += '</div>';
+        } else {
+            html += `<p style="color:#8a7a5a;font-size:0.9em;margin:4px 0;">No crews are currently recruiting. Create your own or wait for a crew leader to open recruitment.</p>`;
         }
+        html += '</div>';
     }
 
     // All crews list
