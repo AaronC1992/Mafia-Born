@@ -230,7 +230,7 @@ export const familyStories = {
   narrative: [
     { type: "scene", text: "The basement of the Social Club has been transformed. A long table draped in black cloth. A single candle beside a Catholic saint's card and a ceremonial dagger. The air smells of incense and old wood." },
     { type: "narration", text: "This is the making ceremony -- the ancient ritual that transforms an outsider into a member of La Cosa Nostra. Once the words are spoken and the blood is drawn, there is only one way out: death." },
-    { type: "dialogue", text: "Do you swear, on your blood and on the souls of your ancestors, to live and die by the code of this Family? To hold omertÃ  sacred above all? To obey the Don in all things, even unto death?", speaker: "Don Salvatore" },
+    { type: "dialogue", text: "Do you swear, on your blood and on the souls of your ancestors, to live and die by the code of this Family? To hold omertà sacred above all? To obey the Don in all things, even unto death?", speaker: "Don Salvatore" },
     { type: "dialogue", text: "Welcome to the Family. From this moment, you are a man of honor. May God forgive what we do in His name.", speaker: "Marco DeLuca" },
     { type: "scene", text: "The saint's card burns in your cupped hands as your blood drips onto the ashes. The fire doesn't hurt. Nothing will hurt the same way again." }
   ],
@@ -335,7 +335,7 @@ export const familyStories = {
   narrative: [
     { type: "scene", text: "Marco's face is carved from granite as he spreads the surveillance photos across the card table. Enzo Ferrante -- meeting with FBI agents in a parking garage in Hoboken. The timestamps span six months." },
     { type: "dialogue", text: "Six months. He's been feeding them names, dates, operations. Half our crew could go down if we don't shut this pipeline tonight.", speaker: "Marco DeLuca" },
-    { type: "narration", text: "The worst crime in La Cosa Nostra. Worse than murder, worse than theft. Enzo broke omertÃ  -- the sacred code of silence. And now the Family's survival depends on making him answer for it." },
+    { type: "narration", text: "The worst crime in La Cosa Nostra. Worse than murder, worse than theft. Enzo broke omertà -- the sacred code of silence. And now the Family's survival depends on making him answer for it." },
     { type: "dialogue", text: "I trusted that man with my life. Thirty years of friendship, and he sells us to the government like cattle. Bring him to me. Alive, if possible. But bring him.", speaker: "Don Salvatore" },
     { type: "scene", text: "You gather your crew in the basement of the laundromat. Maps of Enzo's safe house are pinned to the wall. He'll have armed men -- loyalists who chose the rat over the Family. This will be your first real war." }
   ],
@@ -2178,7 +2178,7 @@ export const familyStories = {
   narrative: [
     { type: "narration", text: "With a seat on the council and your own division, Chen Wei tasks you with the Triad's most ambitious project: the New Silk Road. Not a single marketplace, but a global network of interconnected dark web platforms spanning every continent -- each one specialized, each one feeding intelligence to the central hub. Information from Tokyo to Toronto, flowing through the Triad's invisible channels like water through ancient aqueducts." },
     { type: "dialogue", text: "The original Silk Road connected East to West. Ours will connect everything to everything. We will become the nervous system of the shadow economy.", speaker: "Chen Wei" },
-    { type: "scene", text: "You establish nodes in Singapore, Zurich, SÃ£o Paulo, and Lagos -- each one staffed by local operatives recruited through the Triad's expanding network. The platforms are tailored to regional markets: financial intelligence in Zurich, technology secrets in Singapore, resource data in Lagos, political intelligence in SÃ£o Paulo." },
+    { type: "scene", text: "You establish nodes in Singapore, Zurich, São Paulo, and Lagos -- each one staffed by local operatives recruited through the Triad's expanding network. The platforms are tailored to regional markets: financial intelligence in Zurich, technology secrets in Singapore, resource data in Lagos, political intelligence in São Paulo." },
     { type: "dialogue", text: "The architecture is elegant. But elegance attracts admirers and enemies in equal measure. Security protocols must scale with the network. Every new node is a door, and every door can be kicked in.", speaker: "Liang 'Ghost' Zhao" }
   ],
   objectives: [
@@ -2800,7 +2800,7 @@ export const familyStories = {
   rankOnComplete: null,
   respectGain: 14,
   narrative: [
-    { type: "scene", text: "DÃ­a de los Muertos transforms the city into a riot of color and memory. Marigold petals carpet the streets, sugar skulls grin from every altar, and painted faces blur the line between the living and the dead. It's the perfect cover for the Morales Cartel's biggest urban shipment." },
+    { type: "scene", text: "Día de los Muertos transforms the city into a riot of color and memory. Marigold petals carpet the streets, sugar skulls grin from every altar, and painted faces blur the line between the living and the dead. It's the perfect cover for the Morales Cartel's biggest urban shipment." },
     { type: "narration", text: "El Jefe has hidden twenty kilos inside hollow parade floats -- giant skeletal figures that will roll through the city center. Your job: ensure the floats reach three separate safe houses without interception, using the festival crowd as cover." },
     { type: "dialogue", text: "The dead protect us tonight, Soldado. Their spirits dance in the streets and blind the eyes of our enemies. Move the product through the parade route. Diego's men will handle security. You handle the logistics.", speaker: "El Jefe Morales" },
     { type: "dialogue", text: "And remember -- tonight is sacred. No blood on the festival. No guns where children can see. Sofia would never forgive us, and honestly? She's scarier than the DEA.", speaker: "Diego Vargas" }
@@ -2864,7 +2864,7 @@ export const familyStories = {
   narrative: [
     { type: "scene", text: "Dawn breaks over the lab -- a converted ranch house deep in the desert where the Morales Cartel processes its product. The morning shift has just arrived when the first shots ring out. Colombian paramilitary soldiers pour from two armored trucks, AK-47s blazing." },
     { type: "narration", text: "The attack is coordinated and brutal -- a Colombian scouting force sent by El Diablo to test the Morales defenses. They've hit the lab at its most vulnerable, when the night guards are changing shifts." },
-    { type: "dialogue", text: "Â¡Colombianos! They're hitting the lab! Get everyone armed -- NOW! This is not a drill, Soldado. They want our product and our blood. Give them neither!", speaker: "Diego Vargas" },
+    { type: "dialogue", text: "¡Colombianos! They're hitting the lab! Get everyone armed -- NOW! This is not a drill, Soldado. They want our product and our blood. Give them neither!", speaker: "Diego Vargas" },
     { type: "dialogue", text: "Protect the workers first! The product can be replaced -- people cannot! This is what la familia means!", speaker: "Sofia Morales" }
   ],
   objectives: [
@@ -3111,8 +3111,8 @@ export const familyStories = {
   rankOnComplete: null,
   respectGain: 25,
   narrative: [
-    { type: "scene", text: "A neutral cantina in JuÃ¡rez -- midway between Morales territory and El Diablo's advance positions. The air is thick with cigar smoke and mutual suspicion. Both sides have agreed to a temporary ceasefire to discuss terms." },
-    { type: "dialogue", text: "I don't want peace with that Colombian devil. But my people are tired. Sofia says we need time to rebuild, and when Sofia speaks, even God listens. Go to JuÃ¡rez. Negotiate. Buy us time -- that's all I ask.", speaker: "El Jefe Morales" },
+    { type: "scene", text: "A neutral cantina in Juárez -- midway between Morales territory and El Diablo's advance positions. The air is thick with cigar smoke and mutual suspicion. Both sides have agreed to a temporary ceasefire to discuss terms." },
+    { type: "dialogue", text: "I don't want peace with that Colombian devil. But my people are tired. Sofia says we need time to rebuild, and when Sofia speaks, even God listens. Go to Juárez. Negotiate. Buy us time -- that's all I ask.", speaker: "El Jefe Morales" },
     { type: "narration", text: "El Diablo has sent his own representative -- a cold-eyed woman named La Serpiente, who speaks softly and carries the authority to make deals or declare war with equal ease." },
     { type: "dialogue", text: "El Diablo respects strength, not words. But he is a businessman above all. Show him that peace is more profitable than war, and perhaps we can find an arrangement that doesn't end with everyone dead.", speaker: "La Serpiente" }
   ],
@@ -3228,7 +3228,7 @@ export const familyStories = {
   },
   completionNarrative: [
     { type: "scene", text: "Intelligence pinpoints Isabella's location -- a fortified compound in the Colombian jungle, guarded by El Diablo's personal army. The rescue will be the most dangerous operation in Morales Cartel history." },
-    { type: "dialogue", text: "I know where she is. A compound near MedellÃ­n. Fifty guards, at least. El Diablo himself is there -- he wants to be present when he breaks us. Instead, we will break him.", speaker: "Diego Vargas" },
+    { type: "dialogue", text: "I know where she is. A compound near Medellín. Fifty guards, at least. El Diablo himself is there -- he wants to be present when he breaks us. Instead, we will break him.", speaker: "Diego Vargas" },
     { type: "narration", text: "The Morales war machine mobilizes. Every soldier, every weapon, every resource points south. El Jefe hasn't slept in three days. His eyes burn with a father's fury. The time for negotiation is over." }
   ],
   boss: null
