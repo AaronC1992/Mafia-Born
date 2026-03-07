@@ -1558,7 +1558,7 @@ function handleTerritoryWar(clientId, message) {
     const healthDamage = victory
         ? 15 + Math.floor(Math.random() * 21) // 15-35 on win
         : 25 + Math.floor(Math.random() * 31); // 25-55 on loss
-    attackerState.health = Math.max(1, (attackerState.health || 100) - healthDamage);
+    attackerState.health = Math.max(0, (attackerState.health || 100) - healthDamage);
 
     // Wanted level increase
     attackerState.wantedLevel = Math.min(100, (attackerState.wantedLevel || 0) + (victory ? 20 : 12));
@@ -1850,8 +1850,8 @@ function handlePlayerChallenge(clientId, message) {
         const bountyClaim = autoClaimBounty(clientId, targetId);
 
         // Apply health damage
-        challengerState.health = Math.max(1, (challengerState.health || 100) - winnerDmg);
-        targetState.health = Math.max(1, (targetState.health || 100) - loserDmg);
+        challengerState.health = Math.max(0, (challengerState.health || 100) - winnerDmg);
+        targetState.health = Math.max(0, (targetState.health || 100) - loserDmg);
 
         console.log(` ${challenger.name} defeated ${targetPlayer.name} (${Math.round(challengerScore)} vs ${Math.round(targetScore)})`);
 
@@ -1889,8 +1889,8 @@ function handlePlayerChallenge(clientId, message) {
         const bountyClaim = autoClaimBounty(targetId, clientId);
 
         // Apply health damage
-        challengerState.health = Math.max(1, (challengerState.health || 100) - loserDmg);
-        targetState.health = Math.max(1, (targetState.health || 100) - winnerDmg);
+        challengerState.health = Math.max(0, (challengerState.health || 100) - loserDmg);
+        targetState.health = Math.max(0, (targetState.health || 100) - winnerDmg);
 
         console.log(` ${targetPlayer.name} defeated ${challenger.name} (${Math.round(targetScore)} vs ${Math.round(challengerScore)})`);
 
@@ -3217,7 +3217,7 @@ function handleAssassinationAttempt(clientId, message) {
     } else {
         healthDamage = 20 + Math.floor(Math.random() * 31); // 20-50 on failure
     }
-    attackerState.health = Math.max(1, (attackerState.health || 100) - healthDamage);
+    attackerState.health = Math.max(0, (attackerState.health || 100) - healthDamage);
 
     // ---- Gang member casualties ----
     // Each gang member sent has a 20% chance of being killed in the firefight

@@ -2083,7 +2083,13 @@ function executeEliminationMission(famKey) {
   }
 
   // Apply damage
-  player.health = Math.max(1, player.health - totalDamage);
+  player.health = Math.max(0, player.health - totalDamage);
+
+  // Check for death before showing results
+  if (player.health <= 0) {
+    showDeathScreen(`Killed in the assault on ${fam.name}`);
+    return;
+  }
 
   // Process gang casualties from the mission
   const { casualties, injured } = processTurfAttackCasualties(missionSuccess, player.gang?.gangMembers || [], `${fam.name} Elimination`);
@@ -6723,8 +6729,12 @@ async function attackTurfZone(zoneId) {
     if (bossAlive) {
       const result = resolveBossFight(bossInfo, attackPower);
       if (!result.won) {
-        player.health = Math.max(1, player.health - result.damageTaken);
+        player.health = Math.max(0, player.health - result.damageTaken);
         player.turf.power = Math.max(10, (player.turf.power || 100) - 15);
+        if (player.health <= 0) {
+          showDeathScreen(`Killed by ${bossInfo.name} while attacking ${zone.name}`);
+          return;
+        }
         // Gang casualties even on boss loss
         const { casualties, injured } = processTurfAttackCasualties(false, player.gang?.gangMembers || [], zone.name);
         let lossMsg = `${bossInfo.name} defeated you! Lost 15 power and ${result.damageTaken} health.`;
@@ -6772,8 +6782,12 @@ async function attackTurfZone(zoneId) {
 
     if (roll >= effectiveChance) {
       // Attack FAILED -- zone not taken
-      player.health = Math.max(1, player.health - Math.floor(Math.random() * 15 + 10));
+      player.health = Math.max(0, player.health - Math.floor(Math.random() * 15 + 10));
       player.turf.power = Math.max(10, (player.turf.power || 100) - 10);
+      if (player.health <= 0) {
+        showDeathScreen(`Killed in the failed assault on ${zone.name}`);
+        return;
+      }
       const { casualties, injured } = processTurfAttackCasualties(false, player.gang?.gangMembers || [], zone.name);
       let failMsg = `Attack on ${zone.name} failed! (${effectiveChance}% chance) Lost 10 power.`;
       if (casualties.length) failMsg += ` KILLED: ${casualties.join(', ')}.`;
@@ -19264,11 +19278,16 @@ function attemptBounty(index) {
     bounty.failed = true;
     const damage = Math.floor(Math.random() * (bounty.tier * 8)) + bounty.tier * 5;
     const heatGain = Math.floor(bounty.tier * 5);
-    player.health = Math.max(1, player.health - damage);
+    player.health = Math.max(0, player.health - damage);
     player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + heatGain);
 
     showBriefNotification(`Bounty failed! -${damage} HP, +${heatGain} heat`, 'danger');
     logAction(`The hit on ${bounty.name} went sideways. You took ${damage} damage and drew attention. +${heatGain} heat.`);
+
+    if (player.health <= 0) {
+      showDeathScreen(`Killed during a failed hit on ${bounty.name}`);
+      return;
+    }
   }
 
   player.playstyleStats.violentJobs = (player.playstyleStats.violentJobs || 0) + 1;
@@ -20171,9 +20190,13 @@ function healthScare() {
   const baseLoss = Math.floor(Math.random() * 15) + 5;
   const reduction = Math.min(baseLoss - 1, player.skillTree.endurance.vitality * 2);
   const actualLoss = Math.max(1, baseLoss - reduction);
-  player.health = Math.max(1, player.health - actualLoss);
+  player.health = Math.max(0, player.health - actualLoss);
   showBriefNotification(`Health scare! -${actualLoss} HP`, 3000);
   logAction(`A rough night takes its toll. You lose ${actualLoss} health. ${reduction > 0 ? 'Your endurance training softened the blow.' : 'Take it easy.'}`);
+  if (player.health <= 0) {
+    showDeathScreen('Succumbed to injuries from a rough night on the streets');
+    return;
+  }
   updateUI();
 }
 

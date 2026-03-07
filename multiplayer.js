@@ -1612,7 +1612,13 @@ async function handleServerMessage(message) {
                 // Sync health damage from server
                 if (message.healthDamage) {
                     const myDmg = isWinner ? message.healthDamage.winner : message.healthDamage.loser;
-                    if (myDmg) player.health = Math.max(1, (player.health || 100) - myDmg);
+                    if (myDmg) {
+                        player.health = Math.max(0, (player.health || 100) - myDmg);
+                        if (player.health <= 0 && typeof window.showDeathScreen === 'function') {
+                            window.showDeathScreen(`Killed in PvP by ${isWinner ? message.loser : message.winner}`);
+                            return;
+                        }
+                    }
                 }
                 // Show bounty claim toast
                 if (isWinner && message.bountyClaimed) {
@@ -4674,7 +4680,7 @@ function participateInEvent(eventType, district) {
         // Failure — still get partial rewards but take a hit
         const partialMoney = Math.floor(scenario.moneyMin * 0.3);
         player.money += partialMoney;
-        player.health = Math.max(1, (player.health || 100) - scenario.healthLoss);
+        player.health = Math.max(0, (player.health || 100) - scenario.healthLoss);
         player.wantedLevel = Math.min(10, (player.wantedLevel || 0) + scenario.wantedGain);
 
         modal.innerHTML = `
