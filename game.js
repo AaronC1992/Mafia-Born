@@ -11921,7 +11921,7 @@ function sendToJail(wantedLevelLoss, crimeContext) {
   // Generate and show jail newspaper headline
   const jailNewspaperData = generateJailNewspaperData(crimeContext);
   lastJailNewspaperData = jailNewspaperData;
-  logAction(`<span class="newspaper-chat-link" onclick="showJailNewspaper(lastJailNewspaperData)">Read the Headlines: ${player.name} ARRESTED!</span>`, 'chat');
+  logAction(`<span class="newspaper-chat-link" onclick="showLastJailNewspaper()">Read the Headlines: ${player.name} ARRESTED!</span>`, 'chat');
 
   // Broadcast jail newspaper to world chat via multiplayer (if connected)
   if (typeof broadcastJailNewspaper === 'function') {
@@ -19602,7 +19602,7 @@ function showDeathScreen(causeOfDeath) {
   if (restartArea) {
     restartArea.innerHTML = `
       <div style="margin: 25px auto; max-width: 500px; text-align: center;">
-        <button onclick="showDeathNewspaper(lastDeathNewspaperData)" style="background: linear-gradient(45deg, #5a4a30, #4a3a20); color: #f5e6c8; padding: 14px 30px; border: 2px solid #8b7355; border-radius: 2px; font-size: 1.1em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-family: var(--font-typewriter); margin-bottom: 16px;">
+        <button onclick="showLastDeathNewspaper()" style="background: linear-gradient(45deg, #5a4a30, #4a3a20); color: #f5e6c8; padding: 14px 30px; border: 2px solid #8b7355; border-radius: 2px; font-size: 1.1em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-family: var(--font-typewriter); margin-bottom: 16px;">
           &#128240; Read Your Obituary
         </button>
         <p style="color: #d4c4a0; margin-bottom: 20px; font-style: italic;">
@@ -19791,6 +19791,7 @@ function showDeathNewspaper(data) {
   overlay.style.display = 'flex';
 }
 window.showDeathNewspaper = showDeathNewspaper;
+window.showLastDeathNewspaper = function() { showDeathNewspaper(lastDeathNewspaperData); };
 window.showDeathScreen = showDeathScreen;
 window.generateDeathNewspaperData = generateDeathNewspaperData;
 
@@ -19988,6 +19989,7 @@ function closeJailNewspaper() {
   if (overlay) overlay.style.display = 'none';
 }
 window.showJailNewspaper = showJailNewspaper;
+window.showLastJailNewspaper = function() { showJailNewspaper(lastJailNewspaperData); };
 window.closeJailNewspaper = closeJailNewspaper;
 window.generateJailNewspaperData = generateJailNewspaperData;
 
