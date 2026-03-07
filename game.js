@@ -14559,6 +14559,13 @@ function showRecruitment() {
         const levelText = recruit.experienceLevel <= 3 ? 'Rookie' :
                 recruit.experienceLevel <= 6 ? 'Experienced' : 'Veteran';
 
+        const expandedRoleKey = SPECIALIZATION_TO_EXPANDED[recruit.specialization];
+        const expandedRoleData = expandedRoleKey ? GANG_MEMBER_ROLES[expandedRoleKey] : null;
+        const displayRoleName = expandedRoleData ? expandedRoleData.name : (recruit.specialization.charAt(0).toUpperCase() + recruit.specialization.slice(1));
+        const isCleanMoney = expandedRoleData ? expandedRoleData.cleanCashTribute : false;
+        const moneyTypeLabel = isCleanMoney ? 'Clean' : 'Dirty';
+        const moneyTypeColor = isCleanMoney ? '#5a8a5a' : '#8a5a5a';
+
         return `
           <li style="margin: 12px 0; padding: 20px; background: linear-gradient(135deg, #14120a 0%, #0d0b07 100%); border-radius: 12px; border: 1px solid ${levelColor}; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
@@ -14569,7 +14576,10 @@ function showRecruitment() {
                     Level ${recruit.experienceLevel} ${levelText}
                   </span>
                   <span style="background: rgba(20, 18, 10, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; margin-left: 8px;">
-                    ${recruit.specialization}
+                    ${displayRoleName}
+                  </span>
+                  <span style="background: ${moneyTypeColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; margin-left: 8px;">
+                    ${moneyTypeLabel} Money
                   </span>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.95em;">
@@ -14643,8 +14653,9 @@ function recruitMember(index) {
     // EXPANDED: Create enhanced gang member with role system if enabled
     let newMember;
     if (EXPANDED_SYSTEMS_CONFIG.gangRolesEnabled) {
-      // Generate expanded gang member with role
-      newMember = generateExpandedGangMember(null, recruit.name);
+      // Map the recruit's displayed specialization to the expanded role so it matches what was shown
+      const expandedRole = SPECIALIZATION_TO_EXPANDED[recruit.specialization] || null;
+      newMember = generateExpandedGangMember(expandedRole, recruit.name);
 
       // Merge with legacy data & derive specialization from expanded role
       newMember.experienceLevel = recruit.experienceLevel;
@@ -17176,8 +17187,17 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.17.1";
+const CURRENT_VERSION = "1.17.2";
 const VERSION_UPDATES = {
+  "1.17.2": {
+    title: "Recruitment Fixes & Quality of Life",
+    date: "March 2026",
+    changes: [
+      "Fixed gang recruit role being rerolled on hire -- members now keep the role shown on screen",
+      "Recruitment screen now shows expanded role name instead of raw specialization key",
+      "Recruitment screen now displays whether each recruit brings in Clean or Dirty money",
+    ]
+  },
   "1.17.1": {
     title: "Deep Audit Fixes & Stability Improvements",
     date: "March 2026",
