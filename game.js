@@ -10164,7 +10164,7 @@ window.syncTutorialToggleButton = syncTutorialToggleButton;
 })();
 
 // Function to show jobs
-const JOB_XP_BY_RISK = { low: 2, medium: 4, high: 10, 'very high': 16, extreme: 25, legendary: 40 };
+const JOB_XP_BY_RISK = { low: 2, medium: 8, high: 20, 'very high': 32, extreme: 100, legendary: 160 };
 
 function showJobs() {
   if (player.inJail) {
@@ -10988,27 +10988,27 @@ async function startJob(index) {
     hurtChance = Math.max(0, 5 - player.power * 0.05 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 20;
     player.reputation += 0.3;
-    gainExperience(4);
+    gainExperience(8);
   } else if (job.risk === "high") {
     hurtChance = Math.max(0, 10 - player.power * 0.1 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 50;
     player.reputation += 0.6;
-    gainExperience(10);
+    gainExperience(20);
   } else if (job.risk === "very high") {
     hurtChance = Math.max(0, 15 - player.power * 0.12 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 60;
     player.reputation += 1.0;
-    gainExperience(16);
+    gainExperience(32);
   } else if (job.risk === "extreme") {
     hurtChance = Math.max(0, 20 - player.power * 0.15 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 75;
     player.reputation += 1.5;
-    gainExperience(25);
+    gainExperience(100);
   } else if (job.risk === "legendary") {
     hurtChance = Math.max(0, 25 - player.power * 0.18 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 90;
     player.reputation += 2.5;
-    gainExperience(40);
+    gainExperience(160);
   }
 
   // Street Cred skill: +2% reputation gain per rank
@@ -17481,7 +17481,7 @@ const VERSION_UPDATES = {
       "Job energy costs increased across the board -- Street Soldier now costs 3 energy (was 1)",
       "Early job payouts reduced -- Street Soldier $40-180 (was $60-300), Store Heist $800-2,200 (was $1,200-3,000)",
       "XP curve steepened by ~50% -- leveling takes real commitment",
-      "XP rewards per job reduced -- low risk: 2 XP, medium: 4, high: 10, extreme: 25, legendary: 40",
+      "XP rewards per job -- low risk: 2 XP, medium: 8, high: 20, very high: 32, extreme: 100, legendary: 160",
       "Reputation gains slowed ~40% across all risk tiers",
       "Hospital costs increased -- full heal $25/HP (was $10), patch $20/HP (was $8), rest costs 25 energy (was 20)",
       "Store prices increased ~30% -- weapons, armor, vehicles, utilities all cost more",
