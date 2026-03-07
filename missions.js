@@ -657,7 +657,6 @@ export const familyStories = {
   objectives: [
     { type: "jobs", target: 63, text: "Complete 63 jobs (any type)" },
     { type: "money", target: 80000, text: "Manage $80,000 in Family operations" },
-    { type: "reputation", target: , text: "Reach  Rep" },
     { type: "gang", target: 10, text: "Command 10 crew members" },
     { type: "properties", target: 3, text: "Oversee 3 Family properties" },
     { type: "reputation", target: 45, text: "Build reputation to 45" }
