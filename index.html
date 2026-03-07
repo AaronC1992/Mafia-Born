@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Playfair+Display+SC:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.22.0">
+    <link rel="stylesheet" href="styles.css?v=1.23.0">
 </head>
 <body>
     <noscript>
@@ -120,7 +120,7 @@
                     <p id="active-events-display" style="display: none;">Events: None</p>
                     <p id="ammo-display" style="display: none;">Bullets: 0</p>
                     <p id="gas-display" style="display: none;">Gas: 0</p>
-                    <p id="reputation-display" style="display: none;">Rep: 0</p>
+                    <p id="reputation-display">Rep: 0</p>
                     <p id="jail-status-display" style="display: none;">Jail: Free</p>
                     <p id="family-rank-display" style="display: none;">Family: None</p>
                     <p class="auth-status-indicator" onclick="showAuthModal()" style="cursor: pointer;"></p>
@@ -174,7 +174,7 @@
             <div style="margin-top: 15px;">
                 <button id="check-updates-btn" onclick="checkForUpdates()" style="background: linear-gradient(to bottom, #1a1a1a, #000); border-color: #c0a062; color: #c0a062; font-size: 13px;">Check for Updates</button>
             </div>
-            <div id="intro-version" style="position: absolute; bottom: 15px; left: 15px; color: #95a5a6; font-size: 0.9em; opacity: 0.7; z-index: 10;"></div>
+            <div id="intro-version" onclick="showChangelog()" style="position: absolute; bottom: 15px; left: 15px; color: #95a5a6; font-size: 0.9em; opacity: 0.7; z-index: 10; cursor: pointer; text-decoration: underline;" title="View Changelog"></div>
         </div>
 
         <!-- Character Creation Screen -->
@@ -629,6 +629,7 @@
             <div class="content-card">
                 <button onclick="showHelpScreen()" style="border-color: #c0a062; color: #c0a062;">Help & Game Guide</button>
                 <button id="tutorial-toggle-btn" onclick="toggleTutorialFromSettings()" style="border-color: #8a9a6a; color: #8a9a6a;">Tutorials: Enabled</button>
+                <button onclick="showChangelog()" style="border-color: #c0a062; color: #c0a062;">Changelog</button>
             </div>
             <div class="section-header">UI Toggles</div>
             <div class="content-card" style="display:flex; flex-direction:column; gap:10px;">
@@ -702,7 +703,7 @@
                         <span style="color:#f39c12;">Gas</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                        <input type="checkbox" class="stat-toggle" data-stat="reputation-display" onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
+                        <input type="checkbox" class="stat-toggle" data-stat="reputation-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
                         <span style="color:#e67e22;">Respect</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
@@ -988,6 +989,6 @@
     <!-- Multiplayer client (global script, must load before game.js module) -->
     <script src="multiplayer.js"></script>
     <!-- Main game logic (Module) -->
-    <script type="module" src="game.js?v=1.22.0"></script>
+    <script type="module" src="game.js?v=1.23.0"></script>
 </body>
 </html>

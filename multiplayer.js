@@ -2945,6 +2945,10 @@ function showOnlineWorld(activeTab) {
         font-weight: ${tab === id ? 'bold' : 'normal'}; font-size: 0.95em;
     `;
     
+    const hasFriendBadge = window._pendingFriendRequests && window._pendingFriendRequests.length > 0;
+    const hasCrewBadge = !!window._pendingCrewInvite;
+    const badgeDot = '<span style="display:inline-block;width:8px;height:8px;background:#e74c3c;border-radius:50%;margin-left:6px;vertical-align:middle;"></span>';
+    
     // -- Tab bar --
     let worldHTML = `
         <h2 style="color: #c0a062; font-family: 'Georgia', serif; text-shadow: 2px 2px 4px #000; margin-bottom: 5px;">The Commission</h2>
@@ -2960,8 +2964,8 @@ function showOnlineWorld(activeTab) {
             <button onclick="showOnlineWorld('territories')" style="${tabStyle('territories')}">Territories</button>
             <button onclick="showOnlineWorld('politics')" style="${tabStyle('politics')}">Politics</button>
             <button onclick="showOnlineWorld('activities')" style="${tabStyle('activities')}">Activities</button>
-            <button onclick="showOnlineWorld('crew')" style="${tabStyle('crew')}">Crew</button>
-            <button onclick="showOnlineWorld('friends')" style="${tabStyle('friends')}">Friends</button>
+            <button onclick="showOnlineWorld('crew')" style="${tabStyle('crew')}">Crew${hasCrewBadge ? badgeDot : ''}</button>
+            <button onclick="showOnlineWorld('friends')" style="${tabStyle('friends')}">Friends${hasFriendBadge ? badgeDot : ''}</button>
             <button onclick="showOnlineWorld('market')" style="${tabStyle('market')}">Market</button>
             <button onclick="showOnlineWorld('chat')" style="${tabStyle('chat')}">Chat</button>
         </div>
@@ -5704,6 +5708,23 @@ function renderFriendsTabContent() {
       </div>
     </div>`;
 
+    // Pending friend requests
+    const pendingRequests = window._pendingFriendRequests || [];
+    if (pendingRequests.length > 0) {
+      html += `<div ${style}>
+        <h4 style="color:#c0a062;">Pending Friend Requests (${pendingRequests.length})</h4>`;
+      pendingRequests.forEach(r => {
+        html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #2a2518;">
+          <span style="color:#d4c4a0;">${escapeHTML(r.fromName)} wants to be your friend</span>
+          <div>
+            <button onclick="acceptFriendRequest('${escapeHTML(r.fromName)}')" style="background:#27ae60;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Accept</button>
+            <button onclick="declineFriendRequest('${escapeHTML(r.fromName)}')" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;">Decline</button>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
     // Friends list
     html += `<div ${style}>
       <h4 style="color:#c0a062;">Friends (${friends.length})</h4>`;
@@ -5736,7 +5757,7 @@ function renderFriendsTabContent() {
           html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #2a2518;">
             <span style="color:#d4c4a0;"><span style="color:#27ae60;">●</span> ${escapeHTML(o.name)} <span style="color:#8a7a5a;font-size:0.8em;">Lv.${o.level || '?'}</span></span>
             <div>
-              <button onclick="addFriend('${escapeHTML(o.name)}')" style="background:#27ae60;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Add Friend</button>
+              <button onclick="addFriend('${escapeHTML(o.name)}')" style="background:#27ae60;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Send Request</button>
               <button onclick="blockPlayer('${escapeHTML(o.name)}')" style="background:#555;color:#f5e6c8;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;">Block</button>
             </div>
           </div>`;
@@ -5769,10 +5790,21 @@ function handleFriendResult(message) {
             if (!player.friends.find(f => f.name === message.targetName)) {
                 player.friends.push({ name: message.targetName, addedAt: Date.now() });
             }
+            // Remove from pending requests if it was there
+            if (window._pendingFriendRequests) {
+                window._pendingFriendRequests = window._pendingFriendRequests.filter(r => r.fromName !== message.targetName);
+            }
             if (typeof showBriefNotification === 'function') showBriefNotification(`${message.targetName} added as friend!`, 'success');
         } else if (message.action === 'removed') {
             player.friends = (player.friends || []).filter(f => f.name !== message.targetName);
             if (typeof showBriefNotification === 'function') showBriefNotification(`${message.targetName} removed from friends.`, 'info');
+        } else if (message.action === 'requested') {
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Friend request sent to ${message.targetName}.`, 'success');
+        } else if (message.action === 'declined') {
+            if (window._pendingFriendRequests) {
+                window._pendingFriendRequests = window._pendingFriendRequests.filter(r => r.fromName !== message.targetName);
+            }
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Declined friend request from ${message.targetName}.`, 'info');
         }
         renderFriendsTabContent();
     } else {
@@ -5781,8 +5813,13 @@ function handleFriendResult(message) {
 }
 
 function handleFriendRequest(message) {
-    if (typeof showBriefNotification === 'function') showBriefNotification(`${message.fromName} added you as a friend!`, 'success');
-    if (typeof logAction === 'function') _safeLogAction(`${message.fromName} added you as a friend!`, 'social');
+    // Store pending friend request for accept/decline
+    if (!window._pendingFriendRequests) window._pendingFriendRequests = [];
+    if (!window._pendingFriendRequests.find(r => r.fromName === message.fromName)) {
+        window._pendingFriendRequests.push({ fromName: message.fromName, receivedAt: Date.now() });
+    }
+    if (typeof showBriefNotification === 'function') showBriefNotification(`${message.fromName} sent you a friend request!`, 'success');
+    if (typeof logAction === 'function') _safeLogAction(`${message.fromName} sent you a friend request!`, 'social');
 }
 
 function handleBlockResult(message) {
@@ -5808,6 +5845,16 @@ function handleFriendsListResult(message) {
 // Global functions for friends screen buttons
 window.addFriend = function(name) {
     sendMP({ type: 'friend_add', targetName: name });
+};
+window.acceptFriendRequest = function(name) {
+    sendMP({ type: 'friend_accept', fromName: name });
+    window._pendingFriendRequests = (window._pendingFriendRequests || []).filter(r => r.fromName !== name);
+    renderFriendsTabContent();
+};
+window.declineFriendRequest = function(name) {
+    sendMP({ type: 'friend_decline', fromName: name });
+    window._pendingFriendRequests = (window._pendingFriendRequests || []).filter(r => r.fromName !== name);
+    renderFriendsTabContent();
 };
 window.removeFriend = function(name) {
     sendMP({ type: 'friend_remove', targetName: name });
@@ -5981,7 +6028,7 @@ function renderCrewScreen(container, data) {
                 <input type="text" id="crew-name-input" placeholder="Crew name (3-24 chars)" maxlength="24" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
                 <input type="text" id="crew-tag-input" placeholder="Tag (2-5 chars, e.g. MFB)" maxlength="5" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
                 <input type="text" id="crew-motto-create" placeholder="Motto (optional)" maxlength="64" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
-                <button onclick="window.crewCreate()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:10px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:1em;">Create Crew ($10,000)</button>
+                <button onclick="window.crewCreate()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:10px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:1em;">Create Crew</button>
             </div>
         </div>`;
 
@@ -5989,7 +6036,10 @@ function renderCrewScreen(container, data) {
             html += `<div ${style} style="border-color:#d4af37;">
                 <h4 style="color:#d4af37;">Pending Invite</h4>
                 <p style="color:#d4c4a0;">You've been invited to join <strong>${escapeHTML(window._pendingCrewInvite.crewName)}</strong></p>
-                <button onclick="window.crewAcceptInvite()" style="background:#27ae60;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Accept</button>
+                <div style="display:flex;gap:8px;">
+                    <button onclick="window.crewAcceptInvite()" style="background:#27ae60;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Accept</button>
+                    <button onclick="window.crewDeclineInvite()" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Decline</button>
+                </div>
             </div>`;
         }
     }
@@ -6030,6 +6080,11 @@ window.crewAcceptInvite = function() {
         sendMP({ type: 'crew_join', crewId: window._pendingCrewInvite.crewId });
         window._pendingCrewInvite = null;
     }
+};
+window.crewDeclineInvite = function() {
+    window._pendingCrewInvite = null;
+    if (typeof showBriefNotification === 'function') showBriefNotification('Crew invite declined.', 'info');
+    renderCrewScreen();
 };
 
 // ==================== PLAYER GAMBLING CLIENT ====================

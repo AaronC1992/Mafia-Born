@@ -1042,6 +1042,12 @@ function handleClientMessage(clientId, message, ws) {
         case 'friend_add':
             handleFriendAdd(clientId, message);
             break;
+        case 'friend_accept':
+            handleFriendAccept(clientId, message);
+            break;
+        case 'friend_decline':
+            handleFriendDecline(clientId, message);
+            break;
         case 'friend_remove':
             handleFriendRemove(clientId, message);
             break;
@@ -4619,13 +4625,45 @@ function handleFriendAdd(clientId, message) {
     }
     if (!targetId) return ws.send(JSON.stringify({ type: 'friend_result', success: false, error: 'Player not found online.' }));
     
-    ws.send(JSON.stringify({ type: 'friend_result', success: true, action: 'added', targetName }));
-    // Notify target
+    // Send as pending request — not auto-added
+    ws.send(JSON.stringify({ type: 'friend_result', success: true, action: 'requested', targetName }));
+    // Notify target with a friend request they must accept/decline
     const targetWs = clients.get(targetId);
     if (targetWs && targetWs.readyState === WebSocket.OPEN) {
         targetWs.send(JSON.stringify({ type: 'friend_request', fromName: player.name }));
     }
     scheduleWorldSave();
+}
+
+function handleFriendAccept(clientId, message) {
+    const ws = clients.get(clientId);
+    const player = gameState.players.get(clientId);
+    if (!ws || !player) return;
+    const fromName = (message.fromName || '').trim();
+    if (!fromName) return;
+
+    // Add to this player's friends
+    ws.send(JSON.stringify({ type: 'friend_result', success: true, action: 'added', targetName: fromName }));
+
+    // Find the requester and add them too
+    let requesterId = null;
+    for (const [id, p] of gameState.players) {
+        if (p.name === fromName) { requesterId = id; break; }
+    }
+    if (requesterId) {
+        const requesterWs = clients.get(requesterId);
+        if (requesterWs && requesterWs.readyState === WebSocket.OPEN) {
+            requesterWs.send(JSON.stringify({ type: 'friend_result', success: true, action: 'added', targetName: player.name }));
+        }
+    }
+    scheduleWorldSave();
+}
+
+function handleFriendDecline(clientId, message) {
+    const ws = clients.get(clientId);
+    if (!ws) return;
+    // Just acknowledge — no state change needed
+    ws.send(JSON.stringify({ type: 'friend_result', success: true, action: 'declined', targetName: message.fromName }));
 }
 
 function handleFriendRemove(clientId, message) {
@@ -4910,11 +4948,30 @@ function handleCrewKick(clientId, message) {
 
 function handleCrewInfo(clientId) {
     const ws = clients.get(clientId);
+    const player = gameState.players.get(clientId);
     if (!ws) return;
     
     let playerCrew = null;
     for (const [, c] of gameState.crews) {
-        if (c.members.find(m => m.playerId === clientId)) { playerCrew = c; break; }
+        // Match by player name so it survives reconnection (clientId changes on refresh)
+        const member = player ? c.members.find(m => m.name === player.name) : null;
+        if (member) {
+            // Update stored clientId to current connection
+            member.playerId = clientId;
+            if (c.leaderName === player.name) {
+                c.leader = clientId;
+            }
+            if (member.role === 'officer' && !c.officers.includes(clientId)) {
+                c.officers = c.officers.filter(id => {
+                    // Remove stale officer IDs for this player
+                    const oldMember = c.members.find(m => m.playerId === id);
+                    return oldMember && oldMember.name !== player.name;
+                });
+                c.officers.push(clientId);
+            }
+            playerCrew = c;
+            break;
+        }
     }
     
     // Also send list of all crews

@@ -9338,7 +9338,7 @@ const STAT_BAR_ITEMS = [
 ];
 
 // Stats that default to HIDDEN (player must opt-in)
-const STAT_BAR_DEFAULTS_OFF = ['ammo-display', 'gas-display', 'reputation-display', 'jail-status-display', 'family-rank-display'];
+const STAT_BAR_DEFAULTS_OFF = ['ammo-display', 'gas-display', 'jail-status-display', 'family-rank-display'];
 
 function toggleStatDisplay(checkbox) {
   const statId = checkbox.getAttribute('data-stat');
@@ -16847,8 +16847,8 @@ function showTerritorySpawn() {
 
   container.innerHTML = `
     <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.95); display: flex; align-items: center;
-                justify-content: center; z-index: 1000; overflow-y: auto;">
+                background: rgba(0,0,0,0.95); display: flex; align-items: flex-start;
+                justify-content: center; z-index: 1000; overflow-y: auto; padding: 30px 0;">
       <div style="max-width: 1000px; width: 95%; padding: 30px; text-align: center; color: white;">
         <h2 style="color: #8b3a3a; font-size: 2em; margin-bottom: 8px;">Choose Your Turf</h2>
         <p style="color: #d4c4a0; margin-bottom: 24px; font-size: 1.1em;">
@@ -17405,15 +17405,27 @@ function startGameAfterIntro() {
 
   // Log the beginning of the journey
   logAction(`${player.name} steps into the shadows of the city. The streets whisper promises of power and wealth, but first... survival.`);
-
-  // Show version update notification
-  checkAndShowVersionUpdate();
 }
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.22.0";
+const CURRENT_VERSION = "1.23.0";
 const VERSION_UPDATES = {
+  "1.23.0": {
+    title: "Social & Crew Overhaul",
+    date: "June 2025",
+    changes: [
+      "Changelog no longer auto-pops on login -- moved to Settings and clickable version on title screen",
+      "Fixed spawn location screen top clipping on profile creation",
+      "Reputation now visible in top status bar by default",
+      "Training Gym button shows notification badge when training is available",
+      "Commission screen Friends/Crew tabs show notification badges for pending invites",
+      "Friend requests now require accept/decline instead of auto-adding",
+      "Crew invites now have a Decline button alongside Accept",
+      "Removed crew creation cost -- crews now work as a free party system for co-op heists",
+      "Fixed crew screen breaking after browser refresh/reconnect",
+    ]
+  },
   "1.18.0": {
     title: "Buff & Perk Rebalance Pass",
     date: "March 2026",
@@ -18212,8 +18224,9 @@ function checkAndShowVersionUpdate() {
   }
 }
 
-function showVersionUpdateNotification() {
-  const updateInfo = VERSION_UPDATES[CURRENT_VERSION];
+function showVersionUpdateNotification(version) {
+  const ver = version || CURRENT_VERSION;
+  const updateInfo = VERSION_UPDATES[ver];
   if (!updateInfo) return;
 
   const overlay = document.createElement('div');
@@ -18257,7 +18270,7 @@ function showVersionUpdateNotification() {
         ${updateInfo.title}
       </h3>
       <p style="color: #c0a062; font-weight: bold; font-size: 1.1em; margin: 5px 0;">
-        Version ${CURRENT_VERSION}
+        Version ${ver}
       </p>
       <p style="color: #8a7a5a; font-size: 0.9em; margin: 10px 0 0 0;">
         Released: ${updateInfo.date}
@@ -18303,14 +18316,8 @@ function showVersionUpdateNotification() {
         onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(192, 160, 98, 0.6)';"
         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(192, 160, 98, 0.4)';"
       >
-        Let's Get Started!
+        Close
       </button>
-    </div>
-
-    <div style="text-align: center; margin-top: 20px;">
-      <p style="color: #8a7a5a; font-size: 0.85em;">
-        Tip: You can always check the latest updates in the game menu
-      </p>
     </div>
   `;
 
@@ -18318,15 +18325,17 @@ function showVersionUpdateNotification() {
   document.body.appendChild(overlay);
 }
 
+function showChangelog() {
+  showVersionUpdateNotification(CURRENT_VERSION);
+}
+window.showChangelog = showChangelog;
+
 function closeVersionUpdate() {
   const overlay = document.getElementById('version-update-overlay');
   if (overlay) {
     overlay.style.animation = 'fadeOut 0.3s ease';
     setTimeout(() => {
       overlay.remove();
-      // After the changelog is dismissed, trigger the safehouse tutorial
-      // (only shows if the player hasn't seen it yet)
-      setTimeout(() => showTutorialOverlay('safehouse'), 300);
     }, 300);
   }
 }
@@ -24812,6 +24821,16 @@ function getNotificationBadges() {
   // Crew invite pending
   if (window._pendingCrewInvite) {
     badges.crew = true;
+  }
+
+  // Training gym: badge when not currently training (slot available)
+  if (!player.activeTraining) {
+    badges.skills = true;
+  }
+
+  // The Commission: badge if any pending friend/crew/alliance invites
+  if (window._pendingCrewInvite || window._pendingAllianceInvite || (window._pendingFriendRequests && window._pendingFriendRequests.length > 0)) {
+    badges.onlineworld = true;
   }
 
   return badges;
