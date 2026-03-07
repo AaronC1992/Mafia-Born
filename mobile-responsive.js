@@ -125,12 +125,10 @@ export const MobileSystem = {
             this.setupSwipeGestures();
             this.swipeGesturesConfigured = true;
         }
-        // Floating ledger button removed - now in quick bar
+        // Floating ledger button now in quick bar
         this.createMobileQuickActions();
         this.mobileNavigationActive = true;
     },
-    
-    // createMobileMenuButton removed — was dead code (ledger in quick bar),
     
     // Setup swipe gestures for mobile action panel
     setupSwipeGestures() {
@@ -368,8 +366,6 @@ export const MobileSystem = {
             this.openActionPanel();
         }
     },
-    
-    // showLogButtonHint removed — was dead code (ledger in quick bar),
     
     // Emergency cleanup function to remove any stuck overlays
     cleanupOverlays() {
@@ -641,8 +637,6 @@ export const MobileSystem = {
             actionPanel.remove();
         }
     },
-    
-    // createMobileActionLog removed — was dead code (handled in slide menu),
     
     // JS RESPONSIBILITY: Touch-specific enhancements (feedback, scroll optimization)
     // CSS RESPONSIBILITY: Button sizing via .mobile-device class

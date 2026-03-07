@@ -222,4 +222,3 @@ export const factionEffects = {
     }
 };
 
-// Mentorship system removed in Phase 31

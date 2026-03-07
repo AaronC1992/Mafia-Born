@@ -358,15 +358,6 @@ export function gainExperience(amount) {
   }
 }
 
-/** Legacy stub -- level system removed, reputation is the sole progression metric */
-export function checkLevelUp() {}
-
-// Energy system removed — replaced by crime cooldown timers.
-// Legacy stubs kept for backward compatibility with old saves.
-export function regenerateEnergy() {}
-export function startEnergyRegenTimer() {}
-export function startEnergyRegeneration() {}
-
 // ── Unified Skill Tree Definitions ──────────────────────────────
 // RPG-style talent trees with 3 tiers per discipline.
 // Tier 1: Foundation skills (max 10 ranks, no prereqs)

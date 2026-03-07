@@ -1,7 +1,6 @@
-// onboarding removed -- tutorial system fully stripped
 import { applyDailyPassives, getDrugIncomeMultiplier, getViolenceHeatMultiplier, getWeaponPriceMultiplier } from './passiveManager.js';
 import { showEmpireOverview } from './empireOverview.js';
-import { player, gainExperience, checkLevelUp, REPUTATION_TIERS, getReputationTier, getNextTier, SKILL_TREE_DEFS, getTreePointsSpent, canUnlockNode, isNodeAccessible, achievements, CHARACTER_BACKGROUNDS, CHARACTER_PERKS } from './player.js';
+import { player, gainExperience, REPUTATION_TIERS, getReputationTier, getNextTier, SKILL_TREE_DEFS, getTreePointsSpent, canUnlockNode, isNodeAccessible, achievements, CHARACTER_BACKGROUNDS, CHARACTER_PERKS } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
 import { crimeFamilies, factionEffects } from './factions.js';
 import { familyStories, missionProgress, factionMissions } from './missions.js?v=1.8.1';
@@ -65,8 +64,6 @@ window.jailPrisoners = jailPrisoners;
 window.jailbreakPrisoners = jailbreakPrisoners;
 window.SKILL_TREE_DEFS = SKILL_TREE_DEFS;
 window.factionEffects = factionEffects;
-// availablePerks removed (Phase 31)
-// potentialMentors removed (Phase 31)
 window.achievements = achievements;
 window.EventBus = EventBus;
 window.GameLogging = GameLogging;
@@ -379,7 +376,6 @@ function updateMissionProgress(actionType, value = 1) {
 }
 
 // Function to update mission availability based on player progress
-// (factionMissions and bossBattles arrays are empty -- loops removed)
 function updateMissionAvailability() {
 }
 
@@ -1137,9 +1133,6 @@ function startSignatureJob(familyKey) {
   showMissions();
 }
 
-// startTurfMission removed -- turfMissions was always empty; turf is handled by attackTurfZone()
-// startBossBattle removed -- bossBattles array was always empty
-
 // ==================== GANG MANAGEMENT OVERHAUL ====================
 
 // --- Unified Role System ---
@@ -1401,11 +1394,6 @@ function calculateMemberEffectiveness(member, taskType) {
     });
 
     return Math.floor(baseScore);
-}
-
-// Gang loyalty system removed -- updateMemberLoyalty is now a no-op kept for API compat
-function updateMemberLoyalty(member, change, reason = "") {
-    return { betrayed: false, loyaltyChange: 0 };
 }
 
 // ==================== 2. SINGLEPLAYER TURF SYSTEM ====================
@@ -2788,8 +2776,6 @@ const RIVAL_KINGPINS = Object.values(RIVAL_FAMILIES).flatMap(f => {
     return list;
 }).concat(Object.values(INDEPENDENT_BOSSES).map(b => ({ id: b.id, name: b.name, faction: "independent", personality: "opportunistic", territories: [b.zone], gangSize: 6, powerRating: b.power, wealth: b.reward, aggressiveness: 0.9, respectTowardPlayer: 0, specialAbility: "guerrilla_warfare" })));
 
-// processRivalTurn removed -- dead code (never called)
-
 // ==================== SIDE QUEST SYSTEM (v1.9 -- Timers + Linked Street Stories) ====================
 
 function initSideQuests() {
@@ -3369,9 +3355,6 @@ function initializeExpandedSystems(player) {
         });
     }
 
-    // Respect system removed -- factions use streetReputation in player.js
-    // initializeRespectSystem(player);
-
     // Event tracking
     if (!player.interactiveEvents) {
         player.interactiveEvents = {
@@ -3416,8 +3399,6 @@ export default {
     // Event functions
     triggerInteractiveEvent,
     processEventChoice,
-
-    // Rival functions removed (processRivalTurn was dead code)
 
     // Initialization
     initializeExpandedSystems
@@ -4070,8 +4051,6 @@ const betrayalEvents = [
     detectionChance: 40
   }
 ];
-// districtTypes array removed -- Map now uses TURF_ZONES; businesses use DISTRICTS from territories.js
-
 // Protection Racket Businesses
 const protectionBusinesses = [
   {
@@ -4163,8 +4142,6 @@ const protectionBusinesses = [
     category: "logistics"
   }
 ];
-
-// rivalGangs removed -- 5 gangs were defined but never referenced anywhere
 
 // Corruption Targets
 const corruptionTargets = [
@@ -4827,8 +4804,6 @@ async function sellBusiness(businessIndex) {
   refreshFrontsPanel();
 }
 
-// [Loan Shark system removed in Phase 31]
-
 // Money Laundering Functions
 // Build laundering content HTML (used by both standalone screen and Properties tab)
 function buildLaunderingHTML() {
@@ -5437,17 +5412,6 @@ function showGangManagementScreen() {
   document.getElementById("gang-screen").style.display = "block";
 }
 
-// boostMemberLoyalty removed -- loyalty system no longer active
-function boostMemberLoyalty(memberIndex) {
-  // No-op: loyalty system removed
-  return;
-}
-
-// getAverageLoyalty removed -- loyalty system no longer active
-function getAverageLoyalty() {
-  return 100; // Stub: always returns 100 for backward compat
-}
-
 // Calculate total gang power
 // Accepts members with either legacy specialization or expanded role
 function calculateGangPower() {
@@ -6026,12 +5990,6 @@ function enrollInTraining(programId) {
 
   updateUI();
   showGang();
-}
-
-// dealWithDisloyalty removed -- loyalty system no longer active
-async function dealWithDisloyalty(memberIndex) {
-  // No-op: loyalty system removed
-  return;
 }
 
 // Check for betrayal events
@@ -9184,8 +9142,6 @@ function updateRightPanelExtras() {
   }
 }
 
-// Quick energy purchase functions removed -- energy system replaced by crime cooldowns
-
 // Function to check if the player has required items for a job
 function hasRequiredItems(requiredItems) {
   return requiredItems.every(item => {
@@ -12224,13 +12180,7 @@ async function attemptGangRescue() {
 }
 window.attemptGangRescue = attemptGangRescue;
 
-// Legacy aliases for onclick handlers
-function showSkillTab() { renderSkillTreeUI(); }
-function upgradeSkill() {}
-function upgradeSkillTree() {}
-
 // Function to show gang management
-// (Removed duplicate showGang function)
 
 // Gang management functions
 function collectTribute() {
@@ -13149,18 +13099,6 @@ const newsEvents = [
     icon: ''
   }
 ];
-
-// (Suspicion system removed -- using unified Heat/Wanted Level instead)
-
-// Police Crackdown System placeholder -- keep crackdown array below
-// Legacy dead functions removed: checkSuspicionConsequences, checkFBIInvestigation,
-// showFBIEventOverlay, handleFBIChoice, executeFBIRaid
-
-/* eslint-disable no-unused-vars */
-function checkSuspicionConsequences() { /* no-op */ }
-function checkFBIInvestigation() { /* no-op */ }
-function handleFBIChoice() { /* no-op */ }
-/* eslint-enable no-unused-vars */
 
 // Police Crackdown System
 const crackdownTypes = [
@@ -18894,8 +18832,6 @@ const BOUNTY_TARGETS = [
 const BOUNTY_TIER_LABELS = { 1: 'Street', 2: 'Enforcer', 3: 'Underboss', 4: 'Kingpin' };
 const BOUNTY_TIER_COLORS = { 1: '#8a9a6a', 2: '#c0a040', 3: '#e67e22', 4: '#8b3a3a' };
 const BOUNTY_REFRESH_MS = 4 * 60 * 60 * 1000; // 4 hours
-const BOUNTY_ENERGY_COST = {}; // Legacy (energy system removed)
-
 function generateBountyBoard() {
   if (!player.bountyBoard) player.bountyBoard = { targets: [], lastRefresh: 0 };
   const now = Date.now();
@@ -22148,8 +22084,6 @@ function applySaveData(saveData) {
     }
   }
 
-  // --- Offline energy regen removed (cooldown system) ---
-
   // --- Offline Tribute Collection (via bookie, if hired) ---
   // Already handled by bookieAutoCollect on next tick, no extra work needed.
 
@@ -24541,7 +24475,6 @@ window.dropProtection = dropProtection;
 window.fortifyTerritory = fortifyTerritory;
 window.acquireTerritory = function(zoneId) { attackTurfZone(zoneId); };
 window.fireGangMember = fireGangMember;
-window.dealWithDisloyalty = dealWithDisloyalty;
 window.startTraining = startTraining;
 window.hireSpecialRecruit = hireSpecialRecruit;
 window.showGangManagementScreen = showGangManagementScreen;
@@ -24549,15 +24482,11 @@ window.deleteGameSlot = deleteGameSlot;
 
 // Skills & Progression (Unified RPG Skill Tree)
 window.showSkills = showSkills;
-window.showSkillTab = showSkillTab;
 window.selectSkillTree = selectSkillTree;
 window.renderSkillTreeUI = renderSkillTreeUI;
 window.startSkillTraining = startSkillTraining;
 window.cancelSkillTraining = cancelSkillTraining;
-window.upgradeSkillTree = upgradeSkillTree;
-window.upgradeSkill = upgradeSkill;
 window.gainExperience = gainExperience;
-window.checkLevelUp = checkLevelUp;
 window.showLevelUpEffects = showLevelUpEffects;
 window.createLevelUpParticles = createLevelUpParticles;
 window.showNarrativeOverlay = showNarrativeOverlay;
@@ -24566,9 +24495,6 @@ window.closeLevelUpOverlay = closeLevelUpOverlay;
 window.unlockAchievement = unlockAchievement;
 window.checkAchievements = checkAchievements;
 window.showAchievements = showAchievements;
-
-// FBI Investigation (removed -- suspicion system consolidated into heat)
-// window.handleFBIChoice = handleFBIChoice;
 
 // The Fence
 window.showFence = showFence;

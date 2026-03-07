@@ -235,8 +235,6 @@ export const businessTypes = [
     }
 ];
 
-// [Loan Shark system removed in Phase 31]
-
 // Money Laundering Methods
 // timeRequired is in real-time MINUTES (displayed as "Processing Time")
 export const launderingMethods = [
