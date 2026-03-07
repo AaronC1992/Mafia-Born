@@ -482,11 +482,13 @@ export const MobileSystem = {
                 const recentActions = logItems.slice(-10).reverse(); // Get last 10 actions, newest first
                 
                 if (recentActions.length > 0) {
-                    mobileActionList.innerHTML = recentActions.map(item => 
-                        `<div style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.05); 
+                    mobileActionList.innerHTML = recentActions.map(item => {
+                        const msgEl = item.querySelector('.log-msg');
+                        const text = msgEl ? msgEl.textContent : item.textContent;
+                        return `<div style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.05); 
                                      border-radius: 4px; color: #f5e6c8; font-size: 13px; line-height: 1.4; 
-                                     border-left: 3px solid #c0a062; font-family: 'Georgia', serif;">${item.textContent}</div>`
-                    ).join('');
+                                     border-left: 3px solid #c0a062; font-family: 'Georgia', serif;">${text}</div>`;
+                    }).join('');
                 } else {
                     mobileActionList.innerHTML = '<div style="color: #8a7a5a; font-style: italic; text-align: center; padding: 20px;">No recent activity</div>';
                 }

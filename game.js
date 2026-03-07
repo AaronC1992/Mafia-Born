@@ -10106,8 +10106,8 @@ function showJobs() {
         detailsHTML += `<br><small style="color:#8a7a5a;">Jail: ${job.jailChance}% | Damage: ${job.healthLoss} | Wanted: +${job.wantedLevelGain} | Rep: <span style="color:#c0a062;">${JOB_REP_BY_RISK[job.risk] || 0.5}</span></small>`;
 
         return `
-          <li>
-            <strong>${job.name}</strong> - ${payoutText}
+          <li class="game-card game-card--accent-left" style="--card-accent: ${buttonColor};">
+            <strong class="game-card__title">${job.name}</strong> - ${payoutText}
             <br><small>Risk: ${job.risk.toUpperCase()} | Cooldown: ${formatCooldownTime(baseCooldown)} | ${cooldownLabel}</small>
             ${detailsHTML}
             <button data-job-index="${index}" style="background-color: ${buttonColor};"
@@ -10188,13 +10188,80 @@ function setLedgerFilter(filter) {
 }
 window.setLedgerFilter = setLedgerFilter;
 
+// Formats a timestamp into relative text ("just now", "2m ago", etc.)
+function formatRelativeTime(timestamp) {
+  const diff = Math.floor((Date.now() - timestamp) / 1000);
+  if (diff < 10) return 'just now';
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+// Periodically refresh all visible timestamps in the ledger
+setInterval(() => {
+  const items = document.querySelectorAll('#log-list li[data-log-time]');
+  items.forEach(li => {
+    const ts = parseInt(li.getAttribute('data-log-time'), 10);
+    const span = li.querySelector('.log-timestamp');
+    if (span && ts) span.textContent = formatRelativeTime(ts);
+  });
+}, 30000); // every 30s
+
+// Strips HTML tags to get a plain-text key for grouping
+function _logPlainText(msg) {
+  const tmp = document.createElement('span');
+  tmp.innerHTML = msg;
+  return tmp.textContent || tmp.innerText || '';
+}
+
 function logAction(message, category) {
-  // category: 'environment' (default), 'chat', or 'online'
   const cat = category || 'environment';
   const logList = document.getElementById("log-list");
-  const logItem = document.createElement("li");
+  const now = Date.now();
+
+  // --- Grouping: if latest entry has same category + text, bump its count ---
+  const lastItem = logList.lastElementChild;
+  if (lastItem && cat !== 'chat' && cat !== 'online') {
+    const lastMsg = lastItem.getAttribute('data-log-msg') || '';
+    const plainMsg = _logPlainText(message);
+    if (lastMsg === plainMsg && lastItem.getAttribute('data-log-category') === cat) {
+      const count = parseInt(lastItem.getAttribute('data-log-count') || '1', 10) + 1;
+      lastItem.setAttribute('data-log-count', count);
+      lastItem.setAttribute('data-log-time', now);
+      let badge = lastItem.querySelector('.log-group-count');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'log-group-count';
+        const msgSpan = lastItem.querySelector('.log-msg');
+        if (msgSpan) msgSpan.appendChild(badge);
+      }
+      badge.textContent = `x${count}`;
+      const tsSpan = lastItem.querySelector('.log-timestamp');
+      if (tsSpan) tsSpan.textContent = formatRelativeTime(now);
+      if (lastItem.style.display !== 'none') {
+        lastItem.scrollIntoView({ behavior: 'smooth' });
+      }
+      updateMobileActionLog();
+      return;
+    }
+  }
+
+  // --- Create new entry ---
+  const logItem = document.createElement('li');
   logItem.setAttribute('data-log-category', cat);
-  logItem.innerText = message;
+  logItem.setAttribute('data-log-time', now);
+  logItem.setAttribute('data-log-msg', _logPlainText(message));
+
+  const msgSpan = document.createElement('span');
+  msgSpan.className = 'log-msg';
+  msgSpan.innerHTML = message;
+  logItem.appendChild(msgSpan);
+
+  const tsSpan = document.createElement('span');
+  tsSpan.className = 'log-timestamp';
+  tsSpan.textContent = 'just now';
+  logItem.appendChild(tsSpan);
 
   // Style chat entries differently
   if (cat === 'chat') {
@@ -10205,18 +10272,22 @@ function logAction(message, category) {
 
   // Respect current filter
   if (currentLedgerFilter !== 'all' && cat !== currentLedgerFilter) {
-    // 'online' entries show under both 'chat' filter and 'all'
     if (!(currentLedgerFilter === 'chat' && cat === 'online')) {
       logItem.style.display = 'none';
     }
   }
 
   logList.appendChild(logItem);
-  if (logItem.style.display !== 'none') {
-    logItem.scrollIntoView({ behavior: "smooth" });
+
+  // Cap log at 200 entries to avoid memory bloat
+  while (logList.children.length > 200) {
+    logList.removeChild(logList.firstChild);
   }
 
-  // Update mobile action log if mobile system is loaded
+  if (logItem.style.display !== 'none') {
+    logItem.scrollIntoView({ behavior: 'smooth' });
+  }
+
   updateMobileActionLog();
 }
 
@@ -14494,18 +14565,18 @@ function showRecruitment() {
         const moneyTypeColor = isCleanMoney ? '#5a8a5a' : '#8a5a5a';
 
         return `
-          <li style="margin: 12px 0; padding: 20px; background: linear-gradient(135deg, #14120a 0%, #0d0b07 100%); border-radius: 12px; border: 1px solid ${levelColor}; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+          <li class="game-card game-card--tier" style="--card-accent: ${levelColor}; margin: 12px 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
               <div style="flex: 1; min-width: 220px;">
-                <h4 style="color: ${levelColor}; margin: 0 0 10px 0; font-size: 1.2em; font-family: 'Georgia', serif;">${recruit.name}</h4>
+                <h4 class="game-card__title" style="color: ${levelColor}; margin: 0 0 10px 0; font-size: 1.2em;">${recruit.name}</h4>
                 <div style="margin-bottom: 10px;">
-                  <span style="background: ${levelColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; font-weight: bold;">
+                  <span class="game-card__badge" style="background: ${levelColor}; color: white;">
                     Level ${recruit.experienceLevel} ${levelText}
                   </span>
-                  <span style="background: rgba(20, 18, 10, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; margin-left: 8px;">
+                  <span class="game-card__badge" style="background: rgba(20, 18, 10, 0.8); color: white; margin-left: 8px;">
                     ${displayRoleName}
                   </span>
-                  <span style="background: ${moneyTypeColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; margin-left: 8px;">
+                  <span class="game-card__badge" style="background: ${moneyTypeColor}; color: white; margin-left: 8px;">
                     ${moneyTypeLabel} Money
                   </span>
                 </div>
@@ -14514,15 +14585,12 @@ function showRecruitment() {
                 </div>
               </div>
               <div style="text-align: right; margin-left: 15px;">
-                <div style="font-size: 1.2em; font-weight: bold; color: #c0a040; margin-bottom: 10px;">
+                <div class="game-card__price" style="font-size: 1.2em; margin-bottom: 10px;">
                   $${recruit.cost.toLocaleString()}
                 </div>
                 <button onclick="recruitMember(${index})"
                     ${canAfford ? '' : 'disabled'}
-                    style="background: ${canAfford ? 'linear-gradient(180deg, #7a8a5a, #1a7a40)' : '#555'};
-                        color: white; padding: 12px 20px; border: none; border-radius: 8px;
-                        font-weight: bold; cursor: ${canAfford ? 'pointer' : 'not-allowed'};
-                        font-size: 15px; font-family: 'Georgia', serif; transition: all 0.3s ease;">
+                    class="store-buy-btn ${canAfford ? 'store-buy-btn--active' : 'store-buy-btn--disabled'}">
                   ${canAfford ? ' Recruit' : 'Too Expensive'}
                 </button>
               </div>
@@ -15064,43 +15132,34 @@ function renderStoreTab(tabId) {
     const borderColor = borderColorMap[item.type] || '#c0a062';
 
     return `
-      <li style="display: flex; align-items: center; gap: 15px; padding: 15px; margin: 10px 0; background: rgba(20, 18, 10, 0.6); border-radius: 8px; border-left: 4px solid ${borderColor};">
+      <li class="game-card game-card--accent-left" style="--card-accent: ${borderColor}; display: flex; align-items: center; gap: 15px; margin: 10px 0;">
         <div style="flex-shrink: 0;">
           <img src="${imageSrc}" alt="${item.name}"
-             style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;
-                border: 2px solid #f5e6c8; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
+             class="store-item-img"
              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div style="display: none; width: 80px; height: 80px; border-radius: 8px;
-                background: #6a5a3a; align-items: center; justify-content: center;
-                font-size: 12px; color: white; border: 2px solid #f5e6c8; text-align: center;">
+          <div class="store-item-img-fallback">
             ${item.name}
           </div>
         </div>
         <div style="flex: 1;">
           <div style="margin-bottom: 5px;">
-            <strong style="color: #f5e6c8; font-size: 1.1em;">${item.name}</strong>${ownedBadge}
+            <strong class="game-card__title">${item.name}</strong>${ownedBadge}
           </div>
-          <div style="margin-bottom: 8px; color: #d4c4a0;">
+          <div class="game-card__subtitle" style="margin-bottom: 8px;">
             ${itemDescription}
           </div>
           ${item.description ? `<div style="margin-bottom: 6px; color: #a0b0c0; font-size: 0.88em; font-style: italic;">${item.description}</div>` : ''}
           ${comparisonHTML}
           ${requirementText}
           ${bulletStockHTML}
-          <div id="store-price-${index}" data-base-price="${item.price}" style="color: #c0a040; font-weight: bold; font-size: 1.1em;">
+          <div id="store-price-${index}" data-base-price="${item.price}" class="game-card__price">
             $${finalPrice.toLocaleString()}${discountText}
           </div>
         </div>
         <div style="flex-shrink: 0;">
           <button id="buy-btn-${index}" onclick="buyItem(${index})"
-              style="background: ${canBuy ? '#7a8a5a' : '#6a5a3a'};
-                  color: white; padding: 12px 20px; border: none; border-radius: 6px;
-                  cursor: ${canBuy ? 'pointer' : 'not-allowed'};
-                  font-weight: bold; font-size: 14px; min-width: 120px;
-                  transition: all 0.3s ease;"
-              ${canBuy ? '' : 'disabled'}
-              onmouseover="if(!this.disabled) this.style.background='#229954'"
-              onmouseout="if(!this.disabled) this.style.background='#7a8a5a'">
+              class="store-buy-btn ${canBuy ? 'store-buy-btn--active' : 'store-buy-btn--disabled'}"
+              ${canBuy ? '' : 'disabled'}>
             ${btnText}
           </button>
         </div>
@@ -18904,11 +18963,11 @@ function renderBountyBoard() {
     }
 
     html += `
-      <div class="bounty-card ${bounty.completed ? 'bounty-card-done' : ''} ${bounty.failed ? 'bounty-card-failed' : ''}" style="--tier-color:${tierColor}">
-        <div class="bounty-card-tier" style="background:${tierColor}">${tierLabel}</div>
-        <div class="bounty-card-name">${bounty.name}</div>
-        <p class="bounty-card-desc">${bounty.desc}</p>
-        <div class="bounty-card-stats">
+      <div class="game-card game-card--tier bounty-card ${bounty.completed ? 'game-card--done bounty-card-done' : ''} ${bounty.failed ? 'game-card--done bounty-card-failed' : ''}" style="--card-accent:${tierColor}; --tier-color:${tierColor}">
+        <div class="game-card__badge bounty-card-tier" style="background:${tierColor}">${tierLabel}</div>
+        <div class="game-card__title bounty-card-name">${bounty.name}</div>
+        <p class="game-card__subtitle bounty-card-desc">${bounty.desc}</p>
+        <div class="game-card__stats bounty-card-stats">
           <span>Reward: <strong>$${bounty.reward.toLocaleString()}</strong></span>
           <span>Rep: <strong>${bounty.xp}</strong></span>
         </div>
@@ -19045,16 +19104,16 @@ function renderHospitalContent() {
 
     // Full Treatment (90s base)
     const fullDur = getHealDuration(HEAL_TYPES.full.baseDuration);
-    html += `<div class="hospital-option">
-      <div class="hospital-option-header">
+    html += `<div class="game-card hospital-option">
+      <div class="game-card__header hospital-option-header">
         <span class="hospital-icon"></span>
         <div>
-          <strong>${HEAL_TYPES.full.label}</strong>
-          <p>${HEAL_TYPES.full.desc}</p>
+          <strong class="game-card__title">${HEAL_TYPES.full.label}</strong>
+          <p class="game-card__subtitle">${HEAL_TYPES.full.desc}</p>
         </div>
       </div>
-      <div class="hospital-option-footer">
-        <span class="hospital-cost">$${vals.full.cost.toLocaleString()} | ${fullDur}s</span>
+      <div class="game-card__footer hospital-option-footer">
+        <span class="game-card__price hospital-cost">$${vals.full.cost.toLocaleString()} | ${fullDur}s</span>
         <button onclick="startHospitalHealing('full')" ${player.money < vals.full.cost || missingHealth <= 0 ? 'disabled' : ''}>
           ${player.money < vals.full.cost ? "Can't Afford" : `Heal to 100% (+${vals.full.healAmount} HP)`}
         </button>
@@ -19064,16 +19123,16 @@ function renderHospitalContent() {
     // Partial Heal (60s base)
     if (missingHealth > 10) {
       const partDur = getHealDuration(HEAL_TYPES.partial.baseDuration);
-      html += `<div class="hospital-option">
-        <div class="hospital-option-header">
+      html += `<div class="game-card hospital-option">
+        <div class="game-card__header hospital-option-header">
           <span class="hospital-icon"></span>
           <div>
-            <strong>${HEAL_TYPES.partial.label}</strong>
-            <p>${HEAL_TYPES.partial.desc}</p>
+            <strong class="game-card__title">${HEAL_TYPES.partial.label}</strong>
+            <p class="game-card__subtitle">${HEAL_TYPES.partial.desc}</p>
           </div>
         </div>
-        <div class="hospital-option-footer">
-          <span class="hospital-cost">$${vals.partial.cost.toLocaleString()} | ${partDur}s</span>
+        <div class="game-card__footer hospital-option-footer">
+          <span class="game-card__price hospital-cost">$${vals.partial.cost.toLocaleString()} | ${partDur}s</span>
           <button onclick="startHospitalHealing('partial')" ${player.money < vals.partial.cost ? 'disabled' : ''}>
             ${player.money < vals.partial.cost ? "Can't Afford" : `Patch Up (+${vals.partial.healAmount} HP)`}
           </button>
@@ -19083,16 +19142,16 @@ function renderHospitalContent() {
 
     // Rest (30s base)
     const restDur = getHealDuration(HEAL_TYPES.rest.baseDuration);
-    html += `<div class="hospital-option">
-      <div class="hospital-option-header">
+    html += `<div class="game-card hospital-option">
+      <div class="game-card__header hospital-option-header">
         <span class="hospital-icon"></span>
         <div>
-          <strong>${HEAL_TYPES.rest.label}</strong>
-          <p>${HEAL_TYPES.rest.desc}</p>
+          <strong class="game-card__title">${HEAL_TYPES.rest.label}</strong>
+          <p class="game-card__subtitle">${HEAL_TYPES.rest.desc}</p>
         </div>
       </div>
-      <div class="hospital-option-footer">
-        <span class="hospital-cost" style="color:#c0a062;">Free | ${restDur}s</span>
+      <div class="game-card__footer hospital-option-footer">
+        <span class="game-card__price hospital-cost" style="color:#c0a062;">Free | ${restDur}s</span>
         <button onclick="startHospitalHealing('rest')" ${vals.rest.healAmount <= 0 ? 'disabled' : ''}>
           ${vals.rest.healAmount <= 0 ? 'Too Healthy to Rest' : `Rest (+${vals.rest.healAmount} HP)`}
         </button>
