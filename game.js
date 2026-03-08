@@ -8744,6 +8744,12 @@ function showAdminPanel() {
       </div>
     </div>
 
+    <div class="section-header" style="color: #8b3a3a;">Bug Reports / Suggestions</div>
+    <div class="content-card">
+      <button onclick="adminLoadBugReports()" style="border-color:#8b3a3a; margin-bottom:10px;">Load Bug Reports</button>
+      <div id="admin-bug-reports" style="max-height:400px; overflow-y:auto;"></div>
+    </div>
+
     <div class="section-header" style="color: #8b3a3a;">&#9760; Kill Player (Online)</div>
     <div class="content-card">
       <div style="display:flex; gap:8px; margin-bottom:10px;">
@@ -8769,6 +8775,42 @@ function adminQuickGrant(stat, amount) {
   updateUI();
   showAdminPanel(); // Refresh panel to show updated values
 }
+
+async function adminLoadBugReports() {
+  const container = document.getElementById('admin-bug-reports');
+  if (!container) return;
+  container.innerHTML = '<p style="color:#8a7a5a;">Loading...</p>';
+  try {
+    const apiBase = window.__MULTIPLAYER_SERVER_URL__ ||
+      (location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+        ? `http://${location.hostname}:3000` : 'https://mafia-born.onrender.com');
+    const token = localStorage.getItem('auth_token');
+    const resp = await fetch(`${apiBase}/api/admin/reports`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!resp.ok) throw new Error('Failed to fetch reports');
+    const { reports } = await resp.json();
+    if (!reports || reports.length === 0) {
+      container.innerHTML = '<p style="color:#8a7a5a;">No reports yet.</p>';
+      return;
+    }
+    container.innerHTML = reports.map(r => {
+      const date = new Date(r.createdAt).toLocaleString();
+      const typeColor = r.type === 'bug' ? '#ff6b6b' : r.type === 'suggestion' ? '#8a9a6a' : '#c0a062';
+      return `<div style="border:1px solid #333; border-radius:6px; padding:10px; margin-bottom:8px; background:#14120a;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="color:${typeColor}; font-weight:bold; text-transform:uppercase; font-size:0.8em;">${r.type}</span>
+          <span style="color:#666; font-size:0.8em;">${date}</span>
+        </div>
+        <div style="color:#c0a062; font-size:0.85em; margin-bottom:4px;">From: ${r.playerName}</div>
+        <div style="color:#e0e0e0; font-size:0.9em; white-space:pre-wrap;">${r.description.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<p style="color:#ff6b6b;">Error: ${err.message}</p>`;
+  }
+}
+window.adminLoadBugReports = adminLoadBugReports;
 
 function adminLevelUp(count) {
   // Legacy -- levels removed, grant reputation instead

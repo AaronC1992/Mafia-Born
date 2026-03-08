@@ -1,48 +1,14 @@
 // ==================== MAFIA BORN - MULTIPLAYER SERVER ====================
-const dns = require('dns');
-dns.setDefaultResultOrder('ipv4first');
-// Force all DNS lookups to use IPv4 (Render has no IPv6 outbound)
-const _origLookup = dns.lookup;
-dns.lookup = function (hostname, options, callback) {
-    if (typeof options === 'function') { callback = options; options = {}; }
-    if (typeof options === 'number') { options = { family: options }; }
-    options = Object.assign({}, options, { family: 4 });
-    return _origLookup.call(dns, hostname, options, callback);
-};
 const WebSocket = require('ws');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const nodemailer = require('nodemailer');
 // JSON file persistence utilities
 const { loadWorldState, saveWorldState, flushWorldState } = require('./worldPersistence');
 // MongoDB connection
 const mongodb = require('./db');
 // User accounts & authentication
 const userDB = require('./userDB');
-
-// ── Email transporter (created once at startup) ────────────────
-const mailTransporter = (function () {
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-    if (!user || !pass) {
-        console.log('[mail] SMTP_USER / SMTP_PASS not set -- email notifications disabled.');
-        return null;
-    }
-    const t = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: { user, pass }
-    });
-    // Verify connection at startup
-    t.verify().then(() => {
-        console.log('[mail] Gmail SMTP connection verified successfully.');
-    }).catch(err => {
-        console.error('[mail] Gmail SMTP verification FAILED:', err.message);
-    });
-    return t;
-})();
 
 // ── Admin accounts (lowercase usernames) ───────────────────────
 const ADMIN_USERNAMES = new Set(['admin']);
@@ -338,23 +304,25 @@ const server = http.createServer(async (req, res) => {
                     return json(500, { error: 'Failed to save report. Please try again later.' });
                 }
 
-                // Try to email (await it so it actually completes)
-                if (mailTransporter) {
-                    try {
-                        const smtpUser = process.env.SMTP_USER;
-                        await mailTransporter.sendMail({
-                            from: `"Mafia Born Reports" <${smtpUser}>`,
-                            to: 'aaroncue92@gmail.com',
-                            subject: `[Mafia Born] ${safeType.charAt(0).toUpperCase() + safeType.slice(1)} from ${safeName}`,
-                            text: `Type: ${safeType}\nPlayer: ${safeName}\nDate: ${new Date().toISOString()}\n\n${safeDesc}`,
-                        });
-                        console.log('[mail] Bug report email sent successfully.');
-                    } catch (mailErr) {
-                        console.error('[mail] Bug report email FAILED:', mailErr.message);
-                    }
-                }
-
                 return json(200, { ok: true });
+            }
+
+            // ── GET /api/admin/reports ─────────────────────
+            if (urlPath === '/api/admin/reports' && req.method === 'GET') {
+                const username = userDB.validateToken(getToken());
+                if (!username || !isAdmin(username)) return json(403, { error: 'Admin access required' });
+                try {
+                    const db = mongodb.getDb();
+                    const reports = await db.collection('bug_reports')
+                        .find({})
+                        .sort({ createdAt: -1 })
+                        .limit(50)
+                        .toArray();
+                    return json(200, { reports });
+                } catch (dbErr) {
+                    console.error('Failed to fetch bug reports:', dbErr.message);
+                    return json(500, { error: 'Failed to fetch reports.' });
+                }
             }
 
             // Unknown API route
