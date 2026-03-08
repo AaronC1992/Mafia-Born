@@ -553,6 +553,9 @@ const gameState = {
     // Chat channels (crew/alliance)
     crewChats: new Map(),      // crewId -> messages[] (last 50)
     allianceChats: new Map(),  // allianceId -> messages[] (last 50)
+    // Offline death newspapers — queued for crew/alliance members who are offline when a teammate dies
+    // Map: playerName -> [ { newspaperData, context, groupName, timestamp } ]
+    offlineDeathNewspapers: new Map(),
     // Player gambling tables
     gamblingTables: new Map(), // tableId -> { id, type, hostId, hostName, guestId, guestName, bet, state, gameData, createdAt }
     // Seasonal events
@@ -638,6 +641,13 @@ try {
         gameState.bounties = persisted.bounties;
     }
 
+    // Load offline death newspapers
+    if (persisted.offlineDeathNewspapers && typeof persisted.offlineDeathNewspapers === 'object') {
+        for (const [name, msgs] of Object.entries(persisted.offlineDeathNewspapers)) {
+            if (Array.isArray(msgs)) gameState.offlineDeathNewspapers.set(name, msgs);
+        }
+    }
+
     // Load unified player market (supports legacy 'marketplace' key)
     if (Array.isArray(persisted.playerMarket)) {
         gameState.playerMarket = persisted.playerMarket;
@@ -712,6 +722,7 @@ function scheduleWorldSave() {
                 alliances: Object.fromEntries(gameState.alliances),
                 bounties: gameState.bounties,
                 playerMarket: gameState.playerMarket,
+                offlineDeathNewspapers: Object.fromEntries(gameState.offlineDeathNewspapers),
                 season: {
                     number: gameState.season.number,
                     startedAt: gameState.season.startedAt,
@@ -1341,6 +1352,22 @@ function handlePlayerConnect(clientId, message, ws) {
     // Add join message to global chat (skip on reconnects to avoid spam)
     if (!wasReconnect) {
         addGlobalChatMessage('System', `${player.name} joined the criminal underworld!`, '#f39c12');
+    }
+
+    // Deliver any queued death newspapers from crew/alliance members who died while offline
+    const pendingNewspapers = gameState.offlineDeathNewspapers.get(player.name);
+    if (pendingNewspapers && pendingNewspapers.length > 0) {
+        // Expire entries older than 7 days
+        const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        const valid = pendingNewspapers.filter(e => e.timestamp > sevenDaysAgo);
+        if (valid.length > 0) {
+            ws.send(JSON.stringify({
+                type: 'pending_death_newspapers',
+                newspapers: valid
+            }));
+        }
+        gameState.offlineDeathNewspapers.delete(player.name);
+        scheduleWorldSave();
     }
 }
 
@@ -3198,6 +3225,92 @@ function addGlobalChatMessage(sender, message, color = '#ffffff') {
     });
 }
 
+// ==================== CREW/ALLIANCE DEATH NOTIFICATION ====================
+// When a player dies, notify their crew and alliance members.
+// Online members already receive the global broadcast; offline members get
+// the newspaper queued so it is delivered when they next log in.
+
+const MAX_OFFLINE_NEWSPAPERS = 20; // cap per player to prevent unbounded growth
+
+function queueOfflineDeathNewspaper(playerName, entry) {
+    let queue = gameState.offlineDeathNewspapers.get(playerName);
+    if (!queue) { queue = []; gameState.offlineDeathNewspapers.set(playerName, queue); }
+    queue.push(entry);
+    // Trim oldest if over cap
+    if (queue.length > MAX_OFFLINE_NEWSPAPERS) queue.splice(0, queue.length - MAX_OFFLINE_NEWSPAPERS);
+}
+
+function notifyCrewAllianceOfDeath(deadClientId, newspaperData) {
+    const deadPlayer = gameState.players.get(deadClientId);
+    if (!deadPlayer) return;
+    const deadName = deadPlayer.name;
+
+    // ── Crew notification ──
+    let deadCrew = null;
+    for (const [, c] of gameState.crews) {
+        if (c.members.find(m => m.name === deadName)) { deadCrew = c; break; }
+    }
+    if (deadCrew) {
+        for (const member of deadCrew.members) {
+            if (member.name === deadName) continue; // skip the dead player
+            const ws = clients.get(member.playerId);
+            if (ws && ws.readyState === 1) {
+                // Online — send targeted crew death notification
+                ws.send(JSON.stringify({
+                    type: 'crew_death_newspaper',
+                    newspaperData: newspaperData,
+                    context: 'crew',
+                    groupName: deadCrew.name,
+                    groupTag: deadCrew.tag
+                }));
+            } else {
+                // Offline — queue for delivery on login
+                queueOfflineDeathNewspaper(member.name, {
+                    newspaperData: newspaperData,
+                    context: 'crew',
+                    groupName: deadCrew.name,
+                    groupTag: deadCrew.tag,
+                    timestamp: Date.now()
+                });
+            }
+        }
+    }
+
+    // ── Alliance notification ──
+    const deadAlliance = findPlayerAlliance(deadClientId);
+    if (deadAlliance) {
+        for (const memberId of deadAlliance.members) {
+            if (memberId === deadClientId) continue; // skip the dead player
+            const ws = clients.get(memberId);
+            if (ws && ws.readyState === 1) {
+                // Online — send targeted alliance death notification
+                ws.send(JSON.stringify({
+                    type: 'crew_death_newspaper',
+                    newspaperData: newspaperData,
+                    context: 'alliance',
+                    groupName: deadAlliance.name,
+                    groupTag: deadAlliance.tag
+                }));
+            } else {
+                // Offline — resolve name from memberNames lookup
+                const memberName = (deadAlliance.memberNames && deadAlliance.memberNames[memberId])
+                    || null;
+                if (memberName) {
+                    queueOfflineDeathNewspaper(memberName, {
+                        newspaperData: newspaperData,
+                        context: 'alliance',
+                        groupName: deadAlliance.name,
+                        groupTag: deadAlliance.tag,
+                        timestamp: Date.now()
+                    });
+                }
+            }
+        }
+    }
+
+    if (deadCrew || deadAlliance) scheduleWorldSave();
+}
+
 // ==================== PLAYER DEATH NEWSPAPER ====================
 function handlePlayerDeath(clientId, message) {
     const playerData = gameState.players.get(clientId);
@@ -3233,6 +3346,9 @@ function handlePlayerDeath(clientId, message) {
         type: 'player_death_newspaper',
         newspaperData: sanitized
     });
+
+    // Notify crew/alliance members (online get targeted msg, offline get queued)
+    notifyCrewAllianceOfDeath(clientId, sanitized);
 }
 
 // ==================== JAIL NEWSPAPER BROADCAST ====================
@@ -3339,6 +3455,9 @@ function handleAdminKillPlayer(clientId, message) {
         type: 'player_death_newspaper',
         newspaperData: serverNewspaper
     });
+
+    // Notify crew/alliance members (online get targeted msg, offline get queued)
+    notifyCrewAllianceOfDeath(targetPlayerId, serverNewspaper);
 
     // Also broadcast as global chat
     broadcastToAll({
@@ -3713,6 +3832,7 @@ function handleAllianceCreate(clientId, message) {
         tag: tag,
         leader: clientId,
         members: [clientId],
+        memberNames: { [clientId]: player.name },
         createdAt: Date.now(),
         treasury: 0,
         motto: (message.motto || 'United we stand.').substring(0, 80)
@@ -3780,6 +3900,8 @@ function handleAllianceJoin(clientId, message) {
     if (alliance.members.length >= MAX_ALLIANCE_SIZE) return fail('Alliance is full.');
 
     alliance.members.push(clientId);
+    if (!alliance.memberNames) alliance.memberNames = {};
+    alliance.memberNames[clientId] = player.name;
 
     console.log(` ${player.name} joined [${alliance.tag}] ${alliance.name}`);
 
@@ -3805,6 +3927,7 @@ function handleAllianceLeave(clientId, message) {
     if (!alliance) return fail('You are not in an alliance.');
 
     alliance.members = alliance.members.filter(id => id !== clientId);
+    if (alliance.memberNames) delete alliance.memberNames[clientId];
 
     if (alliance.members.length === 0) {
         // Alliance dissolved
@@ -3851,6 +3974,7 @@ function handleAllianceKick(clientId, message) {
     if (!targetId || !alliance.members.includes(targetId)) return fail('Player not in your alliance.');
 
     alliance.members = alliance.members.filter(id => id !== targetId);
+    if (alliance.memberNames) delete alliance.memberNames[targetId];
 
     // Notify kicked player
     const tgtWs = clients.get(targetId);

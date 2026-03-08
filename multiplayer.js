@@ -1492,6 +1492,49 @@ async function handleServerMessage(message) {
             }
             break;
 
+        case 'crew_death_newspaper':
+            // A crew or alliance member died — show the newspaper immediately
+            if (message.newspaperData) {
+                lastReceivedDeathNewspaper = message.newspaperData;
+                const groupLabel = message.context === 'alliance' ? 'Alliance' : 'Crew';
+                const groupTag = message.groupTag ? `[${message.groupTag}]` : '';
+                showMPToast(`${groupLabel} ${groupTag} member ${message.newspaperData.name} has been killed!`, '#8b0000', 5000);
+                if (typeof window.showDeathNewspaper === 'function') {
+                    window.showDeathNewspaper(message.newspaperData);
+                }
+                if (typeof logAction === 'function') {
+                    _safeLogAction(`${groupLabel} ${groupTag} DEATH: ${message.newspaperData.name} is dead! "${message.newspaperData.causeOfDeath}"`, 'chat');
+                }
+            }
+            break;
+
+        case 'pending_death_newspapers':
+            // Queued death newspapers from crew/alliance members who died while we were offline
+            if (Array.isArray(message.newspapers) && message.newspapers.length > 0) {
+                const papers = message.newspapers;
+                showMPToast(`You have ${papers.length} death report${papers.length > 1 ? 's' : ''} from while you were away.`, '#c0a040', 5000);
+                // Show the most recent one immediately, log all
+                for (let i = 0; i < papers.length; i++) {
+                    const entry = papers[i];
+                    if (entry.newspaperData) {
+                        const groupLabel = entry.context === 'alliance' ? 'Alliance' : 'Crew';
+                        const groupTag = entry.groupTag ? `[${entry.groupTag}]` : '';
+                        if (typeof logAction === 'function') {
+                            _safeLogAction(`${groupLabel} ${groupTag} DEATH: ${entry.newspaperData.name} is dead! "${entry.newspaperData.causeOfDeath}"`, 'chat');
+                        }
+                    }
+                }
+                // Show the most recent newspaper popup
+                const latest = papers[papers.length - 1];
+                if (latest.newspaperData) {
+                    lastReceivedDeathNewspaper = latest.newspaperData;
+                    if (typeof window.showDeathNewspaper === 'function') {
+                        window.showDeathNewspaper(latest.newspaperData);
+                    }
+                }
+            }
+            break;
+
         case 'admin_killed':
             // Admin has executed this player — trigger full permadeath
             console.log('You have been killed by admin:', message.causeOfDeath);
