@@ -10250,7 +10250,7 @@ const SCREEN_TUTORIAL_MAP = {
 // Full help reference accessed from Settings > Help button.
 
 const HELP_TOPICS = [
-  { id: 'getting-started', icon: '[?]', title: 'Getting Started', content: `
+  { id: 'getting-started', icon: '', title: 'Getting Started', content: `
     <p>Welcome to <strong>Mafia-Born</strong> -- a browser-based crime RPG where you rise from street thug to Don of your own criminal empire.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Core Concepts</h4>
     <ul>

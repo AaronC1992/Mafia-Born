@@ -1356,7 +1356,11 @@ async function handleServerMessage(message) {
                         player.inJail = !!selfPs.inJail;
                         player.jailTime = selfPs.jailTime || 0;
                     }
-                    if (typeof selfPs.heat === 'number') player.heat = selfPs.heat;
+                    // Heat is NOT synced from world_update — it's managed locally
+                    // (jobs, admin panel, skills, turf, etc.) and would be overwritten
+                    // with a stale server value here.  Server-authoritative heat changes
+                    // from specific actions (job_result, territory_war_result, etc.) are
+                    // still applied via their dedicated handlers.
                     _safeUpdateUI(); // reflect authoritative corrections
                 }
             }
