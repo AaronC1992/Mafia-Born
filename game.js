@@ -13843,7 +13843,6 @@ const menuUnlockConfig = [
   // === EARLY GAME (Level 2-3) ===
   { id: 'playerstats', fn: 'showPlayerStats()', label: 'Overview', tip: 'Stats, events, skills, empire & overview', level: 2 },
   { id: 'skills', fn: 'showSkills()', label: 'Training Gym', tip: 'Train skills & unlock abilities', level: 2 },
-  { id: 'relocate', fn: 'showTerritoryRelocation()', label: 'Relocate', tip: 'Move to a different district', level: 2 },
   { id: 'realestate', fn: 'showRealEstate()', label: 'Properties', tip: 'Real estate & business fronts', level: 3 },
 
   // === MID GAME (Level 5-8) ===
@@ -17096,7 +17095,10 @@ function renderTerritoriesScreen() {
           <h2 style="color: #d4af37; margin: 0;">Your Territories</h2>
           <p style="color: #d4c4a0; margin: 4px 0 0;">Manage your turf zones and district holdings</p>
         </div>
-        <button class="nav-btn-back" onclick="goBackToMainMenu();"><- Back</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="showTerritoryRelocation()" style="background:#333;color:#c0a062;padding:10px 18px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-family:'Georgia',serif;font-weight:bold;">Relocate</button>
+          <button class="nav-btn-back" onclick="goBackToMainMenu();"><- Back</button>
+        </div>
       </div>
 
       <!-- Summary Bar -->
@@ -17425,6 +17427,7 @@ const VERSION_UPDATES = {
       "All game screens now listed in Quick Action and Mobile Nav Bar customization",
       "Vehicles removed from Black Market — Armored Car, Luxury Automobile, and Private Airplane are now extremely rare steals from the Steal a Car job",
       "Player Market is now the only way to buy equipment vehicles from other players",
+      "Relocate moved from SafeHouse menu into the Territories screen",
     ]
   },
   "1.26.1": {
