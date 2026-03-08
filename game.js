@@ -9221,7 +9221,7 @@ function updateQuickActions() {
     }
   });
 
-  html += `<button onclick="saveGame()" class="quick-btn save-btn">Save Records</button>`;
+  html += `<button onclick="saveGame()" class="quick-btn">Save Records</button>`;
 
   // Skip Tutorial button (only visible when tutorials are still active)
   if (localStorage.getItem('tutorialSkipAll') !== '1') {
@@ -9229,7 +9229,7 @@ function updateQuickActions() {
   }
 
   // Help button
-  html += `<button onclick="showHelpScreen()" class="quick-btn" style="border-color:#c0a062;color:#c0a062;">Help</button>`;
+  html += `<button onclick="showHelpScreen()" class="quick-btn">Help</button>`;
 
   container.innerHTML = html;
 }
