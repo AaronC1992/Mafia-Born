@@ -413,7 +413,7 @@ function showCreateHeist() {
             ${targetsHTML}
 
             <div style="text-align: center; margin-top: 20px;">
-                <button onclick="showActiveHeists()" style="background: #333; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">? Back to Big Scores</button>
+                <button onclick="showActiveHeists()" style="background: #333; color: #c0a062; padding: 12px 25px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">Back to Big Scores</button>
             </div>
         </div>
     `;

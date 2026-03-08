@@ -26,10 +26,6 @@ export const storeItems = [
     { name: "Stab Vest", price: 65000, power: 25, type: "armor", durability: 40, maxDurability: 40, description: "Lightweight protection from blades. +25 defense power. Reduces damage from melee weapons." },
     { name: "Bulletproof Vest", price: 130000, power: 40, type: "armor", durability: 30, maxDurability: 30, description: "Standard issue for the paranoid. +40 defense power. Reduces damage from firearms." },
     { name: "Reinforced Body Armor", price: 260000, power: 60, type: "armor", durability: 25, maxDurability: 25, description: "Military-grade protection. +60 defense power. Best-in-class damage reduction." },
-    // === Vehicles ===
-    { name: "Armored Car", price: 150000, power: 25, type: "vehicle", durability: 60, maxDurability: 60, description: "Bulletproof windows, reinforced frame. +25 power. Requires Gasoline to operate." },
-    { name: "Luxury Automobile", price: 500000, power: 50, type: "vehicle", durability: 45, maxDurability: 45, description: "Travel in style and power. +50 power. Requires Gasoline. Boosts respect." },
-    { name: "Private Airplane", price: 1800000, power: 200, type: "vehicle", durability: 30, maxDurability: 30, description: "Leave the country at a moment's notice. +200 power. Requires Gasoline. Unlocks escape options." },
     // === Supplies ===
     { name: "Bullets", price: 100000, power: 0, type: "ammo", description: "Premium black-market ammunition. Extremely scarce — only 10 rounds hit the streets each day. Required for firearms." },
     { name: "Gasoline", price: 50000, power: 0, type: "gas", description: "Fuel for your vehicles. Hard to come by on the black market. Required to operate cars and planes. Consumed per use." },

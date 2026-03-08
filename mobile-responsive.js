@@ -583,7 +583,14 @@ export const MobileSystem = {
         family:     { label: 'Family',    action: 'showGang()' },
         properties: { label: 'Property',  action: 'showRealEstate()' },
         missions:   { label: 'Missions',  action: 'showMissions()' },
-        stats:      { label: 'Stats',     action: 'showPlayerStats()' },
+        stats:      { label: 'Overview',  action: 'showPlayerStats()' },
+        bountyboard:{ label: 'Bounties',  action: 'showBountyBoard()' },
+        relocate:   { label: 'Relocate',  action: 'showTerritoryRelocation()' },
+        territories:{ label: 'Turf',      action: 'showTerritories()' },
+        courthouse: { label: 'Legal Aid', action: 'showCourtHouse()' },
+        jailbreak:  { label: 'Breakout',  action: 'showJailbreak()' },
+        corruption: { label: 'Corrupt',   action: 'showCorruption()' },
+        commission: { label: 'Commission',action: 'showOnlineWorld()' },
     },
     
     // Default tabs (these are used when no customization has been saved)

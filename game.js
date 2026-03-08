@@ -13807,80 +13807,9 @@ function startEventTimers() {
 
 // Function to show current events and weather status
 function showEventsStatus() {
-  hideAllScreens();
-  document.getElementById("events-screen").style.display = "block";
-
-  const weather = weatherEffects[currentWeather];
-  const seasonName = currentSeason.charAt(0).toUpperCase() + currentSeason.slice(1);
-  const effects = getActiveEffects();
-
-  let statusHTML = `
-    <h2>City Status & Events</h2>
-
-    <!-- Current Weather -->
-    <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #c0a062;">
-      <h3 style="color: #c0a062; margin-bottom: 15px;">${weather.icon} Current Weather: ${weather.name}</h3>
-      <p style="margin-bottom: 10px;">${weather.description}</p>
-      <p style="margin-bottom: 10px;"><strong>Season:</strong> ${seasonName}</p>
-    </div>
-
-    <!-- Active Events -->
-    <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #8b3a3a;">
-      <h3 style="color: #8b3a3a; margin-bottom: 15px;">Active Events</h3>
-  `;
-
-  if (activeEvents.length === 0) {
-    statusHTML += `<p style="color: #8a7a5a;">No special events currently active.</p>`;
-  } else {
-    activeEvents.forEach(event => {
-      const timeLeft = Math.max(0, event.endTime - Date.now());
-      const hoursLeft = Math.ceil(timeLeft / (60 * 60 * 1000));
-      const typeColor = event.type === 'crackdown' ? '#8b3a3a' :
-               event.type === 'news' ? '#c0a040' : '#8a9a6a';
-
-      statusHTML += `
-        <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid ${typeColor};">
-          <h4 style="color: ${typeColor}; margin-bottom: 8px;">${event.icon || ''} ${event.name}</h4>
-          <p style="margin-bottom: 8px;">${event.description}</p>
-          <p style="color: #c0a040; margin: 0;"><strong>Time Left:</strong> ${hoursLeft} hour(s)</p>
-        </div>
-      `;
-    });
-  }
-
-  statusHTML += `
-    </div>
-
-    <!-- Combined Effects Summary -->
-    <div style="background: rgba(20, 18, 10, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #8b6a4a;">
-      <h3 style="color: #8b6a4a; margin-bottom: 15px;">Current Effects Summary</h3>
-  `;
-
-  if (Object.keys(effects).length === 0 || Object.values(effects).every(value => value === 0)) {
-    statusHTML += `<p style="color: #8a7a5a;">No special effects currently active - standard operations apply.</p>`;
-  } else {
-    Object.keys(effects).forEach(effect => {
-      const value = effects[effect];
-      if (value !== 0) {
-        const sign = value > 0 ? '+' : '';
-        const color = value > 0 ? '#8a9a6a' : '#8b3a3a';
-        statusHTML += `<p style="color: ${color}; margin: 5px 0;"><strong>${effect}:</strong> ${sign}${(value * 100).toFixed(0)}%</p>`;
-      }
-    });
-  }
-
-  statusHTML += `
-    </div>
-
-    <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-      <button onclick="triggerRandomWeatherChange()" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
-        Check Weather Update
-      </button>
-      <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
-    </div>
-  `;
-
-  document.getElementById("events-content").innerHTML = statusHTML;
+  // Events are now a tab inside the Overview screen
+  showPlayerStats();
+  showPlayerStatsTab('events');
 }
 
 function triggerRandomWeatherChange() {
@@ -13912,7 +13841,7 @@ const menuUnlockConfig = [
   { id: 'casino', fn: 'showCasino()', label: 'Gambling', tip: 'Slots, roulette, cards & mini games', level: 0 },
 
   // === EARLY GAME (Level 2-3) ===
-  { id: 'playerstats', fn: 'showPlayerStats()', label: 'Stats', tip: 'Stats, skills, empire & overview', level: 2 },
+  { id: 'playerstats', fn: 'showPlayerStats()', label: 'Overview', tip: 'Stats, events, skills, empire & overview', level: 2 },
   { id: 'skills', fn: 'showSkills()', label: 'Training Gym', tip: 'Train skills & unlock abilities', level: 2 },
   { id: 'relocate', fn: 'showTerritoryRelocation()', label: 'Relocate', tip: 'Move to a different district', level: 2 },
   { id: 'realestate', fn: 'showRealEstate()', label: 'Properties', tip: 'Real estate & business fronts', level: 3 },
@@ -13921,7 +13850,6 @@ const menuUnlockConfig = [
   { id: 'gang', fn: 'showGang()', label: 'The Family', tip: 'Recruit & manage your crew', level: 5 },
   { id: 'territories', fn: 'showTerritories()', label: 'Territories', tip: 'Manage your owned territories', level: 5 },
   { id: 'courthouse', fn: 'showCourtHouse()', label: 'Legal Aid', tip: 'Pay to reduce your wanted level', level: 5 },
-  { id: 'events', fn: 'showEventsStatus()', label: 'Events', tip: 'Current weather & world events', level: 5 },
   { id: 'jailbreak', fn: 'showJailbreak()', label: 'Breakout', tip: 'Break allies out of prison', level: 0 },
 
   // === LATE GAME (Level 10-15) ===
@@ -14258,11 +14186,12 @@ function showPlayerStats() {
       <button id="tab-empire" onclick="showPlayerStatsTab('empire')" style="background:rgba(231,76,60,0.3);color:#8b3a3a;padding:8px 16px;border:1px solid #8b3a3a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Rating</button>
       <button id="tab-overview" onclick="showPlayerStatsTab('overview')" style="background:rgba(230,126,34,0.3);color:#e67e22;padding:8px 16px;border:1px solid #e67e22;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Overview</button>
       <button id="tab-skills" onclick="showPlayerStatsTab('skills')" style="background:rgba(138, 154, 106,0.3);color:#8a9a6a;padding:8px 16px;border:1px solid #8a9a6a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Training Gym</button>
+      <button id="tab-events" onclick="showPlayerStatsTab('events')" style="background:rgba(192,160,98,0.3);color:#c0a062;padding:8px 16px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Events</button>
     </div>
 
     <!-- Stats Tab (default) -->
     <div id="panel-stats">
-      <h2 style="color:#d4af37;text-align:center;margin:10px 0 18px;">Player Stats Overview</h2>
+      <h2 style="color:#d4af37;text-align:center;margin:10px 0 18px;">Overview</h2>
       ${card('Origin &amp; Perk', '', originHTML)}
       ${card('Core Stats', '', coreHTML)}
       ${card('Skill Trees', '', skillTreeOverviewHTML)}
@@ -14286,6 +14215,9 @@ function showPlayerStats() {
 
     <!-- Skills/Expertise Tab (hidden initially) -->
     <div id="panel-skills" style="display:none;"></div>
+
+    <!-- Events Tab (hidden initially) -->
+    <div id="panel-events" style="display:none;"></div>
   `;
 }
 window.showPlayerStats = showPlayerStats;
@@ -14298,6 +14230,7 @@ const STATS_TAB_CONFIG = {
   empire: { inactive: 'rgba(231,76,60,0.3)', color: '#8b3a3a', active: '#8b3a3a', activeText: '#fff' },
   overview: { inactive: 'rgba(230,126,34,0.3)', color: '#e67e22', active: '#e67e22', activeText: '#fff' },
   skills: { inactive: 'rgba(138, 154, 106,0.3)', color: '#8a9a6a', active: '#8a9a6a', activeText: '#fff' },
+  events: { inactive: 'rgba(192,160,98,0.3)', color: '#c0a062', active: '#c0a062', activeText: '#fff' },
 };
 const STATS_TAB_IDS = Object.keys(STATS_TAB_CONFIG);
 
@@ -14373,8 +14306,77 @@ function showPlayerStatsTab(tab) {
       if (backBtn && backBtn.parentElement) backBtn.parentElement.remove();
     }
   }
+
+  // Lazy-load events content (always refresh for up-to-date weather/events)
+  if (tab === 'events') {
+    const panel = document.getElementById('panel-events');
+    if (panel) {
+      panel.innerHTML = buildEventsTabHTML();
+    }
+  }
 }
 window.showPlayerStatsTab = showPlayerStatsTab;
+
+// Build Events tab HTML for the Overview screen
+function buildEventsTabHTML() {
+  const weather = weatherEffects[currentWeather];
+  const seasonName = currentSeason.charAt(0).toUpperCase() + currentSeason.slice(1);
+  const effects = getActiveEffects();
+
+  let html = `<h2 style="color:#d4af37;text-align:center;margin:10px 0 18px;">City Status & Events</h2>`;
+
+  // Current Weather
+  html += `<div style="background:rgba(20,18,10,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:16px;margin-bottom:14px;">
+    <h3 style="color:#c0a062;margin:0 0 10px;">${weather.icon} Current Weather: ${weather.name}</h3>
+    <p style="margin-bottom:10px;color:#d4c4a0;">${weather.description}</p>
+    <p style="margin-bottom:10px;color:#d4c4a0;"><strong>Season:</strong> ${seasonName}</p>
+  </div>`;
+
+  // Active Events
+  html += `<div style="background:rgba(20,18,10,0.6);border:1px solid rgba(139,58,58,0.3);border-radius:10px;padding:16px;margin-bottom:14px;">
+    <h3 style="color:#8b3a3a;margin:0 0 10px;">Active Events</h3>`;
+
+  if (activeEvents.length === 0) {
+    html += `<p style="color:#8a7a5a;">No special events currently active.</p>`;
+  } else {
+    activeEvents.forEach(event => {
+      const timeLeft = Math.max(0, event.endTime - Date.now());
+      const hoursLeft = Math.ceil(timeLeft / (60 * 60 * 1000));
+      const typeColor = event.type === 'crackdown' ? '#8b3a3a' : event.type === 'news' ? '#c0a040' : '#8a9a6a';
+      html += `<div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:8px;margin-bottom:10px;border-left:4px solid ${typeColor};">
+        <h4 style="color:${typeColor};margin-bottom:8px;">${event.icon || ''} ${event.name}</h4>
+        <p style="margin-bottom:8px;color:#d4c4a0;">${event.description}</p>
+        <p style="color:#c0a040;margin:0;"><strong>Time Left:</strong> ${hoursLeft} hour(s)</p>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+
+  // Effects Summary
+  html += `<div style="background:rgba(20,18,10,0.6);border:1px solid rgba(139,106,74,0.3);border-radius:10px;padding:16px;margin-bottom:14px;">
+    <h3 style="color:#8b6a4a;margin:0 0 10px;">Current Effects Summary</h3>`;
+
+  if (Object.keys(effects).length === 0 || Object.values(effects).every(v => v === 0)) {
+    html += `<p style="color:#8a7a5a;">No special effects currently active - standard operations apply.</p>`;
+  } else {
+    Object.keys(effects).forEach(effect => {
+      const value = effects[effect];
+      if (value !== 0) {
+        const sign = value > 0 ? '+' : '';
+        const color = value > 0 ? '#8a9a6a' : '#8b3a3a';
+        html += `<p style="color:${color};margin:5px 0;"><strong>${effect}:</strong> ${sign}${(value * 100).toFixed(0)}%</p>`;
+      }
+    });
+  }
+  html += `</div>`;
+
+  // Check Weather button
+  html += `<div style="text-align:center;margin-top:15px;">
+    <button onclick="triggerRandomWeatherChange(); showPlayerStatsTab('events');" style="background:#c0a062;color:white;padding:12px 25px;border:none;border-radius:8px;cursor:pointer;">Check Weather Update</button>
+  </div>`;
+
+  return html;
+}
 
 // Build Career Statistics HTML (extracted from showStatistics)
 function buildCareerStatisticsHTML() {
@@ -14996,7 +14998,6 @@ const storeCategories = [
   { id: 'all', label: 'All', icon: '', types: null },
   { id: 'weapons', label: 'Weapons', icon: '', types: ['weapon'] },
   { id: 'armor', label: 'Armor', icon: '', types: ['armor'] },
-  { id: 'vehicles', label: 'Vehicles', icon: '', types: ['vehicle'] },
   { id: 'supplies', label: 'Supplies', icon: '', types: ['ammo', 'gas'] },
   { id: 'utility', label: 'Utility', icon: '', types: ['utility'] },
   { id: 'trade', label: 'Trade Goods', icon: '', types: ['highLevelDrug'] }
@@ -17413,8 +17414,19 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.26.1";
+const CURRENT_VERSION = "1.27.0";
 const VERSION_UPDATES = {
+  "1.27.0": {
+    title: "UI Polish & Vehicle Theft Overhaul",
+    date: "March 2026",
+    changes: [
+      "Fixed stray ? in Plan a Heist back button and removed emoji from PvP Gambling tab",
+      "Stats screen renamed to Overview; Events/weather moved into Overview as a tab",
+      "All game screens now listed in Quick Action and Mobile Nav Bar customization",
+      "Vehicles removed from Black Market — Armored Car, Luxury Automobile, and Private Airplane are now extremely rare steals from the Steal a Car job",
+      "Player Market is now the only way to buy equipment vehicles from other players",
+    ]
+  },
   "1.26.1": {
     title: "Combined DMs & Activities Overhaul",
     date: "June 2025",

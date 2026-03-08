@@ -93,5 +93,10 @@ export const stolenCarTypes = [
     { name: "Party Bus", baseValue: 200000, damageChance: 25, rarity: 0.2, image: "vehicles/Party Bus.png" },
     
     // Super rare vehicles
-    { name: "Police Cruiser", baseValue: 250000, damageChance: 10, rarity: 0.1, image: "vehicles/Police Cruiser.png" }
+    { name: "Police Cruiser", baseValue: 250000, damageChance: 10, rarity: 0.1, image: "vehicles/Police Cruiser.png" },
+
+    // Equipment-grade vehicles (extremely rare — steal to equip or sell on player market)
+    { name: "Armored Car", baseValue: 150000, damageChance: 15, rarity: 0.05, image: "vehicles/Armored Car.png" },
+    { name: "Luxury Automobile", baseValue: 500000, damageChance: 10, rarity: 0.02, image: "vehicles/Luxury Automobile.png" },
+    { name: "Private Airplane", baseValue: 1800000, damageChance: 5, rarity: 0.01, image: "vehicles/Private Airplane.png" }
 ];
