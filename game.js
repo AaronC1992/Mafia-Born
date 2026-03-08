@@ -17969,7 +17969,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.29.1";
+const CURRENT_VERSION = "1.29.2";
 const VERSION_UPDATES = {
   "1.28.0": {
     title: "Heat Terminology Unification",
