@@ -45,6 +45,13 @@ const config = {
   // CORS settings
   corsOrigin: process.env.CORS_ORIGIN || '*', // In production, set to 'https://www.embracedcreation.com'
   
+  // MongoDB
+  // Set MONGODB_URI env var to your Atlas connection string, e.g.:
+  // MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+  // MONGODB_DB_NAME defaults to 'mafiaborn' if not set.
+  mongodbUri: process.env.MONGODB_URI || '',
+  mongodbDbName: process.env.MONGODB_DB_NAME || 'mafiaborn',
+  
   // Logging
   enableVerboseLogging: process.env.NODE_ENV === 'development',
   

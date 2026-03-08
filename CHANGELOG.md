@@ -5,6 +5,17 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.30.0] - 2026-03-08
+
+### Changed -- Server-Only Saves
+- All game saves now stored on the server via MongoDB -- localStorage slots removed entirely
+- Settings panel simplified to three buttons: **Save**, **Load**, **Burn Records**
+- New **Burn Records** modal with two options: Reset Profile (wipe save, keep account) or Burn Everything (delete account and all data)
+- Removed old slot-based save system (11 slots), export/import, and local-vs-cloud save comparisons
+- `initAuth()` now loads directly from cloud without checking localStorage timestamps
+- `autoCloudSave()` failure message updated (no more "saved locally only" reference)
+- Cleaned up ~25 removed functions and their window globals from game.js
+
 ## [1.28.0] - 2025-06-06
 
 ### Changed — Heat Terminology Unification

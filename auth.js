@@ -540,12 +540,11 @@ export async function autoCloudSave(saveEntry) {
         await cloudSave(saveEntry);
     } catch (err) {
         console.warn('Auto cloud save failed:', err.message);
-        // Notify user at most once every 5 minutes so it's not spammy
         const now = Date.now();
         if (now - _lastCloudFailNotify > 300000) {
             _lastCloudFailNotify = now;
             if (typeof window.showBriefNotification === 'function') {
-                window.showBriefNotification('Cloud save failed — progress saved locally only', 'warning');
+                window.showBriefNotification('Cloud save failed — check your connection', 'warning');
             }
         }
     }
@@ -592,31 +591,10 @@ export async function initAuth() {
             try {
                 const save = await cloudLoad();
                 if (save && save.data && typeof window.applyCloudSave === 'function') {
-                    // Check if a newer LOCAL save exists before overwriting
-                    let localIsNewer = false;
-                    let localEntry = null;
-                    try {
-                        const prefs = localStorage.getItem('saveSystemPrefs');
-                        const slot = prefs ? (JSON.parse(prefs).currentSlot ?? 1) : 1;
-                        const localRaw = localStorage.getItem(`gameSlot_${slot}`);
-                        if (localRaw) {
-                            localEntry = JSON.parse(localRaw);
-                            const localTime = new Date(localEntry.saveDate).getTime();
-                            const cloudTime = new Date(save.saveDate).getTime();
-                            if (localTime > cloudTime) localIsNewer = true;
-                        }
-                    } catch { /* ignore parse errors */ }
-
-                    if (localIsNewer) {
-                        console.log('[auth] Local save is newer than cloud — pushing to cloud');
-                        // Sync the newer local save up to cloud
-                        if (localEntry) autoCloudSave(localEntry);
-                    } else {
-                        window.applyCloudSave(save);
-                        console.log('[auth] Cloud save auto-loaded on startup');
-                        if (typeof window.showBriefNotification === 'function') {
-                            setTimeout(() => window.showBriefNotification(` Welcome back, ${save.playerName || authUsername}!`, 'success'), 500);
-                        }
+                    window.applyCloudSave(save);
+                    console.log('[auth] Cloud save auto-loaded on startup');
+                    if (typeof window.showBriefNotification === 'function') {
+                        setTimeout(() => window.showBriefNotification(`Welcome back, ${save.playerName || authUsername}!`, 'success'), 500);
                     }
                 }
             } catch (e) {

@@ -1,59 +1,10 @@
-// ==================== USER DATABASE - JSON FILE PERSISTENCE ====================
-// Simple JSON-file based user storage for accounts & cloud saves.
-// Same pattern as worldPersistence.js — swap for a real DB for production scale.
+// ==================== USER DATABASE - MONGODB PERSISTENCE ====================
+// MongoDB-backed user storage for accounts & cloud saves.
+// All user CRUD methods are async. Sessions stay in-memory with
+// MongoDB persistence so they survive server restarts.
 
-const fs = require('fs');
-const path = require('path');
 const crypto = require('crypto');
-
-const DB_FILE = path.join(__dirname, 'users.json');
-const SAVE_THROTTLE_MS = 3000;
-
-let db = { users: {} };
-let saveTimer = null;
-let isDirty = false;
-
-// ── Bootstrap ──────────────────────────────────────────────────
-function loadDB() {
-    try {
-        if (fs.existsSync(DB_FILE)) {
-            const raw = fs.readFileSync(DB_FILE, 'utf8');
-            db = JSON.parse(raw);
-            if (!db.users) db.users = {};
-            console.log(` User DB loaded — ${Object.keys(db.users).length} accounts`);
-        } else {
-            db = { users: {} };
-            saveDBImmediate();
-            console.log(' Created new user DB');
-        }
-    } catch (err) {
-        console.error(' Failed to load user DB:', err.message);
-        db = { users: {} };
-    }
-}
-
-function saveDB() {
-    isDirty = true;
-    if (!saveTimer) {
-        saveTimer = setTimeout(() => {
-            saveTimer = null;
-            if (isDirty) saveDBImmediate();
-        }, SAVE_THROTTLE_MS);
-    }
-}
-
-function saveDBImmediate() {
-    try {
-        fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
-        isDirty = false;
-    } catch (err) {
-        console.error(' Failed to save user DB:', err.message);
-    }
-}
-
-function flushDB() {
-    if (isDirty) saveDBImmediate();
-}
+const { getDb } = require('./db');
 
 // ── Password hashing (PBKDF2 — no external deps) ──────────────
 function hashPassword(password) {
@@ -68,46 +19,53 @@ function verifyPassword(password, stored) {
     return check === hash;
 }
 
-// ── Session tokens ─────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────
+function users() { return getDb().collection('users'); }
+function sessionsCol() { return getDb().collection('sessions'); }
+
+// ── Session tokens (in-memory + MongoDB backup) ────────────────
 const sessions = new Map(); // token -> { username, expiresAt }
 const TOKEN_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-// Restore sessions from persisted db (survives server restarts)
-function restoreSessionsFromDB() {
-    if (db.sessions && typeof db.sessions === 'object') {
-        const now = Date.now();
-        let restored = 0;
-        for (const [tok, sess] of Object.entries(db.sessions)) {
-            if (sess.expiresAt > now) {
-                sessions.set(tok, sess);
-                restored++;
-            }
-        }
-        if (restored > 0) console.log(` Restored ${restored} active session(s)`);
+async function restoreSessions() {
+    const now = Date.now();
+    const docs = await sessionsCol().find({ expiresAt: { $gt: now } }).toArray();
+    let restored = 0;
+    for (const doc of docs) {
+        sessions.set(doc.token, { username: doc.username, expiresAt: doc.expiresAt });
+        restored++;
     }
+    if (restored > 0) console.log(` Restored ${restored} active session(s)`);
 }
 
-// Persist sessions to db (called on create/destroy)
-function persistSessionsToDB() {
-    db.sessions = Object.fromEntries(sessions);
-    saveDB();
+async function persistSession(token, session) {
+    await sessionsCol().updateOne(
+        { token },
+        { $set: { token, username: session.username, expiresAt: session.expiresAt } },
+        { upsert: true }
+    );
+}
+
+async function removeSession(token) {
+    await sessionsCol().deleteOne({ token });
 }
 
 function generateToken() {
     return crypto.randomBytes(32).toString('hex');
 }
 
-function createSession(username) {
-    // Invalidate any existing sessions for this user
+async function createSession(username) {
+    // Invalidate existing sessions for this user
     for (const [tok, sess] of sessions) {
-        if (sess.username === username) sessions.delete(tok);
+        if (sess.username === username) {
+            sessions.delete(tok);
+            removeSession(tok).catch(() => {});
+        }
     }
     const token = generateToken();
-    sessions.set(token, {
-        username,
-        expiresAt: Date.now() + TOKEN_LIFETIME_MS
-    });
-    persistSessionsToDB();
+    const session = { username, expiresAt: Date.now() + TOKEN_LIFETIME_MS };
+    sessions.set(token, session);
+    await persistSession(token, session);
     return token;
 }
 
@@ -117,107 +75,106 @@ function validateToken(token) {
     if (!session) return null;
     if (Date.now() > session.expiresAt) {
         sessions.delete(token);
+        removeSession(token).catch(() => {});
         return null;
     }
     return session.username;
 }
 
-function destroySession(token) {
+async function destroySession(token) {
     sessions.delete(token);
-    persistSessionsToDB();
+    await removeSession(token);
 }
 
 // Periodically clean expired sessions (every 30 min)
 setInterval(() => {
     const now = Date.now();
-    let cleaned = false;
     for (const [tok, sess] of sessions) {
-        if (now > sess.expiresAt) { sessions.delete(tok); cleaned = true; }
+        if (now > sess.expiresAt) {
+            sessions.delete(tok);
+            removeSession(tok).catch(() => {});
+        }
     }
-    if (cleaned) persistSessionsToDB();
+    // Also clean MongoDB
+    sessionsCol().deleteMany({ expiresAt: { $lte: now } }).catch(() => {});
 }, 30 * 60 * 1000);
 
 // ── User CRUD ──────────────────────────────────────────────────
-function createUser(username, password) {
-    const key = username.toLowerCase();
-    if (db.users[key]) return { ok: false, error: 'Username already taken' };
+async function createUser(username, password) {
     if (username.length < 3 || username.length > 20) return { ok: false, error: 'Username must be 3-20 characters' };
     if (password.length < 6) return { ok: false, error: 'Password must be at least 6 characters' };
     if (!/^[a-zA-Z0-9_]+$/.test(username)) return { ok: false, error: 'Username can only contain letters, numbers, and underscores' };
 
-    db.users[key] = {
-        username: username, // preserve original casing
+    const key = username.toLowerCase();
+    const doc = {
+        username: key,         // lookup key (lowercase)
+        displayName: username, // preserve original casing
         passwordHash: hashPassword(password),
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
-        saveData: null // cloud save slot
+        saveData: null
     };
-    saveDB();
+    try {
+        await users().insertOne(doc);
+    } catch (err) {
+        if (err.code === 11000) return { ok: false, error: 'Username already taken' };
+        throw err;
+    }
     return { ok: true };
 }
 
-function authenticateUser(username, password) {
+async function authenticateUser(username, password) {
     const key = username.toLowerCase();
-    const user = db.users[key];
+    const user = await users().findOne({ username: key });
     if (!user) return { ok: false, error: 'Invalid username or password' };
     if (!verifyPassword(password, user.passwordHash)) return { ok: false, error: 'Invalid username or password' };
 
-    user.lastLogin = new Date().toISOString();
-    saveDB();
-    return { ok: true, username: user.username };
+    await users().updateOne({ username: key }, { $set: { lastLogin: new Date().toISOString() } });
+    return { ok: true, username: user.displayName };
 }
 
-function getUserSave(username) {
+async function getUserSave(username) {
     const key = username.toLowerCase();
-    const user = db.users[key];
+    const user = await users().findOne({ username: key }, { projection: { saveData: 1 } });
     if (!user) return null;
     return user.saveData;
 }
 
-function setUserSave(username, saveData) {
+async function setUserSave(username, saveData) {
     const key = username.toLowerCase();
-    const user = db.users[key];
-    if (!user) return false;
-    user.saveData = saveData;
-    saveDB();
-    return true;
+    const result = await users().updateOne({ username: key }, { $set: { saveData } });
+    return result.matchedCount > 0;
 }
 
-function clearUserSave(username) {
+async function clearUserSave(username) {
     const key = username.toLowerCase();
-    const user = db.users[key];
-    if (!user) return false;
-    user.saveData = null;
-    saveDB();
-    return true;
+    const result = await users().updateOne({ username: key }, { $set: { saveData: null } });
+    return result.matchedCount > 0;
 }
 
-function changePassword(username, oldPassword, newPassword) {
+async function changePassword(username, oldPassword, newPassword) {
     const key = username.toLowerCase();
-    const user = db.users[key];
+    const user = await users().findOne({ username: key });
     if (!user) return { ok: false, error: 'User not found' };
     if (!verifyPassword(oldPassword, user.passwordHash)) return { ok: false, error: 'Current password is incorrect' };
     if (newPassword.length < 6) return { ok: false, error: 'New password must be at least 6 characters' };
 
-    user.passwordHash = hashPassword(newPassword);
-    saveDB();
+    await users().updateOne({ username: key }, { $set: { passwordHash: hashPassword(newPassword) } });
     return { ok: true };
 }
 
-function deleteUser(username) {
+async function deleteUser(username) {
     const key = username.toLowerCase();
-    if (!db.users[key]) return false;
-    delete db.users[key];
-    saveDB();
-    return true;
+    const result = await users().deleteOne({ username: key });
+    return result.deletedCount > 0;
 }
 
-function getUserInfo(username) {
+async function getUserInfo(username) {
     const key = username.toLowerCase();
-    const user = db.users[key];
+    const user = await users().findOne({ username: key });
     if (!user) return null;
     return {
-        username: user.username,
+        username: user.displayName,
         createdAt: user.createdAt,
         lastLogin: user.lastLogin,
         hasSave: !!user.saveData,
@@ -229,22 +186,31 @@ function getUserInfo(username) {
 
 // Check if a character/player name is already used by any account's save data.
 // excludeUsername: skip this account (so a player re-saving with their own name passes).
-function isPlayerNameTaken(name, excludeUsername) {
+async function isPlayerNameTaken(name, excludeUsername) {
     if (!name) return false;
-    const target = name.trim().toLowerCase();
-    const excludeKey = excludeUsername ? excludeUsername.toLowerCase() : null;
-    for (const [key, user] of Object.entries(db.users)) {
-        if (excludeKey && key === excludeKey) continue;
-        if (user.saveData && user.saveData.playerName) {
-            if (user.saveData.playerName.trim().toLowerCase() === target) return true;
-        }
+    const target = name.trim();
+    const filter = {
+        'saveData.playerName': { $regex: new RegExp(`^${target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+    };
+    if (excludeUsername) {
+        filter.username = { $ne: excludeUsername.toLowerCase() };
     }
-    return false;
+    const match = await users().findOne(filter, { projection: { _id: 1 } });
+    return !!match;
 }
 
-// ── Initialize on require ──────────────────────────────────────
-loadDB();restoreSessionsFromDB();
+// ── Initialization (called once after MongoDB connects) ────────
+async function init() {
+    await restoreSessions();
+    const count = await users().countDocuments();
+    console.log(` User DB ready — ${count} accounts`);
+}
+
+// flushDB is now a no-op (MongoDB persists immediately)
+function flushDB() {}
+
 module.exports = {
+    init,
     createUser,
     authenticateUser,
     getUserSave,

@@ -12,7 +12,7 @@ import { GameLogging } from './logging.js';
 import { ui, ModalSystem } from './ui-modal.js';
 import { MobileSystem, updateMobileActionLog } from './mobile-responsive.js';
 import { initUIEvents } from './ui-events.js';
-import { initAuth, showAuthModal, autoCloudSave, emergencyCloudSave, cloudDeleteSave, getAuthState, updateAuthStatusUI, checkPlayerName, checkAdmin, adminModify } from './auth.js';
+import { initAuth, showAuthModal, autoCloudSave, emergencyCloudSave, cloudDeleteSave, cloudSave, cloudLoad, deleteAccount, getAuthState, updateAuthStatusUI, checkPlayerName, checkAdmin, adminModify } from './auth.js';
 import {
   initCasino, getCasinoWins,
   showCasino, showCasinoTab, startBlackjack, bjDeal, bjHit, bjStand, bjDouble,
@@ -326,27 +326,10 @@ window.applyCloudSave = function (cloudEntry) {
         return;
     }
     applySaveData(saveData);
-    // Also store locally so local save system stays in sync
-    const localEntry = {
-        slotNumber: SAVE_SYSTEM.currentSlot ?? 1,
-        saveName: `Cloud - ${cloudEntry.playerName || player.name}`,
-        playerName: cloudEntry.playerName || player.name,
-        level: cloudEntry.level || player.level,
-        money: cloudEntry.money || player.money,
-        reputation: cloudEntry.reputation || 0,
-        empireRating: cloudEntry.empireRating || 0,
-        playtime: cloudEntry.playtime || '0:00',
-        saveDate: cloudEntry.saveDate || new Date().toISOString(),
-        isAutoSave: false,
-        gameVersion: cloudEntry.gameVersion || CURRENT_VERSION,
-        data: saveData
-    };
-    localStorage.setItem(`gameSlot_${SAVE_SYSTEM.currentSlot ?? 1}`, JSON.stringify(localEntry));
     updateUI();
     applyUIToggles();
     applyStatBarPrefs();
     if (!gameplayActive) {
-        // If on intro screen, jump into the game
         activateGameplaySystems();
         hideAllScreens();
         showCommandCenter();
@@ -367,10 +350,7 @@ function clearAllGameplayIntervals() {
   stopQuestTimerTick();
 }
 
-// Save / load related functions that are used via inline onclick handlers
-// (defined later in this file, but hoisted onto window here for safety)
-window.loadGameFromIntroSlot = undefined;
-window.cancelLoadFromIntro = undefined;
+
 
 
 
@@ -17071,10 +17051,6 @@ function createCharacter() {
   player.name = name;
   player.portrait = selectedPortraitFile;
 
-  // Set default current slot for new character
-  SAVE_SYSTEM.currentSlot = 1;
-  saveSaveSystemPrefs();
-
   // Hide character creation screen
   const charScreen = document.getElementById('character-creation-screen');
   if (charScreen) {
@@ -17203,10 +17179,6 @@ function selectPortrait(portraitFile, portraitLabel) {
     player.ethnicity = parts[0]; // white, black, asian, mexican
     player.gender = parts[1]; // male, female
   }
-
-  // Set default current slot for new character (slot 1)
-  SAVE_SYSTEM.currentSlot = 1;
-  saveSaveSystemPrefs();
 
   // Remove portrait selection screen
   const portraitScreen = document.getElementById('portrait-selection-screen');
@@ -18010,8 +17982,19 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.29.2";
+const CURRENT_VERSION = "1.30.0";
 const VERSION_UPDATES = {
+  "1.30.0": {
+    title: "Server-Only Saves",
+    date: "March 2026",
+    changes: [
+      "All game saves now stored on the server -- no more local browser storage",
+      "Settings simplified to three buttons: Save, Load, and Burn Records",
+      "Burn Records lets you reset your profile or delete your account entirely",
+      "Removed old slot-based save system, export/import, and local save comparisons",
+      "MongoDB integration for persistent, reliable cloud saves",
+    ]
+  },
   "1.28.0": {
     title: "Heat Terminology Unification",
     date: "June 2025",
@@ -20213,24 +20196,16 @@ function completeOfflineHealing() {
 
 // Function to show the death screen
 function showDeathScreen(causeOfDeath) {
-  // PERMADEATH: Delete the save file
-  if (typeof SAVE_SYSTEM !== 'undefined' && SAVE_SYSTEM.currentSlot != null) {
-    try {
-      localStorage.removeItem(`gameSlot_${SAVE_SYSTEM.currentSlot}`);
-
-      // Disable autosave to prevent resurrection
-      SAVE_SYSTEM.autoSaveEnabled = false;
-      if (autoSaveIntervalId) {
-        clearInterval(autoSaveIntervalId);
-        autoSaveIntervalId = null;
-      }
-      saveSaveSystemPrefs();
-    } catch (e) {
-      console.error("Failed to delete save on death:", e);
+  // PERMADEATH: Disable autosave to prevent resurrection
+  if (typeof SAVE_SYSTEM !== 'undefined') {
+    SAVE_SYSTEM.autoSaveEnabled = false;
+    if (autoSaveIntervalId) {
+      clearInterval(autoSaveIntervalId);
+      autoSaveIntervalId = null;
     }
   }
 
-  // PERMADEATH: Also delete cloud save so player can't resurrect via server
+  // PERMADEATH: Delete cloud save so player can't resurrect via server
   try {
     cloudDeleteSave().catch(err => console.warn('Cloud save delete failed:', err.message));
   } catch (e) {
@@ -20352,8 +20327,6 @@ function restartGame() {
 
   // Re-enable auto-save for the new life (permadeath disabled it)
   SAVE_SYSTEM.autoSaveEnabled = true;
-  SAVE_SYSTEM.currentSlot = 1;
-  saveSaveSystemPrefs();
   startAutoSave();
 
   // Allow gameplay systems to be re-activated for the new character
@@ -21339,266 +21312,155 @@ function showOptions() {
   if (themePicker) themePicker.innerHTML = buildThemePicker();
 }
 
-// Function to save the game
-function saveGame() {
-  // Show the save system interface instead of directly saving
-  showSaveSystem();
+// Function to save the game (server-only)
+async function saveGame() {
+  await serverSave(false);
 }
 
-// Function to load the saved game - now shows a list of saves to choose from
-function loadGame() {
-  // Get all available save slots
-  const slots = getAllSaveSlots();
-  const availableSaves = slots.filter(slot => !slot.empty);
-
-  if (availableSaves.length === 0) {
-    showBriefNotification("No saved games found! Start a new game to begin your criminal empire.", 'warning');
+// Function to load the saved game (server-only)
+async function loadGame() {
+  const auth = getAuthState();
+  if (!auth.isLoggedIn) {
+    showBriefNotification("Sign in to load your progress!", 'warning');
     return;
   }
 
-  // Create a save selection interface
-  showSaveSelectionInterface(availableSaves);
-}
-
-// Shared helper -- renders load-only slot cards for both in-game and intro load screens.
-// `onClickFn` receives a save object and returns the onclick JS string for that card.
-function renderLoadSlotCards(saves, onClickFn) {
-  return saves.map(save => `
-    <div style="background: rgba(20, 18, 10, 0.8); border: 2px solid #c0a062; border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s ease;"
-       onclick="${onClickFn(save)}"
-       onmouseover="this.style.background='rgba(52, 152, 219, 0.3)'; this.style.borderColor='#8a9a6a';"
-       onmouseout="this.style.background='rgba(20, 18, 10, 0.8)'; this.style.borderColor='#c0a062';">
-      <div class="save-slot-grid" style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
-        <div>
-          <h3 style="color: #c0a062; margin: 0; font-size: 1.1em;">
-            ${save.slotNumber === 0 ? 'Auto-Save' : `Slot ${save.slotNumber}`}
-          </h3>
-        </div>
-        <div>
-          <h4 style="color: #8a9a6a; margin: 0 0 5px 0; font-size: 1.2em;">${save.saveName}</h4>
-          <p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${save.playerName} - Level ${save.level}</p>
-        </div>
-        <div style="text-align: center;">
-          <p style="color: #c0a040; margin: 0; font-weight: bold;">$${save.money.toLocaleString()}</p>
-          <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">Money</p>
-        </div>
-        <div style="text-align: center;">
-          <p style="color: #8b3a3a; margin: 0; font-weight: bold;">${Math.floor(save.reputation)}</p>
-          <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">Reputation</p>
-        </div>
-        <div style="text-align: center;">
-          <p style="color: #c0a062; margin: 0; font-size: 0.9em;">${save.playtime}</p>
-          <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">${formatTimestamp(save.saveDate)}</p>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function showSaveSelectionInterface(saves) {
-  hideAllScreens();
-  document.getElementById('statistics-screen').style.display = 'block';
-
-  const content = `
-    <div style="max-width: 1000px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #c0a062; font-size: 2.5em; margin-bottom: 30px;">
-        Load Game
-      </h2>
-
-      <p style="text-align: center; color: #f5e6c8; font-size: 1.2em; margin-bottom: 30px;">
-        Select a saved game to load:
-      </p>
-
-      <div style="display: grid; gap: 15px; margin-bottom: 30px;">
-        ${renderLoadSlotCards(saves, save => `if(loadGameFromSlot(${save.slotNumber})) { hideAllScreens(); showCommandCenter(); }`)}
-      </div>
-
-      <div class="page-nav" style="justify-content: center;">
-        <button class="nav-btn-back" onclick="exitLoadInterface('menu')">
-          <- Back to SafeHouse
-        </button>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('statistics-content').innerHTML = content;
-  const statsContent = document.getElementById('statistics-content');
-  if (statsContent) {
-    statsContent.dataset.loadContext = 'loadGame';
+  if (player && player.name) {
+    if (!await ui.confirm("Loading will replace your current game with your server save. Continue?")) {
+      return;
+    }
   }
+  await serverLoad();
 }
 
-// Function to load game from intro screen - use the new save selection interface
-function loadGameFromIntro() {
-  // Get all available save slots
-  const slots = getAllSaveSlots();
-  const availableSaves = slots.filter(slot => !slot.empty);
-
-  if (availableSaves.length === 0) {
-    showBriefNotification("No saved games found! Start a new game to begin your criminal empire.", 'warning');
+// Load game from the intro screen (server-only)
+async function loadGameFromIntro() {
+  const auth = getAuthState();
+  if (!auth.isLoggedIn) {
+    showBriefNotification("Sign in first to resume your game!", 'warning');
     return;
   }
-
-  // Hide intro screen and create a temporary save selection screen
-  document.getElementById('intro-screen').style.display = 'none';
-
-  // Create a temporary save selection interface
-  showSaveSelectionFromIntro(availableSaves);
+  await serverLoad();
 }
 
-function showSaveSelectionFromIntro(saves) {
-  // Create a temporary overlay for save selection from intro
+// Burn Records modal - asks the player to reset profile or delete everything
+async function showBurnRecordsModal() {
+  const auth = getAuthState();
+
   const overlay = document.createElement('div');
-  overlay.id = 'intro-save-overlay';
+  overlay.id = 'burn-records-overlay';
   overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-    box-sizing: border-box;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95); display: flex; align-items: center;
+    justify-content: center; z-index: 1000; padding: 20px; box-sizing: border-box;
   `;
 
-  const content = `
-    <div style="max-width: 1000px; width: 100%; background: linear-gradient(135deg, rgba(20, 18, 10, 0.98) 0%, rgba(20, 18, 10, 0.98) 100%);
-          padding: 40px; border-radius: 20px; border: 2px solid #8b3a3a; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; color: white;">
-      <h2 style="color: #c0a062; font-size: 2.5em; margin-bottom: 30px;">
-        Load Game
-      </h2>
-
-      <p style="color: #f5e6c8; font-size: 1.2em; margin-bottom: 30px;">
-        Select a saved game to load:
+  overlay.innerHTML = `
+    <div style="max-width: 500px; width: 100%; background: linear-gradient(135deg, rgba(20, 18, 10, 0.98), rgba(30, 10, 10, 0.98));
+          padding: 40px; border-radius: 20px; border: 2px solid #8b3a3a; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; color: white;">
+      <h2 style="color: #8b3a3a; font-size: 2em; margin: 0 0 15px 0;">Burn Records</h2>
+      <p style="color: #d4c4a0; margin-bottom: 30px; font-style: italic;">
+        "Some things are better left in ashes."
       </p>
 
-      <div style="display: grid; gap: 15px; margin-bottom: 30px;">
-        ${renderLoadSlotCards(saves, save => `loadGameFromIntroSlot(${save.slotNumber})`)}
-      </div>
+      <button id="burn-reset-btn" style="display: block; width: 100%; padding: 18px; margin-bottom: 15px;
+        background: linear-gradient(to bottom, #3a2a1a, #1a1008); border: 2px solid #c0a062; border-radius: 10px;
+        color: #c0a062; font-size: 1.1em; cursor: pointer; font-weight: bold;">
+        Reset Profile
+        <span style="display: block; font-size: 0.75em; color: #8a7a5a; font-weight: normal; margin-top: 4px;">
+          Wipe your save and start fresh — keep your account
+        </span>
+      </button>
 
-      <div style="text-align: center;">
-        <button onclick="cancelLoadFromIntro()" style="background: #8a7a5a; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.1em;">
-          <- Back to Main Screen
-        </button>
-      </div>
+      <button id="burn-everything-btn" style="display: block; width: 100%; padding: 18px; margin-bottom: 25px;
+        background: linear-gradient(to bottom, #5a1010, #2a0505); border: 2px solid #ff2222; border-radius: 10px;
+        color: #ff6b6b; font-size: 1.1em; cursor: pointer; font-weight: bold;">
+        Burn Everything
+        <span style="display: block; font-size: 0.75em; color: #aa5555; font-weight: normal; margin-top: 4px;">
+          Delete your save AND your login — gone forever
+        </span>
+      </button>
+
+      <button id="burn-cancel-btn" style="background: transparent; border: 1px solid #6a5a3a; color: #8a7a5a;
+        padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1em;">
+        Walk Away
+      </button>
     </div>
   `;
 
-  overlay.innerHTML = content;
   document.body.appendChild(overlay);
-}
 
-function exitLoadInterface(target = 'menu') {
-  const overlay = document.getElementById('intro-save-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
+  // Walk Away
+  document.getElementById('burn-cancel-btn').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
-  const statsScreen = document.getElementById('statistics-screen');
-  if (statsScreen) {
-    statsScreen.style.display = 'none';
-  }
+  // Reset Profile
+  document.getElementById('burn-reset-btn').onclick = async () => {
+    if (!await ui.confirm("This will permanently delete your saved progress. Your account will be kept.<br><br>Are you sure?")) return;
 
-  const statsContent = document.getElementById('statistics-content');
-  if (statsContent && statsContent.dataset.loadContext === 'loadGame') {
-    statsContent.innerHTML = '';
-    delete statsContent.dataset.loadContext;
-  }
+    const btn = document.getElementById('burn-reset-btn');
+    btn.disabled = true;
+    btn.innerHTML = 'Burning records...';
 
-  hideAllScreens();
-  // Always go to SafeHouse (intro screen removed)
-  showCommandCenter();
-}
-
-function loadGameFromIntroSlot(slotNumber) {
-  // Load the game from the selected slot
-  if (loadGameFromSlot(slotNumber)) {
-    // Activate all gameplay systems (events, timers, etc.) on first entry
-    activateGameplaySystems();
-
-    // Remove the overlay
-    const overlay = document.getElementById('intro-save-overlay');
-    if (overlay) {
-      overlay.remove();
-    }
-
-    // Show SafeHouse directly (bypass character creation)
-    document.getElementById('intro-screen').style.display = 'none';
-
-    // Update UI to reflect loaded player data
-    updateUI();
-    showCommandCenter();
-
-    // Show welcome back message with player name
-    const playerName = player.name || "Criminal";
-    logAction(`Welcome back, ${playerName}! Your criminal empire has been restored.`);
-
-    // Show brief notification
-    showBriefNotification(`Loaded: ${playerName}'s saved game`, 2000);
-  } else {
-    // Load failed - show error to user
-    showBriefNotification("Failed to load save data! The save may be corrupted or incompatible with the current version.", 'danger');
-  }
-}
-
-function cancelLoadFromIntro() {
-  // Remove the load overlay and return to the title screen
-  const overlay = document.getElementById('intro-save-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
-  document.getElementById('intro-screen').style.display = 'block';
-}
-
-// Expose intro load helpers for inline onclick handlers
-window.loadGameFromIntroSlot = loadGameFromIntroSlot;
-window.cancelLoadFromIntro = cancelLoadFromIntro;
-
-// Helper function to check for slot saves
-function checkForSlotSaves() {
-  // Check all slots including auto-save (slot 0)
-  for (let i = 0; i <= 10; i++) {
-    if (localStorage.getItem(`gameSlot_${i}`)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Helper function to find the most recent save slot
-function findMostRecentSaveSlot() {
-  let mostRecentSlot = null;
-  let mostRecentTime = 0;
-
-  // Check all slots including auto-save (slot 0)
-  for (let i = 0; i <= 10; i++) {
-    const saveEntryStr = localStorage.getItem(`gameSlot_${i}`);
-    if (saveEntryStr) {
-      try {
-        const saveEntry = JSON.parse(saveEntryStr);
-        // Use saveDate (ISO string) since that's what saveGameToSlot stores
-        const saveTime = saveEntry.saveDate ? new Date(saveEntry.saveDate).getTime() : 0;
-        if (saveTime > mostRecentTime) {
-          mostRecentTime = saveTime;
-          mostRecentSlot = i;
-        }
-      } catch (e) {
-        console.error(`Error reading save slot ${i}:`, e);
+    try {
+      if (auth.isLoggedIn) {
+        await cloudDeleteSave();
       }
+    } catch (e) {
+      console.warn('Cloud save delete failed:', e.message);
     }
-  }
 
-  return mostRecentSlot;
+    // Reset runtime state
+    gameplayActive = false;
+    clearAllGameplayIntervals();
+    resetPlayerForNewGame();
+    stopJailTimer();
+    achievements.forEach(a => a.unlocked = false);
+
+    overlay.remove();
+    returnToIntroScreen();
+    showBriefNotification('Records burned. Start a new life.', 'success');
+    logAction('All records have been burned. The slate is clean.');
+  };
+
+  // Burn Everything
+  document.getElementById('burn-everything-btn').onclick = async () => {
+    if (!auth.isLoggedIn) {
+      showBriefNotification('You are not signed in — nothing to burn.', 'warning');
+      overlay.remove();
+      return;
+    }
+
+    if (!await ui.confirm("WARNING: This will permanently delete your account and all saved data.<br><br>This cannot be undone!")) return;
+    if (!await ui.confirm("Are you REALLY sure? Everything will be gone forever.")) return;
+
+    const btn = document.getElementById('burn-everything-btn');
+    btn.disabled = true;
+    btn.innerHTML = 'Burning everything...';
+
+    try {
+      await deleteAccount();
+    } catch (e) {
+      console.error('Delete account error:', e);
+    }
+
+    // Reset runtime state
+    gameplayActive = false;
+    clearAllGameplayIntervals();
+    resetPlayerForNewGame();
+    stopJailTimer();
+    achievements.forEach(a => a.unlocked = false);
+
+    overlay.remove();
+    updateAuthStatusUI();
+    returnToIntroScreen();
+    showBriefNotification('Everything burned. Account deleted.', 3000);
+  };
 }
+window.showBurnRecordsModal = showBurnRecordsModal;
 
-// Function to delete the saved game - now shows save selection
-function deleteSavedGame() {
-  showDeleteSaveSelection();
+function forceNewGame() {
+  showBurnRecordsModal();
 }
 
 // Force-reload the page bypassing all caches (GitHub Pages CDN, browser, service worker).
@@ -21728,212 +21590,29 @@ function checkForUpdates() {
   }, 2500);
 }
 
-function forceNewGame() {
-  showDeleteSaveSelection();
-}
-
-function showDeleteSaveSelection() {
-  // Get all available save slots
-  const slots = getAllSaveSlots();
-  const availableSaves = slots.filter(slot => !slot.empty);
-
-  if (availableSaves.length === 0) {
-    showBriefNotification("No saved games found to delete!", 'warning');
-    return;
-  }
-
-  // Hide current screen
-  const currentScreen = getCurrentScreen();
-  if (currentScreen) {
-    currentScreen.style.display = 'none';
-  }
-
-  // Create a temporary overlay for save deletion selection
-  showDeleteSelectionInterface(availableSaves);
-}
-
-function showDeleteSelectionInterface(saves) {
-  // Create a temporary overlay for save deletion
-  const overlay = document.createElement('div');
-  overlay.id = 'delete-save-overlay';
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-    box-sizing: border-box;
-  `;
-
-  const content = `
-    <div style="max-width: 1000px; width: 100%; background: linear-gradient(135deg, rgba(20, 18, 10, 0.98) 0%, rgba(20, 18, 10, 0.98) 100%);
-          padding: 40px; border-radius: 20px; border: 2px solid #8b3a3a; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); text-align: center; color: white;">
-      <h2 style="color: #8b3a3a; font-size: 2.5em; margin-bottom: 30px;">
-        Delete Save Game
-      </h2>
-
-      <p style="color: #f5e6c8; font-size: 1.2em; margin-bottom: 30px;">
-        <strong>WARNING:</strong> This action cannot be undone! Select a saved game to permanently delete:
-      </p>
-
-      <div style="display: grid; gap: 15px; margin-bottom: 30px;">
-        ${saves.map(save => `
-          <div style="background: rgba(20, 18, 10, 0.8); border: 2px solid #8b3a3a; border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s ease;"
-             onclick="confirmDeleteSave(${save.slotNumber})"
-             onmouseover="this.style.background='rgba(231, 76, 60, 0.3)'; this.style.borderColor='#7a2a2a';"
-             onmouseout="this.style.background='rgba(20, 18, 10, 0.8)'; this.style.borderColor='#8b3a3a';">
-
-            <div class="save-slot-grid" style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; gap: 20px; align-items: center;">
-              <div>
-                <h3 style="color: #8b3a3a; margin: 0; font-size: 1.1em;">
-                  ${save.slotNumber === 0 ? 'Auto-Save' : `Slot ${save.slotNumber}`}
-                </h3>
-              </div>
-
-              <div>
-                <h4 style="color: #8a9a6a; margin: 0 0 5px 0; font-size: 1.2em;">${save.saveName}</h4>
-                <p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${save.playerName} - Level ${save.level}</p>
-              </div>
-
-              <div style="text-align: center;">
-                <p style="color: #c0a040; margin: 0; font-weight: bold;">$${save.money.toLocaleString()}</p>
-                <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">Money</p>
-              </div>
-
-              <div style="text-align: center;">
-                <p style="color: #8b3a3a; margin: 0; font-weight: bold;">${Math.floor(save.reputation)}</p>
-                <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">Reputation</p>
-              </div>
-
-              <div style="text-align: center;">
-                <p style="color: #c0a062; margin: 0; font-size: 0.9em;">${save.playtime}</p>
-                <p style="color: #8a7a5a; margin: 0; font-size: 0.8em;">${formatTimestamp(save.saveDate)}</p>
-              </div>
-            </div>
-
-            <div style="margin-top: 15px; text-align: center;">
-              <span style="color: #8b3a3a; font-weight: bold; font-size: 0.9em;">Click to DELETE this save</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-
-      <div style="text-align: center;">
-        <button onclick="cancelDeleteSave()" style="background: #8a7a5a; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.1em;">
-          <- Cancel
-        </button>
-      </div>
-    </div>
-  `;
-
-  overlay.innerHTML = content;
-  document.body.appendChild(overlay);
-}
-
-async function confirmDeleteSave(slotNumber) {
-  const slot = getSaveEntry(slotNumber);
-  if (!slot || slot.empty) {
-    showBriefNotification("Save slot not found!", 'danger');
-    return;
-  }
-
-  const slotName = slotNumber === 0 ? 'Auto-Save' : `Slot ${slotNumber}`;
-  const confirmMessage = `Are you absolutely sure you want to permanently delete ${slotName}?<br><br>Save: ${slot.saveName}<br>Player: ${slot.playerName}<br>Level: ${slot.level}<br><br>This action cannot be undone!`;
-
-  if (await ui.confirm(confirmMessage)) {
-    try {
-      deleteSaveSlot(slotNumber);
-      logAction(`Deleted save: ${slotName} (${slot.saveName})`);
-    } catch (e) {
-      console.error('Error during save deletion:', e);
-    }
-
-    // Always clean up overlay and return to title
-    const overlay = document.getElementById('delete-save-overlay');
-    if (overlay) {
-      overlay.remove();
-    }
-
-    showBriefNotification(`${slotName} has been permanently deleted! Returning to title screen.`, 'success');
-    returnToIntroScreen();
-  }
-}
-
-function cancelDeleteSave() {
-  // Remove the overlay
-  const overlay = document.getElementById('delete-save-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
-
-  // Return to previous screen (this preserves the original behavior for canceling)
-  restorePreviousScreen();
-}
-
-function getCurrentScreen() {
-  // Find the currently visible screen
-  const screens = document.querySelectorAll('.game-screen, #intro-screen, #character-creation-screen');
-  for (let screen of screens) {
-    if (screen.style.display !== 'none') {
-      return screen;
-    }
-  }
-  return null;
-}
-
-function restorePreviousScreen() {
-  // Always go to command center (intro screen removed)
-  const optionsScreen = document.getElementById('options-screen');
-  if (optionsScreen && optionsScreen.style.display !== 'none') {
-    optionsScreen.style.display = 'block';
-  } else {
-    showCommandCenter();
-  }
-}
-
 function returnToIntroScreen() {
-  // Use the comprehensive screen-hiding helper so nothing is left visible
   hideAllScreens();
-
-  // Also hide non-game screens that hideAllScreens() doesn't cover
   ['character-creation-screen', 'intro-narrative'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
 
-  // Remove any lingering overlays (delete-save, modals, etc.)
-  const deleteOverlay = document.getElementById('delete-save-overlay');
-  if (deleteOverlay) deleteOverlay.remove();
+  // Remove any lingering overlays
+  const burnOverlay = document.getElementById('burn-records-overlay');
+  if (burnOverlay) burnOverlay.remove();
 
-  // Return to title screen
   gameplayActive = false;
   clearAllGameplayIntervals();
   document.getElementById('intro-screen').style.display = 'block';
 }
 
-// -- Delete all local saves and return to title screen ---
-// Called after the server-side account deletion is complete.
+// Called after server-side account deletion is complete (from auth.js)
 function deleteAllLocalSavesAndReset() {
-  // Wipe every game save slot from localStorage (0 = auto-save, 1-10 = manual)
-  for (let i = 0; i <= 10; i++) {
-    localStorage.removeItem(`gameSlot_${i}`);
-  }
-  localStorage.removeItem('saveSystemPrefs');
-
-  // Reset runtime state so nothing lingers
   gameplayActive = false;
   clearAllGameplayIntervals();
   resetPlayerForNewGame();
   stopJailTimer();
 
-  // Hide everything and show the title screen
   const allScreens = document.querySelectorAll('.game-screen');
   allScreens.forEach(s => (s.style.display = 'none'));
   ['character-creation-screen', 'intro-narrative', 'menu', 'options-screen'].forEach(id => {
@@ -21942,38 +21621,12 @@ function deleteAllLocalSavesAndReset() {
   });
   document.getElementById('intro-screen').style.display = 'block';
 
-  // Update UI elements to reflect logged-out state
   updateAuthStatusUI();
   if (typeof window.showBriefNotification === 'function') {
     window.showBriefNotification('Account deleted - returned to title', 3000);
   }
 }
 window.deleteAllLocalSavesAndReset = deleteAllLocalSavesAndReset;
-
-// Function to confirm reset game
-async function confirmResetGame() {
-  if (await ui.confirm("Are you sure you want to reset the game? This will delete all progress.")) {
-    resetGame();
-  }
-}
-
-// Function to reset the game
-function resetGame() {
-  resetPlayerForNewGame();
-  stopJailTimer();
-
-  // Reset achievements
-  achievements.forEach(achievement => achievement.unlocked = false);
-
-  // Reset weekly challenges
-  if (typeof weeklyChallenges !== 'undefined') {
-    weeklyChallenges.length = 0;
-  }
-
-  updateUI();
-  logAction("Game restarted.");
-  goBackToMainMenu();
-}
 
 // Removed duplicate initialization - now using window.onload initGame() function
 
@@ -22914,35 +22567,26 @@ function buildEmpireOverviewHTML() {
 
 // ==================== SAVE SYSTEM ====================
 
-// Save system configuration
+// Save system configuration (server-only)
 const SAVE_SYSTEM = {
-  maxSlots: 10,
   autoSaveInterval: 60000, // 60 seconds
-  currentSlot: 1,
   autoSaveEnabled: true,
   lastAutoSave: 0
 };
 
 // Initialize save system
 function initializeSaveSystem() {
-  // Load save system preferences
-  const savePrefs = localStorage.getItem('saveSystemPrefs');
-  if (savePrefs) {
-    Object.assign(SAVE_SYSTEM, JSON.parse(savePrefs));
-  }
-
   // Start auto-save if enabled
   if (SAVE_SYSTEM.autoSaveEnabled) {
     startAutoSave();
   }
 
-  // Always save on page unload (regardless of auto-save setting)
+  // Always save on page unload
   window.addEventListener('beforeunload', function(e) {
     emergencySave();
   });
 
   // Save when page goes hidden (mobile tab switch, browser minimize, etc.)
-  // More reliable than beforeunload on mobile devices
   document.addEventListener('visibilitychange', function() {
     if (document.visibilityState === 'hidden' && player && player.name) {
       emergencySave();
@@ -22967,15 +22611,7 @@ function startAutoSave() {
 
 function autoSave() {
   try {
-    const currentTime = Date.now();
-    // Auto-save to the currently loaded slot instead of always slot 0
-    const targetSlot = SAVE_SYSTEM.currentSlot ?? 1; // Default to slot 1 if no current slot set
-    saveGameToSlot(targetSlot, `${player.name} - ${getCurrentDateString()}`, true);
-    SAVE_SYSTEM.lastAutoSave = currentTime;
-
-    // Show brief auto-save notification
-    showBriefNotification(`Auto-saved to Slot ${targetSlot}`, 1000);
-
+    serverSave(true);
   } catch (error) {
     console.error("Auto-save failed:", error);
   }
@@ -22984,12 +22620,7 @@ function autoSave() {
 function emergencySave() {
   try {
     if (player && player.name) {
-      // Save to current slot (or slot 0 as fallback) so the save is actually loadable
-      const targetSlot = (SAVE_SYSTEM.currentSlot != null && SAVE_SYSTEM.currentSlot >= 0) ? SAVE_SYSTEM.currentSlot : 0;
-      const saveEntry = saveGameToSlot(targetSlot, `Emergency - ${player.name}`, true);
-
-      // Use keepalive fetch for cloud save so it survives page unload
-      // (the normal autoCloudSave from saveGameToSlot may be cancelled by the browser)
+      const saveEntry = window.createSaveDataForCloud();
       if (saveEntry) {
         emergencyCloudSave(saveEntry);
       }
@@ -22999,204 +22630,87 @@ function emergencySave() {
   }
 }
 
-// Core save/load functions
-function saveGameToSlot(slotNumber, customName = null, isAutoSave = false) {
+// Server-only save function
+async function serverSave(isAutoSave = false) {
   try {
-    // Validate player data before saving
     if (!player || !player.name || player.name.trim() === "") {
-      console.error("Save failed: Player name is missing or empty");
       if (!isAutoSave) {
-        showBriefNotification("Save failed! Player name is missing. Please create a character first.", 'danger');
+        showBriefNotification("No active game to save!", 'danger');
       }
       return null;
     }
 
-    const saveData = createSaveData();
-    const saveName = customName || `${player.name} - ${getCurrentDateString()}`;
-    const empireRating = calculateEmpireRating();
-    const playtime = formatPlaytime(calculatePlaytime());
-
-    const saveEntry = {
-      slotNumber: slotNumber,
-      saveName: saveName,
-      playerName: player.name,
-      level: player.level,
-      reputation: Math.floor(player.reputation || 0),
-      money: player.money,
-      empireRating: empireRating.totalScore,
-      playtime: playtime,
-      saveDate: new Date().toISOString(),
-      isAutoSave: isAutoSave,
-      gameVersion: CURRENT_VERSION,
-      data: saveData
-    };
-
-    // Save to localStorage
-    localStorage.setItem(`gameSlot_${slotNumber}`, JSON.stringify(saveEntry));
-
-    // Update save slots list
-    updateSaveSlotsList();
-
-    if (!isAutoSave) {
-      SAVE_SYSTEM.currentSlot = slotNumber;
-      saveSaveSystemPrefs();
-      logAction(`Game saved to slot ${slotNumber}: ${saveName}`);
+    const auth = getAuthState();
+    if (!auth.isLoggedIn) {
+      if (!isAutoSave) {
+        showBriefNotification("Sign in to save your progress!", 'warning');
+      }
+      return null;
     }
 
-    // Auto cloud save (fire-and-forget, won't block)
-    autoCloudSave(saveEntry);
+    const saveEntry = window.createSaveDataForCloud();
+    await cloudSave(saveEntry);
+    SAVE_SYSTEM.lastAutoSave = Date.now();
+
+    if (!isAutoSave) {
+      logAction("Progress saved to the server.");
+      showBriefNotification("Game saved!", 'success');
+    } else {
+      showBriefNotification("Auto-saved", 1000);
+    }
 
     return saveEntry;
   } catch (error) {
     console.error("Save failed:", error);
-    console.error("Player object:", player);
     if (!isAutoSave) {
-      showBriefNotification(`Save failed! Error: ${error.message}`, 'danger');
+      showBriefNotification("Save failed! " + error.message, 'danger');
     }
     return null;
   }
 }
 
-function loadGameFromSlot(slotNumber) {
+// Server-only load function
+async function serverLoad() {
+  const auth = getAuthState();
+  if (!auth.isLoggedIn) {
+    showBriefNotification("Sign in to load your progress!", 'warning');
+    return false;
+  }
+
   try {
-    const saveEntryStr = localStorage.getItem(`gameSlot_${slotNumber}`);
-    if (!saveEntryStr) {
-      showBriefNotification("No save data found in this slot!", 'danger');
+    const save = await cloudLoad();
+    if (save && save.data) {
+      if (!validateSaveData(save.data)) {
+        showBriefNotification('Save data is corrupted or incompatible!', 'danger');
+        return false;
+      }
+      applySaveData(save.data);
+      updateUI();
+      applyUIToggles();
+      applyStatBarPrefs();
+      if (!gameplayActive) {
+        activateGameplaySystems();
+        hideAllScreens();
+        showCommandCenter();
+      }
+      logAction(`Welcome back, ${player.name}! Your empire has been restored.`);
+      showBriefNotification(`Loaded: ${player.name}'s saved game`, 'success');
+      return true;
+    } else {
+      showBriefNotification("No saved game found on the server!", 'warning');
       return false;
     }
-
-    const saveEntry = JSON.parse(saveEntryStr);
-    const saveData = saveEntry.data;
-
-    // Validate save data
-    if (!validateSaveData(saveData)) {
-      showBriefNotification("Save data is corrupted or incompatible!", 'danger');
-      return false;
-    }
-
-    // Apply save data to current game
-    applySaveData(saveData);
-
-    // Update current slot
-    SAVE_SYSTEM.currentSlot = slotNumber;
-    saveSaveSystemPrefs();
-
-    // Update UI
-    updateUI();
-    applyUIToggles();
-    applyStatBarPrefs();
-
-    // Don't automatically navigate to any screen - let the caller handle that
-    // Note: If player is in jail, applySaveData() already showed the jail screen
-
-    logAction(`Game loaded from slot ${slotNumber}: ${saveEntry.saveName}`);
-    showBriefNotification(`Loaded: ${saveEntry.saveName}`, 2000);
-
-    return true;
   } catch (error) {
-    console.error("Load failed:", error);
-    showBriefNotification("Failed to load save data!", 'danger');
+    if (error.message === 'No cloud save found') {
+      showBriefNotification("No saved game found!", 'warning');
+    } else {
+      showBriefNotification("Load failed! " + error.message, 'danger');
+    }
     return false;
   }
 }
 
-async function deleteGameSlot(slotNumber) {
-  if (slotNumber === 0) {
-    showBriefNotification("Cannot delete auto-save slot!", 'warning');
-    return;
-  }
-
-  const saveEntry = getSaveEntry(slotNumber);
-  if (!saveEntry) {
-    showBriefNotification("No save data in this slot!", 'warning');
-    return;
-  }
-
-  if (await ui.confirm(`Delete save "${saveEntry.saveName}"?<br><br>This action cannot be undone!`)) {
-    localStorage.removeItem(`gameSlot_${slotNumber}`);
-    updateSaveSlotsList();
-    logAction(`Deleted save from slot ${slotNumber}`);
-    showBriefNotification("Save deleted", 1500);
-  }
-}
-
 // Save data creation and validation
-
-// Export all save data as a downloadable JSON file
-function exportSaveData() {
-  try {
-    const allSaves = {};
-    for (let i = 0; i <= 10; i++) {
-      const key = `gameSlot_${i}`;
-      const data = localStorage.getItem(key);
-      if (data) allSaves[key] = data;
-    }
-
-    const blob = new Blob([JSON.stringify(allSaves, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `MafiaBorn_backup_${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    showBriefNotification('Save data exported successfully!', 'success');
-  } catch (error) {
-    console.error('Export failed:', error);
-    showBriefNotification('Export failed: ' + error.message, 'danger');
-  }
-}
-
-// Import save data from a JSON file
-function importSaveData() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      try {
-        const allSaves = JSON.parse(event.target.result);
-
-        if (typeof allSaves !== 'object' || allSaves === null) {
-          showBriefNotification('Invalid save file format.', 'danger');
-          return;
-        }
-
-        // Validate it has at least one save slot
-        const hasSlot = Object.keys(allSaves).some(k => k.startsWith('gameSlot_'));
-        if (!hasSlot) {
-          showBriefNotification('No save slots found in file.', 'danger');
-          return;
-        }
-
-        // Import all data -- only allow known save-related keys
-        const allowedKeyPrefixes = ['gameSlot_', 'saveSystemPrefs'];
-        Object.entries(allSaves).forEach(([key, value]) => {
-          if (allowedKeyPrefixes.some(prefix => key.startsWith(prefix))) {
-            localStorage.setItem(key, value);
-          }
-        });
-
-        showBriefNotification('Save data imported! Refreshing...', 'success');
-        logAction('Imported save backup file.');
-
-        // Refresh save system display
-        setTimeout(() => showSaveSystem(), 500);
-      } catch (err) {
-        console.error('Import failed:', err);
-        showBriefNotification('Import failed: invalid JSON file.', 'danger');
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
 
 function createSaveData() {
   // Deep-copy player to prevent shared references between save slots
@@ -23543,180 +23057,6 @@ function initializeMissingData() {
   recalculatePower();
 }
 
-// Save slots management
-function getSaveEntry(slotNumber) {
-  const saveEntryStr = localStorage.getItem(`gameSlot_${slotNumber}`);
-  return saveEntryStr ? JSON.parse(saveEntryStr) : null;
-}
-
-function getAllSaveSlots() {
-  const slots = [];
-
-  // Add auto-save slot (0)
-  const autoSave = getSaveEntry(0);
-  if (autoSave) {
-    slots.push(autoSave);
-  }
-
-  // Add regular slots (1-10)
-  for (let i = 1; i <= SAVE_SYSTEM.maxSlots; i++) {
-    const saveEntry = getSaveEntry(i);
-    slots.push(saveEntry || { slotNumber: i, empty: true });
-  }
-
-  return slots;
-}
-
-function deleteSaveSlot(slotNumber) {
-  try {
-    const key = `gameSlot_${slotNumber}`;
-
-    // Check if the slot exists
-    const existingData = localStorage.getItem(key);
-    if (!existingData) {
-      console.warn(`No save data found in slot ${slotNumber}`);
-      return false;
-    }
-
-    // Remove the save slot
-    localStorage.removeItem(key);
-
-    // If this was the current slot, clear the current slot reference
-    if (SAVE_SYSTEM.currentSlot === slotNumber) {
-      SAVE_SYSTEM.currentSlot = -1;
-      saveSaveSystemPrefs();
-    }
-
-    // Update the save slots list if it's currently displayed
-    updateSaveSlotsList();
-
-    return true;
-
-  } catch (error) {
-    console.error(`Failed to delete save slot ${slotNumber}:`, error);
-    return false;
-  }
-}
-
-function updateSaveSlotsList() {
-  // This will be called to refresh the save slots UI
-  if (document.getElementById('save-slots-container')) {
-    showSaveSystem();
-  }
-}
-
-// UI Functions
-function showSaveSystem() {
-  hideAllScreens();
-  document.getElementById('statistics-screen').style.display = 'block';
-
-  const slots = getAllSaveSlots();
-  const currentPlaytime = calculatePlaytime();
-
-  const content = `
-    <div style="max-width: 1200px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #c0a062; font-size: 2.5em; margin-bottom: 20px;">
-        Save System
-      </h2>
-
-      <!-- Save System Controls -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
-        <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a062;">
-          <h3 style="color: #c0a062; margin: 0 0 10px 0;">Auto-Save</h3>
-          <label style="display: flex; align-items: center; color: #f5e6c8;">
-            <input type="checkbox" ${SAVE_SYSTEM.autoSaveEnabled ? 'checked' : ''} onchange="toggleAutoSave(this.checked)" style="margin-right: 8px;">
-            Auto-save every ${SAVE_SYSTEM.autoSaveInterval/1000}s
-          </label>
-          <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #d4c4a0;">
-            Last: ${SAVE_SYSTEM.lastAutoSave ? formatTimestamp(SAVE_SYSTEM.lastAutoSave) : 'Never'}
-          </p>
-        </div>
-        <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8a9a6a;">
-          <h3 style="color: #8a9a6a; margin: 0 0 10px 0;">Backup</h3>
-          <button onclick="exportSaveData()" style="background:#8a9a6a; color:white; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:3px; width:100%;">
-            Export Save
-          </button>
-          <button onclick="importSaveData()" style="background:#c0a062; color:white; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:3px; width:100%;">
-            Import Save
-          </button>
-        </div>
-      </div>
-
-      <!-- Save Slots -->
-      <div id="save-slots-container">
-        <h3 style="color: #f5e6c8; border-bottom: 2px solid #c0a062; padding-bottom: 10px; margin-bottom: 20px;">
-          Save Slots
-        </h3>
-
-        <div style="display: grid; gap: 15px;">
-          ${slots.map(slot => {
-            if (slot.empty) {
-              return `
-                <div style="padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 2px dashed #6a5a3a; display: flex; justify-content: space-between; align-items: center;">
-                  <div>
-                    <h4 style="color: #8a7a5a; margin: 0;">Slot ${slot.slotNumber} - Empty</h4>
-                    <p style="color: #6a5a3a; margin: 5px 0 0 0;">No save data</p>
-                  </div>
-                  <button onclick="saveToSlot(${slot.slotNumber})" style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    Save Here
-                  </button>
-                </div>
-              `;
-            } else {
-              const isAutoSave = slot.slotNumber === 0;
-              const isCurrent = slot.slotNumber === SAVE_SYSTEM.currentSlot;
-              const borderColor = isAutoSave ? '#c0a040' : isCurrent ? '#8a9a6a' : '#c0a062';
-
-              return `
-                <div class="save-manage-row" style="padding: 20px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 2px solid ${borderColor}; display: grid; grid-template-columns: 1fr auto auto auto; gap: 15px; align-items: center;">
-                  <div>
-                    <h4 style="color: #f5e6c8; margin: 0 0 5px 0;">
-                      ${isAutoSave ? '' : ''}${slot.saveName}
-                      ${isCurrent ? ' (Current)' : ''}
-                    </h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 10px 0;">
-                      <div><span style="color: #8a9a6a;"></span> $${slot.money.toLocaleString()}</div>
-                      <div><span style="color: #c0a062;"></span> Level ${slot.level}</div>
-                      <div><span style="color: #8b3a3a;"></span> ${slot.reputation}</div>
-                      <div><span style="color: #c0a040;"></span> ${slot.empireRating.toLocaleString()}</div>
-                    </div>
-                    <p style="color: #8a7a5a; margin: 5px 0 0 0; font-size: 0.9em;">
-                      ${formatTimestamp(new Date(slot.saveDate).getTime())} * ${slot.playtime || 'Unknown'}
-                    </p>
-                  </div>
-
-                  <button onclick="loadGameFromSlot(${slot.slotNumber})" style="background: #c0a062; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    Load
-                  </button>
-
-                  ${!isAutoSave ? `
-                    <button onclick="saveToSlot(${slot.slotNumber})" style="background: #8a9a6a; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                      Overwrite
-                    </button>
-
-                    <button onclick="deleteGameSlot(${slot.slotNumber})" style="background: #8b3a3a; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                      Delete
-                    </button>
-                  ` : `
-                    <div></div>
-                    <div style="color: #c0a040; font-size: 0.9em; text-align: center;">Auto-Save</div>
-                  `}
-                </div>
-              `;
-            }
-          }).join('')}
-        </div>
-      </div>
-
-      <div style="text-align: center; margin-top: 30px;">
-        <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('statistics-content').innerHTML = content;
-}
-
 // Helper functions
 // Function to map item names to their image paths in the new folder structure
 function getItemImage(itemName) {
@@ -23796,40 +23136,19 @@ function getItemImage(itemName) {
   return `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9IiM0OTUwNTciIHJ4PSI4Ii8+PHRleHQgeD0iNDAiIHk9IjM1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNhYWIwYjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPj88L3RleHQ+PHRleHQgeD0iNDAiIHk9IjU1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iOCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+`;
 }
 
-async function saveToSlot(slotNumber) {
-  if (!player.name || player.name.trim() === "") {
-    showBriefNotification("You must create a character before saving! Click 'Start Game' to create your character first.", 'danger');
-    return;
-  }
-
-  const customName = await ui.prompt(`Enter a name for this save:`, `${player.name} - ${getCurrentDateString()}`);
-  if (customName !== null) {
-    // Sanitize save name: strip HTML, control chars, limit length
-    const sanitized = customName.trim()
-      .replace(/<[^>]*>/g, '')
-      .replace(/[\x00-\x1F\x7F]/g, '')
-      .substring(0, 60);
-    const result = saveGameToSlot(slotNumber, sanitized || `${player.name} - ${getCurrentDateString()}`);
-    if (result) {
-      showBriefNotification("Game saved successfully!", 'success');
-    }
-  }
-}
-
 function toggleAutoSave(enabled) {
   SAVE_SYSTEM.autoSaveEnabled = enabled;
-  saveSaveSystemPrefs();
 
   if (enabled) {
     startAutoSave();
     logAction("Auto-save enabled");
   } else {
+    if (autoSaveIntervalId) {
+      clearInterval(autoSaveIntervalId);
+      autoSaveIntervalId = null;
+    }
     logAction("Auto-save disabled");
   }
-}
-
-function saveSaveSystemPrefs() {
-  localStorage.setItem('saveSystemPrefs', JSON.stringify(SAVE_SYSTEM));
 }
 
 function getCurrentDateString() {
@@ -25891,21 +25210,11 @@ window.updateRightPanel = updateRightPanel;
 // Save/Load & Options
 window.saveGame = saveGame;
 window.loadGame = loadGame;
-window.deleteSavedGame = deleteSavedGame;
-window.confirmResetGame = confirmResetGame;
-window.showSaveSystem = showSaveSystem;
+window.showBurnRecordsModal = showBurnRecordsModal;
 window.showOptions = showOptions;
 window.restartGame = restartGame;
 window.checkForUpdates = checkForUpdates;
 window.forceNewGame = forceNewGame;
-window.saveToSlot = saveToSlot;
-window.loadGameFromSlot = loadGameFromSlot;
-window.exitLoadInterface = exitLoadInterface;
-window.confirmDeleteSave = confirmDeleteSave;
-window.cancelDeleteSave = cancelDeleteSave;
-window.showDeleteSelectionInterface = showDeleteSelectionInterface;
-window.exportSaveData = exportSaveData;
-window.importSaveData = importSaveData;
 window.bribeGuard = bribeGuard;
 
 // Version Updates

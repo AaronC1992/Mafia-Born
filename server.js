@@ -5,6 +5,8 @@ const fs = require('fs');
 const path = require('path');
 // JSON file persistence utilities
 const { loadWorldState, saveWorldState, flushWorldState } = require('./worldPersistence');
+// MongoDB connection
+const mongodb = require('./db');
 // User accounts & authentication
 const userDB = require('./userDB');
 
@@ -142,9 +144,9 @@ const server = http.createServer(async (req, res) => {
                 if (!checkAuthRateLimit(clientIP)) return json(429, { error: 'Too many attempts. Please wait a minute.' });
                 const { username, password } = await readBody();
                 if (!username || !password) return json(400, { error: 'Username and password required' });
-                const result = userDB.createUser(username.trim(), password);
+                const result = await userDB.createUser(username.trim(), password);
                 if (!result.ok) return json(400, { error: result.error });
-                const token = userDB.createSession(username.trim().toLowerCase());
+                const token = await userDB.createSession(username.trim().toLowerCase());
                 return json(201, { ok: true, token, username: username.trim() });
             }
 
@@ -154,16 +156,16 @@ const server = http.createServer(async (req, res) => {
                 if (!checkAuthRateLimit(clientIP)) return json(429, { error: 'Too many attempts. Please wait a minute.' });
                 const { username, password } = await readBody();
                 if (!username || !password) return json(400, { error: 'Username and password required' });
-                const result = userDB.authenticateUser(username.trim(), password);
+                const result = await userDB.authenticateUser(username.trim(), password);
                 if (!result.ok) return json(401, { error: result.error });
-                const token = userDB.createSession(username.trim().toLowerCase());
+                const token = await userDB.createSession(username.trim().toLowerCase());
                 return json(200, { ok: true, token, username: result.username });
             }
 
             // ── POST /api/logout ───────────────────────────
             if (urlPath === '/api/logout' && req.method === 'POST') {
                 const token = getToken();
-                if (token) userDB.destroySession(token);
+                if (token) await userDB.destroySession(token);
                 return json(200, { ok: true });
             }
 
@@ -171,7 +173,7 @@ const server = http.createServer(async (req, res) => {
             if (urlPath === '/api/profile' && req.method === 'GET') {
                 const username = userDB.validateToken(getToken());
                 if (!username) return json(401, { error: 'Not authenticated' });
-                const info = userDB.getUserInfo(username);
+                const info = await userDB.getUserInfo(username);
                 info.isAdmin = isAdmin(username);
                 return json(200, info);
             }
@@ -220,7 +222,7 @@ const server = http.createServer(async (req, res) => {
                     gameVersion: body.gameVersion || '1.18.0',
                     data: body.data
                 };
-                userDB.setUserSave(username, saveEntry);
+                await userDB.setUserSave(username, saveEntry);
                 return json(200, { ok: true, saveDate: saveEntry.saveDate });
             }
 
@@ -228,7 +230,7 @@ const server = http.createServer(async (req, res) => {
             if (urlPath === '/api/load' && req.method === 'GET') {
                 const username = userDB.validateToken(getToken());
                 if (!username) return json(401, { error: 'Not authenticated' });
-                const save = userDB.getUserSave(username);
+                const save = await userDB.getUserSave(username);
                 if (!save) return json(404, { error: 'No cloud save found' });
                 return json(200, save);
             }
@@ -237,7 +239,7 @@ const server = http.createServer(async (req, res) => {
             if (urlPath === '/api/save' && req.method === 'DELETE') {
                 const username = userDB.validateToken(getToken());
                 if (!username) return json(401, { error: 'Not authenticated' });
-                userDB.clearUserSave(username);
+                await userDB.clearUserSave(username);
                 return json(200, { ok: true });
             }
 
@@ -247,7 +249,7 @@ const server = http.createServer(async (req, res) => {
                 if (!username) return json(401, { error: 'Not authenticated' });
                 const { oldPassword, newPassword } = await readBody();
                 if (!oldPassword || !newPassword) return json(400, { error: 'Both passwords required' });
-                const result = userDB.changePassword(username, oldPassword, newPassword);
+                const result = await userDB.changePassword(username, oldPassword, newPassword);
                 if (!result.ok) return json(400, { error: result.error });
                 return json(200, { ok: true });
             }
@@ -261,7 +263,7 @@ const server = http.createServer(async (req, res) => {
                 // If the caller is logged in, exclude their own account
                 const token = getToken();
                 const caller = token ? userDB.validateToken(token) : null;
-                const taken = userDB.isPlayerNameTaken(name.trim(), caller);
+                const taken = await userDB.isPlayerNameTaken(name.trim(), caller);
                 return json(200, { taken });
             }
 
@@ -270,8 +272,8 @@ const server = http.createServer(async (req, res) => {
                 const token = getToken();
                 const username = userDB.validateToken(token);
                 if (!username) return json(401, { error: 'Not authenticated' });
-                userDB.destroySession(token);
-                userDB.deleteUser(username);
+                await userDB.destroySession(token);
+                await userDB.deleteUser(username);
                 return json(200, { ok: true });
             }
 
@@ -6082,33 +6084,44 @@ function generateClientId() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-server.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
-    // Initialize jail bots on startup
-    updateJailBots();
-    console.log(` Jail bots initialized: ${gameState.jailBots.length} inmates`);
-    // Calculate Top Don on startup based on existing territories
-    recalcTopDon();
-    if (gameState.politics.topDonName) {
-        console.log(` Top Don: ${gameState.politics.topDonName} (${gameState.politics.territoryCount} territories)`);
+// ── Async startup: connect MongoDB, then listen ───────────────
+(async () => {
+    try {
+        await mongodb.connect();
+        await userDB.init();
+    } catch (err) {
+        console.error('Failed to connect to MongoDB:', err.message);
+        process.exit(1);
     }
-});
+
+    server.listen(PORT, () => {
+        console.log(`Server started on port ${PORT}`);
+        // Initialize jail bots on startup
+        updateJailBots();
+        console.log(` Jail bots initialized: ${gameState.jailBots.length} inmates`);
+        // Calculate Top Don on startup based on existing territories
+        recalcTopDon();
+        if (gameState.politics.topDonName) {
+            console.log(` Top Don: ${gameState.politics.topDonName} (${gameState.politics.territoryCount} territories)`);
+        }
+    });
+})();
 
 // ==================== GRACEFUL SHUTDOWN ====================
 // Handle server shutdown to save world state
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
-function gracefulShutdown() {
+async function gracefulShutdown() {
     console.log('\n Server shutting down gracefully...');
     
     // Flush any pending world state changes
     try {
         flushWorldState();
-        userDB.flushDB();
-        console.log(' World state & user DB flushed to disk');
+        await mongodb.close();
+        console.log(' World state flushed & MongoDB closed');
     } catch (err) {
-        console.error(' Error flushing data:', err.message);
+        console.error(' Error during shutdown:', err.message);
     }
     
     // Notify all connected clients
