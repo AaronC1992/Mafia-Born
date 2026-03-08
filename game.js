@@ -17413,8 +17413,20 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.25.0";
+const CURRENT_VERSION = "1.25.1";
 const VERSION_UPDATES = {
+  "1.25.1": {
+    title: "Equipment Visibility & Driver Vehicle Bonus",
+    date: "June 2025",
+    changes: [
+      "Driver role now uses that player's actual vehicle for the heist getaway bonus",
+      "Better vehicle = bigger success boost: Armored Car +2%, Luxury Automobile +4%, Private Airplane +8%",
+      "All crew equipment (weapons, armor, vehicles) shown in the Heist Management screen",
+      "Heist results now display full crew loadout and getaway vehicle used",
+      "Superboss fights now track and display each participant's equipped gear",
+      "Superboss victory log shows crew loadout with damage contribution",
+    ]
+  },
   "1.25.0": {
     title: "Heist Roles, Chat Channels & Open Lobbies",
     date: "June 2025",

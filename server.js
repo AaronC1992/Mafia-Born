@@ -1707,6 +1707,19 @@ function handleTerritoryWar(clientId, message) {
     scheduleWorldSave();
 }
 
+// Sanitize client-reported equipment into a safe server-side object
+function _sanitizeEquipment(eq) {
+    if (!eq || typeof eq !== 'object') return null;
+    const out = {};
+    for (const slot of ['weapon', 'armor', 'vehicle']) {
+        const item = eq[slot];
+        if (item && typeof item === 'object' && item.name) {
+            out[slot] = { name: String(item.name).substring(0, 40), power: Math.min(Math.max(Number(item.power) || 0, 0), 999) };
+        }
+    }
+    return Object.keys(out).length ? out : null;
+}
+
 // Heist creation handler
 function handleHeistCreate(clientId, message) {
     const player = gameState.players.get(clientId);
@@ -1724,6 +1737,7 @@ function handleHeistCreate(clientId, message) {
         organizerId: clientId,
         participants: [clientId],
         roles: {},  // playerId -> role (driver/hacker/muscle/lookout)
+        equipment: {}, // playerId -> { weapon, armor, vehicle }
         open: message.open !== false, // default open unless explicitly private
         maxParticipants: message.maxParticipants || 4,
         minCrew: message.minCrew || 1,
@@ -1737,6 +1751,8 @@ function handleHeistCreate(clientId, message) {
     if (message.role && ['driver','hacker','muscle','lookout'].includes(message.role)) {
         heist.roles[clientId] = message.role;
     }
+    // Store organizer's equipment
+    heist.equipment[clientId] = _sanitizeEquipment(message.equipment) || player.equipment || {};
     
     gameState.activeHeists.push(heist);
     
@@ -1775,6 +1791,8 @@ function handleHeistJoin(clientId, message) {
         if (message.role && ['driver','hacker','muscle','lookout'].includes(message.role)) {
             heist.roles[clientId] = message.role;
         }
+        // Store joiner's equipment
+        heist.equipment[clientId] = _sanitizeEquipment(message.equipment) || player.equipment || {};
         
         console.log(` ${player.name} joined heist: ${heist.target}`);
         
@@ -2061,7 +2079,10 @@ function handleHeistSetRole(clientId, message) {
     if (!message.role || !validRoles.includes(message.role)) return;
     if (!heist.roles) heist.roles = {};
     heist.roles[clientId] = message.role;
+    // Refresh equipment from latest player data
     const player = gameState.players.get(clientId);
+    if (!heist.equipment) heist.equipment = {};
+    heist.equipment[clientId] = player ? (player.equipment || {}) : {};
     broadcastToAll({
         type: 'heist_update',
         heist: heist,
@@ -2219,6 +2240,18 @@ function handlePlayerUpdate(clientId, message) {
         playerState.playerId = clientId;
         playerState.name = player.name;
         playerState.lastUpdate = Date.now();
+    }
+    
+    // Store equipment summary (display-only, names + power capped for sanity)
+    if (message.equipment && typeof message.equipment === 'object') {
+        const eq = {};
+        for (const slot of ['weapon', 'armor', 'vehicle']) {
+            const item = message.equipment[slot];
+            if (item && typeof item === 'object' && item.name) {
+                eq[slot] = { name: String(item.name).substring(0, 40), power: Math.min(Math.max(Number(item.power) || 0, 0), 999) };
+            }
+        }
+        player.equipment = eq;
     }
     
     console.log(` Updated player state: ${player.name} ${playerState.inJail ? '[IN JAIL]' : ''}`);
@@ -2911,14 +2944,33 @@ function executeHeist(heist) {
     const uniqueRoles = new Set(roleList);
     if (uniqueRoles.size >= 4) roleSuccessBonus += 0.10;
 
-    const successChance = Math.min(baseSuccess + crewBonus + roleSuccessBonus, 0.95);
+    // Driver's vehicle bonus — the driver's vehicle is used for the getaway
+    const heistEquipment = heist.equipment || {};
+    let driverVehicleBonus = 0;
+    let driverVehicleName = null;
+    const driverId = Object.entries(roles).find(([, r]) => r === 'driver')?.[0];
+    if (driverId) {
+        const driverEq = heistEquipment[driverId];
+        if (driverEq && driverEq.vehicle) {
+            const vPower = driverEq.vehicle.power || 0;
+            // Vehicle power 25 -> +2%, 50 -> +4%, 200 -> +8% (capped at 8%)
+            driverVehicleBonus = Math.min(Math.floor(vPower / 25) * 0.02, 0.08);
+            driverVehicleName = driverEq.vehicle.name;
+        }
+    }
+
+    const successChance = Math.min(baseSuccess + crewBonus + roleSuccessBonus + driverVehicleBonus, 0.95);
     const success = Math.random() < successChance;
     
-    // Build role summary for results
+    // Build role & equipment summary for results
     const participantRoles = {};
     heist.participants.forEach(pid => {
         const p = gameState.players.get(pid);
-        participantRoles[pid] = { name: p ? p.name : 'Unknown', role: roles[pid] || 'none' };
+        participantRoles[pid] = {
+            name: p ? p.name : 'Unknown',
+            role: roles[pid] || 'none',
+            equipment: heistEquipment[pid] || {}
+        };
     });
 
     // Get participant names for the world message
@@ -2956,6 +3008,7 @@ function executeHeist(heist) {
                     target: heist.target,
                     crewSize: heist.participants.length,
                     roles: participantRoles,
+                    driverVehicle: driverVehicleName,
                     worldMessage: ` Heist on ${heist.target} was successful! Crew: ${participantNames}`
                 }));
             }
@@ -2998,6 +3051,7 @@ function executeHeist(heist) {
                     target: heist.target,
                     crewSize: heist.participants.length,
                     roles: participantRoles,
+                    driverVehicle: driverVehicleName,
                     worldMessage: ` Heist on ${heist.target} failed! The crew barely escaped.`
                 }));
             }
@@ -5384,10 +5438,12 @@ function handleSuperbossStart(clientId, message) {
         bossMaxHP: boss.hp,
         bossPower: boss.power,
         participants: [{ playerId: clientId, name: player.name, damage: 0, alive: true }],
+        equipment: {},
         startedAt: Date.now(),
         phase: 'recruiting', // recruiting -> fighting -> resolved
         reward: boss.reward
     };
+    fight.equipment[clientId] = _sanitizeEquipment(message.equipment) || player.equipment || {};
     gameState.activeSuperbossFights.set(fightId, fight);
     
     ws.send(JSON.stringify({ type: 'superboss_result', success: true, action: 'started', fight }));
@@ -5436,6 +5492,7 @@ function handleSuperbossJoin(clientId, message) {
     if (fight.participants.find(p => p.playerId === clientId)) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Already in this fight.' }));
     
     fight.participants.push({ playerId: clientId, name: player.name, damage: 0, alive: true });
+    fight.equipment[clientId] = _sanitizeEquipment(message.equipment) || player.equipment || {};
     
     // Notify all participants
     fight.participants.forEach(p => {
@@ -5494,6 +5551,13 @@ function handleSuperbossAttack(clientId, message) {
         
         // Distribute rewards to all participants proportionally
         const totalDamage = fight.participants.reduce((s, p) => s + p.damage, 0) || 1;
+        const fightEquipment = fight.equipment || {};
+        const crewLoadout = fight.participants.map(p => ({
+            name: p.name,
+            damage: p.damage,
+            damageShare: Math.round((p.damage / totalDamage) * 100),
+            equipment: fightEquipment[p.playerId] || {}
+        }));
         fight.participants.forEach(p => {
             const share = p.damage / totalDamage;
             const moneyReward = Math.floor(fight.reward.money * share);
@@ -5507,7 +5571,8 @@ function handleSuperbossAttack(clientId, message) {
                     xpReward,
                     buff: fight.reward.buff,
                     damageDealt: p.damage,
-                    damageShare: Math.round(share * 100)
+                    damageShare: Math.round(share * 100),
+                    crewLoadout
                 }));
             }
         });

@@ -532,7 +532,8 @@ function confirmCreateHeist(targetId) {
         minCrew: target.minCrew,
         successBase: target.successBase,
         role: role,
-        open: isOpen
+        open: isOpen,
+        equipment: getEquipmentSummary()
     }));
 
     _safeLogAction(`Planning heist: ${target.name}. Looking for crew...`);
@@ -559,6 +560,7 @@ function manageHeist(heistId) {
     const roleColors = { driver: '#3498db', hacker: '#9b59b6', muscle: '#e74c3c', lookout: '#2ecc71' };
     const roleLabels = { driver: 'Driver', hacker: 'Hacker', muscle: 'Muscle', lookout: 'Lookout' };
     const roles = heist.roles || {};
+    const heistEquipment = heist.equipment || {};
 
     // Count unique roles for balance indicator
     const uniqueRoles = new Set(Object.values(roles));
@@ -576,20 +578,33 @@ function manageHeist(heistId) {
             const pRole = roles[pid];
             const roleColor = pRole ? roleColors[pRole] || '#888' : '#555';
             const roleLabel = pRole ? roleLabels[pRole] || pRole : 'No Role';
+
+            // Equipment display
+            const eq = heistEquipment[pid] || {};
+            let eqParts = [];
+            if (eq.weapon) eqParts.push(`<span style="color:#e74c3c;" title="Weapon: Power ${eq.weapon.power}">${escapeHTML(eq.weapon.name)}</span>`);
+            if (eq.armor) eqParts.push(`<span style="color:#3498db;" title="Armor: Power ${eq.armor.power}">${escapeHTML(eq.armor.name)}</span>`);
+            if (eq.vehicle) eqParts.push(`<span style="color:#f39c12;" title="Vehicle: Power ${eq.vehicle.power}">${escapeHTML(eq.vehicle.name)}</span>`);
+            const eqHTML = eqParts.length > 0
+                ? `<div style="font-size:0.78em;color:#888;margin-top:3px;">Gear: ${eqParts.join(' / ')}</div>`
+                : `<div style="font-size:0.78em;color:#555;margin-top:3px;">No equipment</div>`;
             
             return `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin: 6px 0; background: rgba(${isOrganizer ? '192,160,98' : '139,0,0'},0.15); border-radius: 6px; border: 1px solid ${isOrganizer ? '#c0a062' : '#3a0000'};">
-                <div>
-                    <span style="color: ${isOrganizer ? '#c0a062' : '#ff4444'}; font-weight: bold;">${name}</span>
-                    <span style="color: #888; font-size: 0.85em;"> Lvl ${level}</span>
-                    <span style="color: ${roleColor}; font-size: 0.8em; margin-left: 8px; border: 1px solid ${roleColor}; padding: 1px 6px; border-radius: 3px;">${roleLabel}</span>
-                    ${isOrganizer ? '<span style="color: #c0a062; font-size: 0.8em; margin-left: 6px;">Leader</span>' : ''}
-                    ${isMe && !isOrganizer ? '<span style="color: #8a9a6a; font-size: 0.8em; margin-left: 6px;">(You)</span>' : ''}
+            <div style="padding: 10px; margin: 6px 0; background: rgba(${isOrganizer ? '192,160,98' : '139,0,0'},0.15); border-radius: 6px; border: 1px solid ${isOrganizer ? '#c0a062' : '#3a0000'};">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="color: ${isOrganizer ? '#c0a062' : '#ff4444'}; font-weight: bold;">${name}</span>
+                        <span style="color: #888; font-size: 0.85em;"> Lvl ${level}</span>
+                        <span style="color: ${roleColor}; font-size: 0.8em; margin-left: 8px; border: 1px solid ${roleColor}; padding: 1px 6px; border-radius: 3px;">${roleLabel}</span>
+                        ${isOrganizer ? '<span style="color: #c0a062; font-size: 0.8em; margin-left: 6px;">Leader</span>' : ''}
+                        ${isMe && !isOrganizer ? '<span style="color: #8a9a6a; font-size: 0.8em; margin-left: 6px;">(You)</span>' : ''}
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                        ${isMe ? `<button onclick="showChangeRolePopup('${heistId}')" style="background:#222;color:${roleColor};padding:5px 10px;border:1px solid ${roleColor};border-radius:4px;cursor:pointer;font-size:0.8em;">Change Role</button>` : ''}
+                        ${!isOrganizer && isMe ? `<button onclick="leaveHeist('${heistId}')" style="background:#333;color:#ff4444;padding:5px 12px;border:1px solid #ff4444;border-radius:4px;cursor:pointer;font-size:0.85em;">Leave</button>` : ''}
+                    </div>
                 </div>
-                <div style="display:flex;gap:6px;">
-                    ${isMe ? `<button onclick="showChangeRolePopup('${heistId}')" style="background:#222;color:${roleColor};padding:5px 10px;border:1px solid ${roleColor};border-radius:4px;cursor:pointer;font-size:0.8em;">Change Role</button>` : ''}
-                    ${!isOrganizer && isMe ? `<button onclick="leaveHeist('${heistId}')" style="background:#333;color:#ff4444;padding:5px 12px;border:1px solid #ff4444;border-radius:4px;cursor:pointer;font-size:0.85em;">Leave</button>` : ''}
-                </div>
+                ${eqHTML}
             </div>`;
         }).join('');
     }
@@ -867,7 +882,7 @@ function joinHeist(heistId, role) {
     }
     
     if (onlineWorldState.socket && onlineWorldState.socket.readyState === WebSocket.OPEN) {
-        const msg = { type: 'heist_join', heistId: heistId };
+        const msg = { type: 'heist_join', heistId: heistId, equipment: getEquipmentSummary() };
         if (role) msg.role = role;
         onlineWorldState.socket.send(JSON.stringify(msg));
         _safeLogAction(`Requested to join heist: ${heist.target} as ${role || 'unassigned'}`);
@@ -923,7 +938,29 @@ function showHeistResult(result) {
                 <div style="color:#888;font-size:0.85em;margin-top:10px;">
                     Crew size: ${result.crewSize || '?'}
                 </div>
+                ${result.driverVehicle ? `<div style="color:#f39c12;font-size:0.9em;margin-top:8px;">Getaway Vehicle: ${escapeHTML(result.driverVehicle)}</div>` : ''}
             </div>
+            
+            ${Array.isArray(result.roles) && result.roles.length > 0 ? `
+            <div class="popup-section" style="margin-top:10px;">
+                <h3 style="color:#c0a062;font-size:0.95em;margin-bottom:8px;">Crew Loadout</h3>
+                ${result.roles.map(r => {
+                    const eq = r.equipment || {};
+                    let gear = [];
+                    if (eq.weapon) gear.push(`<span style="color:#e74c3c;">${escapeHTML(eq.weapon.name)}</span>`);
+                    if (eq.armor) gear.push(`<span style="color:#3498db;">${escapeHTML(eq.armor.name)}</span>`);
+                    if (eq.vehicle) gear.push(`<span style="color:#f39c12;">${escapeHTML(eq.vehicle.name)}</span>`);
+                    const gearStr = gear.length > 0 ? gear.join(' / ') : '<span style="color:#555;">No gear</span>';
+                    const rLabel = r.role ? (roleLabels[r.role] || r.role) : 'No Role';
+                    const rColor = r.role ? (roleColors[r.role] || '#888') : '#555';
+                    return `<div style="font-size:0.82em;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span style="color:#ccc;">${escapeHTML(r.playerName || 'Unknown')}</span>
+                        <span style="color:${rColor};margin-left:6px;">[${rLabel}]</span>
+                        <div style="margin-left:10px;color:#888;">${gearStr}</div>
+                    </div>`;
+                }).join('')}
+            </div>
+            ` : ''}
             
             <div class="popup-actions">
                 <button onclick="document.getElementById('heist-result-modal').remove()" class="popup-btn ${isSuccess ? 'popup-btn-success' : 'popup-btn-danger'}">
@@ -2749,6 +2786,22 @@ function _scheduleNameCorrection() {
     }, 1000);
 }
 
+// Build a safe equipment summary from the local player object for server sync
+function getEquipmentSummary() {
+    const eq = {};
+    if (typeof player === 'undefined') return eq;
+    if (player.equippedWeapon && typeof player.equippedWeapon === 'object') {
+        eq.weapon = { name: player.equippedWeapon.name || 'Unknown', power: player.equippedWeapon.power || 0 };
+    }
+    if (player.equippedArmor && typeof player.equippedArmor === 'object') {
+        eq.armor = { name: player.equippedArmor.name || 'Unknown', power: player.equippedArmor.power || 0 };
+    }
+    if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
+        eq.vehicle = { name: player.equippedVehicle.name || 'Unknown', power: player.equippedVehicle.power || 0 };
+    }
+    return eq;
+}
+
 // Sync player state to server
 function syncPlayerState() {
     if (onlineWorldState.socket && onlineWorldState.socket.readyState === WebSocket.OPEN) {
@@ -2770,7 +2823,8 @@ function syncPlayerState() {
                 // Display-sync stats for other players to see
                 gangMembers: (player.gang && player.gang.gangMembers ? player.gang.gangMembers : []).length,
                 power: typeof calculatePower === 'function' ? calculatePower() : 0
-            }
+            },
+            equipment: getEquipmentSummary()
         }));
     }
 }
@@ -6709,6 +6763,19 @@ function handleSuperbossVictory(message) {
     if (typeof showBriefNotification === 'function') showBriefNotification(`${message.bossName} DEFEATED! +$${message.moneyReward.toLocaleString()} +${message.xpReward} Rep (${message.damageShare}% contribution)`, 'success');
     if (typeof logAction === 'function') _safeLogAction(`SUPERBOSS DEFEATED: ${message.bossName}! You dealt ${message.damageDealt} damage (${message.damageShare}% share). Reward: $${message.moneyReward.toLocaleString()} + ${message.xpReward} Rep`, 'combat');
     
+    // Show crew loadout in log if available
+    if (Array.isArray(message.crewLoadout) && message.crewLoadout.length > 0) {
+        message.crewLoadout.forEach(c => {
+            const eq = c.equipment || {};
+            let gear = [];
+            if (eq.weapon) gear.push(eq.weapon.name);
+            if (eq.armor) gear.push(eq.armor.name);
+            if (eq.vehicle) gear.push(eq.vehicle.name);
+            const gearStr = gear.length > 0 ? gear.join(', ') : 'No gear';
+            _safeLogAction(`  ${c.name} (${c.damageShare}% dmg) — ${gearStr}`, 'info');
+        });
+    }
+    
     renderSuperbossScreen();
 }
 
@@ -6739,7 +6806,15 @@ function renderSuperbossScreen() {
             </div>
             <div style="margin:12px 0;">
                 <h4 style="color:#c0a062;">Participants:</h4>
-                ${f.participants.map(p => `<div style="padding:4px 8px;color:${p.alive ? '#d4c4a0' : '#8a7a5a'};"><span>${p.alive ? '[OK]' : '[X]'} ${escapeHTML(p.name)}</span> <span style="color:#8a7a5a;">— ${p.damage} dmg</span></div>`).join('')}
+                ${f.participants.map(p => {
+                    const eq = (f.equipment || {})[p.playerId] || {};
+                    let gear = [];
+                    if (eq.weapon) gear.push(`<span style="color:#e74c3c;">${escapeHTML(eq.weapon.name)}</span>`);
+                    if (eq.armor) gear.push(`<span style="color:#3498db;">${escapeHTML(eq.armor.name)}</span>`);
+                    if (eq.vehicle) gear.push(`<span style="color:#f39c12;">${escapeHTML(eq.vehicle.name)}</span>`);
+                    const gearStr = gear.length > 0 ? `<div style="font-size:0.8em;color:#888;margin-left:16px;">Gear: ${gear.join(' / ')}</div>` : '';
+                    return `<div style="padding:4px 8px;color:${p.alive ? '#d4c4a0' : '#8a7a5a'};"><span>${p.alive ? '[OK]' : '[X]'} ${escapeHTML(p.name)}</span> <span style="color:#8a7a5a;">— ${p.damage} dmg</span>${gearStr}</div>`;
+                }).join('')}
             </div>
             ${f.phase === 'recruiting' ? `
                 <p style="color:#d4af37;text-align:center;">Recruiting phase — invite friends before attacking!</p>
@@ -6802,7 +6877,7 @@ window.startSuperbossFight = async function(bossId) {
         const choice = await window.checkCrewBeforeAction('a Superboss Fight', true);
         if (choice === 'crew' || choice === 'cancel') return;
     }
-    sendMP({ type: 'superboss_start', bossId });
+    sendMP({ type: 'superboss_start', bossId, equipment: getEquipmentSummary() });
 };
 window.superbossAttack = function() {
     if (_activeSuperbossFight) {
@@ -6817,7 +6892,7 @@ window.superbossInvite = function() {
 };
 window.superbossJoinInvite = function() {
     if (window._pendingSuperbossInvite) {
-        sendMP({ type: 'superboss_join', fightId: window._pendingSuperbossInvite.fightId });
+        sendMP({ type: 'superboss_join', fightId: window._pendingSuperbossInvite.fightId, equipment: getEquipmentSummary() });
         window._pendingSuperbossInvite = null;
     }
 };
