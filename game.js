@@ -8650,6 +8650,9 @@ function showAdminPanel() {
 
   container.style.display = 'block';
 
+  const tutorialMode = getTutorialMode() || 'none';
+  const tutorialsSkipped = localStorage.getItem('tutorialSkipAll') === '1';
+
   container.innerHTML = `
     <div class="content-header">
       <h2 style="color: #8b3a3a;">Admin Panel</h2>
@@ -8666,14 +8669,18 @@ function showAdminPanel() {
       <button onclick="adminQuickGrant('health', 100)" style="border-color:#8b3a3a;">+100 Health</button>
       <button onclick="adminQuickGrant('reputation', 500)" style="border-color:#8b3a3a;">+500 Respect</button>
       <button onclick="adminQuickGrant('ammo', 500)" style="border-color:#8b3a3a;">+500 Ammo</button>
+      <button onclick="adminQuickGrant('power', 100)" style="border-color:#8b3a3a;">+100 Influence</button>
+      <button onclick="adminQuickGrant('gas', 50)" style="border-color:#8b3a3a;">+50 Gas</button>
+      <button onclick="adminQuickGrant('money', 1000000)" style="border-color:#8b3a3a;">+$1M Clean</button>
+      <button onclick="adminQuickGrant('dirtyMoney', 1000000)" style="border-color:#8b3a3a;">+$1M Dirty</button>
     </div>
 
     <div class="section-header" style="color: #8b3a3a;">Set Stats Directly</div>
     <div class="content-card">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
         <label style="display:flex; flex-direction:column; gap:4px;">
-          <span>Street Rank: ${getReputationTier(player.reputation).name}</span>
-          <input type="number" id="admin-rep" value="${Math.floor(player.reputation || 0)}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <span>Reputation -- ${getReputationTier(player.reputation).name} (${player.reputation})</span>
+          <input type="number" id="admin-reputation" value="${Math.floor(player.reputation || 0)}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Clean Money ($${player.money.toLocaleString()})</span>
@@ -8682,10 +8689,6 @@ function showAdminPanel() {
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Dirty Money ($${(player.dirtyMoney || 0).toLocaleString()})</span>
           <input type="number" id="admin-dirty" value="${player.dirtyMoney || 0}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
-        </label>
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span>Reputation (${player.reputation})</span>
-          <input type="number" id="admin-rep" value="${player.reputation}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Skill Points (${player.skillPoints || 0})</span>
@@ -8707,6 +8710,14 @@ function showAdminPanel() {
           <span>Ammo (${player.ammo || 0})</span>
           <input type="number" id="admin-ammo" value="${player.ammo || 0}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
+        <label style="display:flex; flex-direction:column; gap:4px;">
+          <span>Influence (${player.power || 0})</span>
+          <input type="number" id="admin-power" value="${player.power || 0}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+        </label>
+        <label style="display:flex; flex-direction:column; gap:4px;">
+          <span>Gas (${player.gas || 0})</span>
+          <input type="number" id="admin-gas" value="${player.gas || 0}" min="0" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+        </label>
       </div>
       <div style="margin-top:12px; display:flex; gap:8px;">
         <button onclick="adminApplyStats()" style="border-color:#8b3a3a; color:#8b3a3a; flex:1;">Apply All Changes</button>
@@ -8727,6 +8738,20 @@ function showAdminPanel() {
       <button onclick="adminSetAllSkills(10)" style="border-color:#8b3a3a;">Set All Skills to 10</button>
       <button onclick="adminSetAllSkills(25)" style="border-color:#8b3a3a;">Set All Skills to 25</button>
       <button onclick="adminSetAllSkills(0)" style="border-color:#8b3a3a;">Reset All Skills to 0</button>
+    </div>
+
+    <div class="section-header" style="color: #8b3a3a;">Tutorial Management</div>
+    <div class="content-card">
+      <p style="color: #8a7a5a; font-size: 0.85em; margin: 0 0 10px;">
+        Current mode: <strong style="color: #c0a062;">${tutorialMode}</strong> | 
+        Tutorials: <strong style="color: ${tutorialsSkipped ? '#8b3a3a' : '#8a9a6a'};">${tutorialsSkipped ? 'Disabled' : 'Active'}</strong>
+      </p>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <button onclick="adminResetTutorials('contextual')" style="border-color:#8b3a3a;">Reset to Learn as You Play</button>
+        <button onclick="adminResetTutorials('narrative')" style="border-color:#8b3a3a;">Launch Narrative Guide</button>
+        <button onclick="adminResetTutorials('welcome')" style="border-color:#8b3a3a;">Show Welcome Popup</button>
+        <button onclick="adminResetTutorials('clear')" style="border-color:#8b3a3a;">Clear All Tutorial Data</button>
+      </div>
     </div>
 
     <div class="section-header" style="color: #8b3a3a;">&#9760; Kill Player (Online)</div>
@@ -8766,7 +8791,7 @@ function adminLevelUp(count) {
 
 function adminApplyStats() {
   const getValue = (id) => parseInt(document.getElementById(id).value) || 0;
-  player.reputation = Math.max(0, getValue('admin-rep'));
+  player.reputation = Math.max(0, getValue('admin-reputation'));
   player.money = Math.max(0, getValue('admin-money'));
   player.dirtyMoney = Math.max(0, getValue('admin-dirty'));
   player.skillPoints = Math.max(0, getValue('admin-sp'));
@@ -8774,6 +8799,8 @@ function adminApplyStats() {
   player.heat = Math.max(0, Math.min(100, getValue('admin-wanted')));
   player.gang.members = Math.max(0, getValue('admin-gang'));
   player.ammo = Math.max(0, getValue('admin-ammo'));
+  player.power = Math.max(0, getValue('admin-power'));
+  player.gas = Math.max(0, getValue('admin-gas'));
   showBriefNotification('Admin: Stats updated!', 'success');
   logAction('[Admin] Stats manually set via admin panel');
   updateUI();
@@ -8794,6 +8821,8 @@ function adminResetStats() {
       player.heat = 0;
       player.gang.members = 0;
       player.ammo = 0;
+      player.power = 0;
+      player.gas = 0;
       player.equippedWeapon = null;
       player.equippedArmor = null;
       player.equippedVehicle = null;
@@ -8851,6 +8880,36 @@ function adminSetAllSkills(level) {
   updateUI();
   showAdminPanel();
 }
+
+// -- Admin Tutorial Management --
+function adminResetTutorials(action) {
+  if (action === 'contextual') {
+    reEnableContextualTutorials();
+    showAdminPanel();
+  } else if (action === 'narrative') {
+    startNarrativeGuide();
+  } else if (action === 'welcome') {
+    // Clear mode so the welcome popup triggers
+    localStorage.removeItem('tutorialMode');
+    localStorage.removeItem('tutorialSkipAll');
+    Object.keys(TUTORIAL_CONTENT).forEach(id => {
+      localStorage.removeItem('tutorialSeen_' + id);
+    });
+    localStorage.removeItem('narrativeComplete');
+    showTutorialWelcome();
+  } else if (action === 'clear') {
+    localStorage.removeItem('tutorialMode');
+    localStorage.removeItem('tutorialSkipAll');
+    localStorage.removeItem('narrativeComplete');
+    Object.keys(TUTORIAL_CONTENT).forEach(id => {
+      localStorage.removeItem('tutorialSeen_' + id);
+    });
+    showBriefNotification('Admin: All tutorial data cleared.', 'success');
+    logAction('[Admin] Tutorial data cleared');
+    showAdminPanel();
+  }
+}
+window.adminResetTutorials = adminResetTutorials;
 
 // -- Admin Kill Player ---
 function buildAdminKillPlayerList() {
@@ -9510,7 +9569,7 @@ const TUTORIAL_CONTENT = {
       { heading: 'The Ledger (Activity Log)', text: 'Below the status bar is The Ledger -- a scrolling log that records everything you do: jobs, fights, purchases, story events, and more. Keep an eye on it for confirmation of your actions and narrative flavour.' },
       { heading: 'Quick Actions Bar (Right Panel)', text: 'On the right (desktop) or accessible via the mobile menu, the Quick Actions bar provides one-tap shortcuts to your most-used screens. It also has a Save button, Help button, and a Skip Tutorials option. You can customise which shortcuts appear in Settings.' },
       { heading: 'Navigation Buttons', text: 'The main buttons in the SafeHouse let you visit Jobs, the Black Market, Missions, the Casino, Hospital, and more. New areas unlock as your reputation grows -- keep grinding!' },
-      { heading: 'Getting Started Tips', text: 'Start by doing <b>Jobs</b> to earn cash and Respect. Visit the <b>Black Market</b> to buy weapons and armour. Check <b>Missions</b> when you\'re ready for the story. Visit the <b>Hospital</b> when your health is low. Head to <b>Settings > Help</b> at any time for a full game guide.' },
+      { heading: 'Getting Started Tips', text: 'Start by doing <b>Jobs</b> to earn cash and Respect. Visit the <b>Black Market</b> to buy weapons and armour. Check <b>Missions</b> when you\'re ready for the story. Visit the <b>Hospital</b> when your health is low. Head to <b>Settings > Help</b> at any time for a full game guide or to restart either tutorial.' },
     ]
   },
   jobs: {
@@ -9612,12 +9671,24 @@ const TUTORIAL_CONTENT = {
       { heading: 'Save & Load', text: 'Save your game to multiple slots. Auto-save runs periodically. Sign in for Cloud Save to sync across devices.' },
       { heading: 'Customize', text: 'Customise your Quick Actions bar and mobile nav bar -- choose which screen shortcuts appear for fast access.' },
       { heading: 'UI Toggles', text: 'Show or hide the Quick Actions panel, mobile nav bar, and individual stats on the Status Bar. Tailor the HUD to your preference.' },
-      { heading: 'Help & Tutorials', text: 'Tap the Help button for a full guide covering every game system, status, and mechanic. You can also re-enable or disable screen tutorials from here.' },
+      { heading: 'Help & Tutorials', text: 'Tap the Help button for a full guide covering every game system. From Help you can also restart either tutorial -- "Learn as You Play" (screen-by-screen tips) or "Narrative Guide" (full step-by-step walkthrough) -- at any time.' },
     ]
   },
 };
 
-// Check if tutorial has been seen for a screen
+// ==================== TUTORIAL MODE SYSTEM ====================
+// Modes: 'contextual' (Learn as You Play), 'narrative' (Narrative Guide), 'skipped'
+// On very first visit, a welcome popup lets the player choose.
+
+function getTutorialMode() {
+  return localStorage.getItem('tutorialMode') || null; // null = never chosen
+}
+
+function setTutorialMode(mode) {
+  localStorage.setItem('tutorialMode', mode);
+}
+
+// Check if tutorial has been seen for a screen (contextual mode)
 function isTutorialSeen(screenId) {
   return localStorage.getItem('tutorialSeen_' + screenId) === '1' || localStorage.getItem('tutorialSkipAll') === '1';
 }
@@ -9630,31 +9701,133 @@ function markTutorialSeen(screenId) {
 // Skip all tutorials
 function skipAllTutorials() {
   localStorage.setItem('tutorialSkipAll', '1');
-  // Remove any active tutorial overlay
+  setTutorialMode('skipped');
   const existing = document.getElementById('tutorial-overlay');
   if (existing) existing.remove();
+  const narrativeEl = document.getElementById('narrative-guide-overlay');
+  if (narrativeEl) narrativeEl.remove();
   showBriefNotification('Tutorials disabled. Re-enable from Settings > Help.', 'info');
 }
 window.skipAllTutorials = skipAllTutorials;
 
-// Re-enable tutorials (called from help screen)
-function reEnableTutorials() {
+// Re-enable tutorials for contextual mode
+function reEnableContextualTutorials() {
   localStorage.removeItem('tutorialSkipAll');
-  // Clear all individual seen flags
+  setTutorialMode('contextual');
   Object.keys(TUTORIAL_CONTENT).forEach(id => {
     localStorage.removeItem('tutorialSeen_' + id);
   });
-  showBriefNotification('Tutorials re-enabled! Visit any screen to see its guide.', 'success');
+  showBriefNotification('Learn as You Play tutorials re-enabled! Visit any screen to see its guide.', 'success');
+}
+window.reEnableContextualTutorials = reEnableContextualTutorials;
+
+// Legacy alias
+function reEnableTutorials() {
+  reEnableContextualTutorials();
 }
 window.reEnableTutorials = reEnableTutorials;
 
-// Show tutorial overlay for a screen
+// Restart the Narrative Guide
+function startNarrativeGuide() {
+  setTutorialMode('narrative');
+  localStorage.removeItem('tutorialSkipAll');
+  showNarrativeGuide();
+}
+window.startNarrativeGuide = startNarrativeGuide;
+
+// ==================== WELCOME POPUP (3 OPTIONS) ====================
+
+function showTutorialWelcome() {
+  const existing = document.getElementById('tutorial-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'tutorial-overlay';
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000;
+    background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center;
+    animation: tutorialFadeIn 0.3s ease;
+  `;
+
+  overlay.innerHTML = `
+    <div style="background: linear-gradient(135deg, #14120a, #0d0b07); border: 2px solid #c0a062;
+         border-radius: 16px; padding: 34px; max-width: 560px; width: 92%; max-height: 85vh;
+         overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); position: relative;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h2 style="color: #c0a062; margin: 0 0 8px; font-size: 1.6em; font-family: 'Georgia', serif;">Welcome to Mafia Born</h2>
+        <p style="color: #8a7a5a; font-size: 0.9em; margin: 0;">How would you like to learn the ropes?</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
+        <button onclick="chooseTutorialMode('contextual')" style="background: rgba(20, 18, 10,0.5); border: 2px solid #c0a062;
+          border-radius: 12px; padding: 18px 20px; cursor: pointer; text-align: left; transition: all 0.2s;"
+          onmouseover="this.style.background='rgba(192,160,98,0.15)'; this.style.borderColor='#d4af37';"
+          onmouseout="this.style.background='rgba(20, 18, 10,0.5)'; this.style.borderColor='#c0a062';">
+          <strong style="color: #d4af37; font-size: 1.1em; display: block; margin-bottom: 6px;">Learn as You Play</strong>
+          <span style="color: #d4c4a0; font-size: 0.88em; line-height: 1.5;">
+            Get a brief tutorial popup each time you visit a new screen for the first time. 
+            Explore at your own pace -- tips appear when you need them.
+          </span>
+        </button>
+
+        <button onclick="chooseTutorialMode('narrative')" style="background: rgba(20, 18, 10,0.5); border: 2px solid #c0a062;
+          border-radius: 12px; padding: 18px 20px; cursor: pointer; text-align: left; transition: all 0.2s;"
+          onmouseover="this.style.background='rgba(192,160,98,0.15)'; this.style.borderColor='#d4af37';"
+          onmouseout="this.style.background='rgba(20, 18, 10,0.5)'; this.style.borderColor='#c0a062';">
+          <strong style="color: #d4af37; font-size: 1.1em; display: block; margin-bottom: 6px;">Narrative Guide</strong>
+          <span style="color: #d4c4a0; font-size: 0.88em; line-height: 1.5;">
+            A full guided walkthrough that takes you step-by-step through every part of the game. 
+            Click "Next" to advance through each lesson at your own speed.
+          </span>
+        </button>
+
+        <button onclick="chooseTutorialMode('skipped')" style="background: rgba(20, 18, 10,0.3); border: 2px solid #555;
+          border-radius: 12px; padding: 14px 20px; cursor: pointer; text-align: left; transition: all 0.2s;"
+          onmouseover="this.style.borderColor='#8a7a5a';"
+          onmouseout="this.style.borderColor='#555';">
+          <strong style="color: #8a7a5a; font-size: 1em; display: block; margin-bottom: 4px;">Skip Tutorial</strong>
+          <span style="color: #6a5a3a; font-size: 0.85em; line-height: 1.5;">
+            Jump straight into the action. You can always start either tutorial later from Settings > Help.
+          </span>
+        </button>
+      </div>
+
+      <p style="color: #555; font-size: 0.8em; text-align: center; margin: 0;">
+        You can restart either tutorial any time from Settings > Help.
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+window.showTutorialWelcome = showTutorialWelcome;
+
+function chooseTutorialMode(mode) {
+  const overlay = document.getElementById('tutorial-overlay');
+  if (overlay) overlay.remove();
+
+  if (mode === 'contextual') {
+    setTutorialMode('contextual');
+    // Mark safehouse as seen since they're already here, show its tutorial now
+    showTutorialOverlay('safehouse');
+  } else if (mode === 'narrative') {
+    setTutorialMode('narrative');
+    localStorage.setItem('tutorialSkipAll', '1'); // Prevent contextual popups during narrative
+    showNarrativeGuide();
+  } else {
+    skipAllTutorials();
+  }
+  updateQuickActions();
+}
+window.chooseTutorialMode = chooseTutorialMode;
+
+// ==================== CONTEXTUAL TUTORIAL OVERLAY (Learn as You Play) ====================
+
 function showTutorialOverlay(screenId) {
   if (isTutorialSeen(screenId)) return;
   const content = TUTORIAL_CONTENT[screenId];
   if (!content) return;
 
-  // Remove any existing overlay
   const existing = document.getElementById('tutorial-overlay');
   if (existing) existing.remove();
 
@@ -9671,7 +9844,6 @@ function showTutorialOverlay(screenId) {
          border-radius: 16px; padding: 30px; max-width: 520px; width: 90%; max-height: 80vh;
          overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); position: relative;">
       <div style="text-align: center; margin-bottom: 20px;">
-        <div style="font-size: 2em; margin-bottom: 8px;"></div>
         <h2 style="color: #c0a062; margin: 0; font-size: 1.5em; font-family: 'Georgia', serif;">${content.title}</h2>
         <p style="color: #6a5a3a; font-size: 0.85em; margin: 6px 0 0;">First time here? Here's what you need to know.</p>
       </div>
@@ -9689,7 +9861,7 @@ function showTutorialOverlay(screenId) {
                  font-family: 'Georgia', serif;">
           Got It
         </button>
-        <button onclick="skipAllTutorials();"
+        <button onclick="skipAllTutorials(); updateQuickActions();"
           style="background: transparent; color: #6a5a3a; border: 1px solid #555;
                  padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 0.9em;">
           Skip All Tutorials
@@ -9704,6 +9876,299 @@ function showTutorialOverlay(screenId) {
 window.showTutorialOverlay = showTutorialOverlay;
 window.markTutorialSeen = markTutorialSeen;
 
+// ==================== NARRATIVE GUIDE (Full Step-by-Step Walkthrough) ====================
+
+const NARRATIVE_GUIDE_STEPS = [
+  {
+    title: 'Welcome to Mafia Born',
+    subtitle: 'Your Criminal Empire Awaits',
+    body: `<p>You've just arrived in the city -- a nobody with nothing but ambition and a willingness to get your hands dirty.</p>
+      <p>This guided walkthrough will take you through every corner of the game, step by step. Click <strong>"Next"</strong> to advance through each lesson.</p>
+      <p style="color:#c0a062;"><strong>Let's begin your rise from the streets to the top of the underworld.</strong></p>`,
+    step: '1'
+  },
+  {
+    title: 'The SafeHouse',
+    subtitle: 'Your Home Base',
+    body: `<p>The <strong>SafeHouse</strong> is your central hub. Every journey into the city starts and ends here.</p>
+      <p>From the SafeHouse you'll see <strong>navigation buttons</strong> to every area of the game. New areas unlock as your reputation grows -- keep grinding to open more of the city.</p>
+      <p>At the top, the <strong>Status Bar</strong> shows your vital stats in real time: Cash, Health, Heat, Rank, and more. You can customise which stats are displayed in Settings.</p>
+      <p>Below the status bar is <strong>The Ledger</strong> -- a scrolling activity log that records everything you do: jobs, fights, purchases, story events, and narrative moments.</p>
+      <p>On the right side (or via the mobile menu), the <strong>Quick Actions bar</strong> gives you one-tap shortcuts to your favourite screens, plus Save and Help buttons.</p>`,
+    step: '2'
+  },
+  {
+    title: 'Jobs & Hustles',
+    subtitle: 'Earning Your Keep',
+    body: `<p><strong>Jobs</strong> are your bread and butter -- the main way to earn cash and Respect, especially early on.</p>
+      <p>Pick a job from the list and complete it for <strong>cash + Respect</strong>. Each job triggers a <strong>cooldown timer</strong> before you can do it again. Higher-tier jobs pay more but have longer cooldowns.</p>
+      <p>Some jobs raise your <strong>Heat</strong> -- the more crimes you commit, the more the police watch you. Getting caught means fines, arrest, or worse.</p>
+      <p>Jobs can also reward <strong>stolen goods</strong> that you sell at The Fence (Black Market) for extra profit.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> Grind low-risk jobs early to build a cash reserve before buying gear. Invest in the Planning skill to reduce cooldown times.</p>`,
+    step: '3'
+  },
+  {
+    title: 'The Black Market',
+    subtitle: 'Gear Up and Trade',
+    body: `<p>The <strong>Black Market</strong> has three tabs:</p>
+      <p><strong>Buy</strong> -- Purchase weapons (boost Attack), armour (boost Defence), and consumables like Medkits (restore health). Better gear costs more but gives you a huge edge in combat.</p>
+      <p><strong>The Fence</strong> -- Sell stolen goods from jobs and heists at premium rates. Fence prices fluctuate with your Heat level.</p>
+      <p><strong>Player Market</strong> -- Buy and sell vehicles, weapons, armour, ammo, gas, and trade goods with other real players through The Commission.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> Your first purchase should be a weapon and armour -- they make jobs easier and keep you alive in combat.</p>`,
+    step: '4'
+  },
+  {
+    title: 'Missions & Story',
+    subtitle: 'Your Rise to Power',
+    body: `<p>This is the narrative heart of Mafia Born. Choose a <strong>crime family</strong> -- Torrino, Kozlov, Chen, or Morales -- and play through their cinematic storyline from street thug to Don.</p>
+      <p><strong>Story Chapters</strong> unlock as your reputation grows. Each chapter has unique missions with dialogue, choices, and consequences.</p>
+      <p><strong>Side Operations</strong> are optional quest chains that run in parallel. Each step has a countdown timer (3-20 minutes) -- you wait for the timer AND complete the objective to advance.</p>
+      <p><strong>Street Stories</strong> are narrative events triggered during side ops, adding choices, consequences, and atmospheric flavour.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> Missions are the best source of large Respect gains, cash, influence, and unique rewards. Don't ignore them!</p>`,
+    step: '5'
+  },
+  {
+    title: 'The Family (Gang)',
+    subtitle: 'Strength in Numbers',
+    body: `<p>Crime families are the social and multiplayer backbone of Mafia Born.</p>
+      <p><strong>Create</strong> your own family (costs cash) and become the Boss, or <strong>join</strong> an existing one. Families share territory, resources, and receive group bonuses.</p>
+      <p>The hierarchy: <strong>Boss > Underboss > Capo > Soldier</strong>. Each role has different authority levels for managing the family.</p>
+      <p>Coordinate with members to wage <strong>Family Wars</strong> against rivals for territory and dominance. You can also hire <strong>AI Crew</strong> members who boost your stats and join heists.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> Being in a family gives stat bonuses, shared territory defence, and access to family-only features.</p>`,
+    step: '6'
+  },
+  {
+    title: 'Properties & Fronts',
+    subtitle: 'Passive Income Empire',
+    body: `<p>Build your empire with real estate and money laundering.</p>
+      <p><strong>Properties</strong> (apartments, shops, warehouses) generate <strong>passive income</strong> every game cycle automatically. More expensive properties yield higher returns.</p>
+      <p><strong>Business Fronts</strong> (laundromats, restaurants, etc.) automatically <strong>launder your Dirty Money</strong> into clean Cash. You MUST have fronts to convert dirty money -- it's useless otherwise.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> Buy a front early if you're earning dirty money from heists. Higher-tier fronts process larger amounts per cycle.</p>`,
+    step: '7'
+  },
+  {
+    title: 'Casino & Mini Games',
+    subtitle: 'High Risk, High Reward',
+    body: `<p>Test your luck and skill at the Casino and mini games.</p>
+      <p><strong>Casino:</strong> Blackjack, Slots, Roulette, Dice, and Horse Racing. Wager your real in-game cash for potentially huge payouts.</p>
+      <p><strong>Mini Games:</strong> TikTakToe, Number Guessing, Rock Paper Scissors, and Snake. Fun diversions with consistent, smaller rewards.</p>
+      <p style="color:#8b3a3a;"><strong>Warning:</strong> The Casino uses your real Cash. There is no guaranteed win -- gamble responsibly to protect your bankroll!</p>`,
+    step: '8'
+  },
+  {
+    title: 'Stash & Motor Pool',
+    subtitle: 'Your Inventory',
+    body: `<p>Manage your gear and vehicles.</p>
+      <p><strong>Stash</strong> holds all your weapons, armour, consumables, and stolen goods. Tap an item to <strong>equip</strong> it (weapons/armour) or <strong>use</strong> it (consumables). Equipped gear directly affects your Attack and Defence stats.</p>
+      <p><strong>Motor Pool</strong> displays your vehicle collection. Cars give speed bonuses and are used in heists and getaways. Sell unwanted vehicles on the Player Market.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> Always keep Medkits in your stash for emergencies. Check your equipped gear regularly as you find or buy better items.</p>`,
+    step: '9'
+  },
+  {
+    title: 'The Hospital',
+    subtitle: 'Stay Alive',
+    body: `<p>The underground doctor keeps you patched up -- for a price.</p>
+      <p><strong>Full Treatment</strong> -- Restores health to 100%. Expensive but thorough.</p>
+      <p><strong>Patch Job</strong> -- Cheaper partial heal (up to ~25 HP). Good for a quick fix between jobs.</p>
+      <p><strong>Rest</strong> -- Heals a small amount over time using a timer-based recovery system.</p>
+      <p style="color:#8b3a3a;"><strong>CRITICAL:</strong> If your health drops to 0 during a fight or failed job, your character dies permanently. This is <strong>permadeath</strong>! Keep your health above 50% before doing anything risky.</p>`,
+    step: '10'
+  },
+  {
+    title: 'Talents & Skills',
+    subtitle: 'Build Your Playstyle',
+    body: `<p>Invest skill points into 6 permanent talent trees to customise how you play.</p>
+      <p><strong>Combat</strong> -- Attack power, critical hits, armour penetration.</p>
+      <p><strong>Stealth</strong> -- Dodge chance, theft success, heat reduction.</p>
+      <p><strong>Business</strong> -- Job income, property returns, purchase discounts.</p>
+      <p><strong>Endurance</strong> -- Damage reduction, cooldown reduction, health recovery.</p>
+      <p><strong>Street Smarts</strong> -- Respect gains, jail time reduction, loot quality.</p>
+      <p><strong>Leadership</strong> -- Crew bonuses, family buffs, territory defence.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> You earn skill points each time you rank up. Each node is permanent once purchased, so spend wisely.</p>`,
+    step: '11'
+  },
+  {
+    title: 'Territory Control',
+    subtitle: 'Dominate the City',
+    body: `<p>Claim districts and build your turf empire.</p>
+      <p>The city has <strong>8 turf zones</strong> controlled by rival families. Attack from the Turf Map to seize control. Each zone you hold generates <strong>weekly Tribute</strong> (dirty money).</p>
+      <p><strong>Fortify</strong> zones to boost their defence. Assign <strong>crew members</strong> as defenders. The more zones you own, the harder and more frequent rival attacks become.</p>
+      <p><strong>Turf Milestones:</strong> 2 zones = +10% Respect. 4 zones = passive heat decay. 6 zones = +15% turf income. 8 zones = +25% income + Overlord's Scepter weapon.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> Don't over-expand without fortifying -- more zones means stronger retaliation!</p>`,
+    step: '12'
+  },
+  {
+    title: 'Stats & Empire Overview',
+    subtitle: 'Track Your Progress',
+    body: `<p>The Stats screen gives you a complete breakdown of your criminal career.</p>
+      <p>View your <strong>rank, cash, dirty money, health, attack, defence, influence, respect</strong>, and every other stat in one place.</p>
+      <p>Your <strong>Empire Rating</strong> is a composite score measuring overall power -- factoring in territory, income, crew size, properties, and story progress.</p>
+      <p>The <strong>Empire Overview</strong> dashboard shows all your assets, income sources, crew, and territory at a glance.</p>`,
+    step: '13'
+  },
+  {
+    title: 'Heat & The Law',
+    subtitle: 'Stay Under the Radar',
+    body: `<p><strong>Heat</strong> (0-100) measures police attention on you.</p>
+      <p><strong>0-15 Cool</strong> -- Under the radar. <strong>16-30 Warm</strong> -- Occasional attention. <strong>31-50 Hot</strong> -- Regular encounters. <strong>51-75 Scorching</strong> -- Frequent raids. <strong>76-100 Inferno</strong> -- Maximum pressure, lay low immediately!</p>
+      <p>Heat rises from risky jobs, failed crimes, PvP attacks, and certain story actions. It does NOT decay on its own unless you have the Neighbourhood Boss turf perk (4 zones).</p>
+      <p style="color:#c0a062;"><strong>Reduce heat with:</strong> Stealth skills, the 4-zone turf perk, bribing officials, and laying low.</p>`,
+    step: '14'
+  },
+  {
+    title: 'Saving & Multiplayer',
+    subtitle: 'Protect Your Progress',
+    body: `<p><strong>Auto-Save</strong> runs every 60 seconds. <strong>Manual Save</strong> is available from Settings or the Quick Actions bar. <strong>Cloud Save</strong> lets you sync across browsers and devices by signing in.</p>
+      <p><strong>Multiplayer features:</strong> World Chat, Player Market trading, PvP combat, and crime families are all available when connected online.</p>
+      <p>Mafia Born works fully offline too -- multiplayer enhances the experience but isn't required.</p>
+      <p style="color:#c0a062;"><strong>Tip:</strong> Save before risky activities! Use multiple save slots to keep backups at key points.</p>`,
+    step: '15'
+  },
+  {
+    title: 'Settings & Help',
+    subtitle: 'Customise Your Experience',
+    body: `<p>The <strong>Settings</strong> screen gives you full control over your game.</p>
+      <p><strong>Save & Load</strong> -- Multiple save slots, cloud save, and auto-save management.</p>
+      <p><strong>UI Toggles</strong> -- Show or hide the Quick Actions panel, mobile nav bar, and individual status bar stats.</p>
+      <p><strong>Customise</strong> -- Choose which screen shortcuts appear in the Quick Actions bar.</p>
+      <p><strong>Help</strong> -- A full index of every game system with detailed guides. You can also <strong>restart either tutorial</strong> (Learn as You Play or Narrative Guide) from the Help screen at any time.</p>
+      <p style="color:#c0a062;"><strong>Remember:</strong> Visit Settings > Help any time to access the complete game guide or restart tutorials.</p>`,
+    step: '16'
+  },
+  {
+    title: 'You\'re Ready',
+    subtitle: 'Go Make Your Name',
+    body: `<p>That's everything you need to know to get started. The city is waiting.</p>
+      <p><strong>Quick recap:</strong></p>
+      <ul style="color:#d4c4a0; line-height:1.8;">
+        <li>Do <strong>Jobs</strong> to earn cash and Respect.</li>
+        <li>Buy gear at the <strong>Black Market</strong>.</li>
+        <li>Follow the <strong>Missions</strong> storyline.</li>
+        <li>Heal at the <strong>Hospital</strong> -- health at 0 = permadeath.</li>
+        <li>Watch your <strong>Heat</strong> -- the cops are always watching.</li>
+        <li>Build your empire with <strong>Properties</strong>, <strong>Territory</strong>, and <strong>Skills</strong>.</li>
+        <li>Visit <strong>Settings > Help</strong> for detailed guides on anything.</li>
+      </ul>
+      <p style="color:#c0a062; font-family:'Georgia', serif; font-size:1.05em; margin-top:16px;"><strong>Now get out there and carve your name into the streets.</strong></p>`,
+    step: '17'
+  }
+];
+
+let _narrativeStep = 0;
+
+function showNarrativeGuide(stepIndex) {
+  if (typeof stepIndex === 'number') _narrativeStep = stepIndex;
+  else _narrativeStep = 0;
+
+  renderNarrativeStep();
+}
+window.showNarrativeGuide = showNarrativeGuide;
+
+function renderNarrativeStep() {
+  const existing = document.getElementById('narrative-guide-overlay');
+  if (existing) existing.remove();
+
+  if (_narrativeStep < 0 || _narrativeStep >= NARRATIVE_GUIDE_STEPS.length) return;
+
+  const step = NARRATIVE_GUIDE_STEPS[_narrativeStep];
+  const isFirst = _narrativeStep === 0;
+  const isLast = _narrativeStep === NARRATIVE_GUIDE_STEPS.length - 1;
+  const total = NARRATIVE_GUIDE_STEPS.length;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'narrative-guide-overlay';
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000;
+    background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center;
+    animation: tutorialFadeIn 0.3s ease;
+  `;
+
+  overlay.innerHTML = `
+    <div style="background: linear-gradient(135deg, #14120a, #0d0b07); border: 2px solid #c0a062;
+         border-radius: 16px; padding: 30px; max-width: 600px; width: 92%; max-height: 85vh;
+         overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); position: relative;">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="color: #6a5a3a; font-size: 0.8em;">Step ${step.step} of ${total}</span>
+        <button onclick="skipNarrativeGuide()"
+          style="background: transparent; color: #6a5a3a; border: 1px solid #444; border-radius: 6px;
+                 padding: 4px 14px; cursor: pointer; font-size: 0.8em; transition: all 0.2s;"
+          onmouseover="this.style.borderColor='#8b3a3a'; this.style.color='#8b3a3a';"
+          onmouseout="this.style.borderColor='#444'; this.style.color='#6a5a3a';">
+          Skip Guide
+        </button>
+      </div>
+
+      <div style="background: linear-gradient(90deg, #c0a062 0%, transparent 100%); height: 2px; margin-bottom: 20px; border-radius: 2px;">
+        <div style="background: #d4af37; height: 100%; width: ${(((_narrativeStep + 1) / total) * 100).toFixed(1)}%; border-radius: 2px; transition: width 0.3s;"></div>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="color: #c0a062; margin: 0 0 4px; font-size: 1.4em; font-family: 'Georgia', serif;">${step.title}</h2>
+        <p style="color: #8a7a5a; font-size: 0.88em; margin: 0; font-style: italic;">${step.subtitle}</p>
+      </div>
+
+      <div style="color: #d4c4a0; font-size: 0.93em; line-height: 1.7; margin-bottom: 24px;">
+        ${step.body}
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        ${!isFirst ? `
+          <button onclick="narrativePrev()"
+            style="background: transparent; color: #c0a062; border: 1px solid #c0a062;
+                   padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 0.95em;
+                   font-family: 'Georgia', serif; transition: all 0.2s;"
+            onmouseover="this.style.background='rgba(192,160,98,0.1)';"
+            onmouseout="this.style.background='transparent';">
+            <- Back
+          </button>
+        ` : ''}
+        <button onclick="${isLast ? 'finishNarrativeGuide()' : 'narrativeNext()'}"
+          style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border: none;
+                 padding: 12px 32px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;
+                 font-family: 'Georgia', serif;">
+          ${isLast ? 'Start Playing' : 'Next ->'}
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function narrativeNext() {
+  _narrativeStep++;
+  renderNarrativeStep();
+}
+window.narrativeNext = narrativeNext;
+
+function narrativePrev() {
+  _narrativeStep--;
+  renderNarrativeStep();
+}
+window.narrativePrev = narrativePrev;
+
+function skipNarrativeGuide() {
+  const overlay = document.getElementById('narrative-guide-overlay');
+  if (overlay) overlay.remove();
+  // Keep mode as narrative but mark it done
+  localStorage.setItem('narrativeComplete', '1');
+  localStorage.removeItem('tutorialSkipAll'); // Allow contextual tutorials if they want later
+  showBriefNotification('Narrative Guide skipped. Restart any time from Settings > Help.', 'info');
+  updateQuickActions();
+}
+window.skipNarrativeGuide = skipNarrativeGuide;
+
+function finishNarrativeGuide() {
+  const overlay = document.getElementById('narrative-guide-overlay');
+  if (overlay) overlay.remove();
+  localStorage.setItem('narrativeComplete', '1');
+  localStorage.removeItem('tutorialSkipAll');
+  showBriefNotification('Narrative Guide complete! Visit Settings > Help any time for guides.', 'success');
+  updateQuickActions();
+}
+window.finishNarrativeGuide = finishNarrativeGuide;
+
 // Inject tutorial CSS animation
 (function injectTutorialCSS() {
   if (document.getElementById('tutorial-css')) return;
@@ -9714,7 +10179,7 @@ window.markTutorialSeen = markTutorialSeen;
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    #tutorial-overlay > div {
+    #tutorial-overlay > div, #narrative-guide-overlay > div {
       animation: tutorialSlideIn 0.3s ease;
     }
     @keyframes tutorialSlideIn {
@@ -9745,10 +10210,6 @@ const SCREEN_TUTORIAL_MAP = {
 
 // Hook into screen transitions -- show tutorial on first visit
 (function setupTutorialHooks() {
-  const originalHideAllScreens = hideAllScreens;
-
-  // We observe screen display changes. When a screen becomes visible,
-  // trigger the tutorial if it hasn't been seen yet.
   const tutorialObserver = new MutationObserver(mutations => {
     for (const m of mutations) {
       if (m.type === 'attributes' && m.attributeName === 'style') {
@@ -9756,8 +10217,16 @@ const SCREEN_TUTORIAL_MAP = {
         if (el.style.display === 'block' || el.style.display === 'flex') {
           const tutorialId = SCREEN_TUTORIAL_MAP[el.id];
           if (tutorialId) {
-            // Small delay so screen content renders first
-            setTimeout(() => showTutorialOverlay(tutorialId), 200);
+            setTimeout(() => {
+              const mode = getTutorialMode();
+              // First time ever: show welcome popup on safehouse
+              if (!mode && tutorialId === 'safehouse') {
+                showTutorialWelcome();
+              } else if (mode === 'contextual') {
+                showTutorialOverlay(tutorialId);
+              }
+              // narrative and skipped modes don't trigger contextual popups
+            }, 200);
           }
         }
       }
@@ -10240,13 +10709,50 @@ function showHelpScreen(topicId) {
     }
   } else {
     // Show topic index
+    const tutorialMode = getTutorialMode();
     const tutorialsSkipped = localStorage.getItem('tutorialSkipAll') === '1';
+    const contextualEnabled = tutorialMode === 'contextual' && !tutorialsSkipped;
+    
     html += `
       <div style="max-width: 700px; margin: 0 auto;">
         <p style="color: #d4c4a0; text-align: center; margin-bottom: 20px; font-size: 0.95em;">
           Choose a topic to learn more about any game system.
         </p>
 
+        <!-- Tutorial Controls -->
+        <div style="background: rgba(20, 18, 10,0.5); border: 2px solid #c0a062; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+          <h3 style="color: #c0a062; margin: 0 0 14px; font-family: 'Georgia', serif; font-size: 1.1em; text-align: center;">Tutorial Options</h3>
+          <p style="color: #8a7a5a; font-size: 0.85em; text-align: center; margin: 0 0 16px;">
+            Restart or switch between tutorial modes at any time.
+          </p>
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="reEnableContextualTutorials(); showHelpScreen();"
+              style="background: ${contextualEnabled ? 'rgba(138,154,106,0.2)' : 'transparent'}; 
+                     color: ${contextualEnabled ? '#8a9a6a' : '#d4c4a0'}; 
+                     border: 2px solid ${contextualEnabled ? '#8a9a6a' : '#555'}; 
+                     padding: 12px 18px; border-radius: 8px; cursor: pointer; font-size: 0.9em; flex: 1; min-width: 180px;">
+              <strong style="display: block; margin-bottom: 4px;">Learn as You Play</strong>
+              <span style="font-size: 0.82em; color: #8a7a5a;">${contextualEnabled ? '(Currently Active)' : 'Screen-by-screen tips'}</span>
+            </button>
+            <button onclick="startNarrativeGuide();"
+              style="background: transparent; color: #d4c4a0; border: 2px solid #555;
+                     padding: 12px 18px; border-radius: 8px; cursor: pointer; font-size: 0.9em; flex: 1; min-width: 180px;">
+              <strong style="display: block; margin-bottom: 4px;">Narrative Guide</strong>
+              <span style="font-size: 0.82em; color: #8a7a5a;">Full step-by-step walkthrough</span>
+            </button>
+            <button onclick="skipAllTutorials(); showHelpScreen();"
+              style="background: ${tutorialsSkipped ? 'rgba(139,58,58,0.2)' : 'transparent'}; 
+                     color: ${tutorialsSkipped ? '#8b3a3a' : '#6a5a3a'}; 
+                     border: 2px solid ${tutorialsSkipped ? '#8b3a3a' : '#444'}; 
+                     padding: 12px 18px; border-radius: 8px; cursor: pointer; font-size: 0.9em; min-width: 120px;">
+              <strong style="display: block; margin-bottom: 4px;">Disable All</strong>
+              <span style="font-size: 0.82em; color: #6a5a3a;">${tutorialsSkipped ? '(Currently Off)' : 'Turn off tutorials'}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Game Guide Topics -->
+        <h3 style="color: #c0a062; font-family: 'Georgia', serif; font-size: 1.05em; margin: 0 0 12px; text-align: center;">Game Guide Index</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px;">
           ${HELP_TOPICS.map(topic => `
             <button onclick="showHelpScreen('${topic.id}')"
@@ -10259,18 +10765,6 @@ function showHelpScreen(topicId) {
               <span style="color: #f5e6c8; font-weight: bold; font-size: 0.95em;">${topic.title}</span>
             </button>
           `).join('')}
-        </div>
-
-        <div style="background: rgba(20, 18, 10,0.3); border: 1px solid #555; border-radius: 10px; padding: 16px; margin-bottom: 20px; text-align: center;">
-          <p style="color: #8a7a5a; margin: 0 0 10px; font-size: 0.9em;">
-            Screen tutorials ${tutorialsSkipped ? 'are currently <strong style="color:#8b3a3a;">disabled</strong>' : 'are currently <strong style="color:#8a9a6a;">enabled</strong>'}.
-            These pop up the first time you visit each screen.
-          </p>
-          <button onclick="${tutorialsSkipped ? 'reEnableTutorials(); showHelpScreen();' : 'skipAllTutorials(); showHelpScreen();'}"
-            style="background: ${tutorialsSkipped ? '#7a8a5a' : '#8b3a3a'}; color: #fff;
-            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em;">
-            ${tutorialsSkipped ? 'Re-enable Tutorials' : 'Disable All Tutorials'}
-          </button>
         </div>
 
         <div class="page-nav" style="justify-content: center;">
@@ -10287,12 +10781,12 @@ window.showHelpScreen = showHelpScreen;
 // Toggle tutorials from Settings screen
 function toggleTutorialFromSettings() {
   if (localStorage.getItem('tutorialSkipAll') === '1') {
-    reEnableTutorials();
+    reEnableContextualTutorials();
   } else {
     skipAllTutorials();
   }
   syncTutorialToggleButton();
-  updateQuickActions(); // Refresh quickbar to show/hide skip button
+  updateQuickActions();
 }
 window.toggleTutorialFromSettings = toggleTutorialFromSettings;
 
@@ -10301,9 +10795,20 @@ function syncTutorialToggleButton() {
   const btn = document.getElementById('tutorial-toggle-btn');
   if (!btn) return;
   const skipped = localStorage.getItem('tutorialSkipAll') === '1';
-  btn.textContent = skipped ? 'Tutorials: Disabled' : 'Tutorials: Enabled';
-  btn.style.borderColor = skipped ? '#8b3a3a' : '#8a9a6a';
-  btn.style.color = skipped ? '#8b3a3a' : '#8a9a6a';
+  const mode = getTutorialMode();
+  if (skipped) {
+    btn.textContent = 'Tutorials: Disabled';
+    btn.style.borderColor = '#8b3a3a';
+    btn.style.color = '#8b3a3a';
+  } else if (mode === 'contextual') {
+    btn.textContent = 'Tutorials: Learn as You Play';
+    btn.style.borderColor = '#8a9a6a';
+    btn.style.color = '#8a9a6a';
+  } else {
+    btn.textContent = 'Tutorials: Enabled';
+    btn.style.borderColor = '#8a9a6a';
+    btn.style.color = '#8a9a6a';
+  }
 }
 window.syncTutorialToggleButton = syncTutorialToggleButton;
 
