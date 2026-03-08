@@ -29,7 +29,7 @@ export const CHARACTER_BACKGROUNDS = [
     description: 'Kicked off the force for corruption. You know how the law thinks.',
     flavor: 'You swore to protect and serve — now you serve yourself.',
     bonus: { intelligence: 2, reputation: 5 },
-    bonusText: '+2 Intelligence, +5 Starting Reputation'
+    bonusText: '+2 Intelligence, +5 Starting Respect'
   },
   {
     id: 'trust_fund',
@@ -101,7 +101,7 @@ export const CHARACTER_PERKS = [
     name: 'Street Smarts',
     icon: '🧠',
     description: 'You read people and situations like an open book.',
-    effect: '+15% job success chance. +10% reputation from all sources.',
+    effect: '+15% job success chance. +10% respect from all sources.',
     color: '#8a9a6a'
   },
   {

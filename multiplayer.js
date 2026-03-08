@@ -210,8 +210,8 @@ function showWhackRivalDon() {
             <div style="background: rgba(192, 160, 98, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #c0a062;">
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; text-align: center;">
                     <div>
-                        <div style="color: #c0a040; font-weight: bold;">Don Rep</div>
-                        <div style="color: #888; font-size: 0.8em;">Win = +Rep / Lose = -Rep</div>
+                        <div style="color: #c0a040; font-weight: bold;">Don Respect</div>
+                        <div style="color: #888; font-size: 0.8em;">Win = +Respect / Lose = -Respect</div>
                     </div>
                     <div>
                         <div style="color: #e67e22; font-weight: bold;">Health</div>
@@ -219,7 +219,7 @@ function showWhackRivalDon() {
                     </div>
                 </div>
             </div>
-            <p style="color: #888; text-align: center; font-size: 0.85em; margin: 5px 0 15px 0;">Don Reputation is for fun & ranking only — pick a fight and see who's tougher!</p>
+            <p style="color: #888; text-align: center; font-size: 0.85em; margin: 5px 0 15px 0;">Don Respect is for fun & ranking only -- pick a fight and see who's tougher!</p>
             <div id="online-player-list" style="margin: 20px 0;">
                 <p style="color: #888; text-align: center;">Loading online players...</p>
             </div>
@@ -388,11 +388,11 @@ function showCreateHeist() {
                         <span style="color: #8a9a6a; font-size: 0.85em;">$${t.reward.toLocaleString()}</span>
                         <span style="color: #ccc; font-size: 0.85em;">${t.minCrew}-${t.maxCrew} crew</span>
                     </div>
-                    <div style="color: #888; font-size: 0.8em; margin-top: 4px;">Base success: ${t.successBase}% | Requires ${t.minReputation}+ Rep</div>
+                    <div style="color: #888; font-size: 0.8em; margin-top: 4px;">Base success: ${t.successBase}% | Requires ${t.minReputation}+ Respect</div>
                 </div>
                 <div>
                     ${locked 
-                        ? `<div style="color: #666; font-size: 0.85em;">${t.minReputation} Rep</div>`
+                        ? `<div style="color: #666; font-size: 0.85em;">${t.minReputation} Respect</div>`
                         : `<button onclick="createHeist('${t.id}')" style="background: linear-gradient(180deg, #8b0000, #3a0000); color: #ff4444; padding: 10px 20px; border: 1px solid #ff0000; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                             Plan This
                         </button>`
@@ -437,7 +437,7 @@ async function createHeist(targetId) {
     }
 
     if ((player.reputation || 0) < target.minReputation) {
-        window.ui.toast(`You need ${target.minReputation}+ reputation to plan this heist.`, 'error');
+        window.ui.toast(`You need ${target.minReputation}+ respect to plan this heist.`, 'error');
         return;
     }
 
@@ -460,10 +460,10 @@ function showHeistSetup(target) {
     const diffColor = target.difficulty === 'Easy' ? '#8a9a6a' : target.difficulty === 'Medium' ? '#c0a040' : target.difficulty === 'Hard' ? '#8b3a3a' : '#ff00ff';
 
     const roleDescriptions = {
-        driver: { label: 'Driver', desc: '+5% success, less rep loss on failure', color: '#3498db' },
+        driver: { label: 'Driver', desc: '+5% success, less respect loss on failure', color: '#3498db' },
         hacker: { label: 'Hacker', desc: '+8% success chance', color: '#9b59b6' },
         muscle: { label: 'Muscle', desc: '+5% success, +15% reward bonus', color: '#e74c3c' },
-        lookout: { label: 'Lookout', desc: '+5% success, -50% rep loss on failure', color: '#2ecc71' }
+        lookout: { label: 'Lookout', desc: '+5% success, -50% respect loss on failure', color: '#2ecc71' }
     };
 
     let rolesHTML = Object.entries(roleDescriptions).map(([key, r]) => `
@@ -676,10 +676,10 @@ function showChangeRolePopup(heistId) {
     if (existing) existing.remove();
 
     const roleDescs = {
-        driver:  { label: 'Driver',  desc: '+5% success, less rep loss',  color: '#3498db' },
+        driver:  { label: 'Driver',  desc: '+5% success, less respect loss',  color: '#3498db' },
         hacker:  { label: 'Hacker',  desc: '+8% success chance',          color: '#9b59b6' },
         muscle:  { label: 'Muscle',  desc: '+5% success, +15% reward',    color: '#e74c3c' },
-        lookout: { label: 'Lookout', desc: '+5% success, -50% rep loss',  color: '#2ecc71' }
+        lookout: { label: 'Lookout', desc: '+5% success, -50% respect loss',  color: '#2ecc71' }
     };
 
     let btns = Object.entries(roleDescs).map(([key, r]) => `
@@ -832,10 +832,10 @@ function showJoinHeistRolePicker(heistId) {
     if (existing) existing.remove();
 
     const roleDescs = {
-        driver:  { label: 'Driver',  desc: '+5% success, less rep loss',  color: '#3498db' },
+        driver:  { label: 'Driver',  desc: '+5% success, less respect loss',  color: '#3498db' },
         hacker:  { label: 'Hacker',  desc: '+8% success chance',          color: '#9b59b6' },
         muscle:  { label: 'Muscle',  desc: '+5% success, +15% reward',    color: '#e74c3c' },
-        lookout: { label: 'Lookout', desc: '+5% success, -50% rep loss',  color: '#2ecc71' }
+        lookout: { label: 'Lookout', desc: '+5% success, -50% respect loss',  color: '#2ecc71' }
     };
 
     let btns = Object.entries(roleDescs).map(([key, r]) => `
@@ -926,14 +926,14 @@ function showHeistResult(result) {
                         +$${(result.reward || 0).toLocaleString()}
                     </div>
                     <div style="color:#c0a040;font-size:1em;">
-                        +${result.repGain || 0} Reputation
+                        +${result.repGain || 0} Respect
                     </div>
                 ` : `
                     <div class="popup-stat-value" style="color:#8b3a3a;font-size:1.3em;margin-bottom:8px;">
                         No Payout
                     </div>
                     <div style="color:#8b3a3a;font-size:1em;">
-                        -${result.repLoss || 0} Reputation
+                        -${result.repLoss || 0} Respect
                     </div>
                 `}
                 <div style="color:#888;font-size:0.85em;margin-top:10px;">
@@ -4689,7 +4689,7 @@ function findPlayersInDistrict(districtName) {
                                 <h4 style="color: #c0a062; margin: 0; font-family: 'Georgia', serif;">${escapeHTML(p.name)}</h4>
                                 <div style="display: flex; gap: 20px; font-size: 0.9em; margin: 5px 0; color: #ccc;">
                                     <span>Level ${p.level}</span>
-                                    <span>Rep: ${p.reputation}</span>
+                                    <span>Respect: ${p.reputation}</span>
                                     <span>Territory: ${escapeHTML(p.territory)}</span>
                                     <span style="color: #7a8a5a;">? Online</span>
                                 </div>
@@ -5156,15 +5156,15 @@ function challengePlayer(playerName) {
             <div style="margin:20px 0;display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:center;">
                 <div class="popup-section" style="border-color:rgba(138, 154, 106,0.3);text-align:center;padding:15px;">
                     <div style="color:#8a9a6a;font-weight:bold;font-size:1.1em;">${escapeHTML(player.name || 'You')}</div>
-                    <div style="color:#888;font-size:0.85em;margin-top:5px;">Rep: ${Math.floor(player.reputation || 0)}</div>
+                    <div style="color:#888;font-size:0.85em;margin-top:5px;">Respect: ${Math.floor(player.reputation || 0)}</div>
                 </div>
                 <div style="color:#8b0000;font-size:1.5em;font-weight:bold;">VS</div>
                 <div class="popup-section" style="border-color:rgba(231,76,60,0.3);text-align:center;padding:15px;">
                     <div style="color:#8b3a3a;font-weight:bold;font-size:1.1em;">${escapeHTML(playerName)}</div>
-                    <div style="color:#888;font-size:0.85em;margin-top:5px;">Rep: ${targetRep}</div>
+                    <div style="color:#888;font-size:0.85em;margin-top:5px;">Respect: ${targetRep}</div>
                 </div>
             </div>
-            <p class="popup-subtitle">Winner gains Don Rep</p>
+            <p class="popup-subtitle">Winner gains Don Respect</p>
             <div class="popup-actions">
                 <button onclick="executePvpChallenge('${escapeHTML(playerName)}')" class="popup-btn popup-btn-crimson">Fight</button>
                 <button onclick="document.getElementById('pvp-challenge-modal').remove();" class="popup-btn popup-btn-secondary">Walk Away</button>
