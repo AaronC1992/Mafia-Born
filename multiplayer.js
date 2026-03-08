@@ -2979,6 +2979,9 @@ function showGlobalChat() {
         multiplayerScreen.appendChild(mpContent);
     }
     
+    const activeWcTab = onlineWorldState._worldChatTab || 'world';
+    const wcTabStyle = (id) => `padding:10px 18px;border:1px solid ${activeWcTab===id?'#c0a062':'#555'};background:${activeWcTab===id?'rgba(192,160,98,0.15)':'rgba(0,0,0,0.4)'};color:${activeWcTab===id?'#c0a062':'#888'};border-radius:8px 8px 0 0;cursor:pointer;font-family:'Georgia',serif;font-size:0.95em;font-weight:${activeWcTab===id?'bold':'normal'};`;
+
     let chatHTML = `
         <div class="game-screen" style="display: block;">
             <h2 style="color: #c0a062; font-family: 'Georgia', serif; text-shadow: 2px 2px 4px #000;">World Chat</h2>
@@ -2988,9 +2991,17 @@ function showGlobalChat() {
             <div id="chat-connection-status" style="background: rgba(0, 0, 0, 0.8); padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid #c0a062;">
                 ${getConnectionStatusHTML()}
             </div>
+
+            <!-- Channel Tabs -->
+            <div style="display:flex;gap:4px;margin-bottom:0;flex-wrap:wrap;">
+                <button onclick="switchWorldChatTab('world')" style="${wcTabStyle('world')}">World</button>
+                <button onclick="switchWorldChatTab('crew')" style="${wcTabStyle('crew')}">Crew</button>
+                <button onclick="switchWorldChatTab('alliance')" style="${wcTabStyle('alliance')}">Alliance</button>
+                <button onclick="switchWorldChatTab('private')" style="${wcTabStyle('private')}">Private</button>
+            </div>
             
-            <!-- Chat Area -->
-            <div style="background: rgba(0, 0, 0, 0.9); padding: 20px; border-radius: 15px; border: 2px solid #c0a062; margin-bottom: 20px; box-shadow: 0 0 15px rgba(192, 160, 98, 0.2);">
+            <!-- World Tab (default) -->
+            <div id="worldchat-world-tab" style="display:${activeWcTab === 'world' ? 'block' : 'none'};background: rgba(0, 0, 0, 0.9); padding: 20px; border-radius: 0 0 15px 15px; border: 2px solid #c0a062; border-top: none; margin-bottom: 20px; box-shadow: 0 0 15px rgba(192, 160, 98, 0.2);">
                 <div id="global-chat-area" style="height: 400px; overflow-y: auto; background: rgba(20, 20, 20, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #555;">
                     ${generateChatHTML()}
                 </div>
@@ -3017,6 +3028,13 @@ function showGlobalChat() {
                         <button onclick="sendQuickChat('Anyone need a lawyer?')" style="padding: 8px; background: #8b6a4a; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;"> Need a lawyer?</button>
                         <button onclick="sendQuickChat('My regards to the Don.')" style="padding: 8px; background: #1abc9c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;"> Regards to the Don</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Crew / Alliance / Private Tab Content -->
+            <div id="worldchat-channel-tab" style="display:${activeWcTab !== 'world' ? 'block' : 'none'};background:rgba(0,0,0,0.9);border:2px solid #c0a062;border-top:none;border-radius:0 0 15px 15px;padding:20px;margin-bottom:20px;box-shadow:0 0 15px rgba(192,160,98,0.2);">
+                <div id="worldchat-channel-content">
+                    ${activeWcTab !== 'world' ? renderChatChannelContent(activeWcTab) : ''}
                 </div>
             </div>
             
@@ -3233,6 +3251,39 @@ function addChatMessage(playerName, message, color = '#f5e6c8') {
 
 // ---- Multi-channel chat system ----
 
+// Switch tabs within the World Chat screen
+function switchWorldChatTab(channel) {
+    onlineWorldState._worldChatTab = channel;
+    onlineWorldState.activeChatChannel = channel;
+    const worldTab = document.getElementById('worldchat-world-tab');
+    const channelTab = document.getElementById('worldchat-channel-tab');
+    const channelContent = document.getElementById('worldchat-channel-content');
+    if (channel === 'world') {
+        if (worldTab) worldTab.style.display = 'block';
+        if (channelTab) channelTab.style.display = 'none';
+    } else {
+        if (worldTab) worldTab.style.display = 'none';
+        if (channelTab) channelTab.style.display = 'block';
+        if (channelContent) {
+            channelContent.innerHTML = renderChatChannelContent(channel);
+            const area = channelContent.querySelector('.channel-messages');
+            if (area) area.scrollTop = area.scrollHeight;
+        }
+    }
+    // Update tab button highlights
+    const tabContainer = worldTab ? worldTab.parentElement : null;
+    if (tabContainer) {
+        tabContainer.querySelectorAll('[onclick^="switchWorldChatTab"]').forEach(btn => {
+            const id = btn.getAttribute('onclick').match(/'(\w+)'/)?.[1];
+            const active = id === channel;
+            btn.style.border = `1px solid ${active ? '#c0a062' : '#555'}`;
+            btn.style.background = active ? 'rgba(192,160,98,0.15)' : 'rgba(0,0,0,0.4)';
+            btn.style.color = active ? '#c0a062' : '#888';
+            btn.style.fontWeight = active ? 'bold' : 'normal';
+        });
+    }
+}
+
 function switchChatChannel(channel) {
     onlineWorldState.activeChatChannel = channel;
     const container = document.getElementById('chat-channel-content');
@@ -3405,11 +3456,20 @@ async function sendChannelMessage(channel) {
 function updateChannelChatDisplay(channel) {
     // Only update if the active channel matches
     if (onlineWorldState.activeChatChannel !== channel) return;
+    // Update Commission chat panel
     const container = document.getElementById('chat-channel-content');
-    if (!container) return;
-    container.innerHTML = renderChatChannelContent(channel);
-    const area = container.querySelector('.channel-messages');
-    if (area) area.scrollTop = area.scrollHeight;
+    if (container) {
+        container.innerHTML = renderChatChannelContent(channel);
+        const area = container.querySelector('.channel-messages');
+        if (area) area.scrollTop = area.scrollHeight;
+    }
+    // Also update World Chat's channel panel
+    const wcContainer = document.getElementById('worldchat-channel-content');
+    if (wcContainer) {
+        wcContainer.innerHTML = renderChatChannelContent(channel);
+        const area = wcContainer.querySelector('.channel-messages');
+        if (area) area.scrollTop = area.scrollHeight;
+    }
 }
 
 // Get connection status HTML for chat
@@ -5941,7 +6001,17 @@ function handleSeasonInfoResult(message) {
 
 // Death newspaper data from other players
 let lastReceivedDeathNewspaper = null;
-window._showReceivedDeathNewspaper = function() { if (lastReceivedDeathNewspaper && typeof showDeathNewspaper === 'function') showDeathNewspaper(lastReceivedDeathNewspaper); };
+window._showReceivedDeathNewspaper = function() {
+    if (lastReceivedDeathNewspaper && typeof showDeathNewspaper === 'function') {
+        showDeathNewspaper(lastReceivedDeathNewspaper);
+    } else if (typeof window.showDeathNewspaper === 'function' && lastReceivedDeathNewspaper) {
+        window.showDeathNewspaper(lastReceivedDeathNewspaper);
+    } else if (typeof window.showLastDeathNewspaper === 'function') {
+        window.showLastDeathNewspaper();
+    } else if (window.ui && window.ui.toast) {
+        window.ui.toast('Obituary is no longer available.', 'info');
+    }
+};
 
 function broadcastDeathNewspaper(newspaperData) {
     if (!onlineWorldState.isConnected || !onlineWorldState.socket || onlineWorldState.socket.readyState !== WebSocket.OPEN) {

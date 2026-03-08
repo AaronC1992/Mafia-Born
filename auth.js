@@ -586,6 +586,8 @@ export async function initAuth() {
             console.log('[auth] Saved session expired');
         } else {
             console.log(`[auth] Restored session for ${authUsername}`);
+            // Check admin status on session restore
+            await checkAdmin();
             // Auto-load cloud save and jump straight into the game
             try {
                 const save = await cloudLoad();

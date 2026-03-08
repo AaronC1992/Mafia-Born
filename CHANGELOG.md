@@ -5,6 +5,13 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.1] - 2025-06-05
+
+### Changed — World Chat Tabs & Admin Detection Fix
+- **World Chat channel tabs** — Crew, Alliance, and Private channels are now accessible directly from the World Chat screen without visiting The Commission
+- **Admin detection on session restore** — Admin status is now checked when a saved session is restored, not only on fresh login
+- **Death newspaper fallback** — Clicking a death announcement in World Chat now falls back to the local obituary or shows a message if the data is unavailable
+
 ## [1.17.0] - 2026-03-06
 
 ### Added — Gang Member Operations

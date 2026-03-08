@@ -17416,8 +17416,17 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.27.0";
+const CURRENT_VERSION = "1.27.1";
 const VERSION_UPDATES = {
+  "1.27.1": {
+    title: "World Chat Tabs & Admin Detection Fix",
+    date: "June 2025",
+    changes: [
+      "World Chat now has Crew, Alliance, and Private tabs for quick channel switching",
+      "Admin status is now detected on session restore, not just on fresh login",
+      "Death newspaper button in World Chat now falls back to local obituary or shows a message if unavailable",
+    ]
+  },
   "1.27.0": {
     title: "UI Polish & Vehicle Theft Overhaul",
     date: "March 2026",
