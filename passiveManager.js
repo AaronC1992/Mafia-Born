@@ -54,12 +54,12 @@ export function applyDailyPassives() {
         if (window.logAction) window.logAction(`Chen Triad "Smuggling Routes" passive: Your drug network earns $${networkBonus} dirty money overnight.`);
     }
 
-    // Morales Cartel: "Cartel Connections" - Small daily wanted level decay
+    // Morales Cartel: "Cartel Connections" - Small daily heat decay
     if (hasPassive('morales')) {
-        if (player.wantedLevel > 0) {
-            const decay = Math.min(player.wantedLevel, Math.floor(Math.random() * 3) + 1);
-            player.wantedLevel = Math.max(0, player.wantedLevel - decay);
-            if (window.logAction) window.logAction(`Morales Cartel "Cartel Connections" passive: Corrupt officials scrub ${decay} from your wanted level.`);
+        if (player.heat > 0) {
+            const decay = Math.min(player.heat, Math.floor(Math.random() * 3) + 1);
+            player.heat = Math.max(0, player.heat - decay);
+            if (window.logAction) window.logAction(`Morales Cartel "Cartel Connections" passive: Corrupt officials scrub ${decay} from your heat.`);
         }
     }
 }

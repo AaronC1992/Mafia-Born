@@ -33,7 +33,7 @@ export function initUIEvents() {
         refreshMoneyDisplay();
     });
 
-    EventBus.on('wantedLevelChanged', ({ oldValue, newValue }) => {
+    EventBus.on('heatChanged', ({ oldValue, newValue }) => {
         const el = document.getElementById('wanted-level-display');
         if (el) el.innerText = `Heat: ${newValue}`;
     });
@@ -56,6 +56,6 @@ export function initUIEvents() {
     // Initial paint
     refreshMoneyDisplay();
     const wanted = document.getElementById('wanted-level-display');
-    if (wanted) wanted.innerText = `Heat: ${player.wantedLevel}`;
+    if (wanted) wanted.innerText = `Heat: ${player.heat}`;
 }
 

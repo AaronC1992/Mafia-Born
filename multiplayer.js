@@ -1356,7 +1356,7 @@ async function handleServerMessage(message) {
                         player.inJail = !!selfPs.inJail;
                         player.jailTime = selfPs.jailTime || 0;
                     }
-                    if (typeof selfPs.wantedLevel === 'number') player.wantedLevel = selfPs.wantedLevel;
+                    if (typeof selfPs.heat === 'number') player.heat = selfPs.heat;
                     _safeUpdateUI(); // reflect authoritative corrections
                 }
             }
@@ -1636,7 +1636,7 @@ async function handleServerMessage(message) {
                 // Server-authoritative values overwrite local computation
                 if (typeof message.money === 'number') player.money = message.money;
                 if (typeof message.reputation === 'number') player.reputation = message.reputation;
-                if (typeof message.wantedLevel === 'number') player.wantedLevel = message.wantedLevel;
+                if (typeof message.heat === 'number') player.heat = message.heat;
                 if (message.jailed) {
                     player.inJail = true;
                     player.jailTime = message.jailTime || 30;
@@ -1669,13 +1669,13 @@ async function handleServerMessage(message) {
                 _safeLogAction(`\u2694\uFE0F Victory! Conquered ${message.district} from ${message.oldOwner}. Rep +${message.repGain}, lost ${message.gangMembersLost} members, HP -${message.healthDamage}.`);
                 playNotificationSound('victory');
                 showMPToast(`\u2694\uFE0F Victory! You conquered ${message.district}!`, '#8a9a6a', 5000);
-                if (typeof message.wantedLevel === 'number') player.wantedLevel = message.wantedLevel;
+                if (typeof message.heat === 'number') player.heat = message.heat;
                 if (typeof message.newHealth === 'number') player.health = message.newHealth;
             } else {
                 _safeLogAction(`\u2694\uFE0F Defeat! Failed to take ${message.district}. Lost ${message.gangMembersLost} members, HP -${message.healthDamage}.${message.jailed ? ' Arrested!' : ''}`);
                 playNotificationSound('defeat');
                 showMPToast(`\u2694\uFE0F Defeat! Failed to take ${message.district}.`, '#8b3a3a', 5000);
-                if (typeof message.wantedLevel === 'number') player.wantedLevel = message.wantedLevel;
+                if (typeof message.heat === 'number') player.heat = message.heat;
                 if (typeof message.newHealth === 'number') player.health = message.newHealth;
                 if (message.jailed) {
                     player.inJail = true;
@@ -1723,7 +1723,7 @@ async function handleServerMessage(message) {
             if (message.success) {
                 if (typeof message.money === 'number') player.money = message.money;
                 if (typeof message.reputation === 'number') player.reputation = message.reputation;
-                if (typeof message.wantedLevel === 'number') player.wantedLevel = message.wantedLevel;
+                if (typeof message.heat === 'number') player.heat = message.heat;
                 player.inJail = !!message.jailed ? true : player.inJail;
                 if (message.jailed) player.jailTime = message.jailTime || player.jailTime;
                 // Log outcome
@@ -4535,7 +4535,7 @@ function doDistrictJob(districtName) {
         const jailTime = 10 + Math.floor(Math.random() * 15);
         player.inJail = true;
         player.jailTime = jailTime;
-        player.wantedLevel = Math.min(10, (player.wantedLevel || 0) + 1);
+        player.heat = Math.min(10, (player.heat || 0) + 1);
 
         resultModal.innerHTML = `
             <div class="popup-card popup-danger" style="max-width:520px;">
@@ -4895,7 +4895,7 @@ function handleAssassinationResult(message) {
         // Sync authoritative money/rep from server
         if (typeof message.newMoney === 'number') player.money = message.newMoney;
         if (typeof message.newReputation === 'number') player.reputation = message.newReputation;
-        if (typeof message.wantedLevel === 'number') player.wantedLevel = message.wantedLevel;
+        if (typeof message.heat === 'number') player.heat = message.heat;
 
         // Apply health damage
         if (typeof message.newHealth === 'number') player.health = message.newHealth;
@@ -4939,7 +4939,7 @@ function handleAssassinationResult(message) {
                         <div style="color: #8a9a6a; font-size: 1.5em; font-weight: bold; margin-bottom: 10px;">+$${(message.stolenAmount || 0).toLocaleString()}</div>
                         <div style="color: #ccc;">Stole ${message.stealPercent}% of their wealth</div>
                         <div style="color: #c0a062; margin-top: 8px;">+${message.repGain} Reputation</div>
-                        <div style="color: #ff6666; margin-top: 4px;">+25 Wanted Level</div>
+                        <div style="color: #ff6666; margin-top: 4px;">+25 Heat</div>
                         <div style="color: #ff4444; margin-top: 8px;">-${message.healthDamage || 0} Health (now ${message.newHealth || '?'})</div>
                         ${(message.gangMembersLost || 0) > 0 ? '<div style="color: #ff8800; margin-top: 4px;">Lost ' + message.gangMembersLost + ' gang member' + (message.gangMembersLost > 1 ? 's' : '') + ' in the firefight</div>' : ''}
                         ${seizedHTML}
@@ -4956,7 +4956,7 @@ function handleAssassinationResult(message) {
     } else {
         // Failed
         player.ammo = Math.max(0, (player.ammo || 0) - (message.bulletsUsed || 3));
-        if (typeof message.wantedLevel === 'number') player.wantedLevel = message.wantedLevel;
+        if (typeof message.heat === 'number') player.heat = message.heat;
 
         // Apply health damage
         if (typeof message.newHealth === 'number') player.health = message.newHealth;
@@ -4999,7 +4999,7 @@ function handleAssassinationResult(message) {
                     </p>
                     <div style="background: rgba(139, 0, 0, 0.2); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 350px; border: 1px solid #8b0000;">
                         <div style="color: #ff4444;">-${message.repLoss || 0} Reputation</div>
-                        <div style="color: #ff8800; margin-top: 4px;">+15 Wanted Level</div>
+                        <div style="color: #ff8800; margin-top: 4px;">+15 Heat</div>
                         <div style="color: #ff4444; margin-top: 4px;">-${message.healthDamage || 0} Health (now ${message.newHealth || '?'})</div>
                         ${(message.gangMembersLost || 0) > 0 ? '<div style="color: #ff8800; margin-top: 4px;">Lost ' + message.gangMembersLost + ' gang member' + (message.gangMembersLost > 1 ? 's' : '') + ' in the firefight</div>' : ''}
                         <div style="color: #888; margin-top: 4px;">${message.bulletsUsed || 3} bullets wasted</div>
@@ -5270,7 +5270,7 @@ function participateInEvent(eventType, district) {
         const partialMoney = Math.floor(scenario.moneyMin * 0.3);
         player.money += partialMoney;
         player.health = Math.max(0, (player.health || 100) - scenario.healthLoss);
-        player.wantedLevel = Math.min(10, (player.wantedLevel || 0) + scenario.wantedGain);
+        player.heat = Math.min(10, (player.heat || 0) + scenario.wantedGain);
 
         modal.innerHTML = `
             <div class="popup-card popup-danger" style="max-width:550px;">

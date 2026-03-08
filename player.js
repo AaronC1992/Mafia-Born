@@ -144,7 +144,7 @@ export const player = {
   breakoutChance: 45, // Breakout chance (in percent), decreased slightly
   breakoutAttempts: 3, // Number of breakout attempts left
   power: 0, // Player's power level
-  wantedLevel: 0, // Player's wanted level
+  heat: 0, // Player's heat level
   reputation: 0, // Player's reputation (primary progression metric)
   level: 1, // Legacy — kept for save compatibility
   experience: 0, // Legacy — kept for save compatibility
@@ -515,7 +515,7 @@ export const achievements = [
   { id: "faction_ally", name: "Made Man", description: "Reach 50 reputation with any faction", unlocked: false, reward: { money: 50000, xp: 300 }, title: "Made Man" },
   // === Combat & Crime ===
   { id: "jail_break", name: "Great Escape", description: "Successfully break out of jail", unlocked: false, reward: { money: 5000, xp: 100 }, title: "Escape Artist" },
-  { id: "most_wanted", name: "Most Wanted", description: "Reach wanted level 50", unlocked: false, reward: { money: 25000, xp: 300 }, title: "Most Wanted" },
+  { id: "most_wanted", name: "Most Wanted", description: "Reach heat level 50", unlocked: false, reward: { money: 25000, xp: 300 }, title: "Most Wanted" },
   { id: "ghost", name: "Ghost", description: "Complete 10 jobs without getting arrested", unlocked: false, reward: { money: 20000, xp: 250 }, title: "The Ghost" },
   { id: "boss_slayer", name: "Boss Slayer", description: "Defeat your first rival boss", unlocked: false, reward: { money: 100000, xp: 500 }, title: "Boss Slayer" },
   // === Progression ===

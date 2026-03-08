@@ -31,7 +31,7 @@ export const storeItems = [
     { name: "Gasoline", price: 50000, power: 0, type: "gas", description: "Fuel for your vehicles. Hard to come by on the black market. Required to operate cars and planes. Consumed per use." },
     // === Utility Items ===
     { name: "Lockpick Set", price: 15000, power: 0, type: "utility", description: "Passively grants +10% success chance on all jobs while owned." },
-    { name: "Police Scanner", price: 50000, power: 0, type: "utility", description: "Passively reduces wanted level gain by 20% on every job and combat action while owned." },
+    { name: "Police Scanner", price: 50000, power: 0, type: "utility", description: "Passively reduces heat gain by 20% on every job and combat action while owned." },
     { name: "Burner Phone", price: 12000, power: 0, type: "utility", description: "Passively reduces suspicion risk by 15% when laundering money while owned." },
     { name: "Fake ID Kit", price: 35000, power: 0, type: "utility", description: "Passively reduces jail time by 5 seconds when arrested. Also required for the Counterfeiting Money job." },
     // === High-Level Drugs (Trade Goods) ===

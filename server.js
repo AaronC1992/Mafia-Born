@@ -44,7 +44,7 @@ setInterval(() => {
 // ── Allowed fields for admin modifications ─────────────────────
 const ADMIN_ALLOWED_FIELDS = new Set([
     'money', 'level', 'experience', 'health',
-    'power', 'reputation', 'wantedLevel', 'ammo', 'gas', 'skillPoints',
+    'power', 'reputation', 'heat', 'ammo', 'gas', 'skillPoints',
     'territory', 'dirtyMoney'
 ]);
 
@@ -1287,7 +1287,7 @@ function handlePlayerConnect(clientId, message, ws) {
         inJail: message.playerStats?.inJail || false,
         jailTime: message.playerStats?.jailTime || 0,
         health: message.playerStats?.health || 100,
-        wantedLevel: message.playerStats?.wantedLevel || 0,
+        heat: message.playerStats?.heat || 0,
         lastUpdate: Date.now()
     };
     
@@ -1637,8 +1637,8 @@ function handleTerritoryWar(clientId, message) {
         : 25 + Math.floor(Math.random() * 31); // 25-55 on loss
     attackerState.health = Math.max(0, (attackerState.health || 100) - healthDamage);
 
-    // Wanted level increase
-    attackerState.wantedLevel = Math.min(100, (attackerState.wantedLevel || 0) + (victory ? 20 : 12));
+    // Heat increase
+    attackerState.heat = Math.min(100, (attackerState.heat || 0) + (victory ? 20 : 12));
 
     if (victory) {
         // Transfer ownership
@@ -1666,7 +1666,7 @@ function handleTerritoryWar(clientId, message) {
                 gangMembersLost: gangMembersLost,
                 healthDamage: healthDamage,
                 newHealth: attackerState.health,
-                wantedLevel: attackerState.wantedLevel,
+                heat: attackerState.heat,
                 territories: gameState.territories
             }));
         }
@@ -1729,7 +1729,7 @@ function handleTerritoryWar(clientId, message) {
                 gangMembersLost: gangMembersLost,
                 healthDamage: healthDamage,
                 newHealth: attackerState.health,
-                wantedLevel: attackerState.wantedLevel,
+                heat: attackerState.heat,
                 jailed: jailed,
                 jailTime: jailTime,
                 error: jailed
@@ -2277,7 +2277,7 @@ function handlePlayerUpdate(clientId, message) {
     }
     
     // Update allowed state fields from message (whitelist approach)
-    // SECURITY: gameplay-sensitive fields (health, inJail, jailTime, wantedLevel)
+    // SECURITY: gameplay-sensitive fields (health, inJail, jailTime, heat)
     // are only updated by server-side handlers (jobs, combat, jailbreak, etc.)
     if (message.playerState) {
         // Display-sync only — these help other clients see you accurately
@@ -2464,7 +2464,7 @@ function handleJailbreakAttempt(clientId, message) {
             // Helper gets arrested
             helperState.inJail = true;
             helperState.jailTime = 15 + Math.floor(Math.random() * 10); // 15-24 seconds
-            helperState.wantedLevel = (helperState.wantedLevel || 0) + 2;
+            helperState.heat = (helperState.heat || 0) + 2;
             
             console.log(` Jailbreak failed! ${helper.name} was arrested`);
             
@@ -2665,7 +2665,7 @@ function handleJailbreakBot(clientId, message) {
         if (Math.random() * 100 < arrestChance) {
             helperState.inJail = true;
             helperState.jailTime = 15 + Math.floor(Math.random() * 10);
-            helperState.wantedLevel = (helperState.wantedLevel || 0) + 1;
+            helperState.heat = (helperState.heat || 0) + 1;
 
             console.log(` Bot jailbreak failed: ${helper.name} was arrested`);
 
@@ -2856,8 +2856,8 @@ function handleJobIntent(clientId, message) {
     player.reputation += repGain;
     ps.reputation = player.reputation;
 
-    // Wanted level increase
-    ps.wantedLevel = (ps.wantedLevel || 0) + jobDef.wanted;
+    // Heat increase
+    ps.heat = (ps.heat || 0) + jobDef.wanted;
 
     // Jail chance
     let jailed = false;
@@ -2886,7 +2886,7 @@ function handleJobIntent(clientId, message) {
             jailTime: ps.jailTime || 0,
             money: ps.money,
             reputation: ps.reputation,
-            wantedLevel: ps.wantedLevel
+            heat: ps.heat
         }));
     }
 
@@ -3251,7 +3251,7 @@ function handlePlayerJailNewspaper(clientId, message) {
         riskLevel: String(nd.riskLevel || 'medium').slice(0, 20),
         tone: String(nd.tone || 'funny').slice(0, 10),
         jailTime: Math.max(0, Math.min(999, parseInt(nd.jailTime) || 15)),
-        wantedLevel: Math.max(0, Math.min(100, parseInt(nd.wantedLevel) || 0)),
+        heat: Math.max(0, Math.min(100, parseInt(nd.heat) || 0)),
         money: Math.max(0, parseInt(nd.money) || 0),
         reputation: Math.max(0, parseInt(nd.reputation) || 0),
         totalCrimes: Math.max(0, parseInt(nd.totalCrimes) || 0),
@@ -3534,8 +3534,8 @@ function handleAssassinationAttempt(clientId, message) {
         target.reputation = Math.max(0, (target.reputation || 0) - 5);
         targetState.reputation = target.reputation;
 
-        // Attacker gets high wanted level
-        attackerState.wantedLevel = Math.min(100, (attackerState.wantedLevel || 0) + 25);
+        // Attacker gets high heat
+        attackerState.heat = Math.min(100, (attackerState.heat || 0) + 25);
 
         // ── Phase 2: Territory conquest via assassination ──────────────
         // If the target owns any territories, the attacker seizes them
@@ -3577,7 +3577,7 @@ function handleAssassinationAttempt(clientId, message) {
                 chance: Math.round(chance),
                 newMoney: attacker.money,
                 newReputation: attacker.reputation,
-                wantedLevel: attackerState.wantedLevel,
+                heat: attackerState.heat,
                 healthDamage: healthDamage,
                 newHealth: attackerState.health,
                 gangMembersLost: gangMembersLost,
@@ -3612,8 +3612,8 @@ function handleAssassinationAttempt(clientId, message) {
         attacker.reputation = Math.max(0, (attacker.reputation || 0) - repLoss);
         attackerState.reputation = attacker.reputation;
 
-        // Wanted level increases regardless
-        attackerState.wantedLevel = Math.min(100, (attackerState.wantedLevel || 0) + 15);
+        // Heat increases regardless
+        attackerState.heat = Math.min(100, (attackerState.heat || 0) + 15);
 
         let jailTime = 0;
         if (arrested) {
@@ -3637,7 +3637,7 @@ function handleAssassinationAttempt(clientId, message) {
                 repLoss: repLoss,
                 bulletsUsed: bulletsUsed,
                 chance: Math.round(chance),
-                wantedLevel: attackerState.wantedLevel,
+                heat: attackerState.heat,
                 healthDamage: healthDamage,
                 newHealth: attackerState.health,
                 gangMembersLost: gangMembersLost,

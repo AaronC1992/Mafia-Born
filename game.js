@@ -2713,7 +2713,7 @@ function applyEventOutcomes(outcome, player) {
     }
 
     if (outcome.heat) {
-        player.wantedLevel = Math.max(0, Math.min(100, player.wantedLevel + outcome.heat));
+        player.heat = Math.max(0, Math.min(100, player.heat + outcome.heat));
         changes.heat = outcome.heat;
     }
 
@@ -4002,11 +4002,11 @@ const betrayalEvents = [
     name: "Police Informant",
     description: "A gang member has been feeding information to the police",
     triggerConditions: {
-      minWantedLevel: 20
+      minHeat: 20
     },
     consequences: {
       policeRaid: true,
-      wantedLevelIncrease: 15,
+      heatIncrease: 15,
       moneyLoss: 0.20, // 20% of current money
       gangMemberLoss: 1
     },
@@ -4825,7 +4825,7 @@ function buildLaunderingHTML() {
       <h3>Current Status</h3>
       <p><strong>Dirty Money:</strong> $${player.dirtyMoney.toLocaleString()}</p>
       <p><strong>Clean Money:</strong> $${player.money.toLocaleString()}</p>
-      <p><strong>Heat Level:</strong> ${player.wantedLevel || 0} / 100</p>
+      <p><strong>Heat Level:</strong> ${player.heat || 0} / 100</p>
     </div>
   `;
 
@@ -5017,7 +5017,7 @@ function startLaundering(methodId) {
 
   // Roll for interception (heat-based risk)
   const riskRoll = Math.random() * 100;
-  const currentHeat = player.wantedLevel || 0;
+  const currentHeat = player.heat || 0;
   let adjustedRisk = method.suspicionRisk + (currentHeat * 0.5);
 
   // Utility item: Burner Phone reduces risk by 15%
@@ -5041,7 +5041,7 @@ function startLaundering(methodId) {
     const heatGain = 5 + Math.floor(Math.random() * 8);
 
     player.dirtyMoney += returned; // Give back the non-confiscated portion
-    player.wantedLevel = Math.min(100, player.wantedLevel + heatGain);
+    player.heat = Math.min(100, player.heat + heatGain);
 
     showToast(`Operation compromised! Lost $${lost.toLocaleString()}, $${returned.toLocaleString()} returned. +${heatGain} heat.`, 'error');
     logAction(`The operation goes sideways! Feds intercept the cash. $${lost.toLocaleString()} seized, but $${returned.toLocaleString()} dirty money was recovered. The heat is rising (+${heatGain} heat).`);
@@ -5051,7 +5051,7 @@ function startLaundering(methodId) {
     const heatGain = Math.floor(method.suspicionRisk * 0.05);
     const processingTimeMs = method.timeRequired * 60 * 1000; // timeRequired is in minutes (real-time)
 
-    player.wantedLevel = Math.min(100, player.wantedLevel + heatGain);
+    player.heat = Math.min(100, player.heat + heatGain);
 
     const operation = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
@@ -6071,7 +6071,7 @@ function completeGangOperation(operationData) {
 function handleOperationBetrayal(member, operation) {
   const moneyLoss = Math.floor(player.money * 0.1); // 10% money loss
   player.money = Math.max(0, player.money - moneyLoss);
-  player.wantedLevel += 5;
+  player.heat += 5;
 
   // Clean up active operation for this member
   player.gang.activeOperations = player.gang.activeOperations.filter(op => op.memberName !== member.name);
@@ -6081,7 +6081,7 @@ function handleOperationBetrayal(member, operation) {
   player.gang.members = Math.max(0, player.gang.members - 1);
 
   showBriefNotification(`${member.name} betrayed the operation! They disappeared with $${moneyLoss.toLocaleString()} and tipped off the authorities.`, 'danger');
-  logAction(`Betrayal! ${member.name} turns their back on the family, vanishing with your money and leaving a trail for the cops to follow. Trust is a luxury you can't afford (-$${moneyLoss.toLocaleString()}, +5 wanted level).`);
+  logAction(`Betrayal! ${member.name} turns their back on the family, vanishing with your money and leaving a trail for the cops to follow. Trust is a luxury you can't afford (-$${moneyLoss.toLocaleString()}, +5 heat).`);
 
   updateUI();
 }
@@ -6092,7 +6092,7 @@ function handleOperationArrest(member, operation) {
   member.arrested = true;
   member.onOperation = false;
   member.arrestTime = Date.now() + (Math.random() * 72 + 24) * 60 * 60 * 1000; // 1-3 days
-  player.wantedLevel += 3;
+  player.heat += 3;
 
   // Clean up active operation for this member
   player.gang.activeOperations = player.gang.activeOperations.filter(op => op.memberName !== member.name);
@@ -6266,7 +6266,7 @@ function checkForBetrayals() {
 function shouldTriggerBetrayal(event) {
   const conditions = event.triggerConditions;
 
-  if (conditions.minWantedLevel && player.wantedLevel < conditions.minWantedLevel) return false;
+  if (conditions.minHeat && player.heat < conditions.minHeat) return false;
   if (conditions.minTerritory && (player.turf?.owned || []).length < conditions.minTerritory) return false;
   if (conditions.minBusinesses && player.businesses.length < conditions.minBusinesses) return false;
   if (conditions.minGangMembers && player.gang.gangMembers.length < conditions.minGangMembers) return false;
@@ -6284,8 +6284,8 @@ function triggerBetrayalEvent(event) {
     player.money = Math.max(0, player.money - loss);
   }
 
-  if (consequences.wantedLevelIncrease) {
-    player.wantedLevel += consequences.wantedLevelIncrease;
+  if (consequences.heatIncrease) {
+    player.heat += consequences.heatIncrease;
   }
 
   if (consequences.reputationLoss) {
@@ -6393,7 +6393,7 @@ function renderTurfControlContent() {
     html += `<div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;"><h3 style="color: #8b3a3a; margin-bottom: 15px;">Your Turf</h3><div style="display: grid; gap: 15px;">`;
     ownedZones.forEach(zone => {
       const income = calculateTurfZoneIncome(zone);
-      const heatLevel = player.wantedLevel || 0;
+      const heatLevel = player.heat || 0;
       const fortLevel = (player.turf.fortifications || {})[zone.id] || 0;
       html += `<div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px; border-left: 4px solid ${getHeatColor(heatLevel)};">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
@@ -6809,7 +6809,7 @@ async function attackTurfZone(zoneId) {
     zone.defendingMembers = [];
     if (!player.turf.owned) player.turf.owned = [];
     player.turf.owned.push(zone.id);
-    player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + 15);
+    player.heat = Math.min(100, (player.heat || 0) + 15);
     player.turf.reputation = (player.turf.reputation || 0) + 15;
     player.territoryReputation = (player.territoryReputation || 0) + 15;
     recalcTurfIncome();
@@ -6861,7 +6861,7 @@ function calculateTurfZoneIncome(zone) {
   let income = zone.baseIncome;
   const fortLevel = (player.turf.fortifications || {})[zone.id] || 0;
   income *= (1 + fortLevel * 0.1);
-  const heat = player.wantedLevel || 0;
+  const heat = player.heat || 0;
   income *= Math.max(0.3, 1 - (heat / 100) * 0.5);
   // Family buff
   const buff = getChosenFamilyBuff();
@@ -6898,7 +6898,7 @@ function manageTurfDetails(zoneId) {
   const zone = (player.turf._zones || []).find(z => z.id === zoneId);
   if (!zone) return;
   const income = calculateTurfZoneIncome(zone);
-  const heat = player.wantedLevel || 0;
+  const heat = player.heat || 0;
   const fort = (player.turf.fortifications || {})[zone.id] || 0;
 
   // Calculate defense breakdown
@@ -7004,12 +7004,12 @@ window.fortifyTurf = fortifyTurf;
 
 // Reduce global heat from turf screen
 function reduceHeatTurf(zoneId) {
-  const heat = player.wantedLevel || 0;
+  const heat = player.heat || 0;
   const cost = Math.max(1000, Math.floor(heat * 200));
   if (player.money < cost) { showBriefNotification(`Need $${cost.toLocaleString()}!`, 'danger'); return; }
   if (heat <= 0) { showBriefNotification('Heat is already at 0!', 'info'); return; }
   player.money -= cost;
-  player.wantedLevel = Math.max(0, heat - 10);
+  player.heat = Math.max(0, heat - 10);
   recalcTurfIncome();
   showBriefNotification('Heat reduced by 10!', 'success');
   logAction(`Paid $${cost.toLocaleString()} to lay low and reduce heat.`);
@@ -7030,7 +7030,7 @@ function collectTurfTribute(zoneId) {
   const tribute = Math.floor(income * Math.min(hoursSince / 168, 1));
   player.dirtyMoney = (player.dirtyMoney || 0) + tribute;
   player.turf.lastTributeCollection = now;
-  player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + 3);
+  player.heat = Math.min(100, (player.heat || 0) + 3);
   showBriefNotification(`Collected $${tribute.toLocaleString()} in dirty tribute! (+3 heat)`, 'success');
   logAction(`Collected $${tribute.toLocaleString()} tribute from ${zone.name}.`);
   updateUI();
@@ -7051,8 +7051,8 @@ function processTurfOperations() {
   }
 
   // Heat only decays if the player has the heat_reduction milestone perk
-  if (player.wantedLevel > 0 && typeof hasTurfPerk === 'function' && hasTurfPerk('heat_reduction')) {
-    player.wantedLevel = Math.max(0, player.wantedLevel - 6);
+  if (player.heat > 0 && typeof hasTurfPerk === 'function' && hasTurfPerk('heat_reduction')) {
+    player.heat = Math.max(0, player.heat - 6);
   }
 
   // Rival retaliation - FAMILY-BASED AI (3 rival families attack individually)
@@ -7619,7 +7619,7 @@ function generateTurfOverviewHTML() {
 
     ownedZones.forEach(zone => {
       const income = calculateTurfZoneIncome(zone);
-      const heatLevel = player.wantedLevel || 0;
+      const heatLevel = player.heat || 0;
       const fortLevel = (player.turf.fortifications || {})[zone.id] || 0;
 
       html += `
@@ -7970,7 +7970,7 @@ async function renewCorruption(officialId) {
 
     // Small risk on renewal too
     if (Math.random() < 0.08) {
-      player.wantedLevel += Math.floor(Math.random() * 10) + 5;
+      player.heat += Math.floor(Math.random() * 10) + 5;
       showBriefNotification(`Bribe renewed, but someone may have noticed the exchange...`, 'warning');
       logAction(`${target.name}'s loyalty renewed, but whispers travel fast in the shadows.`);
     } else {
@@ -8006,14 +8006,14 @@ async function corruptOfficial(targetId) {
     player.corruptedOfficials.push(corruption);
 
     // Corrupting officials reduces heat
-    player.wantedLevel = Math.max(0, (player.wantedLevel || 0) - 5);
+    player.heat = Math.max(0, (player.heat || 0) - 5);
     if (player.streetReputation) {
       player.streetReputation.underground = Math.min(100, (player.streetReputation.underground || 0) + 2);
     }
 
     // Risk of getting caught
     if (Math.random() < (target.riskLevel === 'extreme' ? 0.3 : target.riskLevel === 'high' ? 0.2 : 0.1)) {
-      player.wantedLevel += Math.floor(Math.random() * 20) + 10;
+      player.heat += Math.floor(Math.random() * 20) + 10;
       showBriefNotification(`Bribe successful, but someone may have noticed...`, 'warning');
       logAction(`${target.name} has been corrupted, but you sense eyes watching your every move. The price of power is constant vigilance.`);
     } else {
@@ -8065,8 +8065,8 @@ function approachBusiness(businessId, territoryId) {
   } else {
     // Failed approach - business calls police or refuses
     if (Math.random() < 0.3) {
-      player.wantedLevel += Math.floor(Math.random() * 15) + 5;
-      showBriefNotification(`${business.name} called the police! Wanted level up.`, 'danger');
+      player.heat += Math.floor(Math.random() * 15) + 5;
+      showBriefNotification(`${business.name} called the police! Heat up.`, 'danger');
       logAction(`${business.name} refused your offer and called the authorities. Sometimes the sheep bite back.`);
     } else {
       showBriefNotification(`${business.name} refused your offer.`, 'warning');
@@ -8131,7 +8131,7 @@ function pressureBusiness(racketId) {
     // Pressure backfires
     if (Math.random() < 0.4) {
       // Business calls police
-      player.wantedLevel += Math.floor(Math.random() * 20) + 10;
+      player.heat += Math.floor(Math.random() * 20) + 10;
       showBriefNotification(`Your pressure tactics backfired! ${business.name} called the police.`, 'danger');
       logAction(`${business.name} cracked under pressure and called the cops. Sometimes intimidation cuts both ways.`);
     } else {
@@ -8277,7 +8277,7 @@ function generateTerritoryEvent() {
   // Apply effects from the richer schema
   if (evt.effects.heatIncrease) {
     const heatGain = Math.round(evt.effects.heatIncrease * 50);
-    player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + heatGain);
+    player.heat = Math.min(100, (player.heat || 0) + heatGain);
   }
   if (evt.effects.incomeReduction) {
     // Temporarily reduce income from the zone for event duration (stored on event)
@@ -8379,7 +8379,7 @@ function updateUI() {
           money: player.money,
           dirtyMoney: dirty,
           reputation: player.reputation,
-          wantedLevel: player.wantedLevel,
+          heat: player.heat,
           health: player.health,
           inJail: player.inJail,
           jailTime: player.jailTime,
@@ -8407,7 +8407,7 @@ function updateUI() {
       emitNum('money', player.money, 'moneyChanged');
       emitNum('dirtyMoney', dirty, 'dirtyMoneyChanged');
       emitNum('reputation', Math.floor(player.reputation), 'reputationChanged');
-      emitNum('wantedLevel', player.wantedLevel, 'wantedLevelChanged');
+      emitNum('heat', player.heat, 'heatChanged');
       emitNum('health', player.health, 'healthChanged');
       emitNum('territoryCount', (player.turf?.owned || []).length, 'territoryChanged');
       emitNum('level', player.level, 'levelChanged');
@@ -8418,7 +8418,7 @@ function updateUI() {
   // Check for newly unlocked menu items
   checkForNewUnlocks();
 
-  // Money and wanted level HUD updates handled via EventBus subscribers
+  // Money and heat HUD updates handled via EventBus subscribers
 
   // Update dirty money display in stats bar (always visible)
   const dirtyMoneyDisplay = document.getElementById("dirty-money-display");
@@ -8638,8 +8638,8 @@ function showAdminPanel() {
           <input type="number" id="admin-health" value="${player.health}" min="0" max="100" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
-          <span>Wanted Level (${player.wantedLevel})</span>
-          <input type="number" id="admin-wanted" value="${player.wantedLevel}" min="0" max="100" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
+          <span>Heat (${player.heat})</span>
+          <input type="number" id="admin-wanted" value="${player.heat}" min="0" max="100" style="padding:6px; background:#14120a; color:#e0e0e0; border:1px solid #444; border-radius:4px;">
         </label>
         <label style="display:flex; flex-direction:column; gap:4px;">
           <span>Gang Members (${player.gang.members})</span>
@@ -8659,7 +8659,7 @@ function showAdminPanel() {
     <div class="section-header" style="color: #8b3a3a;">Jail Controls</div>
     <div class="content-card" style="display:flex; flex-wrap:wrap; gap:8px;">
       <button onclick="adminJailRelease()" style="border-color:#8b3a3a;">Release from Jail</button>
-      <button onclick="adminClearWanted()" style="border-color:#8b3a3a;">Clear Wanted Level</button>
+      <button onclick="adminClearHeat()" style="border-color:#8b3a3a;">Clear Heat</button>
       <button onclick="adminFullHeal()" style="border-color:#8b3a3a;">Full Heal</button>
     </div>
 
@@ -8713,7 +8713,7 @@ function adminApplyStats() {
   player.dirtyMoney = Math.max(0, getValue('admin-dirty'));
   player.skillPoints = Math.max(0, getValue('admin-sp'));
   player.health = Math.max(0, Math.min(100, getValue('admin-health')));
-  player.wantedLevel = Math.max(0, Math.min(100, getValue('admin-wanted')));
+  player.heat = Math.max(0, Math.min(100, getValue('admin-wanted')));
   player.gang.members = Math.max(0, getValue('admin-gang'));
   player.ammo = Math.max(0, getValue('admin-ammo'));
   showBriefNotification('Admin: Stats updated!', 'success');
@@ -8733,7 +8733,7 @@ function adminResetStats() {
       player.reputation = 0;
       player.skillPoints = 0;
       player.health = 100;
-      player.wantedLevel = 0;
+      player.heat = 0;
       player.gang.members = 0;
       player.ammo = 0;
       player.equippedWeapon = null;
@@ -8757,10 +8757,10 @@ function adminJailRelease() {
   updateUI();
 }
 
-function adminClearWanted() {
-  player.wantedLevel = 0;
-  showBriefNotification('Admin: Wanted level cleared!', 'success');
-  logAction('[Admin] Wanted level cleared');
+function adminClearHeat() {
+  player.heat = 0;
+  showBriefNotification('Admin: Heat cleared!', 'success');
+  logAction('[Admin] Heat cleared');
   updateUI();
   showAdminPanel();
 }
@@ -9037,7 +9037,7 @@ function refreshJobsList() {
     if (detailParts.length > 0) {
       detailsHTML += `<br><small style="line-height:1.6;">${detailParts.join(' &nbsp; ')}</small>`;
     }
-    detailsHTML += `<br><small style="color:#8a7a5a;">Jail: ${job.jailChance}% | Damage: ${job.healthLoss} | Wanted: +${job.wantedLevelGain} | Rep: <span style="color:#c0a062;">${JOB_REP_BY_RISK[job.risk] || 0.5}</span></small>`;
+    detailsHTML += `<br><small style="color:#8a7a5a;">Jail: ${job.jailChance}% | Damage: ${job.healthLoss} | Heat: +${job.heatGain} | Rep: <span style="color:#c0a062;">${JOB_REP_BY_RISK[job.risk] || 0.5}</span></small>`;
 
     // Cooldown display
     const cooldownDisplay = cooldownLeft > 0
@@ -9448,7 +9448,7 @@ const TUTORIAL_CONTENT = {
     title: 'Welcome to Mafia Born',
     sections: [
       { heading: 'Your SafeHouse', text: 'This is your base of operations -- the hub of your criminal empire. Every journey into the city starts from here. As you earn reputation, new locations and features will unlock on the navigation buttons below.' },
-      { heading: 'The Status Bar (Top)', text: 'The bar running across the top of the screen shows your vital stats at a glance:<br><b>Cash</b> -- your spending money.<br><b>Health</b> -- drops from fights and failed jobs; if it hits 0, your character dies permanently (permadeath).<br><b>Heat</b> -- your wanted level; rises from crime, attracts police attention, and decays over time.<br><b>Rank</b> -- your current reputation rank in the underworld; earn Rep to unlock new content.<br>You can customise which stats are shown in Settings > UI Toggles.' },
+      { heading: 'The Status Bar (Top)', text: 'The bar running across the top of the screen shows your vital stats at a glance:<br><b>Cash</b> -- your spending money.<br><b>Health</b> -- drops from fights and failed jobs; if it hits 0, your character dies permanently (permadeath).<br><b>Heat</b> -- rises from crime, attracts police attention, and decays over time.<br><b>Rank</b> -- your current reputation rank in the underworld; earn Rep to unlock new content.<br>You can customise which stats are shown in Settings > UI Toggles.' },
       { heading: 'The Ledger (Activity Log)', text: 'Below the status bar is The Ledger -- a scrolling log that records everything you do: jobs, fights, purchases, story events, and more. Keep an eye on it for confirmation of your actions and narrative flavour.' },
       { heading: 'Quick Actions Bar (Right Panel)', text: 'On the right (desktop) or accessible via the mobile menu, the Quick Actions bar provides one-tap shortcuts to your most-used screens. It also has a Save button, Help button, and a Skip Tutorials option. You can customise which shortcuts appear in Settings.' },
       { heading: 'Navigation Buttons', text: 'The main buttons in the SafeHouse let you visit Jobs, the Black Market, Missions, the Casino, Hospital, and more. New areas unlock as your reputation grows -- keep grinding!' },
@@ -9460,7 +9460,7 @@ const TUTORIAL_CONTENT = {
     sections: [
       { heading: 'Earn Cash & Rep', text: 'Pick a job from the list to earn money and reputation. Higher-tier jobs pay more but have longer cooldown timers.' },
       { heading: 'Crime Cooldowns', text: 'Every job triggers a cooldown timer after completion. Higher-risk jobs have longer cooldowns. The Planning and Unstoppable skills reduce cooldown times.' },
-      { heading: 'Heat Warning', text: 'Some jobs raise your Heat (wanted level). Higher heat means more police encounters and bigger penalties if caught.' },
+      { heading: 'Heat Warning', text: 'Some jobs raise your Heat. Higher heat means more police encounters and bigger penalties if caught.' },
       { heading: 'Ranking Up', text: 'Reputation from jobs ranks you up, unlocking new content and story chapters. Check your Rep in the status bar.' },
     ]
   },
@@ -9730,7 +9730,7 @@ const HELP_TOPICS = [
       <li><strong>Cash</strong> -- Your main currency. Earned from jobs, businesses, missions, and the casino. Spend it on gear, properties, heals, and more.</li>
       <li><strong>Dirty Money</strong> -- Earned from heists and illegal activities. Cannot be spent directly -- you must launder it through Business Fronts (Properties screen) to convert it into clean Cash.</li>
       <li><strong>Health</strong> -- Drops from combat, failed jobs, and random events. If it hits 0, your character dies permanently (permadeath). Heal at the Hospital or use Medkits.</li>
-      <li><strong>Heat (Wanted Level)</strong> -- Rises when you commit crimes. Higher heat means more police encounters, bigger fines, and possible arrest. Heat does NOT decay on its own -- you must reduce it via perks, skills, and bribes.</li>
+      <li><strong>Heat</strong> -- Rises when you commit crimes. Higher heat means more police encounters, bigger fines, and possible arrest. Heat does NOT decay on its own -- you must reduce it via perks, skills, and bribes.</li>
       <li><strong>Rep & Rank</strong> -- Earn reputation from jobs, missions, side ops, and combat. Rank up to unlock new screens, gear, story chapters, and features.</li>
       <li><strong>Influence</strong> -- A measure of your power in the underworld. Used to claim territory and affects your Empire Rating.</li>
     </ul>
@@ -9750,7 +9750,7 @@ const HELP_TOPICS = [
     <ul>
       <li><strong>Cash</strong> -- Your clean, spendable money.</li>
       <li><strong>Health</strong> -- Your current HP. If it reaches 0, your character dies permanently (permadeath).</li>
-      <li><strong>Heat</strong> -- Your wanted level (0-100). Higher = more police attention.</li>
+      <li><strong>Heat</strong> -- Your heat level (0-100). Higher = more police attention.</li>
       <li><strong>Rank</strong> -- Your reputation rank. Earn Rep to unlock content.</li>
       <li><strong>Dirty Money</strong> -- Cash from illegal activities that needs laundering.</li>
       <li><strong>Influence</strong> -- Your underworld power / reputation score.</li>
@@ -9793,7 +9793,7 @@ const HELP_TOPICS = [
       <li>Each job pays <strong>cash + Rep</strong> on success and triggers a <strong>cooldown timer</strong> before you can do it again.</li>
       <li>Higher-tier jobs unlock at higher reputation and pay significantly more, but have longer cooldowns.</li>
       <li>Some jobs have a <strong>chance to fail</strong>, especially risky ones. Failure may cost health or attract heat.</li>
-      <li>Some jobs increase <strong>Heat</strong> (wanted level), which makes cops more aggressive.</li>
+      <li>Some jobs increase <strong>Heat</strong>, which makes cops more aggressive.</li>
       <li>Jobs may reward <strong>stolen goods</strong> that you can sell at the Fence (Black Market) for extra profit.</li>
     </ul>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Tips</h4>
@@ -10006,8 +10006,8 @@ const HELP_TOPICS = [
       <li>Great for seeing the big picture of your criminal empire's growth.</li>
     </ul>
   `},
-  { id: 'heat-help', icon: '', title: 'Heat (Wanted Level)', content: `
-    <p><strong>Heat</strong> is your wanted level -- a number from 0 to 100 representing how much the police are watching you.</p>
+  { id: 'heat-help', icon: '', title: 'Heat', content: `
+    <p><strong>Heat</strong> is a number from 0 to 100 representing how much the police are watching you.</p>
     <h4 style="color:#c0a062; margin:14px 0 6px;">Heat Levels</h4>
     <ul>
       <li><strong>0-15 (Cool)</strong> -- You're under the radar. Almost no police encounters.</li>
@@ -10353,7 +10353,7 @@ function showJobs() {
         if (detailParts.length > 0) {
           detailsHTML += `<br><small style="line-height:1.6;">${detailParts.join(' &nbsp; ')}</small>`;
         }
-        detailsHTML += `<br><small style="color:#8a7a5a;">Jail: ${job.jailChance}% | Damage: ${job.healthLoss} | Wanted: +${job.wantedLevelGain} | Rep: <span style="color:#c0a062;">${JOB_REP_BY_RISK[job.risk] || 0.5}</span></small>`;
+        detailsHTML += `<br><small style="color:#8a7a5a;">Jail: ${job.jailChance}% | Damage: ${job.healthLoss} | Heat: +${job.heatGain} | Rep: <span style="color:#c0a062;">${JOB_REP_BY_RISK[job.risk] || 0.5}</span></small>`;
 
         return `
           <li class="game-card game-card--accent-left" style="--card-accent: ${buttonColor};">
@@ -10626,7 +10626,7 @@ function updateFactionReputation(job, success) {
   }
 
   // Police reputation changes based on job visibility
-  if (job.wantedLevelGain > 2) {
+  if (job.heatGain > 2) {
     reputationChanges.police = -1; // High-profile crimes hurt police relations
   }
 
@@ -10998,7 +10998,7 @@ async function startJob(index) {
   }
 
   // Heat-based arrest modifier: low heat = less arrests, high heat = more
-  const heatLevel = player.wantedLevel || 0;
+  const heatLevel = player.heat || 0;
   if (heatLevel < 10) {
     adjustedJailChance = Math.max(1, Math.floor(adjustedJailChance * 0.70));
   } else if (heatLevel < 20) {
@@ -11018,7 +11018,7 @@ async function startJob(index) {
       logAction(`Your captain on the payroll tipped you off \u2014 you slipped away before the bust!`);
       showBriefNotification(`Raid warning! Your corrupt contact saved you from arrest.`, 'warning');
     } else {
-      sendToJail(job.wantedLevelGain, { crimeName: job.name, riskLevel: job.risk });
+      sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
       logAction(`Sirens wail behind you! Cold metal cuffs bite into your wrists as the cops drag you away. The ${job.name} was a setup all along...`);
       return;
     }
@@ -11029,39 +11029,39 @@ async function startJob(index) {
     player.dirtyMoney = (player.dirtyMoney || 0) + earnings;
     // Dirty money jobs raise heat -- the feds notice large illegal cash flows
     const dirtyHeat = 3 + Math.floor(Math.random() * 6); // 3-8 heat
-    player.wantedLevel = Math.min(100, player.wantedLevel + dirtyHeat);
+    player.heat = Math.min(100, player.heat + dirtyHeat);
     logAction(`Handling that much dirty cash raises eyebrows... (+${dirtyHeat} heat)`);
   } else {
     player.money += earnings;
   }
 
-  // Apply intimidation to reduce wanted level gain (witnesses too scared to report)
-  let wantedLevelGain = job.wantedLevelGain;
+  // Apply intimidation to reduce heat gain (witnesses too scared to report)
+  let heatGain = job.heatGain;
 
   // Approach consequence: "Go Loud" adds 30% more heat
   if (approachLabel === 'Loud') {
-    wantedLevelGain = Math.ceil(wantedLevelGain * 1.3);
+    heatGain = Math.ceil(heatGain * 1.3);
   }
 
   let intimidationReduction = player.skillTree.combat.intimidation * 0.1; // 10% reduction per level
-  wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - intimidationReduction)));
+  heatGain = Math.max(1, Math.floor(heatGain * (1 - intimidationReduction)));
 
   // Ghost Protocol: -4% heat gain per rank
   const ghostLevel = player.skillTree.stealth.ghost_protocol || 0;
   if (ghostLevel > 0) {
-    wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - ghostLevel * 0.04)));
+    heatGain = Math.max(1, Math.floor(heatGain * (1 - ghostLevel * 0.04)));
   }
 
-  // Utility item: Police Scanner reduces wanted level gain by 20%
+  // Utility item: Police Scanner reduces heat gain by 20%
   if (hasUtilityItem('Police Scanner')) {
-    wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * 0.8));
-    logAction(`Your Police Scanner intercepts radio chatter -- you dodge the heat (+20% wanted reduction).`);
+    heatGain = Math.max(1, Math.floor(heatGain * 0.8));
+    logAction(`Your Police Scanner intercepts radio chatter -- you dodge the heat (+20% heat reduction).`);
   }
 
     // Morales Cartel streetReputation: heat modifier (positive = less heat, negative = more)
   const moralesHeatMod = getStreetRepBonus('morales', 0.05, 0.10, 0.15, 0.20);
   if (moralesHeatMod !== 0) {
-    wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - moralesHeatMod)));
+    heatGain = Math.max(1, Math.floor(heatGain * (1 - moralesHeatMod)));
   }
 
   // Morales Cartel passive: violent crimes generate 20% less heat
@@ -11069,7 +11069,7 @@ async function startJob(index) {
       job.name.toLowerCase().includes('assault') || job.name.toLowerCase().includes('heist'))) {
     const heatMultiplier = getViolenceHeatMultiplier();
     if (heatMultiplier < 1) {
-      wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * heatMultiplier));
+      heatGain = Math.max(1, Math.floor(heatGain * heatMultiplier));
     }
   }
 
@@ -11078,40 +11078,40 @@ async function startJob(index) {
   if (heatFamilyBuff) {
     // Torrino Omerta: -20% heat from ALL jobs
     if (heatFamilyBuff.heatReduction) {
-      wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - heatFamilyBuff.heatReduction)));
+      heatGain = Math.max(1, Math.floor(heatGain * (1 - heatFamilyBuff.heatReduction)));
     }
     // Morales Cartel Supply Line: violent jobs generate 25% less heat
     if (heatFamilyBuff.violentHeatReduction && job.name &&
         (job.name.toLowerCase().includes('fight') || job.name.toLowerCase().includes('rob') ||
          job.name.toLowerCase().includes('assault') || job.name.toLowerCase().includes('heist'))) {
-      wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - heatFamilyBuff.violentHeatReduction)));
+      heatGain = Math.max(1, Math.floor(heatGain * (1 - heatFamilyBuff.violentHeatReduction)));
     }
   }
 
   // Corruption: bribed officials reduce heat gain
   const corruptHeatReduction = Math.max(getCorruptionBenefit('heatReduction'), getCorruptionBenefit('cityWideProtection'));
   if (corruptHeatReduction > 0) {
-    wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - corruptHeatReduction)));
+    heatGain = Math.max(1, Math.floor(heatGain * (1 - corruptHeatReduction)));
   }
 
   // District benefits: heatReduction and legitimacy lower heat gain
   if (curDistrict) {
     const distHeatRed = getDistrictBenefit(curDistrict, 'heatReduction', 0);
-    if (distHeatRed > 0) { wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - distHeatRed))); }
+    if (distHeatRed > 0) { heatGain = Math.max(1, Math.floor(heatGain * (1 - distHeatRed))); }
     const distLegitimacy = getDistrictBenefit(curDistrict, 'legitimacy');
-    if (distLegitimacy > 1) { wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain / distLegitimacy)); }
+    if (distLegitimacy > 1) { heatGain = Math.max(1, Math.floor(heatGain / distLegitimacy)); }
   }
 
-  player.wantedLevel += wantedLevelGain;
+  player.heat += heatGain;
 
   // Every 5 clean jobs reduces heat slightly (laying low)
   if (_jobsWithoutArrest > 0 && _jobsWithoutArrest % 5 === 0) {
-    player.wantedLevel = Math.max(0, player.wantedLevel - 2);
+    player.heat = Math.max(0, player.heat - 2);
     logAction(`Staying clean pays off -- heat drops slightly (-2).`);
   }
 
-  // Log intimidation effect if it reduced wanted level
-  if (intimidationReduction > 0 && wantedLevelGain < job.wantedLevelGain) {
+  // Log intimidation effect if it reduced heat
+  if (intimidationReduction > 0 && heatGain < job.heatGain) {
     logAction(` Your intimidating presence makes witnesses think twice about reporting the crime!`);
   }
 
@@ -11126,8 +11126,8 @@ async function startJob(index) {
     }
 
     if (forensicsSuccess < forensicsChance) {
-      let evidenceReduction = Math.min(2, Math.floor(player.skillTree.intelligence.forensics / 3)); // 1-2 wanted level reduction
-      player.wantedLevel = Math.max(0, player.wantedLevel - evidenceReduction);
+      let evidenceReduction = Math.min(2, Math.floor(player.skillTree.intelligence.forensics / 3)); // 1-2 heat reduction
+      player.heat = Math.max(0, player.heat - evidenceReduction);
       logAction(` Your forensics expertise helps you clean up evidence, reducing heat by ${evidenceReduction}!`);
     }
   }
@@ -11314,7 +11314,7 @@ function handleCarTheft(job) {
   let jailChance = Math.random() * 100;
 
   if (jailChance <= adjustedJailChance) {
-    sendToJail(job.wantedLevelGain, { crimeName: job.name, riskLevel: job.risk });
+    sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
     logAction(`Busted! You barely get the door open before the cops swarm you. The owner was watching from their window the whole time.`);
     return;
   }
@@ -11324,7 +11324,7 @@ function handleCarTheft(job) {
   if (Math.random() * 100 > findCarChance) {
     showBriefNotification(`${getRandomNarration('carTheftFailure')} On cooldown.`, 'danger');
     logAction(`${getRandomNarration('carTheftFailure')} The streets can be unforgiving to those seeking easy rides.`);
-    player.wantedLevel += 1; // Small wanted level increase for suspicious activity
+    player.heat += 1; // Small heat increase for suspicious activity
     gainExperience(0.2);
     updateUI();
     // Only refresh the job list instead of reloading the entire jobs screen to prevent flashing
@@ -11395,7 +11395,7 @@ function handleCarTheft(job) {
     usageCount: 0
   };
 
-  player.wantedLevel += job.wantedLevelGain;
+  player.heat += job.heatGain;
   gainExperience(1.0);
 
   // Check if player gets hurt during theft
@@ -11455,8 +11455,8 @@ function handleLaunderMoneyJob(job, approachLabel) {
     // Caught! Lose the dirty money being laundered and go to jail
     const seized = Math.floor(amountToLaunder * (0.3 + Math.random() * 0.4)); // Feds seize 30-70%
     player.dirtyMoney = Math.max(0, player.dirtyMoney - seized);
-    player.wantedLevel = Math.min(100, player.wantedLevel + 8);
-    sendToJail(job.wantedLevelGain, { crimeName: job.name, riskLevel: job.risk });
+    player.heat = Math.min(100, player.heat + 8);
+    sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
     logAction(`The feds bust your laundering operation! $${seized.toLocaleString()} in dirty money seized as evidence. You're dragged away in cuffs.`);
     return;
   }
@@ -11472,7 +11472,7 @@ function handleLaunderMoneyJob(job, approachLabel) {
   // Approach bonus: each approach has distinct trade-offs
   if (approachLabel === 'Loud') {
     conversionRate -= 0.03; // Loud: -3% conversion (sloppy but fast)
-    player.wantedLevel = Math.min(100, player.wantedLevel + 4); // +4 heat
+    player.heat = Math.min(100, player.heat + 4); // +4 heat
     logAction(`Going loud draws attention -- the feds notice the large cash movements.`);
   } else if (approachLabel === 'Quiet') {
     conversionRate += 0.05; // Quiet: +5% conversion (careful, stealthy handling)
@@ -11503,18 +11503,18 @@ function handleLaunderMoneyJob(job, approachLabel) {
   player.dirtyMoney -= amountToLaunder;
   player.money += cleanAmount;
 
-  // Wanted level gain (reduced by perks/skills)
-  let wantedLevelGain = job.wantedLevelGain;
+  // Heat gain (reduced by perks/skills)
+  let heatGain = job.heatGain;
   if (approachLabel === 'Loud') {
-    wantedLevelGain = Math.ceil(wantedLevelGain * 1.3);
+    heatGain = Math.ceil(heatGain * 1.3);
   }
   let intimidationReduction = player.skillTree.combat.intimidation * 0.1;
-  wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * (1 - intimidationReduction)));
+  heatGain = Math.max(1, Math.floor(heatGain * (1 - intimidationReduction)));
   if (hasUtilityItem('Police Scanner')) {
-    wantedLevelGain = Math.max(1, Math.floor(wantedLevelGain * 0.8));
+    heatGain = Math.max(1, Math.floor(heatGain * 0.8));
     logAction(`Your Police Scanner intercepts radio chatter -- you dodge the heat.`);
   }
-  player.wantedLevel += wantedLevelGain;
+  player.heat += heatGain;
 
   // Small heat gain even on success (modified by approach)
   let baseHeatGain = 1 + Math.floor(Math.random() * 3); // 1-3 heat
@@ -11522,7 +11522,7 @@ function handleLaunderMoneyJob(job, approachLabel) {
     baseHeatGain = Math.max(0, Math.floor(baseHeatGain * 0.3)); // Quiet: minimal heat
   }
   // Loud heat already added above
-  player.wantedLevel = Math.min(100, player.wantedLevel + baseHeatGain);
+  player.heat = Math.min(100, player.heat + baseHeatGain);
 
   // Reputation based on risk level
   gainExperience(3.0);
@@ -11550,7 +11550,7 @@ function handleLaunderMoneyJob(job, approachLabel) {
     let forensicsChance = player.skillTree.intelligence.forensics * 8;
     if (Math.random() * 100 < forensicsChance) {
       let evidenceReduction = Math.min(2, Math.floor(player.skillTree.intelligence.forensics / 3));
-      player.wantedLevel = Math.max(0, player.wantedLevel - evidenceReduction);
+      player.heat = Math.max(0, player.heat - evidenceReduction);
       logAction(` Your forensics expertise helps you cover the paper trail, reducing heat by ${evidenceReduction}!`);
     }
   }
@@ -11862,15 +11862,15 @@ function flashSuccessScreen() {
 }
 
 // Function to send player to jail
-function sendToJail(wantedLevelLoss, crimeContext) {
+function sendToJail(heatLoss, crimeContext) {
   stopJailTimer();
 
   player.inJail = true;
   _jobsWithoutArrest = 0; // Reset consecutive clean jobs on arrest
 
-  // Jail time scales with wanted level but caps at 90 seconds. Escape skill reduces time.
+  // Jail time scales with heat but caps at 90 seconds. Escape skill reduces time.
   const escapeReduction = (player.skillTree.stealth.escape_artist || 0) * 2; // -2s per escape level
-  const baseJailTime = Math.min(90, 15 + Math.floor(player.wantedLevel * 0.8));
+  const baseJailTime = Math.min(90, 15 + Math.floor(player.heat * 0.8));
   let calculatedJailTime = Math.max(10, baseJailTime - escapeReduction);
 
   // Corruption: Judge sentence reduction
@@ -11889,7 +11889,7 @@ function sendToJail(wantedLevelLoss, crimeContext) {
   }
 
   // Heat-based sentence modifier: low heat = shorter, high heat = longer
-  const heatLevelForJail = player.wantedLevel || 0;
+  const heatLevelForJail = player.heat || 0;
   if (heatLevelForJail < 10) {
     const change = Math.floor(calculatedJailTime * 0.25);
     calculatedJailTime = Math.max(5, calculatedJailTime - change);
@@ -11920,8 +11920,8 @@ function sendToJail(wantedLevelLoss, crimeContext) {
     try { EventBus.emit('jailStatusChanged', { inJail: true, jailTime: player.jailTime }); } catch(e) {}
   }
 
-  player.wantedLevel -= wantedLevelLoss; // Lose wanted level when in jail
-  player.wantedLevel = Math.max(0, player.wantedLevel); // Ensure wanted level doesn't go negative
+  player.heat -= heatLoss; // Lose heat when in jail
+  player.heat = Math.max(0, player.heat); // Ensure heat doesn't go negative
 
   player.reputation = Math.max(0, player.reputation - 1); // Lose 1 reputation point, but not below 0
   player.breakoutAttempts = 3; // Reset breakout attempts
@@ -11954,7 +11954,7 @@ function sendToJail(wantedLevelLoss, crimeContext) {
 
 // Bribe guard to get released early
 function bribeGuard() {
-  let bribeCost = Math.floor(1000 + (player.reputation || 0) * 15 + player.wantedLevel * 200);
+  let bribeCost = Math.floor(1000 + (player.reputation || 0) * 15 + player.heat * 200);
   // Silver Tongue perk: -10% bribe cost
   if (hasPlayerPerk('silver_tongue')) {
     bribeCost = Math.floor(bribeCost * 0.90);
@@ -11972,7 +11972,7 @@ function bribeGuard() {
 
 
   // Bribing guards reduces heat slightly
-  player.wantedLevel = Math.max(0, (player.wantedLevel || 0) - 3);
+  player.heat = Math.max(0, (player.heat || 0) - 3);
 
   stopJailTimer();
 
@@ -11997,7 +11997,7 @@ function attemptBreakout() {
   }
 
   player.breakoutAttempts--;
-  player.wantedLevel++; // Increase wanted level with each breakout attempt
+  player.heat++; // Increase heat with each breakout attempt
 
   // Stealth skill improves breakout chance
   let adjustedBreakoutChance = player.breakoutChance + (player.skillTree.stealth.shadow_step * 3);
@@ -12683,7 +12683,7 @@ function gangWar() {
     // Gang war winnings are illicit funds
     player.dirtyMoney = (player.dirtyMoney || 0) + winnings;
     player.reputation += 10;
-    player.wantedLevel += 15;
+    player.heat += 15;
 
     showBriefNotification(`Gang war victory! Earned $${winnings.toLocaleString()} (dirty) and gained turf rep!`, 'success');
     logAction(`Victorious in gang warfare! The streets echo with your name as you claim $${winnings.toLocaleString()} (dirty) and expand your domain.`);
@@ -12839,11 +12839,11 @@ function showJailScreen() {
     oddsEl.style.display = "none";
   }
 
-  // Bribe guard button - costs scale with level and wanted level
+  // Bribe guard button - costs scale with level and heat
   const bribeButton = document.getElementById("bribe-button");
   const bribeCostEl = document.getElementById("bribe-cost");
   if (bribeButton) {
-    const bribeCost = Math.floor(1000 + (player.reputation || 0) * 15 + player.wantedLevel * 200);
+    const bribeCost = Math.floor(1000 + (player.reputation || 0) * 15 + player.heat * 200);
     bribeButton.innerText = `Bribe Guard ($${bribeCost.toLocaleString()})`;
     bribeButton.style.display = player.money >= bribeCost ? "inline-block" : "inline-block";
     bribeButton.style.opacity = player.money >= bribeCost ? "1" : "0.5";
@@ -13040,7 +13040,7 @@ function breakoutPrisoner(prisonerIndex) {
       logAction(`Busted! The guards catch you red-handed helping ${prisoner.name}. They're dragging you to a cell of your own.`);
 
       // Send player to jail properly
-      sendToJail(2, { crimeName: 'Aiding a Prison Escape', riskLevel: 'high' }); // Lose 2 wanted levels and go to jail
+      sendToJail(2, { crimeName: 'Aiding a Prison Escape', riskLevel: 'high' }); // Lose 2 heat and go to jail
 
       // Add additional jail time for the failed breakout attempt (minimum 20 seconds)
       player.jailTime += Math.max(20, 15);
@@ -13396,7 +13396,7 @@ const newsEvents = [
     name: "Gang Violence Surge",
     description: "Recent gang activity puts all criminals under increased scrutiny",
     effects: {
-      wantedLevelGain: 1.4,
+      heatGain: 1.4,
       policePresence: 0.3,
       territoryRisk: 0.25,
       duration: 14 * 24 * 60 * 60 * 1000 // 2 weeks
@@ -13662,13 +13662,13 @@ function triggerPoliceCrackdown() {
     return crackdown.triggers.some(trigger => {
       switch(trigger) {
         case 'high_drug_activity': return (player.reputation || 0) > 30;
-        case 'public_pressure': return player.wantedLevel > 30;
+        case 'public_pressure': return player.heat > 30;
         case 'territory_violence': return (player.turf?.owned || []).length > 2;
         case 'gang_visibility': return player.gang.members > 5;
         case 'car_theft_reports': return player.stolenCars.length > 3;
         case 'insurance_pressure': return player.stolenCars.length > 5;
         case 'corruption_exposure': return player.corruptedOfficials.length > 2;
-        case 'political_pressure': return player.wantedLevel > 50;
+        case 'political_pressure': return player.heat > 50;
         default: return false;
       }
     });
@@ -13848,7 +13848,7 @@ const menuUnlockConfig = [
   // === MID GAME (Level 5-8) ===
   { id: 'gang', fn: 'showGang()', label: 'The Family', tip: 'Recruit & manage your crew', level: 5 },
   { id: 'territories', fn: 'showTerritories()', label: 'Territories', tip: 'Manage your owned territories', level: 5 },
-  { id: 'courthouse', fn: 'showCourtHouse()', label: 'Legal Aid', tip: 'Pay to reduce your wanted level', level: 5 },
+  { id: 'courthouse', fn: 'showCourtHouse()', label: 'Legal Aid', tip: 'Pay to reduce your heat', level: 5 },
   { id: 'jailbreak', fn: 'showJailbreak()', label: 'Breakout', tip: 'Break allies out of prison', level: 0 },
 
   // === LATE GAME (Level 10-15) ===
@@ -14076,7 +14076,7 @@ function showPlayerStats() {
     row('Ammo', player.ammo || 0, '#8b3a3a'),
     row('Gas', player.gas || 0, '#f39c12'),
     row('Power', player.power || 0, '#e67e22'),
-    row('Wanted Level', `${player.wantedLevel || 0} / 100`, '#8b3a3a'),
+    row('Heat', `${player.heat || 0} / 100`, '#8b3a3a'),
     row('Training', player.activeTraining ? 'In Progress' : 'Idle', player.activeTraining ? '#1abc9c' : '#d4af37'),
     row('Breakout Chance', `${player.breakoutChance || 45}%`, '#c0a062'),
     row('Jail Status', player.inJail ? `In Jail (${player.jailTime}s)` : 'Free', player.inJail ? '#8b3a3a' : '#8a9a6a'),
@@ -14423,7 +14423,7 @@ function buildCareerStatisticsHTML() {
         <div class="stat-item"><span class="stat-label">Times Arrested:</span><span class="stat-value">${stats.timesArrested}</span></div>
         <div class="stat-item"><span class="stat-label">Times Escaped:</span><span class="stat-value">${stats.timesEscaped}</span></div>
         <div class="stat-item"><span class="stat-label">Escape Rate:</span><span class="stat-highlight">${escapeRate}%</span></div>
-        <div class="stat-item"><span class="stat-label">Highest Wanted Level:</span><span class="stat-value">${Math.max(stats.highestWantedLevel, player.wantedLevel)}</span></div>
+        <div class="stat-item"><span class="stat-label">Highest Heat:</span><span class="stat-value">${Math.max(stats.highestHeat, player.heat)}</span></div>
         <div class="stat-item"><span class="stat-label">Longest Jail Time:</span><span class="stat-value">${stats.longestJailTime}s</span></div>
         <div class="stat-item"><span class="stat-label">Hospital Visits:</span><span class="stat-value">${stats.hospitalVisits}</span></div>
       </div>
@@ -16002,7 +16002,7 @@ let _jobsWithoutArrest = 0;
 function checkAchievements() {
   const m = player.money;
   const g = player.gang.members;
-  const w = player.wantedLevel;
+  const w = player.heat;
   const r = player.reputation;
   const l = Math.floor(player.reputation);
   const t = (player.turf?.owned || []).length;
@@ -16073,7 +16073,7 @@ function resetPlayerForNewGame() {
     breakoutChance: 45,
     breakoutAttempts: 3,
     power: 0,
-    wantedLevel: 0,
+    heat: 0,
     reputation: 0,
     level: 1,
     experience: 0,
@@ -17416,8 +17416,16 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.27.1";
+const CURRENT_VERSION = "1.28.0";
 const VERSION_UPDATES = {
+  "1.28.0": {
+    title: "Heat Terminology Unification",
+    date: "June 2025",
+    changes: [
+      "All references to 'Wanted Level' now consistently say 'Heat' across the entire game",
+      "Old saves are automatically migrated to the new property name",
+    ]
+  },
   "1.27.1": {
     title: "World Chat Tabs & Admin Detection Fix",
     date: "June 2025",
@@ -17884,7 +17892,7 @@ const VERSION_UPDATES = {
       "Fence merged into the Black Market as a dedicated tab -- no more separate Fence screen",
       "Player Market added as a third tab in Black Market -- trade vehicles with other players",
       "Black Market now has 3 tabs: Buy, The Fence, and Player Market",
-      "Fence sell functions updated to use Heat (Wanted Level) instead of removed Suspicion",
+      "Fence sell functions updated to use Heat instead of removed Suspicion",
       "Removed ~400 lines of commented-out dead code (old suspicion / FBI investigation block)",
       "Removed Fence nav button -- one fewer sidebar button",
       "Cleaned up remaining suspicion timer references in event system",
@@ -17894,7 +17902,7 @@ const VERSION_UPDATES = {
     title: "Suspicion Removed, Motor Pool & Skills Consolidated",
     date: "March 2026",
     changes: [
-      "Removed entire Suspicion system -- all suspicion gains now route through the existing Heat (Wanted Level) system",
+      "Removed entire Suspicion system -- all suspicion gains now route through the existing Heat system",
       "Removed FBI Investigation popups, suspicion timers, and suspicion-based consequences",
       "Motor Pool moved into the Stash screen as its own tab (Stash & Motor Pool)",
       "Skills/Expertise moved into the Stats screen as its own tab (6 tabs total)",
@@ -18725,25 +18733,25 @@ function showCourtHouse() {
   updateCourtHouseCost();
 }
 
-// Function to update the cost of resetting wanted level based on the player's current wanted level
+// Function to update the cost of resetting heat based on the player's current heat
 function updateCourtHouseCost() {
-  const cost = player.wantedLevel * 500; // Cost based on wanted level
+  const cost = player.heat * 500; // Cost based on heat
   const resetButton = document.getElementById("reset-wanted-level-court-house");
-  if (resetButton) resetButton.innerText = `Reset Wanted Level for $${cost}`;
+  if (resetButton) resetButton.innerText = `Reset Heat for $${cost}`;
 }
 
-// Function to reset wanted level via Court House
-function resetWantedLevelCourtHouse() {
-  const cost = player.wantedLevel * 500; // Cost based on wanted level
+// Function to reset heat via Court House
+function resetHeatCourtHouse() {
+  const cost = player.heat * 500; // Cost based on heat
   if (player.money >= cost) {
     player.money -= cost;
-    player.wantedLevel = 0;
+    player.heat = 0;
     updateUI();
 
     // Show narrative message with callback to send to jail
     showNarrativeOverlay(
       "Fine Paid Successfully! ",
-      "You've successfully paid your fine to the court and your wanted level has been cleared.<br><br>However, as part of your sentence, you must still serve jail time to pay your debt to society.<br><br>You'll be transferred to your cell immediately to begin serving your sentence.",
+      "You've successfully paid your fine to the court and your heat has been cleared.<br><br>However, as part of your sentence, you must still serve jail time to pay your debt to society.<br><br>You'll be transferred to your cell immediately to begin serving your sentence.",
       "Report to Jail",
       function() {
         // This callback executes after player clicks the button
@@ -18752,7 +18760,7 @@ function resetWantedLevelCourtHouse() {
       }
     );
   } else {
-    showBriefNotification("You don't have enough money to reset your wanted level.", 'danger');
+    showBriefNotification("You don't have enough money to reset your heat.", 'danger');
   }
 }
 
@@ -19120,7 +19128,7 @@ function getFenceMultiplier() {
   const chopBonus = chopShop ? 0.05 + (chopShop.level * 0.03) : 0; // 8-20%
 
   // Heat penalty -- hot sellers get worse deals
-  const heatPenalty = Math.min(0.15, (player.wantedLevel || 0) / 100 * 0.15);
+  const heatPenalty = Math.min(0.15, (player.heat || 0) / 100 * 0.15);
 
   // Random market fluctuation (-5% to +10%)
   const marketFlux = -0.05 + Math.random() * 0.15;
@@ -19161,7 +19169,7 @@ function fenceSellItem(index, type) {
   player.money += fencePrice;
   player.inventory.splice(index, 1);
   recalculatePower();
-  player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + 0.5);
+  player.heat = Math.min(100, (player.heat || 0) + 0.5);
 
   if (player.statistics) {
     player.statistics.totalEarnings = (player.statistics.totalEarnings || 0) + fencePrice;
@@ -19184,7 +19192,7 @@ function fenceSellCar(index) {
   if (player.selectedCar === index) player.selectedCar = null;
   else if (player.selectedCar > index) player.selectedCar--;
   player.stolenCars.splice(index, 1);
-  player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + 0.5);
+  player.heat = Math.min(100, (player.heat || 0) + 0.5);
 
   if (player.statistics) {
     player.statistics.totalEarnings = (player.statistics.totalEarnings || 0) + fencePrice;
@@ -19210,7 +19218,7 @@ function fenceSellAllCars() {
   player.stolenCars = [];
   player.selectedCar = null;
   const heatGain = Math.ceil(count * 0.25);
-  player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + heatGain);
+  player.heat = Math.min(100, (player.heat || 0) + heatGain);
 
   if (player.statistics) {
     player.statistics.totalEarnings = (player.statistics.totalEarnings || 0) + totalEarned;
@@ -19359,7 +19367,7 @@ function attemptBounty(index) {
     player.money += bounty.reward;
     if (typeof gainExperience === 'function') gainExperience(Math.max(0.5, Math.round(bounty.xp * 0.1 * 10) / 10));
     const heatGain = Math.floor(bounty.tier * 3);
-    player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + heatGain);
+    player.heat = Math.min(100, (player.heat || 0) + heatGain);
 
     showBriefNotification(`Bounty collected! $${bounty.reward.toLocaleString()} + rep`, 'success');
     logAction(`You tracked down ${bounty.name} and collected the bounty. $${bounty.reward.toLocaleString()} earned. +${heatGain} heat.`);
@@ -19369,7 +19377,7 @@ function attemptBounty(index) {
     const damage = Math.floor(Math.random() * (bounty.tier * 8)) + bounty.tier * 5;
     const heatGain = Math.floor(bounty.tier * 5);
     player.health = Math.max(0, player.health - damage);
-    player.wantedLevel = Math.min(100, (player.wantedLevel || 0) + heatGain);
+    player.heat = Math.min(100, (player.heat || 0) + heatGain);
 
     showBriefNotification(`Bounty failed! -${damage} HP, +${heatGain} heat`, 'danger');
     logAction(`The hit on ${bounty.name} went sideways. You took ${damage} damage and drew attention. +${heatGain} heat.`);
@@ -19941,7 +19949,7 @@ function generateJailNewspaperData(crimeContext) {
     riskLevel: ctx.riskLevel || 'medium',
     tone: getJailNewspaperTone(ctx.riskLevel),
     jailTime: player.jailTime || 15,
-    wantedLevel: player.wantedLevel || 0,
+    heat: player.heat || 0,
     money: player.money || 0,
     totalCrimes: totalCrimes,
     gangSize: gangSize,
@@ -20068,7 +20076,7 @@ function buildJailNewspaperHTML(data) {
         <div class="newspaper-stat-row"><span>Crime</span><span>${crime}</span></div>
         <div class="newspaper-stat-row"><span>Risk Level</span><span style="text-transform:capitalize;">${data.riskLevel}</span></div>
         <div class="newspaper-stat-row"><span>Sentence</span><span>${data.jailTime}s</span></div>
-        <div class="newspaper-stat-row"><span>Wanted Level</span><span>${data.wantedLevel}</span></div>
+        <div class="newspaper-stat-row"><span>Heat</span><span>${data.heat}</span></div>
         <div class="newspaper-stat-row"><span>Net Worth</span><span>$${data.money.toLocaleString()}</span></div>
         <div class="newspaper-stat-row"><span>Known Crimes</span><span>${data.totalCrimes}</span></div>
         <div class="newspaper-stat-row"><span>Gang Size</span><span>${data.gangSize}</span></div>
@@ -20220,9 +20228,9 @@ function policeRaid() {
   let wantedIncrease = Math.floor(Math.random() * 5) + 1;
   // Stealth skill can reduce the impact
   wantedIncrease = Math.max(1, wantedIncrease - player.skillTree.stealth.shadow_step);
-  player.wantedLevel += wantedIncrease;
-  showBriefNotification(`Police Raid! Wanted +${wantedIncrease}`, 3000);
-  logAction(`A police raid sweeps through your area! Wanted level increased by ${wantedIncrease}. ${player.skillTree.stealth.shadow_step > 0 ? 'Your stealth skills minimized the damage.' : ''}`);
+  player.heat += wantedIncrease;
+  showBriefNotification(`Police Raid! Heat +${wantedIncrease}`, 3000);
+  logAction(`A police raid sweeps through your area! Heat increased by ${wantedIncrease}. ${player.skillTree.stealth.shadow_step > 0 ? 'Your stealth skills minimized the damage.' : ''}`);
   updateUI();
 }
 
@@ -20425,10 +20433,10 @@ function territoryDispute() {
 
 function policeInformant() {
   const wantedGain = Math.floor(Math.random() * 10) + 5;
-  player.wantedLevel += wantedGain;
+  player.heat += wantedGain;
   player.reputation = Math.max(0, player.reputation - 2);
-  showBriefNotification(`Informant! Wanted +${wantedGain}, Rep -2`, 3000);
-  logAction(`Someone snitched to the Feds! Your wanted level spiked by ${wantedGain} and you lost 2 reputation. Find the rat.`);
+  showBriefNotification(`Informant! Heat +${wantedGain}, Rep -2`, 3000);
+  logAction(`Someone snitched to the Feds! Your heat spiked by ${wantedGain} and you lost 2 reputation. Find the rat.`);
   updateUI();
 }
 
@@ -21749,7 +21757,7 @@ function initializePlayerStatistics() {
     achievementsUnlocked: 0,
     playTimeMinutes: 0,
     startDate: Date.now(),
-    highestWantedLevel: 0,
+    highestHeat: 0,
     longestJailTime: 0,
     bestJobStreak: 0,
     currentJobStreak: 0,
@@ -21856,8 +21864,8 @@ function showStatistics() {
           <span class="stat-highlight">${escapeRate}%</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">Highest Wanted Level:</span>
-          <span class="stat-value">${Math.max(stats.highestWantedLevel, player.wantedLevel)}</span>
+          <span class="stat-label">Highest Heat:</span>
+          <span class="stat-value">${Math.max(stats.highestHeat, player.heat)}</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">Longest Jail Time:</span>
@@ -22041,7 +22049,7 @@ function updateStatistic(stat, value = 1) {
 
     // Update derived statistics
     if (stat === 'timesArrested') {
-      player.statistics.highestWantedLevel = Math.max(player.statistics.highestWantedLevel, player.wantedLevel);
+      player.statistics.highestHeat = Math.max(player.statistics.highestHeat, player.heat);
       // Update longest jail time if current jail time is longer
       if (player.jailTime > player.statistics.longestJailTime) {
         player.statistics.longestJailTime = player.jailTime;
@@ -22654,6 +22662,20 @@ function applySaveData(saveData) {
   // Deep-copy saved data to prevent reference sharing between save slots and live state
   const loadedPlayer = JSON.parse(JSON.stringify(saveData.player));
   Object.assign(player, loadedPlayer);
+
+  // ── Save migration: wantedLevel → heat (v1.28.0) ──
+  if (typeof player.wantedLevel === 'number' && player.heat === undefined) {
+    player.heat = player.wantedLevel;
+    delete player.wantedLevel;
+  } else if (typeof player.wantedLevel === 'number') {
+    delete player.wantedLevel;
+  }
+  if (player.heat === undefined) player.heat = 0;
+  // Migrate stats property
+  if (player.stats && typeof player.stats.highestWantedLevel === 'number') {
+    player.stats.highestHeat = player.stats.highestWantedLevel;
+    delete player.stats.highestWantedLevel;
+  }
 
   // Apply achievements
   if (saveData.achievements) {
@@ -25049,7 +25071,7 @@ window.adminLevelUp = adminLevelUp;
 window.adminApplyStats = adminApplyStats;
 window.adminResetStats = adminResetStats;
 window.adminJailRelease = adminJailRelease;
-window.adminClearWanted = adminClearWanted;
+window.adminClearHeat = adminClearHeat;
 window.adminFullHeal = adminFullHeal;
 window.adminSetAllSkills = adminSetAllSkills;
 window.adminKillPlayer = adminKillPlayer;
@@ -25194,7 +25216,7 @@ window.updateJailTimer = updateJailTimer;
 window.generateJailPrisoners = generateJailPrisoners;
 window.showBriefNotification = showBriefNotification;
 window.showCourtHouse = showCourtHouse;
-window.resetWantedLevelCourtHouse = resetWantedLevelCourtHouse;
+window.resetHeatCourtHouse = resetHeatCourtHouse;
 
 // Recruitment
 window.showRecruitment = showRecruitment;

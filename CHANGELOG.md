@@ -5,6 +5,17 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.28.0] - 2025-06-06
+
+### Changed — Heat Terminology Unification
+- **All "Wanted Level" references renamed to "Heat"** across every file for consistent terminology
+- Player property `wantedLevel` renamed to `heat` in player.js, game.js, multiplayer.js, server.js
+- Job property `wantedLevelGain` renamed to `heatGain` in jobs.js and game.js
+- EventBus event `wantedLevelChanged` renamed to `heatChanged`
+- Functions `resetWantedLevelCourtHouse` and `adminClearWanted` renamed to `resetHeatCourtHouse` and `adminClearHeat`
+- Stats property `highestWantedLevel` renamed to `highestHeat`
+- **Save migration** automatically converts old `wantedLevel` saves to `heat` on load
+
 ## [1.27.1] - 2025-06-05
 
 ### Changed — World Chat Tabs & Admin Detection Fix

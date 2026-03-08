@@ -46,7 +46,7 @@ The game features persistent progression via local storage and cloud saves, a fu
 - **Weekly challenges** with tiered rewards
 
 ### Law & Consequences
-- **Wanted level** and **suspicion** systems that escalate law enforcement attention
+- **Heat** system that escalates law enforcement attention
 - Suspicion consequences ranging from surveillance to full FBI investigation chains
 - Jail, breakout attempts, guard bribery, courthouse bribes, and corrupt officials
 - Police crackdowns triggered by criminal activity in your territories
