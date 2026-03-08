@@ -83,6 +83,66 @@ function escapeHTML(str) {
 }
 window.escapeHTML = escapeHTML;
 
+// ==================== THEME SYSTEM ====================
+const GAME_THEMES = [
+  { id: 'classic',   name: 'Classic',       colors: ['#d4af37', '#0d0b07', '#4a0e0e'] },
+  { id: 'midnight',  name: 'Midnight Blue',  colors: ['#5b8dd9', '#0a0c14', '#1a2a4a'] },
+  { id: 'blood',     name: 'Blood Red',      colors: ['#c43030', '#0e0606', '#3a0a0a'] },
+  { id: 'emerald',   name: 'Emerald',        colors: ['#3aaa5c', '#060e08', '#0a2a10'] },
+  { id: 'purple',    name: 'Royal Purple',   colors: ['#9b6ad4', '#0c0810', '#2a0e3a'] },
+  { id: 'copper',    name: 'Copper',         colors: ['#c87040', '#0e0a06', '#3a1a0a'] },
+  { id: 'noir',      name: 'Noir',           colors: ['#a0a0a0', '#0a0a0a', '#1a1a1a'] },
+  { id: 'frost',     name: 'Frost',          colors: ['#60b8d0', '#080c10', '#0a1a2a'] },
+  { id: 'oldmoney',  name: 'Old Money',      colors: ['#b8a040', '#0c0a06', '#2a2410'] },
+  { id: 'inferno',   name: 'Inferno',        colors: ['#e88020', '#100804', '#3a1808'] },
+  { id: 'absinthe',  name: 'Absinthe',       colors: ['#90b830', '#080c06', '#1a2a0a'] },
+  { id: 'syndicate', name: 'Syndicate',      colors: ['#50b0a0', '#080c0c', '#0a2a24'] },
+  { id: 'rosegold',  name: 'Rose Gold',      colors: ['#c88080', '#0e0a0a', '#2a1418'] },
+];
+
+function applyTheme(themeId) {
+  const theme = GAME_THEMES.find(t => t.id === themeId);
+  if (!theme) return;
+  if (themeId === 'classic') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', themeId);
+  }
+  localStorage.setItem('mafiaTheme', themeId);
+  // Highlight active swatch if picker is visible
+  document.querySelectorAll('.theme-swatch').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === themeId);
+  });
+}
+window.applyTheme = applyTheme;
+
+function buildThemePicker() {
+  return `
+    <div class="theme-grid">
+      ${GAME_THEMES.map((t, i) => `
+        <div class="theme-swatch ${(localStorage.getItem('mafiaTheme') || 'classic') === t.id ? 'active' : ''}"
+             data-theme="${t.id}" onclick="applyTheme('${t.id}')">
+          <div class="theme-swatch-colors">
+            <span style="background:${t.colors[0]};"></span>
+            <span style="background:${t.colors[1]};"></span>
+            <span style="background:${t.colors[2]};"></span>
+          </div>
+          <span class="theme-swatch-label">#${i + 1} ${t.name}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+window.buildThemePicker = buildThemePicker;
+
+// Apply saved theme on load
+(function initTheme() {
+  const saved = localStorage.getItem('mafiaTheme');
+  if (saved && saved !== 'classic') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+
 // ==================== CRIME COOLDOWN SYSTEM ====================
 // Each job has a cooldown based on its risk level. Planning skill & Quick Hands perk reduce cooldowns.
 const RISK_COOLDOWNS = {
@@ -14004,7 +14064,7 @@ function showSafehouseTip() {
         Once you have some money, visit the <strong style="color:#d4af37;">Black Market</strong> for weapons and armour, then check <strong style="color:#d4af37;">The Doctor</strong> when your health is low.
       </p>
       <p style="color: #8a7a5a; font-size: 0.85em; line-height: 1.6; margin: 0 0 20px;">
-        More locations and features unlock as you rank up. Check <strong>Settings &gt; Help</strong> any time for a full guide.
+        More locations and features unlock as you rank up. Head to <strong>Settings</strong> to change your UI theme, toggle HUD stats, customise quick actions, and more.
       </p>
       <button onclick="document.getElementById('safehouse-tip-overlay').remove(); localStorage.setItem('safehouseTipSeen', '1');"
         style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border: none;
@@ -20726,6 +20786,10 @@ function showOptions() {
 
   // Sync tutorial toggle button
   syncTutorialToggleButton();
+
+  // Render theme picker
+  const themePicker = document.getElementById('theme-picker-container');
+  if (themePicker) themePicker.innerHTML = buildThemePicker();
 }
 
 // Function to save the game
