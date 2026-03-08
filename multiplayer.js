@@ -57,6 +57,7 @@ let onlineWorldState = {
     crewChat: [],
     allianceChat: [],
     privateChats: {},  // { playerName: [ {player, message, time, color} ] }
+    privateChatAll: [], // combined DM thread (all conversations merged chronologically)
     activeChatChannel: 'world', // 'world', 'crew', 'alliance', 'private'
     activePrivateChatTarget: null, // name of the player we're DMing
     // Multiplayer area-control zones — controlled by real players or NPC gangs.
@@ -1441,8 +1442,10 @@ async function handleServerMessage(message) {
             if (!onlineWorldState.privateChats[fromName]) onlineWorldState.privateChats[fromName] = [];
             onlineWorldState.privateChats[fromName].push(pmMsg);
             if (onlineWorldState.privateChats[fromName].length > 50) onlineWorldState.privateChats[fromName] = onlineWorldState.privateChats[fromName].slice(-50);
+            onlineWorldState.privateChatAll.push(pmMsg);
+            if (onlineWorldState.privateChatAll.length > 100) onlineWorldState.privateChatAll = onlineWorldState.privateChatAll.slice(-100);
             updateChannelChatDisplay('private');
-            if (onlineWorldState.activeChatChannel !== 'private' || onlineWorldState.activePrivateChatTarget !== fromName) {
+            if (onlineWorldState.activeChatChannel !== 'private') {
                 showMPToast(`DM from ${fromName}: ${message.message.substring(0, 40)}`, '#e67e22');
             }
             break;
@@ -1450,10 +1453,12 @@ async function handleServerMessage(message) {
 
         case 'private_chat_sent': {
             const toName = message.toName;
-            const sentMsg = { player: 'You', message: message.message, time: new Date(message.timestamp).toLocaleTimeString(), color: '#c0a062' };
+            const sentMsg = { player: 'You', message: message.message, time: new Date(message.timestamp).toLocaleTimeString(), color: '#c0a062', toName };
             if (!onlineWorldState.privateChats[toName]) onlineWorldState.privateChats[toName] = [];
             onlineWorldState.privateChats[toName].push(sentMsg);
             if (onlineWorldState.privateChats[toName].length > 50) onlineWorldState.privateChats[toName] = onlineWorldState.privateChats[toName].slice(-50);
+            onlineWorldState.privateChatAll.push(sentMsg);
+            if (onlineWorldState.privateChatAll.length > 100) onlineWorldState.privateChatAll = onlineWorldState.privateChatAll.slice(-100);
             updateChannelChatDisplay('private');
             break;
         }
@@ -3302,54 +3307,58 @@ function renderChatChannelContent(channel) {
 }
 
 function renderPrivateChatUI() {
-    const target = onlineWorldState.activePrivateChatTarget;
-    const convos = Object.keys(onlineWorldState.privateChats);
-
-    // Online player list for starting a new DM
     const onlinePlayers = (onlineWorldState.nearbyPlayers || []).filter(p => p.name && p.name !== (typeof player !== 'undefined' ? player.name : ''));
 
     let html = `<h4 style="color:#e67e22;margin:0 0 10px 0;font-family:'Georgia',serif;">Private Messages</h4>`;
 
-    // Conversation list
-    html += `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">`;
-    convos.forEach(name => {
-        const active = target === name;
-        html += `<button onclick="openPrivateChat('${escapeHTML(name)}')" style="padding:5px 12px;border-radius:4px;border:1px solid ${active?'#e67e22':'#555'};background:${active?'rgba(230,126,34,0.2)':'rgba(0,0,0,0.4)'};color:${active?'#e67e22':'#888'};cursor:pointer;font-size:0.85em;">${escapeHTML(name)}</button>`;
-    });
-    html += `</div>`;
-
-    // New DM dropdown
+    // New DM dropdown / target selector
     if (onlinePlayers.length > 0) {
+        const curTarget = onlineWorldState.activePrivateChatTarget || '';
         html += `<div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;">
-            <select id="dm-target-select" style="flex:1;padding:8px;background:#222;color:#e67e22;border:1px solid #e67e22;border-radius:5px;">
-                <option value="">-- Start new DM --</option>
-                ${onlinePlayers.map(p => `<option value="${escapeHTML(p.name)}">${escapeHTML(p.name)} (Lvl ${p.level||'?'})</option>`).join('')}
+            <select id="dm-target-select" style="flex:1;padding:8px;background:#222;color:#e67e22;border:1px solid #e67e22;border-radius:5px;" onchange="setDMTarget(this.value)">
+                <option value="">-- Select who to message --</option>
+                ${onlinePlayers.map(p => `<option value="${escapeHTML(p.name)}" ${p.name === curTarget ? 'selected' : ''}>${escapeHTML(p.name)} (Lvl ${p.level||'?'})</option>`).join('')}
             </select>
-            <button onclick="startNewDM()" style="padding:8px 14px;background:#e67e22;color:#000;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Open</button>
         </div>`;
     }
 
-    // Message area
+    // Combined message thread (all DMs in one timeline)
+    const msgs = (onlineWorldState.privateChatAll || []).slice(-50);
+    html += `
+    <div class="channel-messages" style="max-height:220px;overflow-y:auto;background:rgba(20,20,20,0.8);padding:10px;border-radius:5px;border:1px solid #e67e2233;margin-bottom:10px;">
+        ${msgs.length ? msgs.map(m => {
+            const label = m.player === 'You' && m.toName ? `You -> ${escapeHTML(m.toName)}` : escapeHTML(m.player);
+            return `<div style="margin:4px 0;font-size:0.9em;"><strong style="color:${m.color||'#e67e22'};">${label}:</strong> ${escapeHTML(m.message)} <small style="color:#8a7a5a;float:right;">${m.time}</small></div>`;
+        }).join('') : '<p style="color:#8a7a5a;text-align:center;">No private messages yet. Select a player above to start a conversation.</p>'}
+    </div>`;
+
+    // Input area (only if a target is selected)
+    const target = onlineWorldState.activePrivateChatTarget;
     if (target) {
-        const msgs = (onlineWorldState.privateChats[target] || []).slice(-30);
-        html += `
-        <div class="channel-messages" style="max-height:180px;overflow-y:auto;background:rgba(20,20,20,0.8);padding:10px;border-radius:5px;border:1px solid #e67e2233;margin-bottom:10px;">
-            ${msgs.length ? msgs.map(m => `<div style="margin:4px 0;font-size:0.9em;"><strong style="color:${m.color||'#e67e22'};">${escapeHTML(m.player)}:</strong> ${escapeHTML(m.message)} <small style="color:#8a7a5a;float:right;">${m.time}</small></div>`).join('') : '<p style="color:#8a7a5a;text-align:center;">No messages with ' + escapeHTML(target) + ' yet.</p>'}
-        </div>
-        <div style="display:flex;gap:8px;">
+        html += `<div style="display:flex;gap:8px;">
             <input type="text" id="channel-chat-input" placeholder="Message ${escapeHTML(target)}..." maxlength="200"
                    style="flex:1;padding:10px;border-radius:5px;border:1px solid #e67e22;background:#222;color:#e67e22;font-size:1em;"
                    onkeypress="if(event.key==='Enter') sendChannelMessage('private')">
             <button onclick="sendChannelMessage('private')" style="background:#e67e22;color:#000;padding:10px 18px;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
         </div>`;
     } else {
-        html += `<p style="color:#8a7a5a;text-align:center;padding:20px;">Select a conversation or start a new DM above.</p>`;
+        html += `<p style="color:#8a7a5a;text-align:center;font-size:0.9em;">Select a player above to send a message.</p>`;
     }
     return html;
 }
 
 function openPrivateChat(name) {
     onlineWorldState.activePrivateChatTarget = name;
+    const container = document.getElementById('chat-channel-content');
+    if (container) {
+        container.innerHTML = renderPrivateChatUI();
+        const area = container.querySelector('.channel-messages');
+        if (area) area.scrollTop = area.scrollHeight;
+    }
+}
+
+function setDMTarget(name) {
+    onlineWorldState.activePrivateChatTarget = name || null;
     const container = document.getElementById('chat-channel-content');
     if (container) {
         container.innerHTML = renderPrivateChatUI();
@@ -3462,13 +3471,11 @@ function showOnlineWorld(activeTab) {
         <!-- Tab Navigation -->
         <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 2px solid #c0a062; padding-bottom: 0;">
             <button onclick="showOnlineWorld('overview')" style="${tabStyle('overview')}">Overview</button>
-            <button onclick="showOnlineWorld('pvp')" style="${tabStyle('pvp')}">PVP</button>
             <button onclick="showOnlineWorld('territories')" style="${tabStyle('territories')}">Territories</button>
             <button onclick="showOnlineWorld('politics')" style="${tabStyle('politics')}">Politics</button>
             <button onclick="showOnlineWorld('activities')" style="${tabStyle('activities')}">Activities</button>
             <button onclick="showOnlineWorld('crew')" style="${tabStyle('crew')}">Crew${hasCrewBadge ? badgeDot : ''}</button>
             <button onclick="showOnlineWorld('friends')" style="${tabStyle('friends')}">Friends${hasFriendBadge ? badgeDot : ''}</button>
-            <button onclick="showOnlineWorld('market')" style="${tabStyle('market')}">Market</button>
             <button onclick="showOnlineWorld('chat')" style="${tabStyle('chat')}">Chat</button>
         </div>
         
@@ -3669,19 +3676,33 @@ function showOnlineWorld(activeTab) {
     // -- ACTIVITIES TAB --
     if (tab === 'activities') {
         worldHTML += `
-            <h3 style="color: #c0a062; text-align: center; margin: 0 0 15px 0; font-family: 'Georgia', serif;">Family Business</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                <button onclick="showGlobalChat()" style="background: #222; color: #c0a062; padding: 15px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    The Wire<br><small style="color: #ccc;">Talk with the family</small>
-                </button>
+            <h3 style="color: #c0a062; text-align: center; margin: 0 0 20px 0; font-family: 'Georgia', serif;">Family Business</h3>
+
+            <!-- PVP Section -->
+            <h4 style="color: #ff4444; margin: 0 0 10px 0; font-family: 'Georgia', serif; border-bottom: 1px solid #8b3a3a; padding-bottom: 6px;">PVP</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
                 <button onclick="showWhackRivalDon()" style="background: linear-gradient(180deg, rgba(192,160,98,0.2) 0%, #1a1a1a 100%); color: #c0a062; padding: 15px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                     Whack Rival Don<br><small style="color: #ccc;">Casual PvP for Don Rep</small>
                 </button>
                 <button onclick="showAssassination()" style="background: linear-gradient(180deg, #4b0000 0%, #1a0000 100%); color: #ff4444; padding: 15px; border: 1px solid #ff4444; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                     Assassination<br><small style="color: #ff8888;">Hunt rivals for their cash</small>
                 </button>
-                <button onclick="showActiveHeists()" style="background: #222; color: #8b0000; padding: 15px; border: 1px solid #8b0000; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    Big Scores<br><small style="color: #ccc;">Join ongoing jobs</small>
+                <button onclick="showBountyBoard()" style="background: linear-gradient(180deg, #4a2600 0%, #1a0a00 100%); color: #ff6600; padding: 15px; border: 1px solid #ff6600; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
+                    Bounty Board<br><small style="color: #ffaa66;">Put a price on heads</small>
+                </button>
+                <button onclick="showRankedSeason()" style="background: linear-gradient(180deg, #1a1a3a 0%, #0a0a1a 100%); color: #ffd700; padding: 15px; border: 1px solid #ffd700; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
+                    Ranked Season<br><small style="color: #ffe066;">Combat rating</small>
+                </button>
+            </div>
+
+            <!-- Co-op Section -->
+            <h4 style="color: #27ae60; margin: 0 0 10px 0; font-family: 'Georgia', serif; border-bottom: 1px solid #1e7a46; padding-bottom: 6px;">Co-op</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                <button onclick="showActiveHeists()" style="background: linear-gradient(180deg, rgba(139,0,0,0.3) 0%, #1a0000 100%); color: #8b0000; padding: 15px; border: 1px solid #8b0000; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
+                    Big Scores<br><small style="color: #ccc;">Join crew heists</small>
+                </button>
+                <button onclick="showSuperbossScreen()" style="background: linear-gradient(180deg, rgba(231,76,60,0.2) 0%, #1a0a0a 100%); color: #e74c3c; padding: 15px; border: 1px solid #e74c3c; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
+                    Superboss<br><small style="color: #ff8888;">Fight legendary crime lords</small>
                 </button>
                 <button onclick="showNearbyPlayers()" style="background: #222; color: #c0a040; padding: 15px; border: 1px solid #c0a040; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
                     Local Crew<br><small style="color: #ccc;">Players in your area</small>
@@ -3689,11 +3710,16 @@ function showOnlineWorld(activeTab) {
                 <button onclick="showAlliancePanel()" style="background: #222; color: #c0a062; padding: 15px; border: 2px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
                     Alliances<br><small style="color: #ccc;">Form a crew</small>
                 </button>
-                <button onclick="showBountyBoard()" style="background: linear-gradient(180deg, #4a2600 0%, #1a0a00 100%); color: #ff6600; padding: 15px; border: 1px solid #ff6600; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    Bounty Board<br><small style="color: #ffaa66;">Put a price on heads</small>
+            </div>
+
+            <!-- Market & Social -->
+            <h4 style="color: #c0a062; margin: 0 0 10px 0; font-family: 'Georgia', serif; border-bottom: 1px solid #555; padding-bottom: 6px;">Market & Social</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <button onclick="showOnlineWorld('market')" style="background: linear-gradient(180deg, rgba(192,160,98,0.15) 0%, #1a1a1a 100%); color: #c0a062; padding: 15px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
+                    Black Market<br><small style="color: #ccc;">Buy and sell goods</small>
                 </button>
-                <button onclick="showRankedSeason()" style="background: linear-gradient(180deg, #1a1a3a 0%, #0a0a1a 100%); color: #ffd700; padding: 15px; border: 1px solid #ffd700; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
-                    Ranked Season<br><small style="color: #ffe066;">Combat rating</small>
+                <button onclick="showGlobalChat()" style="background: #222; color: #c0a062; padding: 15px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
+                    The Wire<br><small style="color: #ccc;">Talk with the family</small>
                 </button>
             </div>
         `;

@@ -17413,8 +17413,18 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = "1.26.0";
+const CURRENT_VERSION = "1.26.1";
 const VERSION_UPDATES = {
+  "1.26.1": {
+    title: "Combined DMs & Activities Overhaul",
+    date: "June 2025",
+    changes: [
+      "Private chat is now a single combined thread instead of separate per-player conversations",
+      "Activities tab reorganized into PVP, Co-op, and Market & Social sections",
+      "PVP and Market moved from Commission tabs into Activities",
+      "New Co-op section groups Big Scores, Superboss, Local Crew, and Alliances",
+    ]
+  },
   "1.26.0": {
     title: "Duplicate Session Prevention",
     date: "March 2026",
