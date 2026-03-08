@@ -18,7 +18,10 @@ async function connect() {
         );
     }
 
-    client = new MongoClient(MONGODB_URI);
+    client = new MongoClient(MONGODB_URI, {
+        serverSelectionTimeoutMS: 10000,
+        connectTimeoutMS: 10000
+    });
     await client.connect();
 
     db = client.db(DB_NAME);

@@ -16,7 +16,11 @@ function hashPassword(password) {
 function verifyPassword(password, stored) {
     const [salt, hash] = stored.split(':');
     const check = crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
-    return check === hash;
+    // Constant-time comparison to prevent timing attacks
+    const checkBuf = Buffer.from(check, 'hex');
+    const hashBuf = Buffer.from(hash, 'hex');
+    if (checkBuf.length !== hashBuf.length) return false;
+    return crypto.timingSafeEqual(checkBuf, hashBuf);
 }
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -103,6 +107,7 @@ setInterval(() => {
 async function createUser(username, password) {
     if (username.length < 3 || username.length > 20) return { ok: false, error: 'Username must be 3-20 characters' };
     if (password.length < 6) return { ok: false, error: 'Password must be at least 6 characters' };
+    if (password.length > 128) return { ok: false, error: 'Password must be 128 characters or fewer' };
     if (!/^[a-zA-Z0-9_]+$/.test(username)) return { ok: false, error: 'Username can only contain letters, numbers, and underscores' };
 
     const key = username.toLowerCase();
@@ -158,6 +163,7 @@ async function changePassword(username, oldPassword, newPassword) {
     if (!user) return { ok: false, error: 'User not found' };
     if (!verifyPassword(oldPassword, user.passwordHash)) return { ok: false, error: 'Current password is incorrect' };
     if (newPassword.length < 6) return { ok: false, error: 'New password must be at least 6 characters' };
+    if (newPassword.length > 128) return { ok: false, error: 'New password must be 128 characters or fewer' };
 
     await users().updateOne({ username: key }, { $set: { passwordHash: hashPassword(newPassword) } });
     return { ok: true };

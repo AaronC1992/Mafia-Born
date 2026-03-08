@@ -48,8 +48,9 @@ async function apiFetch(endpoint, options = {}) {
         if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
         return data;
     } catch (err) {
-        // If auth is expired, clear session
-        if (err.message === 'Not authenticated') {
+        // If auth is expired/invalid, clear session
+        const msg = (err.message || '').toLowerCase();
+        if (msg.includes('not authenticated') || msg.includes('unauthorized') || msg.includes('invalid token') || msg.includes('token expired')) {
             clearLocalAuth();
         }
         throw err;
@@ -134,6 +135,10 @@ export async function checkPlayerName(name) {
 
 // ── Token management ───────────────────────────────────────────
 function setLocalAuth(token, username) {
+    if (!token || !username) {
+        console.error('[auth] setLocalAuth called with missing token or username');
+        return;
+    }
     authToken = token;
     authUsername = username;
     isLoggedIn = true;
@@ -185,8 +190,16 @@ export async function verifySession() {
         isLoggedIn = true;
         _isAdmin = !!info.isAdmin || isAdminUsername(info.username);
         return true;
-    } catch {
-        // Server unreachable — if we have a stored username, use client-side admin check
+    } catch (err) {
+        // Distinguish auth failure (token expired/invalid) from network errors
+        const msg = (err.message || '').toLowerCase();
+        const isAuthFailure = msg.includes('not authenticated') || msg.includes('unauthorized') || msg.includes('invalid token') || msg.includes('token expired');
+        if (isAuthFailure) {
+            // Token is definitely bad — clear everything
+            clearLocalAuth();
+            return false;
+        }
+        // Server unreachable — if we have a stored username, stay logged in
         if (authUsername) {
             isLoggedIn = true;
             _isAdmin = isAdminUsername(authUsername);
