@@ -16794,10 +16794,16 @@ async function _startGameAfterAuth() {
   // Check for a pre-loaded save or fetch one
   let hasSave = false;
   let save = window._pendingCloudSave || null;
+  window._pendingCloudSave = null; // Always clear the cache regardless
+
   if (!save) {
-    try { save = await cloudLoad(); } catch { /* no save */ }
+    try { save = await cloudLoad(); } catch { save = null; }
   }
-  if (save && save.data && validateSaveData(save.data)) hasSave = true;
+  if (save && save.data && validateSaveData(save.data)) {
+    hasSave = true;
+  } else {
+    save = null;
+  }
 
   if (hasSave) {
     // Player has an existing game -- ask what they want
@@ -16838,13 +16844,11 @@ async function _startGameAfterAuth() {
     });
 
     if (choice === 'resume') {
-      window._pendingCloudSave = null;
       window.applyCloudSave(save);
       showBriefNotification(`Welcome back, ${save.playerName || player.name}!`, 'success');
       return;
     } else if (choice === 'new') {
       // Wipe the cloud save then start fresh
-      window._pendingCloudSave = null;
       try { await cloudDeleteSave(); } catch { /* ignore */ }
       resetPlayerForNewGame();
       showSimpleCharacterCreation();
@@ -16856,7 +16860,6 @@ async function _startGameAfterAuth() {
   }
 
   // No existing save -- go straight to character creation
-  window._pendingCloudSave = null;
   resetPlayerForNewGame();
   showSimpleCharacterCreation();
 }
@@ -21423,7 +21426,13 @@ async function loadGameFromIntro() {
     showBriefNotification(`Welcome back, ${pending.playerName || player.name}!`, 'success');
     return;
   }
-  await serverLoad();
+
+  // No cached save -- try the server directly
+  window._pendingCloudSave = null;
+  const loaded = await serverLoad();
+  if (!loaded) {
+    showBriefNotification("No saved game found. Click 'Join the Family' to start!", 'warning');
+  }
 }
 
 // Burn Records modal - asks the player to reset profile or delete everything
