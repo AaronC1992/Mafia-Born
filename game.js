@@ -11607,7 +11607,7 @@ function showCarTheftChoiceResult(stolenCar, wasHurt = false, healthLoss = 0) {
 
         <div class="popup-actions" style="flex-wrap:wrap;">
           <button onclick="handleStolenCarChoice('scrap', '${stolenCar.name}', ${stolenCar.baseValue}, ${stolenCar.currentValue}, ${stolenCar.damagePercentage})"
-              class="popup-btn" style="background:linear-gradient(45deg,#e67e22,#d35400);min-width:140px;">
+              class="popup-btn popup-btn-gold" style="min-width:140px;">
             Scrap for Parts<br><small>+$${Math.floor(stolenCar.currentValue * 0.35).toLocaleString()}</small>
           </button>
           <button onclick="handleStolenCarChoice('store', '${stolenCar.name}', ${stolenCar.baseValue}, ${stolenCar.currentValue}, ${stolenCar.damagePercentage})"
@@ -15280,8 +15280,7 @@ function buildPlayerMarketTabContent() {
         </ul>
       </div>
       <p style="color: #c0a040; margin-bottom: 20px;">You must be connected to The Commission to access the Player Market.</p>
-      <button onclick="if(typeof showOnlineWorld==='function') showOnlineWorld('market'); else showBriefNotification('Online features not available', 'error');"
-        style="background: linear-gradient(45deg, #a08850, #1a5276); color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1em;">
+      <button onclick="if(typeof showOnlineWorld==='function') showOnlineWorld('market'); else showBriefNotification('Online features not available', 'error');">
         Connect to The Commission
       </button>
     </div>
@@ -15783,11 +15782,7 @@ function showLevelUpEffects() {
         ${milestone ? '' : 'Your reputation in the underworld grows...'}
       </div>
       <button onclick="closeLevelUpOverlay()"
-          style="margin-top: 40px; padding: 15px 40px; font-size: 1.3em;
-              background: linear-gradient(45deg, #8b3a3a, #7a2a2a);
-              color: white; border: none; border-radius: 10px; cursor: pointer;
-              box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
-              transition: all 0.3s ease;">
+          style="margin-top: 40px; padding: 15px 40px; font-size: 1.3em;">
         Continue Your Rise
       </button>
     </div>
@@ -15919,11 +15914,7 @@ function showNarrativeOverlay(title, message, buttonText = "Continue", callback 
         ${message}
       </div>
       <button onclick="closeNarrativeOverlay()"
-          style="padding: 15px 40px; font-size: 1.3em;
-              background: linear-gradient(45deg, #1a1610, #14120a);
-              color: white; border: none; border-radius: 10px; cursor: pointer;
-              box-shadow: 0 5px 15px rgba(20, 18, 10, 0.5);
-              transition: all 0.3s ease;">
+          style="padding: 15px 40px; font-size: 1.3em;">
         ${buttonText}
       </button>
     </div>
@@ -15938,9 +15929,7 @@ function showNarrativeOverlay(title, message, buttonText = "Continue", callback 
     }
 
     #narrative-overlay button:hover {
-      background: linear-gradient(45deg, #14120a, #1a1610);
       transform: translateY(-2px);
-      box-shadow: 0 7px 20px rgba(20, 18, 10, 0.7);
     }
   `;
   document.head.appendChild(style);
@@ -16732,8 +16721,6 @@ function updateConfirmButton() {
   if (!btn) return;
   const ready = _selectedBackground && _selectedPerk;
   btn.disabled = !ready;
-  btn.style.background = ready ? 'linear-gradient(45deg, #8b3a3a, #7a2a2a)' : '#6a5a3a';
-  btn.style.cursor = ready ? 'pointer' : 'not-allowed';
 }
 
 function applyBackgroundBonuses(bgId) {
@@ -19709,13 +19696,13 @@ function showDeathScreen(causeOfDeath) {
   if (restartArea) {
     restartArea.innerHTML = `
       <div style="margin: 25px auto; max-width: 500px; text-align: center;">
-        <button onclick="showLastDeathNewspaper()" style="background: linear-gradient(45deg, #5a4a30, #4a3a20); color: #f5e6c8; padding: 14px 30px; border: 2px solid #8b7355; border-radius: 2px; font-size: 1.1em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-family: var(--font-typewriter); margin-bottom: 16px;">
+        <button onclick="showLastDeathNewspaper()" style="margin-bottom: 16px;">
           &#128240; Read Your Obituary
         </button>
         <p style="color: #d4c4a0; margin-bottom: 20px; font-style: italic;">
           "Every empire falls. Will you build another?"
         </p>
-        <button onclick="restartGame()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: #f5e6c8; padding: 18px 40px; border: none; border-radius: 2px; font-size: 1.3em; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+        <button onclick="restartGame()" style="padding: 18px 40px; font-size: 1.3em;">
           Start a New Life
         </button>
       </div>
@@ -22193,7 +22180,7 @@ function buildEmpireRatingHTML() {
       </div>
 
       <div style="text-align: center; margin-top: 20px;">
-        <button onclick="showAchievements()" style="background: linear-gradient(45deg, #c0a040, #e67e22); color: white; padding: 12px 26px; border: none; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer;">
+        <button onclick="showAchievements()">
           Achievements
         </button>
       </div>
@@ -23933,10 +23920,10 @@ function showRivalsScreen() {
 
       <!-- Navigation Tabs -->
       <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #1a1610; padding-bottom: 10px;">
-        <button onclick="showRivalsTab()" id="rivals-tab-btn" style="flex: 1; background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: white; padding: 12px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold;">
+        <button onclick="showRivalsTab()" id="rivals-tab-btn" style="flex: 1; padding: 12px; border-radius: 2px 2px 0 0;">
           AI Rivals
         </button>
-        <button onclick="showCompetitionTab()" id="competition-tab-btn" style="flex: 1; background: rgba(20, 18, 10, 0.6); color: #8a7a5a; padding: 12px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold;">
+        <button onclick="showCompetitionTab()" id="competition-tab-btn" style="flex: 1; padding: 12px; border-radius: 2px 2px 0 0; background: rgba(20, 18, 10, 0.6); color: #8a7a5a; border-color: #333;">
           Leaderboards
         </button>
       </div>
@@ -23958,10 +23945,12 @@ function showRivalsScreen() {
 
 function showRivalsTab() {
   // Update tab buttons
-  document.getElementById('rivals-tab-btn').style.background = 'linear-gradient(45deg, #8b3a3a, #7a2a2a)';
-  document.getElementById('rivals-tab-btn').style.color = 'white';
+  document.getElementById('rivals-tab-btn').style.background = '';
+  document.getElementById('rivals-tab-btn').style.color = '';
+  document.getElementById('rivals-tab-btn').style.borderColor = '';
   document.getElementById('competition-tab-btn').style.background = 'rgba(20, 18, 10, 0.6)';
   document.getElementById('competition-tab-btn').style.color = '#8a7a5a';
+  document.getElementById('competition-tab-btn').style.borderColor = '#333';
 
   const rivals = player.rivalKingpins || RIVAL_KINGPINS;
 
@@ -24009,8 +23998,10 @@ function showCompetitionTab() {
   // Update tab buttons
   document.getElementById('rivals-tab-btn').style.background = 'rgba(20, 18, 10, 0.6)';
   document.getElementById('rivals-tab-btn').style.color = '#8a7a5a';
-  document.getElementById('competition-tab-btn').style.background = 'linear-gradient(45deg, #c0a062, #a08850)';
-  document.getElementById('competition-tab-btn').style.color = 'white';
+  document.getElementById('rivals-tab-btn').style.borderColor = '#333';
+  document.getElementById('competition-tab-btn').style.background = '';
+  document.getElementById('competition-tab-btn').style.color = '';
+  document.getElementById('competition-tab-btn').style.borderColor = '';
 
   const playerRankings = {};
   COMPETITION_SYSTEM.leaderboardCategories.forEach(category => {
@@ -24027,7 +24018,7 @@ function showCompetitionTab() {
         <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a062;">
           <h3 style="color: #c0a062; margin: 0 0 10px 0;">Leaderboards</h3>
           <p style="margin: 0 0 10px 0; color: #f5e6c8; font-size: 0.9em;">Compare your criminal empire with others worldwide</p>
-          <button onclick="showLeaderboards()" style="background: #c0a062; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+          <button onclick="showLeaderboards()" style="width: 100%;">
             View Rankings
           </button>
         </div>
@@ -24035,7 +24026,7 @@ function showCompetitionTab() {
         <div style="background: rgba(243, 156, 18, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a040;">
           <h3 style="color: #c0a040; margin: 0 0 10px 0;">Weekly Challenges</h3>
           <p style="margin: 0 0 10px 0; color: #f5e6c8; font-size: 0.9em;">Complete special objectives for unique rewards</p>
-          <button onclick="showWeeklyChallenges()" style="background: #c0a040; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+          <button onclick="showWeeklyChallenges()" style="width: 100%;">
             View Challenges
           </button>
         </div>
@@ -24043,7 +24034,7 @@ function showCompetitionTab() {
         <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8b6a4a;">
           <h3 style="color: #8b6a4a; margin: 0 0 10px 0;">Character Showcase</h3>
           <p style="margin: 0 0 10px 0; color: #f5e6c8; font-size: 0.9em;">Share your criminal's story and achievements</p>
-          <button onclick="showCharacterShowcase()" style="background: #8b6a4a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+          <button onclick="showCharacterShowcase()" style="width: 100%;">
             My Showcase
           </button>
         </div>
@@ -24051,8 +24042,7 @@ function showCompetitionTab() {
         <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8a9a6a;">
           <h3 style="color: #8a9a6a; margin: 0 0 10px 0;">Submit Rankings</h3>
           <p style="margin: 0 0 10px 0; color: #f5e6c8; font-size: 0.9em;">Update your position on the leaderboards</p>
-          <button onclick="submitToLeaderboards()" ${canSubmit ? '' : 'disabled'}
-              style="background: ${canSubmit ? '#8a9a6a' : '#6a5a3a'}; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: ${canSubmit ? 'pointer' : 'not-allowed'}; width: 100%;">
+          <button onclick="submitToLeaderboards()" ${canSubmit ? '' : 'disabled'} style="width: 100%;">
             ${canSubmit ? 'Submit Now' : 'Cooldown...'}
           </button>
         </div>
@@ -24138,7 +24128,7 @@ function showLeaderboards() {
             <option value="${category.id}">${category.icon} ${category.name}</option>
           `).join('')}
         </select>
-        <button onclick="submitToLeaderboards()" style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;">
+        <button onclick="submitToLeaderboards()">
           Update My Rankings
         </button>
       </div>
@@ -24148,7 +24138,7 @@ function showLeaderboards() {
       </div>
 
       <div style="text-align: center; margin-top: 30px;">
-        <button onclick="showCompetition()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
+        <button onclick="showCompetition()" style="margin-right: 15px;">
           Back to Competition
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
@@ -24335,7 +24325,7 @@ function showWeeklyChallenges() {
       ` : ''}
 
       <div style="text-align: center; margin-top: 30px;">
-        <button onclick="showRivalsScreen()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
+        <button onclick="showRivalsScreen()" style="margin-right: 15px;">
           Back to Rivals
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
@@ -24354,7 +24344,7 @@ function showCharacterShowcase() {
   const showcaseHTML = buildCharacterShowcaseHTML();
   const navButtons = `
       <div style="text-align: center; margin-top: 30px;">
-        <button onclick="showRivalsScreen()" style="background: linear-gradient(45deg, #8b3a3a, #7a2a2a); color: white; padding: 15px 30px; border: none; border-radius: 12px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-right: 15px;">
+        <button onclick="showRivalsScreen()" style="margin-right: 15px;">
           Back to Rivals
         </button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
