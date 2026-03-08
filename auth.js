@@ -587,18 +587,17 @@ export async function initAuth() {
             console.log(`[auth] Restored session for ${authUsername}`);
             // Check admin status on session restore
             await checkAdmin();
-            // Auto-load cloud save and jump straight into the game
+            // Auto-load cloud save into memory but stay on the title screen.
+            // The player uses 'Resume Business' or 'Join the Family' to enter.
             try {
                 const save = await cloudLoad();
-                if (save && save.data && typeof window.applyCloudSave === 'function') {
-                    window.applyCloudSave(save);
-                    console.log('[auth] Cloud save auto-loaded on startup');
-                    if (typeof window.showBriefNotification === 'function') {
-                        setTimeout(() => window.showBriefNotification(`Welcome back, ${save.playerName || authUsername}!`, 'success'), 500);
-                    }
+                if (save && save.data) {
+                    // Stash the save so the title-screen buttons can use it
+                    window._pendingCloudSave = save;
+                    console.log('[auth] Cloud save pre-loaded (staying on title screen)');
                 }
             } catch (e) {
-                console.warn('[auth] No cloud save to auto-load on startup:', e.message);
+                console.warn('[auth] No cloud save to pre-load on startup:', e.message);
             }
         }
     }

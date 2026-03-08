@@ -332,6 +332,11 @@ window.applyCloudSave = function (cloudEntry) {
     if (!gameplayActive) {
         activateGameplaySystems();
         hideAllScreens();
+        // Also hide non-game screens that hideAllScreens doesn't cover
+        const intro = document.getElementById('intro-screen');
+        if (intro) intro.style.display = 'none';
+        const charCreate = document.getElementById('character-creation-screen');
+        if (charCreate) charCreate.style.display = 'none';
         showCommandCenter();
     }
 };
@@ -16767,22 +16772,91 @@ function resetPlayerForNewGame() {
 
 // Function to start the game (always creates a NEW profile)
 // Requires cloud login before proceeding.
-function startGame() {
+async function startGame() {
   const auth = getAuthState();
   if (!auth.isLoggedIn) {
     // Force the player to create an account or sign in first
     showAuthModal({
       required: true,
       startOnRegister: true,
-      onAuth: () => {
-        // Account created/signed in -- now start character creation
-        resetPlayerForNewGame();
-        showSimpleCharacterCreation();
+      onAuth: async () => {
+        // After sign-in, check if they already have a save
+        await _startGameAfterAuth();
       }
     });
     return;
   }
-  // Already logged in -- proceed directly
+  // Already logged in -- check for existing save
+  await _startGameAfterAuth();
+}
+
+async function _startGameAfterAuth() {
+  // Check for a pre-loaded save or fetch one
+  let hasSave = false;
+  let save = window._pendingCloudSave || null;
+  if (!save) {
+    try { save = await cloudLoad(); } catch { /* no save */ }
+  }
+  if (save && save.data && validateSaveData(save.data)) hasSave = true;
+
+  if (hasSave) {
+    // Player has an existing game -- ask what they want
+    const choice = await new Promise(resolve => {
+      const overlay = document.createElement('div');
+      overlay.id = 'resume-or-new-overlay';
+      overlay.style.cssText = `
+        position:fixed;top:0;left:0;width:100%;height:100%;
+        background:rgba(0,0,0,0.95);display:flex;align-items:center;
+        justify-content:center;z-index:1000;padding:20px;box-sizing:border-box;
+      `;
+      overlay.innerHTML = `
+        <div style="max-width:460px;width:100%;background:linear-gradient(135deg,rgba(20,18,10,0.98),rgba(30,20,10,0.98));
+              padding:40px;border-radius:20px;border:2px solid #c0a062;box-shadow:0 20px 50px rgba(0,0,0,0.8);text-align:center;color:white;">
+          <h2 style="color:#c0a062;font-size:1.8em;margin:0 0 12px 0;">Existing Game Found</h2>
+          <p style="color:#d4c4a0;margin-bottom:8px;">
+            <strong>${save.playerName || 'Unknown'}</strong> &mdash; Level ${save.data?.level || save.data?.player?.level || '?'}
+          </p>
+          <p style="color:#8a7a5a;font-size:0.9em;margin-bottom:28px;">What would you like to do?</p>
+          <button id="resume-choice-btn" style="display:block;width:100%;padding:16px;margin-bottom:12px;
+            background:linear-gradient(to bottom,#1a3a1a,#0a1a0a);border:2px solid #8a9a6a;border-radius:10px;
+            color:#8a9a6a;font-size:1.1em;cursor:pointer;font-weight:bold;">Resume Game
+            <span style="display:block;font-size:0.75em;color:#6a7a5a;font-weight:normal;margin-top:4px;">Pick up where you left off</span>
+          </button>
+          <button id="newgame-choice-btn" style="display:block;width:100%;padding:16px;margin-bottom:20px;
+            background:linear-gradient(to bottom,#3a1a1a,#1a0808);border:2px solid #8b3a3a;border-radius:10px;
+            color:#bb5555;font-size:1.1em;cursor:pointer;font-weight:bold;">Start Fresh
+            <span style="display:block;font-size:0.75em;color:#885555;font-weight:normal;margin-top:4px;">Wipe your save and create a new character</span>
+          </button>
+          <button id="cancel-choice-btn" style="background:transparent;border:1px solid #6a5a3a;color:#8a7a5a;
+            padding:10px 28px;border-radius:8px;cursor:pointer;font-size:0.95em;">Cancel</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.getElementById('resume-choice-btn').onclick = () => { overlay.remove(); resolve('resume'); };
+      document.getElementById('newgame-choice-btn').onclick = () => { overlay.remove(); resolve('new'); };
+      document.getElementById('cancel-choice-btn').onclick = () => { overlay.remove(); resolve('cancel'); };
+    });
+
+    if (choice === 'resume') {
+      window._pendingCloudSave = null;
+      window.applyCloudSave(save);
+      showBriefNotification(`Welcome back, ${save.playerName || player.name}!`, 'success');
+      return;
+    } else if (choice === 'new') {
+      // Wipe the cloud save then start fresh
+      window._pendingCloudSave = null;
+      try { await cloudDeleteSave(); } catch { /* ignore */ }
+      resetPlayerForNewGame();
+      showSimpleCharacterCreation();
+      return;
+    } else {
+      // Cancelled -- stay on title screen
+      return;
+    }
+  }
+
+  // No existing save -- go straight to character creation
+  window._pendingCloudSave = null;
   resetPlayerForNewGame();
   showSimpleCharacterCreation();
 }
@@ -21340,6 +21414,15 @@ async function loadGameFromIntro() {
     showBriefNotification("Sign in first to resume your game!", 'warning');
     return;
   }
+
+  // Use pre-loaded save from initAuth if available, otherwise fetch
+  const pending = window._pendingCloudSave;
+  if (pending && pending.data) {
+    window._pendingCloudSave = null;
+    window.applyCloudSave(pending);
+    showBriefNotification(`Welcome back, ${pending.playerName || player.name}!`, 'success');
+    return;
+  }
   await serverLoad();
 }
 
@@ -22691,6 +22774,10 @@ async function serverLoad() {
       if (!gameplayActive) {
         activateGameplaySystems();
         hideAllScreens();
+        const intro = document.getElementById('intro-screen');
+        if (intro) intro.style.display = 'none';
+        const charCreate = document.getElementById('character-creation-screen');
+        if (charCreate) charCreate.style.display = 'none';
         showCommandCenter();
       }
       logAction(`Welcome back, ${player.name}! Your empire has been restored.`);
