@@ -307,7 +307,7 @@ const server = http.createServer(async (req, res) => {
     if (!filePath.startsWith(staticRoot)) {
         console.log(` Attempted path traversal: ${req.url} -> ${filePath}`);
         res.writeHead(403, { 'Content-Type': 'text/html' });
-        res.end(`<h1>403 Forbidden</h1><p>Access denied</p>`);
+        res.end('<h1>403 Forbidden</h1><p>Access denied</p>');
         return;
     }
     if (filePath === './') {
@@ -481,12 +481,12 @@ const jailTickInterval = setInterval(function jailTick() {
 
 // Bot names used for jail bot inmates
 const JAIL_BOT_NAMES = [
-    "Tony \"The Snake\" Marconi", "Vincent \"Vinny\" Romano",
-    "Marco \"The Bull\" Santangelo", "Sal \"Scarface\" DeLuca",
-    "Frank \"The Hammer\" Rossini", "Joey \"Two-Times\" Castellano",
-    "Nick \"The Knife\" Moretti", "Rocco \"Rocky\" Benedetto",
-    "Anthony \"Big Tony\" Genovese", "Michael \"Mikey\" Calabrese",
-    "Dominic \"Dom\" Torrino", "Carlo \"The Cat\" Bianchi"
+    'Tony "The Snake" Marconi', 'Vincent "Vinny" Romano',
+    'Marco "The Bull" Santangelo', 'Sal "Scarface" DeLuca',
+    'Frank "The Hammer" Rossini', 'Joey "Two-Times" Castellano',
+    'Nick "The Knife" Moretti', 'Rocco "Rocky" Benedetto',
+    'Anthony "Big Tony" Genovese', 'Michael "Mikey" Calabrese',
+    'Dominic "Dom" Torrino', 'Carlo "The Cat" Bianchi'
 ];
 
 // Game state
@@ -593,11 +593,11 @@ const MOVE_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
 // NPC bosses — every territory starts under rival NPC control
 const NPC_TERRITORY_BOSSES = {
     residential_low: { name: "Vinnie 'The Rat' Morello", defenseRating: 80 },
-    residential_middle: { name: "Fat Tony Deluca", defenseRating: 120 },
-    residential_upscale: { name: "Don Castellano", defenseRating: 180 },
+    residential_middle: { name: 'Fat Tony Deluca', defenseRating: 120 },
+    residential_upscale: { name: 'Don Castellano', defenseRating: 180 },
     commercial_downtown: { name: "Marco 'The Banker' Ricci", defenseRating: 160 },
     commercial_shopping: { name: "Luca 'Fingers' Bianchi", defenseRating: 100 },
-    industrial_warehouse: { name: "Big Sal Ferrara", defenseRating: 140 },
+    industrial_warehouse: { name: 'Big Sal Ferrara', defenseRating: 140 },
     industrial_port: { name: "Nikolai 'The Bear' Volkov", defenseRating: 200 },
     entertainment_nightlife: { name: "Johnny 'Neon' Cavallo", defenseRating: 150 }
 };
@@ -799,7 +799,7 @@ function ensureUniqueName(baseName) {
 console.log(' Mafia Born - Multiplayer Server Starting...');
 
 // WebSocket connection handler
-wss.on('connection', (ws, req) => {
+wss.on('connection', (ws, _req) => {
     // SERVER-SIDE IDENTITY: assign server-generated playerId and bind to this WebSocket
     const clientId = generateClientId();
     clients.set(clientId, ws);
@@ -1235,17 +1235,17 @@ function handlePlayerConnect(clientId, message, ws) {
                     // Old connection is still live — block this new one
                     ws.send(JSON.stringify({
                         type: 'session_blocked',
-                        message: `This account is already logged in on another session. Close the other tab or window first.`
+                        message: 'This account is already logged in on another session. Close the other tab or window first.'
                     }));
                     console.log(` Blocked duplicate session for "${authenticatedUser}" (existing: ${existingId}, blocked: ${clientId})`);
-                    try { ws.close(); } catch (_) {}
+                    try { ws.close(); } catch (_e) { /* connection cleanup */ }
                     clients.delete(clientId);
                     sessions.delete(ws);
                     return;
                 }
                 // Old connection is dead/closing — evict it and let this one in
                 if (oldWs) {
-                    try { oldWs.close(); } catch (_) {}
+                    try { oldWs.close(); } catch (_e) { /* connection cleanup */ }
                     clients.delete(existingId);
                     sessions.delete(oldWs);
                 }
@@ -1680,7 +1680,7 @@ function handleTerritoryWar(clientId, message) {
     for (const [id, p] of gameState.players.entries()) {
         if (p.name === terr.owner) {
             defenderPlayer = p;
-            defenderState = gameState.playerStates.get(id);
+            defenderState = gameState.playerStates.get(id); // eslint-disable-line no-unused-vars
             defenderId = id;
             break;
         }
@@ -2196,7 +2196,7 @@ function handleHeistInvite(clientId, message) {
     const targetEntry = Array.from(gameState.players.entries()).find(([_, p]) => p.name === message.targetPlayer);
     if (!targetEntry) return;
     
-    const [targetClientId, targetPlayer] = targetEntry;
+    const [targetClientId, _targetPlayer] = targetEntry;
     
     // Don't invite if already in the heist
     if (heist.participants.includes(targetClientId)) return;
@@ -3998,7 +3998,7 @@ function handleAllianceJoin(clientId, message) {
     scheduleWorldSave();
 }
 
-function handleAllianceLeave(clientId, message) {
+function handleAllianceLeave(clientId, _message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
@@ -4328,7 +4328,7 @@ function recalcTopDon() {
         addGlobalChatMessage('System', ` ${gameState.politics.topDonName}${allianceStr} has risen to Top Don with ${gameState.politics.territoryCount} territories! They now control the city's policies.`, '#ffd700');
         console.log(` Top Don changed: ${oldTopDon || 'None'} → ${gameState.politics.topDonName}`);
     } else if (!gameState.politics.topDonName && oldTopDon) {
-        addGlobalChatMessage('System', ` The city has no Top Don — all territories are under NPC control. Conquer to rule!`, '#888');
+        addGlobalChatMessage('System', ' The city has no Top Don \u2014 all territories are under NPC control. Conquer to rule!', '#888');
         console.log(` Top Don vacated (was ${oldTopDon})`);
     }
 }
@@ -4407,7 +4407,7 @@ function handlePoliticsSetPolicy(clientId, message) {
     scheduleWorldSave();
 }
 
-function handleAllianceInfo(clientId, message) {
+function handleAllianceInfo(clientId, _message) {
     const ws = clients.get(clientId);
     if (!ws || ws.readyState !== 1) return;
 
@@ -4611,7 +4611,7 @@ function handleCancelBounty(clientId, message) {
     scheduleWorldSave();
 }
 
-function handleBountyList(clientId, message) {
+function handleBountyList(clientId, _message) {
     const ws = clients.get(clientId);
     if (!ws || ws.readyState !== 1) return;
 
@@ -4736,7 +4736,7 @@ function getEloChange(playerId) {
     return { elo: rating.elo, tier: tier.name, icon: tier.icon };
 }
 
-function handleSeasonInfo(clientId, message) {
+function handleSeasonInfo(clientId, _message) {
     const ws = clients.get(clientId);
     if (!ws || ws.readyState !== 1) return;
 
@@ -4867,7 +4867,7 @@ function handleMarketList(clientId, message) {
     gameState.playerMarket.push(listing);
 
     const categoryLabels = { vehicle: 'vehicle', ammo: 'bullet', gas: 'gasoline', weapon: 'weapon', armor: 'armor', utility: 'item', drug: 'goods' };
-    const label = categoryLabels[category] || 'item';
+    const _label = categoryLabels[category] || 'item';
     const displayQty = quantity > 1 ? `${quantity}x ` : '';
     console.log(` ${seller.name} listed ${displayQty}${itemName} for $${listing.price.toLocaleString()}`);
 
@@ -5055,7 +5055,7 @@ function handleBuyBullets(clientId, message) {
     }
 
     // Broadcast stock update to all connected players
-    for (const [cId, cWs] of clients) {
+    for (const [_cId, cWs] of clients) {
         if (cWs.readyState === WebSocket.OPEN) {
             cWs.send(JSON.stringify({
                 type: 'bullet_stock_update',
@@ -5068,7 +5068,7 @@ function handleBuyBullets(clientId, message) {
     if (remaining <= 3 && remaining > 0) {
         addGlobalChatMessage('System', `\u26a0 Only ${remaining} bullet${remaining === 1 ? '' : 's'} left in today's supply!`, '#e67e22');
     } else if (remaining === 0) {
-        addGlobalChatMessage('System', `\ud83d\udd12 Today's bullet supply is SOLD OUT! Trade on the Player Market or wait until tomorrow.`, '#8b3a3a');
+        addGlobalChatMessage('System', '\ud83d\udd12 Today\'s bullet supply is SOLD OUT! Trade on the Player Market or wait until tomorrow.', '#8b3a3a');
     }
 
     console.log(`\ud83d\udd2b ${buyer.name} bought a bullet from the shop (${gameState.bulletShop.soldToday}/${MAX_BULLETS_PER_DAY} sold today)`);
@@ -5206,7 +5206,7 @@ function handleGetLeaderboards(clientId) {
 
 // ==================== HEIST MATCHMAKING QUEUE ====================
 
-function handleHeistQueueJoin(clientId, message) {
+function handleHeistQueueJoin(clientId, _message) {
     const ws = clients.get(clientId);
     const player = gameState.players.get(clientId);
     if (!ws || !player) return;
@@ -5271,7 +5271,7 @@ function handleAnticheatSnapshot(clientId, message) {
         const timeDelta = (now - snapshot.lastSnapshotAt) / 1000; // seconds
         const moneyGain = (message.money || 0) - snapshot.money;
         const levelGain = (message.level || 0) - snapshot.level;
-        const repGain = (message.reputation || 0) - snapshot.reputation;
+        const _repGain = (message.reputation || 0) - snapshot.reputation;
         
         // Flag suspicious gains (earning more than $500k/minute or 5 levels/minute)
         if (timeDelta > 0) {
@@ -5622,7 +5622,7 @@ function handleGamblingJoinTable(clientId, message) {
     scheduleWorldSave();
 }
 
-function handleGamblingAction(clientId, message) {
+function handleGamblingAction(clientId, _message) {
     // Reserved for future interactive game types (poker rounds, etc.)
     const ws = clients.get(clientId);
     if (ws) ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Not implemented for this game type.' }));
@@ -6049,7 +6049,7 @@ function generateLeaderboard() {
 
     // Territory lords (most territories owned)
     const territoryOwners = {};
-    for (const [tId, tData] of Object.entries(gameState.territories || {})) {
+    for (const [_tId, tData] of Object.entries(gameState.territories || {})) {
         if (tData.owner) {
             territoryOwners[tData.owner] = (territoryOwners[tData.owner] || 0) + 1;
         }
