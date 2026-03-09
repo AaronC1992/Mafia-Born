@@ -456,6 +456,7 @@ const HEARTBEAT_INTERVAL = 30000;
 const RATE_LIMIT_WINDOW = 5000; // 5 seconds
 const MAX_MESSAGES_PER_WINDOW = 5;
 const clientMessageHistory = new Map();
+const connectingUsers = new Set(); // Tracks users mid-connect to prevent race conditions
 
 // Safe WebSocket send wrapper
 function safeSend(ws, data, isRaw) {
@@ -1295,6 +1296,19 @@ function handlePlayerConnect(clientId, message, ws) {
     if (authenticatedUser) {
         if (sess) sess.authenticatedUser = authenticatedUser;
 
+        // Prevent race condition: block if another connection for this user is already mid-connect
+        if (connectingUsers.has(authenticatedUser)) {
+            safeSend(ws, {
+                type: 'session_blocked',
+                message: 'This account is already connecting. Please wait a moment.'
+            });
+            try { ws.close(); } catch (_e) { /* connection cleanup */ }
+            clients.delete(clientId);
+            sessions.delete(ws);
+            return;
+        }
+        connectingUsers.add(authenticatedUser);
+
         // Check if this authenticated user already has an active connection
         for (const [existingId, existingPlayer] of gameState.players.entries()) {
             if (existingId === clientId) continue;
@@ -1312,6 +1326,7 @@ function handlePlayerConnect(clientId, message, ws) {
                     try { ws.close(); } catch (_e) { /* connection cleanup */ }
                     clients.delete(clientId);
                     sessions.delete(ws);
+                    connectingUsers.delete(authenticatedUser);
                     return;
                 }
                 // Old connection is dead/closing — evict it and let this one in
@@ -1499,6 +1514,9 @@ function handlePlayerConnect(clientId, message, ws) {
         gameState.offlineDeathNewspapers.delete(player.name);
         scheduleWorldSave();
     }
+
+    // Release the connecting lock
+    if (authenticatedUser) connectingUsers.delete(authenticatedUser);
 }
 
 // Global chat handler
@@ -2532,7 +2550,8 @@ function handlePlayerUpdate(clientId, message) {
     }
 }
 
-// Handle jail status sync from client (when player is jailed/released locally)
+// Handle jail status sync from client — server-authoritative: only accept going INTO jail
+// Release is handled exclusively by server-side jailTick and jailbreak mechanics
 function handleJailStatusSync(clientId, message) {
     const player = gameState.players.get(clientId);
     const playerState = gameState.playerStates.get(clientId);
@@ -2541,30 +2560,30 @@ function handleJailStatusSync(clientId, message) {
     const wasInJail = !!playerState.inJail;
     const isNowInJail = !!message.inJail;
 
-    playerState.inJail = isNowInJail;
-    playerState.jailTime = message.jailTime || 0;
-
-    if (wasInJail !== isNowInJail) {
-        if (isNowInJail) {
-            console.log(` ${player.name} jail status synced: IN JAIL (${playerState.jailTime}s)`);
-            addGlobalChatMessage('System', ` ${player.name} was arrested and sent to jail!`, '#e74c3c');
-            broadcastToAll({
-                type: 'player_arrested',
-                playerId: clientId,
-                playerName: player.name,
-                jailTime: playerState.jailTime
-            });
-        } else {
-            console.log(` ${player.name} jail status synced: RELEASED`);
-            addGlobalChatMessage('System', ` ${player.name} was released from jail!`, '#2ecc71');
-            broadcastToAll({
-                type: 'player_released',
-                playerId: clientId,
-                playerName: player.name
-            });
+    // Only allow clients to report going TO jail, never releasing themselves
+    if (!isNowInJail) {
+        if (wasInJail) {
+            console.log(` BLOCKED: ${player.name} tried to sync release — only server can release`);
         }
+        return;
+    }
 
-        playerState.previousInJail = isNowInJail;
+    // Client reports arrest — validate jail time is reasonable (max 5 min)
+    const jailTime = Math.min(Math.max(0, parseInt(message.jailTime) || 0), 300);
+    playerState.inJail = true;
+    playerState.jailTime = jailTime;
+
+    if (!wasInJail) {
+        console.log(` ${player.name} jail status synced: IN JAIL (${jailTime}s)`);
+        addGlobalChatMessage('System', ` ${player.name} was arrested and sent to jail!`, '#e74c3c');
+        broadcastToAll({
+            type: 'player_arrested',
+            playerId: clientId,
+            playerName: player.name,
+            jailTime: jailTime
+        });
+
+        playerState.previousInJail = true;
         updateJailBots();
         broadcastPlayerStates();
         broadcastJailRoster();
@@ -6183,7 +6202,7 @@ function generateClientId() {
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason, _promise) => {
     console.error('UNHANDLED REJECTION:', reason);
 });
 

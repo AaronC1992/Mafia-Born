@@ -5120,7 +5120,6 @@ function startLaunderingCountdown() {
     }
 
     const now = Date.now();
-    let anyChanged = false;
 
     player.activeLaundering.forEach(op => {
       const timerEl = document.querySelector(`[data-launder-timer="${op.id}"]`);
@@ -5147,7 +5146,6 @@ function startLaunderingCountdown() {
           btn.style.cssText = 'background: #8a9a6a; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;';
           btn.onclick = () => collectLaundering(op.id);
           parent.appendChild(btn);
-          anyChanged = true;
         }
       } else {
         const mins = Math.floor(remaining / 60000);
@@ -5977,6 +5975,15 @@ function completeGangOperation(operationData) {
   // Check for arrest
   if (arrestRoll < operation.risks.arrestChance) {
     handleOperationArrest(member, operation);
+    return;
+  }
+
+  // Check for operation failure based on member skill
+  if (Math.random() * 100 >= successChance) {
+    player.gang.activeOperations = player.gang.activeOperations.filter(op => op !== operationData);
+    showBriefNotification(`${member.name} failed the ${operation.name}. The operation didn't go as planned.`, 'warning');
+    logAction(`${member.name} came back empty-handed from the ${operation.name}. Not every job goes smooth.`);
+    updateUI();
     return;
   }
 
@@ -13957,10 +13964,6 @@ function isMenuItemUnlocked(item) {
   return true; // All buttons available from the start
 }
 
-function getLockedItems() {
-  return menuUnlockConfig.filter(item => !isMenuItemUnlocked(item));
-}
-
 // Check for newly unlocked items and show notification
 function checkForNewUnlocks() {
   if (!player.unlocksNotified) player.unlocksNotified = [];
@@ -17298,9 +17301,8 @@ function showTerritoryRelocation() {
 
   // Territory state from server (owner, residents, etc.)
   const tState = (typeof onlineWorldState !== 'undefined' && onlineWorldState.territories) || {};
-  const gangSize = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.length : 0;
 
-  const cards = DISTRICTS.map((d, idx) => {
+  const cards = DISTRICTS.map((d) => {
     const isCurrent = d.id === player.currentTerritory;
     const canAfford = player.money >= d.moveCost;
     const disabled = isCurrent || onCooldown || !canAfford;
@@ -22691,11 +22693,10 @@ function showBriefNotification(message, durationOrType = 2000) {
   if (typeof durationOrType === 'string') {
     duration = 3000;
     switch (durationOrType) {
-      case 'success': borderColor = '#8a9a6a'; bgColor = 'rgba(122, 138, 90, 0.15)'; break;
-      case 'warning': borderColor = '#c0a040'; bgColor = 'rgba(243, 156, 18, 0.15)'; break;
-      case 'danger': borderColor = '#8b3a3a'; bgColor = 'rgba(231, 76, 60, 0.15)'; break;
+      case 'success': borderColor = '#8a9a6a'; bgColor = 'rgba(20, 18, 10, 0.95)'; break;
+      case 'warning': borderColor = '#c0a040'; bgColor = 'rgba(20, 18, 10, 0.95)'; break;
+      case 'danger': borderColor = '#8b3a3a'; bgColor = 'rgba(20, 18, 10, 0.95)'; break;
     }
-    bgColor = 'rgba(20, 18, 10, 0.95)'; // keep dark bg for readability
   } else if (typeof durationOrType === 'number') {
     duration = durationOrType;
   }
@@ -22711,7 +22712,7 @@ function showBriefNotification(message, durationOrType = 2000) {
     position: fixed;
     top: ${topOffset}px;
     right: 20px;
-    background: rgba(20, 18, 10, 0.95);
+    background: ${bgColor};
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
@@ -23966,7 +23967,6 @@ function completeLoading() {
 
 // ==================== OFFLINE RETRY ====================
 function retryServerConnection() {
-  const btn = document.getElementById('offline-retry-btn-menu') || document.getElementById('offline-retry-btn-safehouse');
   // Disable all retry buttons while attempting
   document.querySelectorAll('.offline-retry-btn').forEach(b => {
     b.disabled = true;
