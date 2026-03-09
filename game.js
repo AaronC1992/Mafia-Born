@@ -8244,10 +8244,15 @@ async function adminLoadBugReports() {
   if (!container) return;
   container.innerHTML = '<p style="color:#8a7a5a;">Loading...</p>';
   try {
-    const apiBase = window.__MULTIPLAYER_SERVER_URL__ ||
-      (location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-        ? `http://${location.hostname}:3000` : 'https://mafia-born.onrender.com');
-    const token = localStorage.getItem('auth_token');
+    let apiBase;
+    if (window.__MULTIPLAYER_SERVER_URL__) {
+      apiBase = window.__MULTIPLAYER_SERVER_URL__.replace(/^ws/, 'http').replace(/\/$/, '');
+    } else if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      apiBase = `http://${location.hostname}:3000`;
+    } else {
+      apiBase = 'https://mafia-born.onrender.com';
+    }
+    const token = localStorage.getItem('mb_auth_token');
     const resp = await fetch(`${apiBase}/api/admin/reports`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -17547,7 +17552,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.33.0';
+const CURRENT_VERSION = '1.33.1';
 const VERSION_UPDATES = {
   '1.30.0': {
     title: 'Server-Only Saves',
