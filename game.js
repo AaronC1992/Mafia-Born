@@ -1729,7 +1729,7 @@ window.hasTurfPerk = hasTurfPerk;
 
 // ==================== TURF DOMINANCE REWARDS ====================
 // Call after taking a zone to see if the player now owns every zone a family used to hold.
-function checkTurfDominance(justTakenZoneId) {
+function checkTurfDominance(_justTakenZoneId) {
   if (!player.turf.dominanceRewards) player.turf.dominanceRewards = [];
 
   Object.entries(RIVAL_FAMILIES).forEach(([famKey, fam]) => {
@@ -2380,9 +2380,7 @@ function processTurfAttack(zone, attackerName, attackStrength, player) {
     } else {
         result.rewards.money = Math.floor(zone.baseIncome * 0.5);
         result.rewards.respect = Math.floor(zone.baseIncome / 100);
-        (zone.defendingMembers || []).forEach(memberId => {
-            const member = player.gang.gangMembers.find(m => m.id === memberId);
-
+        (zone.defendingMembers || []).forEach(_memberId => {
         });
         if (Math.random() < 0.25 && zone.defendingMembers.length > 0) {
             const rand = player.gang.gangMembers.find(m => m.id === zone.defendingMembers[Math.floor(Math.random() * zone.defendingMembers.length)]);
@@ -6045,7 +6043,7 @@ function completeGangOperation(operationData) {
 }
 
 // Handle operation betrayal
-function handleOperationBetrayal(member, operation) {
+function handleOperationBetrayal(member, _operation) {
   const moneyLoss = Math.floor(player.money * 0.1); // 10% money loss
   player.money = Math.max(0, player.money - moneyLoss);
   player.heat += 5;
@@ -6635,7 +6633,7 @@ window.calculateTurfWinChance = calculateTurfWinChance;
 
 // -- Process casualties among gang members after a turf fight --
 // deathChance / injuryChance are base rates; actual chance per member is randomised.
-function processTurfAttackCasualties(won, gangMembers, zoneName) {
+function processTurfAttackCasualties(won, gangMembers, _zoneName) {
   const casualties = [];
   const injured = [];
   const active = gangMembers.filter(m => m.status === 'active');
@@ -6984,7 +6982,7 @@ function fortifyTurf(zoneId) {
 window.fortifyTurf = fortifyTurf;
 
 // Reduce global heat from turf screen
-function reduceHeatTurf(zoneId) {
+function reduceHeatTurf(_zoneId) {
   const heat = player.heat || 0;
   const cost = Math.max(1000, Math.floor(heat * 200));
   if (player.money < cost) { showBriefNotification(`Need $${cost.toLocaleString()}!`, 'danger'); return; }
@@ -8358,7 +8356,7 @@ function adminFullHeal() {
   showAdminPanel();
 }
 
-function adminClearCooldowns() {
+function adminClearCooldowns() { // eslint-disable-line no-unused-vars -- called from onclick
   player.jobCooldowns = {};
   showBriefNotification('Admin: All job cooldowns cleared!', 'success');
   logAction('[Admin] Job cooldowns cleared');
@@ -10654,7 +10652,7 @@ function trackJobPlaystyle(job, success = true) {
   }
 }
 
-function applySkillTreeBonuses(job, successChance) {
+function applySkillTreeBonuses(job, _successChance) {
   let bonuses = 0;
   const jobName = job.name.toLowerCase();
 
@@ -13960,7 +13958,7 @@ const menuUnlockConfig = [
   { id: 'options', fn: 'showOptions()', label: 'Settings', tip: 'Save, load & game options', level: 0 },
 ];
 
-function isMenuItemUnlocked(item) {
+function isMenuItemUnlocked(_item) {
   return true; // All buttons available from the start
 }
 
@@ -16734,7 +16732,7 @@ function showPortraitSelection() {
   document.body.appendChild(portraitScreen);
 }
 
-function selectPortrait(portraitFile, portraitLabel) {
+function selectPortrait(portraitFile, _portraitLabel) {
   // Save portrait data
   player.portrait = portraitFile;
 
@@ -17322,7 +17320,6 @@ function showTerritoryRelocation() {
     const resCount = terrData.residents ? terrData.residents.length : 0;
     const defRating = terrData.defenseRating || 100;
     const taxTotal = terrData.taxCollected || 0;
-    const isOnline = typeof onlineWorldState !== 'undefined' && onlineWorldState.isConnected;
     const myName = (typeof onlineWorldState !== 'undefined' && onlineWorldState.username) || '';
 
     // Check alliance membership
@@ -18966,7 +18963,7 @@ function buildStashHTML() {
   function renderCategory(title, icon, items) {
     if (items.length === 0) return `<div style="margin-bottom:15px;"><h3 style="color:#8a7a5a;">${icon} ${title} <small>(empty)</small></h3></div>`;
     let s = `<div style="margin-bottom:15px;"><h3 style="color:#e67e22;">${icon} ${title}</h3><div style="display:grid;gap:8px;">`;
-    items.forEach((item, idx) => {
+    items.forEach((item) => {
       const globalIdx = player.inventory.indexOf(item);
       const equipped = player.equippedWeapon === item || player.equippedArmor === item || player.equippedVehicle === item;
       const sellPrice = Math.floor((item.price || 0) * 0.4);
@@ -19767,7 +19764,7 @@ function showDeathScreen(causeOfDeath) {
   const propertiesOwned = player.realEstate ? player.realEstate.ownedProperties.length : 0;
   // Find highest skill across all trees
   let highestSkill = ['none', 0];
-  for (const [treeName, nodes] of Object.entries(player.skillTree)) {
+  for (const [, nodes] of Object.entries(player.skillTree)) {
     for (const [nodeName, rank] of Object.entries(nodes)) {
       if (rank > highestSkill[1]) highestSkill = [nodeName, rank];
     }
@@ -19898,7 +19895,7 @@ function generateDeathNewspaperData(causeOfDeath) {
   const businessCount = player.businesses ? player.businesses.length : 0;
   const propertiesOwned = player.realEstate ? player.realEstate.ownedProperties.length : 0;
   let highestSkill = ['None', 0];
-  for (const [treeName, nodes] of Object.entries(player.skillTree || {})) {
+  for (const [, nodes] of Object.entries(player.skillTree || {})) {
     for (const [nodeName, rank] of Object.entries(nodes)) {
       if (rank > highestSkill[1]) highestSkill = [nodeName, rank];
     }
@@ -22077,7 +22074,7 @@ function initializeSaveSystem() {
   }
 
   // Always save on page unload
-  window.addEventListener('beforeunload', function(e) {
+  window.addEventListener('beforeunload', function() {
     emergencySave();
   });
 
@@ -23306,7 +23303,6 @@ function showRivalsScreen() {
   hideAllScreens();
   document.getElementById('statistics-screen').style.display = 'block';
 
-  const rivals = player.rivalKingpins || RIVAL_KINGPINS;
   const playerRankings = {};
   COMPETITION_SYSTEM.leaderboardCategories.forEach(category => {
     playerRankings[category.id] = getPlayerRanking(category.id);
@@ -23989,7 +23985,7 @@ function retryServerConnection() {
       if (res.ok) return res.json();
       throw new Error('Server returned ' + res.status);
     })
-    .then(data => {
+    .then(() => {
       window._offlineMode = false;
       showBriefNotification('Connected to server!', 'success');
       // Remove offline buttons
@@ -23999,7 +23995,7 @@ function retryServerConnection() {
         connectToOnlineWorld();
       }
     })
-    .catch(err => {
+    .catch(() => {
       showBriefNotification('Server still unavailable. Try again later.', 'danger');
       document.querySelectorAll('.offline-retry-btn').forEach(b => {
         b.disabled = false;
