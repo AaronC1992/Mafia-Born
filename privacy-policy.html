@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Mafia Born</title>
+    <link rel="icon" href="GameLogo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Playfair+Display+SC:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0d0b07;
+            --color-gold: #d4af37;
+            --color-gold-dim: #c0a062;
+            --color-cream: #f5e6c8;
+            --color-aged-cream: #e8d5b0;
+            --font-heading: 'Playfair Display SC', 'Georgia', serif;
+            --font-body: 'Libre Baskerville', 'Georgia', 'Times New Roman', serif;
+        }
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-cream);
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+        }
+        .legal-container {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+        .legal-back {
+            display: inline-block;
+            color: var(--color-gold);
+            text-decoration: none;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+        .legal-back:hover { text-decoration: underline; }
+        h1 {
+            font-family: var(--font-heading);
+            color: var(--color-gold);
+            font-size: 2em;
+            margin-bottom: 4px;
+        }
+        .legal-date {
+            color: var(--color-gold-dim);
+            font-size: 0.85em;
+            margin-bottom: 32px;
+        }
+        h2 {
+            font-family: var(--font-heading);
+            color: var(--color-gold);
+            font-size: 1.2em;
+            margin-top: 32px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 6px;
+        }
+        p, li { color: var(--color-aged-cream); font-size: 0.92em; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+        a { color: var(--color-gold); }
+        strong { color: var(--color-cream); }
+    </style>
+</head>
+<body>
+    <div class="legal-container">
+        <a href="index.html" class="legal-back">&larr; Back to Game</a>
+        <h1>Privacy Policy</h1>
+        <p class="legal-date">Effective: March 8, 2026</p>
+
+        <p>Mafia Born ("the Game", "we", "us") is a free browser-based game available at <strong>mafiaborn.com</strong>. This policy explains what information we collect, how we use it, and your rights regarding that information.</p>
+
+        <h2>1. Information We Collect</h2>
+
+        <p><strong>Account Information</strong></p>
+        <ul>
+            <li><strong>Username</strong> -- chosen by you at registration. This is visible to other players.</li>
+            <li><strong>Password</strong> -- stored as a salted, cryptographic hash (PBKDF2-SHA512). We never store or see your actual password.</li>
+            <li><strong>Account timestamps</strong> -- when your account was created and when you last logged in.</li>
+        </ul>
+
+        <p><strong>Game Data (Cloud Saves)</strong></p>
+        <ul>
+            <li>Your full game progress -- including player stats, inventory, money, territories, missions, and all other gameplay state -- is stored on our servers when you save to the cloud.</li>
+        </ul>
+
+        <p><strong>Bug Reports &amp; Suggestions</strong></p>
+        <ul>
+            <li>If you submit a bug report or suggestion, we store the report text, your player name, the report type, and your IP address.</li>
+        </ul>
+
+        <p><strong>IP Addresses</strong></p>
+        <ul>
+            <li>We temporarily process your IP address to enforce rate limits on login and registration (to prevent abuse). This data is held in memory only and is automatically discarded within 60 seconds.</li>
+            <li>IP addresses submitted with bug reports are stored persistently for abuse prevention.</li>
+        </ul>
+
+        <p><strong>Multiplayer Data</strong></p>
+        <ul>
+            <li>When playing online, certain game information is shared with other players in real time: your player name, level, reputation, current territory, crew/alliance membership, and chat messages you send.</li>
+        </ul>
+
+        <p><strong>Local Storage (Browser)</strong></p>
+        <ul>
+            <li>We store a session token, your username, and UI preferences (theme, mobile navigation settings, tutorial progress) in your browser's local storage. This data never leaves your device except for the session token used for authentication.</li>
+        </ul>
+
+        <h2>2. Information We Do NOT Collect</h2>
+        <ul>
+            <li>We do <strong>not</strong> collect your email address.</li>
+            <li>We do <strong>not</strong> use cookies.</li>
+            <li>We do <strong>not</strong> use any analytics services, tracking pixels, or advertising networks.</li>
+            <li>We do <strong>not</strong> collect payment or financial information.</li>
+            <li>We do <strong>not</strong> sell, rent, or share your data with any third parties.</li>
+        </ul>
+
+        <h2>3. How We Use Your Information</h2>
+        <ul>
+            <li><strong>Account &amp; authentication</strong> -- to let you log in and access your saved game across devices.</li>
+            <li><strong>Cloud saves</strong> -- to store and restore your game progress.</li>
+            <li><strong>Multiplayer</strong> -- to display your player in the online world and enable chat and cooperative gameplay.</li>
+            <li><strong>Abuse prevention</strong> -- to rate-limit login attempts and identify misuse via IP addresses.</li>
+            <li><strong>Bug fixes</strong> -- to review and act on submitted bug reports and suggestions.</li>
+        </ul>
+
+        <h2>4. Data Storage &amp; Security</h2>
+        <ul>
+            <li>Account data and cloud saves are stored in a MongoDB database hosted on secure infrastructure.</li>
+            <li>Passwords are hashed with PBKDF2-SHA512 using a unique random salt per account. We cannot retrieve your password.</li>
+            <li>All connections between your browser and our servers are encrypted via HTTPS/WSS (TLS).</li>
+            <li>Session tokens expire after 7 days and are automatically cleaned up.</li>
+        </ul>
+
+        <h2>5. Data Retention</h2>
+        <ul>
+            <li>Your account and cloud save data is retained for as long as your account exists.</li>
+            <li>Bug reports are retained indefinitely for quality improvement.</li>
+            <li>Rate-limit data is discarded automatically within 60 seconds.</li>
+        </ul>
+
+        <h2>6. Your Rights</h2>
+        <ul>
+            <li><strong>Delete your account</strong> -- you can permanently delete your account and all associated cloud save data at any time from the in-game account settings. This action is immediate and irreversible.</li>
+            <li><strong>Access your data</strong> -- you can view your game data via cloud save/load at any time.</li>
+            <li><strong>Request removal of bug reports</strong> -- contact us to request deletion of any bug reports you've submitted.</li>
+        </ul>
+
+        <h2>7. Children's Privacy</h2>
+        <p>Mafia Born is not directed at children under the age of 13. We do not knowingly collect information from children under 13. If you believe a child under 13 has created an account, please contact us and we will delete it.</p>
+
+        <h2>8. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date. Continued use of the Game after changes constitutes acceptance of the updated policy.</p>
+
+        <h2>9. Contact</h2>
+        <p>For privacy questions or data requests, you can reach us through the in-game bug report system or by opening an issue on our <a href="https://github.com/AaronC1992/Mafia-Born" target="_blank" rel="noopener">GitHub repository</a>.</p>
+    </div>
+</body>
+</html>

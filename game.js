@@ -17552,7 +17552,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.33.1';
+const CURRENT_VERSION = '1.33.2';
 const VERSION_UPDATES = {
   '1.30.0': {
     title: 'Server-Only Saves',

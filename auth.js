@@ -250,9 +250,11 @@ export function showAuthModal(onSuccessOrOpts) {
                     <label for="auth-confirm">Confirm Password</label>
                     <input type="password" id="auth-confirm" placeholder="Confirm password" maxlength="64" autocomplete="new-password" />
                 </div>
+                <p class="auth-info-note" id="auth-info-note" style="display:${startOnRegister ? 'block' : 'none'}; color:#8a7a5a; font-size:0.82em; margin:8px 0 4px; line-height:1.4;">This is just to save your game progress. No email required.</p>
                 <p class="auth-error" id="auth-error"></p>
                 <button class="auth-btn auth-btn-primary" id="auth-submit-btn">${startOnRegister ? 'Create Account' : 'Sign In'}</button>
                 <p class="auth-toggle" id="auth-toggle">${startOnRegister ? 'Already have an account? <span class="auth-link" id="auth-switch-link">Sign in</span>' : 'Don\'t have an account? <span class="auth-link" id="auth-switch-link">Create one</span>'}</p>
+                <p style="margin-top:12px; font-size:0.75em; color:#666;"><a href="privacy-policy.html" target="_blank" style="color:#8a7a5a;">Privacy Policy</a> &middot; <a href="terms-of-use.html" target="_blank" style="color:#8a7a5a;">Terms of Use</a></p>
             </div>
 
             <div id="auth-logged-in-area" style="display:none;">
@@ -281,6 +283,7 @@ export function showAuthModal(onSuccessOrOpts) {
     const passwordInput = document.getElementById('auth-password');
     const confirmInput = document.getElementById('auth-confirm');
     const confirmField = document.getElementById('auth-confirm-field');
+    const infoNote = document.getElementById('auth-info-note');
     const errorEl = document.getElementById('auth-error');
     const titleEl = document.getElementById('auth-modal-title');
     const subtitleEl = document.getElementById('auth-modal-subtitle');
@@ -309,12 +312,14 @@ export function showAuthModal(onSuccessOrOpts) {
             subtitleEl.textContent = 'Save your progress across devices';
             submitBtn.textContent = 'Create Account';
             confirmField.style.display = 'block';
+            infoNote.style.display = 'block';
             toggleEl.innerHTML = 'Already have an account? <span class="auth-link" id="auth-switch-link">Sign in</span>';
         } else {
             titleEl.textContent = 'Sign In';
             subtitleEl.textContent = 'Play across all your devices';
             submitBtn.textContent = 'Sign In';
             confirmField.style.display = 'none';
+            infoNote.style.display = 'none';
             toggleEl.innerHTML = 'Don\'t have an account? <span class="auth-link" id="auth-switch-link">Create one</span>';
         }
         errorEl.textContent = '';
