@@ -64,15 +64,26 @@ const ALLOWED_ORIGINS = [
 
 function getCorsHeaders(req) {
     const origin = req.headers.origin || '*';
-    return {
+    const headers = {
         'Access-Control-Allow-Origin': ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
         'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Max-Age': '86400'
     };
+    if (process.env.NODE_ENV === 'production') {
+        headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
+    }
+    return headers;
 }
 
 const server = http.createServer(async (req, res) => {
+    // HTTPS redirect in production
+    if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
+        res.writeHead(301, { 'Location': `https://${req.headers.host}${req.url}` });
+        res.end();
+        return;
+    }
+
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         res.writeHead(204, getCorsHeaders(req));
@@ -111,7 +122,7 @@ const server = http.createServer(async (req, res) => {
             let data = '';
             req.on('data', chunk => {
                 data += chunk;
-                if (data.length > 1e7) { reject(new Error('Payload too large')); req.destroy(); }
+                if (data.length > 2 * 1024 * 1024) { reject(new Error('Payload too large')); req.destroy(); }
             });
             req.on('end', () => {
                 try { resolve(JSON.parse(data)); }
@@ -433,9 +444,10 @@ const wss = new WebSocket.Server({
     // Accept WebSocket connections from allowed origins
     verifyClient: (info) => {
         const origin = info.origin || info.req.headers.origin || '';
-        // Allow all origins in development, check in production
-        if (!origin || origin === 'null') return true; // file:// or direct
-        return ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed)) || origin.includes('localhost');
+        if (!origin || origin === 'null') {
+            return process.env.NODE_ENV !== 'production';
+        }
+        return ALLOWED_ORIGINS.some(allowed => origin === allowed || origin.startsWith(allowed + '/'));
     }
 });
 
@@ -444,6 +456,17 @@ const HEARTBEAT_INTERVAL = 30000;
 const RATE_LIMIT_WINDOW = 5000; // 5 seconds
 const MAX_MESSAGES_PER_WINDOW = 5;
 const clientMessageHistory = new Map();
+
+// Safe WebSocket send wrapper
+function safeSend(ws, data, isRaw) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        try {
+            ws.send(isRaw ? data : JSON.stringify(data));
+        } catch (err) {
+            console.error('WebSocket send error:', err.message);
+        }
+    }
+}
 
 // Basic Profanity Filter (Expand as needed)
 const BAD_WORDS = ['admin', 'system', 'mod', 'moderator', 'fuck', 'shit', 'ass', 'bitch']; 
@@ -505,7 +528,7 @@ const jailTickInterval = setInterval(function jailTick() {
                 // Notify the specific client
                 const ws = clients.get(id);
                 if (ws && ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({ type: 'player_released', playerId: id, playerName: pName }));
+                    safeSend(ws, { type: 'player_released', playerId: id, playerName: pName });
                 }
             }
         }
@@ -914,7 +937,7 @@ wss.on('connection', (ws, _req) => {
     });
     
     // Send welcome message
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'connection_established',
         playerId: clientId,
         serverInfo: {
@@ -924,7 +947,7 @@ wss.on('connection', (ws, _req) => {
             // Use last persisted snapshot for initial info
             globalLeaderboard: persistedLeaderboard
         }
-    }));
+    });
 });
 
 // Handle client messages
@@ -1281,10 +1304,10 @@ function handlePlayerConnect(clientId, message, ws) {
                 const oldAlive = oldWs && oldWs.readyState === 1; // WebSocket.OPEN
                 if (oldAlive) {
                     // Old connection is still live — block this new one
-                    ws.send(JSON.stringify({
+                    safeSend(ws, {
                         type: 'session_blocked',
                         message: 'This account is already logged in on another session. Close the other tab or window first.'
-                    }));
+                    });
                     console.log(` Blocked duplicate session for "${authenticatedUser}" (existing: ${existingId}, blocked: ${clientId})`);
                     try { ws.close(); } catch (_e) { /* connection cleanup */ }
                     clients.delete(clientId);
@@ -1390,7 +1413,7 @@ function handlePlayerConnect(clientId, message, ws) {
     updateJailBots();
     
     // Send initial game state
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'world_update',
         playerCount: clients.size,
         cityDistricts: gameState.cityDistricts,
@@ -1401,7 +1424,7 @@ function handlePlayerConnect(clientId, message, ws) {
         weather: gameState.currentWeather,
         season: gameState.currentSeason,
         politics: sanitizePolitics()
-    }));
+    });
 
     // Send persisted crew/alliance/private chat history so chats survive logout
     {
@@ -1434,7 +1457,7 @@ function handlePlayerConnect(clientId, message, ws) {
         if (Object.keys(pmChats).length) chatHistory.privateChats = pmChats;
 
         if (Object.keys(chatHistory).length) {
-            ws.send(JSON.stringify({ type: 'chat_history', ...chatHistory, playerName: player.name }));
+            safeSend(ws, { type: 'chat_history', ...chatHistory, playerName: player.name });
         }
     }
     
@@ -1468,10 +1491,10 @@ function handlePlayerConnect(clientId, message, ws) {
         const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
         const valid = pendingNewspapers.filter(e => e.timestamp > sevenDaysAgo);
         if (valid.length > 0) {
-            ws.send(JSON.stringify({
+            safeSend(ws, {
                 type: 'pending_death_newspapers',
                 newspapers: valid
-            }));
+            });
         }
         gameState.offlineDeathNewspapers.delete(player.name);
         scheduleWorldSave();
@@ -1487,11 +1510,11 @@ function handleGlobalChat(clientId, message) {
     if (!checkRateLimit(clientId)) {
         const ws = clients.get(clientId);
         if (ws) {
-            ws.send(JSON.stringify({
+            safeSend(ws, {
                 type: 'system_message',
                 message: 'You are sending messages too fast. Please slow down.',
                 color: '#e74c3c'
-            }));
+            });
         }
         return;
     }
@@ -1504,11 +1527,11 @@ function handleGlobalChat(clientId, message) {
     if (isProfane(sanitizedMessage)) {
         const ws = clients.get(clientId);
         if (ws) {
-            ws.send(JSON.stringify({
+            safeSend(ws, {
                 type: 'system_message',
                 message: 'Please keep the chat clean.',
                 color: '#e74c3c'
-            }));
+            });
         }
         return; // Block the message entirely
     }
@@ -1552,13 +1575,13 @@ function handleTerritorySpawn(clientId, message) {
 
     const districtId = message.district;
     if (!districtId || !TERRITORY_IDS.includes(districtId)) {
-        if (ws) ws.send(JSON.stringify({ type: 'territory_spawn_result', success: false, error: 'Invalid district.' }));
+        safeSend(ws, { type: 'territory_spawn_result', success: false, error: 'Invalid district.' });
         return;
     }
 
     // Prevent double-spawn (player already has a territory)
     if (player.currentTerritory) {
-        if (ws) ws.send(JSON.stringify({ type: 'territory_spawn_result', success: false, error: 'Already spawned.' }));
+        safeSend(ws, { type: 'territory_spawn_result', success: false, error: 'Already spawned.' });
         return;
     }
 
@@ -1576,12 +1599,12 @@ function handleTerritorySpawn(clientId, message) {
     console.log(` ${player.name} spawned in ${districtId}`);
 
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'territory_spawn_result',
             success: true,
             district: districtId,
             territories: gameState.territories
-        }));
+        });
     }
 
     broadcastToAll({
@@ -1598,7 +1621,7 @@ function handleTerritoryMove(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws) ws.send(JSON.stringify({ type: 'territory_move_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'territory_move_result', success: false, error: err }); };
 
     const targetId = message.district;
     if (!targetId || !TERRITORY_IDS.includes(targetId)) return fail('Invalid district.');
@@ -1642,14 +1665,14 @@ function handleTerritoryMove(clientId, message) {
     console.log(` ${player.name} moved from ${oldId} to ${targetId} ($${moveCost})`);
 
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'territory_move_result',
             success: true,
             district: targetId,
             cost: moveCost,
             money: player.money,
             territories: gameState.territories
-        }));
+        });
     }
 
     broadcastToAll({
@@ -1665,10 +1688,10 @@ function handleTerritoryMove(clientId, message) {
 // Return full territory data to requesting client
 function handleTerritoryInfo(clientId, message, ws) {
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'territory_info',
         territories: gameState.territories
-    }));
+    });
 }
 
 // ==================== PHASE 2: TERRITORY OWNERSHIP CLAIM ====================
@@ -1683,7 +1706,7 @@ function handleTerritoryWar(clientId, message) {
     const attackerState = gameState.playerStates.get(clientId);
     if (!attacker || !attackerState) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws) ws.send(JSON.stringify({ type: 'territory_war_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'territory_war_result', success: false, error: err }); };
 
     // Cooldown
     const lastWar = territoryWarCooldowns.get(clientId) || 0;
@@ -1788,7 +1811,7 @@ function handleTerritoryWar(clientId, message) {
         console.log(`TERRITORY WAR: ${attacker.name} conquered ${districtId}${oldOwner ? ` from ${oldOwner}` : ''} (ATK ${attackScore} > DEF ${defenseScore})`);
 
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
+            safeSend(ws, {
                 type: 'territory_war_result',
                 success: true,
                 victory: true,
@@ -1802,19 +1825,19 @@ function handleTerritoryWar(clientId, message) {
                 newHealth: attackerState.health,
                 heat: attackerState.heat,
                 territories: gameState.territories
-            }));
+            });
         }
 
         // Notify defender
         if (defenderId) {
             const defWs = clients.get(defenderId);
             if (defWs && defWs.readyState === WebSocket.OPEN) {
-                defWs.send(JSON.stringify({
+                safeSend(defWs, {
                     type: 'territory_war_defense_lost',
                     district: districtId,
                     attackerName: attacker.name,
                     territories: gameState.territories
-                }));
+                });
             }
         }
 
@@ -1851,7 +1874,7 @@ function handleTerritoryWar(clientId, message) {
         console.log(` TERRITORY WAR FAILED: ${attacker.name} failed to take ${districtId} (ATK ${attackScore} ≤ DEF ${defenseScore})${jailed ? ' — ARRESTED' : ''}`);
 
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
+            safeSend(ws, {
                 type: 'territory_war_result',
                 success: true,
                 victory: false,
@@ -1869,18 +1892,18 @@ function handleTerritoryWar(clientId, message) {
                 error: jailed
                     ? `War for ${districtId.replace(/_/g, ' ')} failed! You were arrested.`
                     : `War for ${districtId.replace(/_/g, ' ')} failed! ${terr.owner}'s forces held the line.`
-            }));
+            });
         }
 
         // Notify defender (positive)
         if (defenderId) {
             const defWs = clients.get(defenderId);
             if (defWs && defWs.readyState === WebSocket.OPEN) {
-                defWs.send(JSON.stringify({
+                safeSend(defWs, {
                     type: 'territory_war_defense_held',
                     district: districtId,
                     attackerName: attacker.name
-                }));
+                });
             }
         }
 
@@ -1979,7 +2002,7 @@ function handleHeistJoin(clientId, message) {
     // Check if heist is open or player was invited
     if (!heist.open && !heist.participants.includes(clientId)) {
         const ws = clients.get(clientId);
-        if (ws) ws.send(JSON.stringify({ type: 'system_message', message: 'This heist is invite-only.', color: '#e74c3c' }));
+        safeSend(ws, { type: 'system_message', message: 'This heist is invite-only.', color: '#e74c3c' });
         return;
     }
     
@@ -2020,7 +2043,7 @@ function handlePlayerChallenge(clientId, message) {
     if (!challenger || !challengerState) return;
 
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'combat_result', error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'combat_result', error: err }); };
 
     // Find target
     let targetId = null, targetPlayer = null, targetState = null;
@@ -2257,14 +2280,14 @@ function handleHeistInvite(clientId, message) {
     // Send invite to the specific player
     const targetWs = clients.get(targetClientId);
     if (targetWs && targetWs.readyState === 1) {
-        targetWs.send(JSON.stringify({
+        safeSend(targetWs, {
             type: 'heist_invite',
             heistId: heist.id,
             inviterName: organizer ? organizer.name : 'Unknown',
             target: heist.target,
             reward: heist.reward,
             difficulty: heist.difficulty
-        }));
+        });
     }
 }
 
@@ -2316,7 +2339,7 @@ function handleCrewChat(clientId, message) {
     for (const member of playerCrew.members) {
         const ws = clients.get(member.playerId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'crew_chat', ...chatMsg }));
+            safeSend(ws, { type: 'crew_chat', ...chatMsg });
         }
     }
     scheduleWorldSave();
@@ -2343,7 +2366,7 @@ function handleAllianceChat(clientId, message) {
     for (const memberId of alliance.members) {
         const ws = clients.get(memberId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'alliance_chat', ...chatMsg }));
+            safeSend(ws, { type: 'alliance_chat', ...chatMsg });
         }
     }
     scheduleWorldSave();
@@ -2364,7 +2387,7 @@ function handlePrivateChat(clientId, message) {
     }
     if (!targetId) {
         const ws = clients.get(clientId);
-        if (ws) ws.send(JSON.stringify({ type: 'system_message', message: 'Player not found online.', color: '#e74c3c' }));
+        safeSend(ws, { type: 'system_message', message: 'Player not found online.', color: '#e74c3c' });
         return;
     }
 
@@ -2384,12 +2407,12 @@ function handlePrivateChat(clientId, message) {
     // Send to target
     const targetWs = clients.get(targetId);
     if (targetWs && targetWs.readyState === 1) {
-        targetWs.send(JSON.stringify({ type: 'private_chat', ...chatMsg }));
+        safeSend(targetWs, { type: 'private_chat', ...chatMsg });
     }
     // Echo back to sender so they see their own message
     const senderWs = clients.get(clientId);
     if (senderWs && senderWs.readyState === 1) {
-        senderWs.send(JSON.stringify({ type: 'private_chat', ...chatMsg }));
+        safeSend(senderWs, { type: 'private_chat', ...chatMsg });
     }
     scheduleWorldSave();
 }
@@ -2594,12 +2617,12 @@ function handleJailbreakAttempt(clientId, message) {
         // Notify target player if they're online
         const targetClient = clients.get(message.targetPlayerId);
         if (targetClient && targetClient.readyState === WebSocket.OPEN) {
-            targetClient.send(JSON.stringify({
+            safeSend(targetClient, {
                 type: 'jailbreak_success',
                 helperName: helper.name,
                 helperId: clientId,
                 message: `${helper.name} successfully broke you out of jail!`
-            }));
+            });
         }
         
         // Broadcast successful jailbreak
@@ -2627,11 +2650,11 @@ function handleJailbreakAttempt(clientId, message) {
             // Notify helper
             const helperClient = clients.get(clientId);
             if (helperClient && helperClient.readyState === WebSocket.OPEN) {
-                helperClient.send(JSON.stringify({
+                safeSend(helperClient, {
                     type: 'jailbreak_failed_arrested',
                     jailTime: helperState.jailTime,
                     message: 'Jailbreak failed and you were caught! You\'ve been arrested.'
-                }));
+                });
             }
             
             addGlobalChatMessage('System', ` ${helper.name} failed to break out ${targetName} and was arrested!`, '#e74c3c');
@@ -2728,7 +2751,7 @@ function buildJailRoster() {
 function sendJailRoster(clientId, ws) {
     updateJailBots();
     if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(buildJailRoster()));
+        safeSend(ws, buildJailRoster());
     }
 }
 
@@ -2748,11 +2771,11 @@ function handleJailbreakBot(clientId, message) {
     if (helperState.inJail) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
+            safeSend(ws, {
                 type: 'jailbreak_bot_result',
                 success: false,
                 message: "You can't help others while you're locked up!"
-            }));
+            });
         }
         return;
     }
@@ -2761,11 +2784,11 @@ function handleJailbreakBot(clientId, message) {
     if (botIndex === -1) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
+            safeSend(ws, {
                 type: 'jailbreak_bot_result',
                 success: false,
                 message: 'That inmate is no longer in jail.'
-            }));
+            });
         }
         return;
     }
@@ -2791,14 +2814,14 @@ function handleJailbreakBot(clientId, message) {
         console.log(` Bot jailbreak: ${helper.name} freed ${bot.name}`);
 
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
+            safeSend(ws, {
                 type: 'jailbreak_bot_result',
                 success: true,
                 botName: bot.name,
                 expReward,
                 cashReward,
                 message: `You freed ${bot.name}! +${Math.round(expReward * 0.1)} Rep, +$${cashReward}`
-            }));
+            });
         }
 
         addGlobalChatMessage('System', ` ${helper.name} busted ${bot.name} out of jail!`, '#2ecc71');
@@ -2826,13 +2849,13 @@ function handleJailbreakBot(clientId, message) {
             console.log(` Bot jailbreak failed: ${helper.name} was arrested`);
 
             if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
+                safeSend(ws, {
                     type: 'jailbreak_bot_result',
                     success: false,
                     arrested: true,
                     jailTime: helperState.jailTime,
                     message: `Failed to break out ${bot.name} — you got caught!`
-                }));
+                });
             }
 
             addGlobalChatMessage('System', ` ${helper.name} was caught trying to break out ${bot.name}!`, '#e74c3c');
@@ -2841,12 +2864,12 @@ function handleJailbreakBot(clientId, message) {
             console.log(` Bot jailbreak failed: ${helper.name} escaped`);
 
             if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
+                safeSend(ws, {
                     type: 'jailbreak_bot_result',
                     success: false,
                     arrested: false,
                     message: `Failed to break out ${bot.name}, but you slipped away undetected.`
-                }));
+                });
             }
 
             addGlobalChatMessage('System', ` ${helper.name} failed to break out ${bot.name} but escaped.`, '#f39c12');
@@ -2878,7 +2901,7 @@ function sendWorldState(clientId, ws) {
     pruneExpiredBounties();
     checkSeasonRotation();
 
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'world_update',
         playerCount: gameState.players.size,
         playerStates: playerStatesObj,
@@ -2890,7 +2913,7 @@ function sendWorldState(clientId, ws) {
         seasonNumber: gameState.season.number,
         seasonEndsAt: gameState.season.endsAt,
         politics: sanitizePolitics()
-    }));
+    });
 }
 
 // ==================== GIFT / MONEY TRANSFER ====================
@@ -2916,12 +2939,12 @@ function handleSendGift(senderId, message) {
     if (targetState) { targetState.money = targetPlayer.money; targetState.lastUpdate = Date.now(); }
 
     if (targetClient.readyState === WebSocket.OPEN) {
-        targetClient.send(JSON.stringify({
+        safeSend(targetClient, {
             type: 'gift_received',
             senderName: sender.name,
             amount: amount,
             message: `${sender.name} sent you $${amount.toLocaleString()} as a thank-you gift!`
-        }));
+        });
     }
 
     addGlobalChatMessage('System', ` ${sender.name} sent a $${amount.toLocaleString()} gift to ${targetPlayer.name}!`, '#c0a062');
@@ -2946,7 +2969,7 @@ function handleJobIntent(clientId, message) {
     if (!jobDef) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'job_result', jobId, success: false, error: 'Unknown job' }));
+            safeSend(ws, { type: 'job_result', jobId, success: false, error: 'Unknown job' });
         }
         return;
     }
@@ -2954,7 +2977,7 @@ function handleJobIntent(clientId, message) {
     // Validation: jail
     if (ps.inJail) {
         const ws = clients.get(clientId);
-        if (ws) ws.send(JSON.stringify({ type: 'job_result', jobId, success: false, error: 'Player in jail' }));
+        safeSend(ws, { type: 'job_result', jobId, success: false, error: 'Player in jail' });
         return;
     }
 
@@ -2989,14 +3012,14 @@ function handleJobIntent(clientId, message) {
                     // Notify territory owner of tax income
                     const ownerWs = clients.get(ownerId);
                     if (ownerWs && ownerWs.readyState === WebSocket.OPEN) {
-                        ownerWs.send(JSON.stringify({
+                        safeSend(ownerWs, {
                             type: 'territory_tax_income',
                             from: player.name,
                             district: playerTerritory,
                             amount: taxAmount,
                             newMoney: ownerPlayer.money,
                             totalCollected: terr.taxCollected
-                        }));
+                        });
                     }
                     break;
                 }
@@ -3028,7 +3051,7 @@ function handleJobIntent(clientId, message) {
     // Send authoritative result to requesting client only
     const ws = clients.get(clientId);
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'job_result',
             jobId,
             success: true,
@@ -3043,7 +3066,7 @@ function handleJobIntent(clientId, message) {
             money: ps.money,
             reputation: ps.reputation,
             heat: ps.heat
-        }));
+        });
     }
 
     // If jailed, broadcast arrest to others
@@ -3090,7 +3113,7 @@ function handleBusinessIncomeTax(clientId, message) {
             // Notify territory owner
             const ownerWs = clients.get(ownerId);
             if (ownerWs && ownerWs.readyState === WebSocket.OPEN) {
-                ownerWs.send(JSON.stringify({
+                safeSend(ownerWs, {
                     type: 'territory_tax_income',
                     from: player.name,
                     district: district,
@@ -3098,7 +3121,7 @@ function handleBusinessIncomeTax(clientId, message) {
                     source: 'business',
                     newMoney: ownerPlayer.money,
                     totalCollected: terr.taxCollected
-                }));
+                });
             }
             break;
         }
@@ -3107,12 +3130,12 @@ function handleBusinessIncomeTax(clientId, message) {
     // Acknowledge to sender
     const ws = clients.get(clientId);
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'business_income_tax_result',
             success: true,
             district: district,
             taxAmount: safeTax
-        }));
+        });
     }
 
     scheduleWorldSave();
@@ -3206,7 +3229,7 @@ function executeHeist(heist) {
             // Send personalized result to each participant
             const ws = clients.get(participantId);
             if (ws && ws.readyState === 1) {
-                ws.send(JSON.stringify({
+                safeSend(ws, {
                     type: 'heist_completed',
                     heistId: heist.id,
                     success: true,
@@ -3218,7 +3241,7 @@ function executeHeist(heist) {
                     roles: participantRoles,
                     driverVehicle: driverVehicleName,
                     worldMessage: ` Heist on ${heist.target} was successful! Crew: ${participantNames}`
-                }));
+                });
             }
         });
         
@@ -3250,7 +3273,7 @@ function executeHeist(heist) {
             // Send personalized result to each participant
             const ws = clients.get(participantId);
             if (ws && ws.readyState === 1) {
-                ws.send(JSON.stringify({
+                safeSend(ws, {
                     type: 'heist_completed',
                     heistId: heist.id,
                     success: false,
@@ -3261,7 +3284,7 @@ function executeHeist(heist) {
                     roles: participantRoles,
                     driverVehicle: driverVehicleName,
                     worldMessage: ` Heist on ${heist.target} failed! The crew barely escaped.`
-                }));
+                });
             }
         });
         
@@ -3288,8 +3311,8 @@ function executeHeist(heist) {
 function broadcastToAll(message, excludeClientId = null) {
     const data = JSON.stringify(message);
     clients.forEach((client, clientId) => {
-        if (client.readyState === WebSocket.OPEN && clientId !== excludeClientId) {
-            client.send(data);
+        if (clientId !== excludeClientId) {
+            safeSend(client, data, true);
         }
     });
 }
@@ -3385,13 +3408,13 @@ function notifyCrewAllianceOfDeath(deadClientId, newspaperData) {
             const ws = clients.get(member.playerId);
             if (ws && ws.readyState === 1) {
                 // Online — send targeted crew death notification
-                ws.send(JSON.stringify({
+                safeSend(ws, {
                     type: 'crew_death_newspaper',
                     newspaperData: newspaperData,
                     context: 'crew',
                     groupName: deadCrew.name,
                     groupTag: deadCrew.tag
-                }));
+                });
             } else {
                 // Offline — queue for delivery on login
                 queueOfflineDeathNewspaper(member.name, {
@@ -3413,13 +3436,13 @@ function notifyCrewAllianceOfDeath(deadClientId, newspaperData) {
             const ws = clients.get(memberId);
             if (ws && ws.readyState === 1) {
                 // Online — send targeted alliance death notification
-                ws.send(JSON.stringify({
+                safeSend(ws, {
                     type: 'crew_death_newspaper',
                     newspaperData: newspaperData,
                     context: 'alliance',
                     groupName: deadAlliance.name,
                     groupTag: deadAlliance.tag
-                }));
+                });
             } else {
                 // Offline — resolve name from memberNames lookup
                 const memberName = (deadAlliance.memberNames && deadAlliance.memberNames[memberId])
@@ -3526,7 +3549,7 @@ function handleAdminKillPlayer(clientId, message) {
         console.log(` Admin kill rejected: ${username || 'unknown'} is not admin`);
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'system_message', message: 'You do not have admin privileges.', color: '#e74c3c' }));
+            safeSend(ws, { type: 'system_message', message: 'You do not have admin privileges.', color: '#e74c3c' });
         }
         return;
     }
@@ -3542,7 +3565,7 @@ function handleAdminKillPlayer(clientId, message) {
     if (!targetPlayer || !targetWs || targetWs.readyState !== 1) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'system_message', message: 'Target player not found or disconnected.', color: '#e74c3c' }));
+            safeSend(ws, { type: 'system_message', message: 'Target player not found or disconnected.', color: '#e74c3c' });
         }
         return;
     }
@@ -3550,11 +3573,11 @@ function handleAdminKillPlayer(clientId, message) {
     console.log(` ADMIN KILL: ${username} executed ${targetPlayer.name} (${targetPlayerId}) — "${causeOfDeath}"`);
 
     // Send kill command to the target client — includes basic player info for newspaper
-    targetWs.send(JSON.stringify({
+    safeSend(targetWs, {
         type: 'admin_killed',
         causeOfDeath: causeOfDeath,
         killedBy: 'The Don'
-    }));
+    });
 
     // Build a server-side newspaper for the broadcast to all other clients
     const serverNewspaper = {
@@ -3601,7 +3624,7 @@ function handleAdminKillPlayer(clientId, message) {
     // Confirm to admin
     const adminWs = clients.get(clientId);
     if (adminWs && adminWs.readyState === 1) {
-        adminWs.send(JSON.stringify({ type: 'system_message', message: `Kill order executed: ${targetPlayer.name} is dead.`, color: '#c0a040' }));
+        safeSend(adminWs, { type: 'system_message', message: `Kill order executed: ${targetPlayer.name} is dead.`, color: '#c0a040' });
     }
 }
 
@@ -3625,7 +3648,7 @@ function handleAssassinationAttempt(clientId, message) {
         const secs = remaining % 60;
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'assassination_result', success: false, error: `You must wait ${mins}m ${secs}s before ordering another hit.`, cooldownRemaining: remaining }));
+            safeSend(ws, { type: 'assassination_result', success: false, error: `You must wait ${mins}m ${secs}s before ordering another hit.`, cooldownRemaining: remaining });
         }
         return;
     }
@@ -3648,7 +3671,7 @@ function handleAssassinationAttempt(clientId, message) {
     if (!target || !targetState) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'assassination_result', success: false, error: 'Target not found or offline.' }));
+            safeSend(ws, { type: 'assassination_result', success: false, error: 'Target not found or offline.' });
         }
         return;
     }
@@ -3657,7 +3680,7 @@ function handleAssassinationAttempt(clientId, message) {
     if (targetState.inJail) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'assassination_result', success: false, error: 'Target is in jail — protected by the feds.' }));
+            safeSend(ws, { type: 'assassination_result', success: false, error: 'Target is in jail — protected by the feds.' });
         }
         return;
     }
@@ -3666,7 +3689,7 @@ function handleAssassinationAttempt(clientId, message) {
     if (attackerState.inJail) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'assassination_result', success: false, error: 'You can\'t plan a hit from behind bars.' }));
+            safeSend(ws, { type: 'assassination_result', success: false, error: 'You can\'t plan a hit from behind bars.' });
         }
         return;
     }
@@ -3684,21 +3707,21 @@ function handleAssassinationAttempt(clientId, message) {
     if (gunCount < 1) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'assassination_result', success: false, error: 'You need at least one gun to attempt a hit.' }));
+            safeSend(ws, { type: 'assassination_result', success: false, error: 'You need at least one gun to attempt a hit.' });
         }
         return;
     }
     if (bulletsSent < 3) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'assassination_result', success: false, error: 'You need at least 3 bullets to attempt a hit.' }));
+            safeSend(ws, { type: 'assassination_result', success: false, error: 'You need at least 3 bullets to attempt a hit.' });
         }
         return;
     }
     if (vehicleCount < 1) {
         const ws = clients.get(clientId);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'assassination_result', success: false, error: 'You need a getaway vehicle to attempt a hit.' }));
+            safeSend(ws, { type: 'assassination_result', success: false, error: 'You need a getaway vehicle to attempt a hit.' });
         }
         return;
     }
@@ -3814,7 +3837,7 @@ function handleAssassinationAttempt(clientId, message) {
         // Notify attacker
         const atkWs = clients.get(clientId);
         if (atkWs && atkWs.readyState === 1) {
-            atkWs.send(JSON.stringify({
+            safeSend(atkWs, {
                 type: 'assassination_result',
                 success: true,
                 targetName: target.name,
@@ -3831,19 +3854,19 @@ function handleAssassinationAttempt(clientId, message) {
                 gangMembersLost: gangMembersLost,
                 cooldownSeconds: ASSASSINATION_COOLDOWN_MS / 1000,
                 territoriesSeized: territoriesSeized
-            }));
+            });
         }
 
         // Notify target
         const tgtWs = clients.get(targetId);
         if (tgtWs && tgtWs.readyState === 1) {
-            tgtWs.send(JSON.stringify({
+            safeSend(tgtWs, {
                 type: 'assassination_victim',
                 attackerName: attacker.name,
                 stolenAmount: stolenAmount,
                 stealPercent: stealPercent,
                 newMoney: target.money
-            }));
+            });
         }
 
         // Broadcast to everyone
@@ -3876,7 +3899,7 @@ function handleAssassinationAttempt(clientId, message) {
         // Notify attacker
         const atkWs = clients.get(clientId);
         if (atkWs && atkWs.readyState === 1) {
-            atkWs.send(JSON.stringify({
+            safeSend(atkWs, {
                 type: 'assassination_result',
                 success: false,
                 targetName: target.name,
@@ -3893,16 +3916,16 @@ function handleAssassinationAttempt(clientId, message) {
                 error: arrested
                     ? `Hit on ${target.name} failed! You were spotted and arrested.`
                     : `Hit on ${target.name} failed! You escaped but lost reputation.`
-            }));
+            });
         }
 
         // Notify target they were targeted
         const tgtWs = clients.get(targetId);
         if (tgtWs && tgtWs.readyState === 1) {
-            tgtWs.send(JSON.stringify({
+            safeSend(tgtWs, {
                 type: 'assassination_survived',
                 attackerName: attacker.name
-            }));
+            });
         }
 
         // Broadcast
@@ -3932,7 +3955,7 @@ function handleAllianceCreate(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'alliance_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'alliance_result', success: false, error: err }); };
 
     if (findPlayerAlliance(clientId)) return fail('You are already in an alliance. Leave first.');
 
@@ -3971,7 +3994,7 @@ function handleAllianceCreate(clientId, message) {
     console.log(` ALLIANCE CREATED: [${tag}] ${name} by ${player.name}`);
 
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'created', alliance: sanitizeAlliance(alliance) }));
+        safeSend(ws, { type: 'alliance_result', success: true, action: 'created', alliance: sanitizeAlliance(alliance) });
     }
 
     addGlobalChatMessage('System', ` ${player.name} founded the alliance [${tag}] ${name}!`, '#c0a062');
@@ -3983,7 +4006,7 @@ function handleAllianceInvite(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'alliance_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'alliance_result', success: false, error: err }); };
 
     const alliance = findPlayerAlliance(clientId);
     if (!alliance) return fail('You are not in an alliance.');
@@ -4002,17 +4025,17 @@ function handleAllianceInvite(clientId, message) {
     // Send invite to target
     const tgtWs = clients.get(targetId);
     if (tgtWs && tgtWs.readyState === 1) {
-        tgtWs.send(JSON.stringify({
+        safeSend(tgtWs, {
             type: 'alliance_invite',
             allianceId: alliance.id,
             allianceName: alliance.name,
             allianceTag: alliance.tag,
             inviterName: player.name
-        }));
+        });
     }
 
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'invited', targetPlayer: targetName }));
+        safeSend(ws, { type: 'alliance_result', success: true, action: 'invited', targetPlayer: targetName });
     }
 }
 
@@ -4020,7 +4043,7 @@ function handleAllianceJoin(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'alliance_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'alliance_result', success: false, error: err }); };
 
     if (findPlayerAlliance(clientId)) return fail('You are already in an alliance.');
 
@@ -4038,7 +4061,7 @@ function handleAllianceJoin(clientId, message) {
     alliance.members.forEach(mId => {
         const mWs = clients.get(mId);
         if (mWs && mWs.readyState === 1) {
-            mWs.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'member_joined', alliance: sanitizeAlliance(alliance), newMember: player.name }));
+            safeSend(mWs, { type: 'alliance_result', success: true, action: 'member_joined', alliance: sanitizeAlliance(alliance), newMember: player.name });
         }
     });
 
@@ -4050,7 +4073,7 @@ function handleAllianceLeave(clientId, _message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'alliance_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'alliance_result', success: false, error: err }); };
 
     const alliance = findPlayerAlliance(clientId);
     if (!alliance) return fail('You are not in an alliance.');
@@ -4073,12 +4096,12 @@ function handleAllianceLeave(clientId, _message) {
     alliance.members.forEach(mId => {
         const mWs = clients.get(mId);
         if (mWs && mWs.readyState === 1) {
-            mWs.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'member_left', alliance: sanitizeAlliance(alliance), leftMember: player.name }));
+            safeSend(mWs, { type: 'alliance_result', success: true, action: 'member_left', alliance: sanitizeAlliance(alliance), leftMember: player.name });
         }
     });
 
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'left', allianceName: alliance.name }));
+        safeSend(ws, { type: 'alliance_result', success: true, action: 'left', allianceName: alliance.name });
     }
 
     console.log(` ${player.name} left [${alliance.tag}] ${alliance.name}`);
@@ -4089,7 +4112,7 @@ function handleAllianceKick(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'alliance_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'alliance_result', success: false, error: err }); };
 
     const alliance = findPlayerAlliance(clientId);
     if (!alliance) return fail('You are not in an alliance.');
@@ -4108,14 +4131,14 @@ function handleAllianceKick(clientId, message) {
     // Notify kicked player
     const tgtWs = clients.get(targetId);
     if (tgtWs && tgtWs.readyState === 1) {
-        tgtWs.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'kicked', allianceName: alliance.name }));
+        safeSend(tgtWs, { type: 'alliance_result', success: true, action: 'kicked', allianceName: alliance.name });
     }
 
     // Notify remaining members
     alliance.members.forEach(mId => {
         const mWs = clients.get(mId);
         if (mWs && mWs.readyState === 1) {
-            mWs.send(JSON.stringify({ type: 'alliance_result', success: true, action: 'member_kicked', alliance: sanitizeAlliance(alliance), kickedMember: message.targetPlayer }));
+            safeSend(mWs, { type: 'alliance_result', success: true, action: 'member_kicked', alliance: sanitizeAlliance(alliance), kickedMember: message.targetPlayer });
         }
     });
 
@@ -4155,7 +4178,7 @@ function handleAllianceDiscipline(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'alliance_discipline_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'alliance_discipline_result', success: false, error: err }); };
 
     const alliance = findPlayerAlliance(clientId);
     if (!alliance) return fail('You are not in an alliance.');
@@ -4198,7 +4221,7 @@ function handleAllianceDiscipline(clientId, message) {
     // Send targeted notification to the victim
     const tgtWs = clients.get(targetId);
     if (tgtWs && tgtWs.readyState === 1) {
-        tgtWs.send(JSON.stringify({
+        safeSend(tgtWs, {
             type: 'alliance_discipline_result',
             success: true,
             action: 'received',
@@ -4209,12 +4232,12 @@ function handleAllianceDiscipline(clientId, message) {
             allianceName: alliance.name,
             allianceTag: alliance.tag,
             reason: reason
-        }));
+        });
     }
 
     // Confirm to the leader
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'alliance_discipline_result',
             success: true,
             action: 'issued',
@@ -4223,7 +4246,7 @@ function handleAllianceDiscipline(clientId, message) {
             icon: disciplineType.icon,
             targetPlayer: targetName,
             reason: reason
-        }));
+        });
     }
 
     // Notify other alliance members
@@ -4231,7 +4254,7 @@ function handleAllianceDiscipline(clientId, message) {
         if (mId === clientId || mId === targetId) return;
         const mWs = clients.get(mId);
         if (mWs && mWs.readyState === 1) {
-            mWs.send(JSON.stringify({
+            safeSend(mWs, {
                 type: 'alliance_discipline_result',
                 success: true,
                 action: 'witnessed',
@@ -4242,7 +4265,7 @@ function handleAllianceDiscipline(clientId, message) {
                 targetPlayer: targetName,
                 allianceName: alliance.name,
                 reason: reason
-            }));
+            });
         }
     });
 
@@ -4385,19 +4408,19 @@ function handlePoliticsInfo(clientId) {
     const ws = clients.get(clientId);
     if (!ws || ws.readyState !== 1) return;
 
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'politics_info_result',
         politics: sanitizePolitics(),
         isTopDon: gameState.politics.topDonClientId === clientId,
         cooldownRemaining: Math.max(0, (gameState.politics.policyChangedAt + POLICY_CHANGE_COOLDOWN_MS) - Date.now())
-    }));
+    });
 }
 
 function handlePoliticsSetPolicy(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'politics_policy_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'politics_policy_result', success: false, error: err }); };
 
     // Must be the Top Don
     if (gameState.politics.topDonClientId !== clientId) {
@@ -4430,14 +4453,14 @@ function handlePoliticsSetPolicy(clientId, message) {
 
     // Notify the Top Don
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'politics_policy_result',
             success: true,
             policy: policy,
             oldValue: oldValue,
             newValue: numVal,
             cooldownRemaining: POLICY_CHANGE_COOLDOWN_MS
-        }));
+        });
     }
 
     // Broadcast to everyone
@@ -4485,19 +4508,19 @@ function handleAllianceInfo(clientId, _message) {
         }
     }
 
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'alliance_info_result',
         myAlliance: alliance ? sanitizeAlliance(alliance) : null,
         allAlliances: allAlliances,
         allianceTerritories: allianceTerritories
-    }));
+    });
 }
 
 function handleAllianceDeposit(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'alliance_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'alliance_result', success: false, error: err }); };
 
     const alliance = findPlayerAlliance(clientId);
     if (!alliance) return fail('You are not in an alliance.');
@@ -4522,7 +4545,7 @@ function handleAllianceDeposit(clientId, message) {
             };
             // Send the depositor their updated money balance
             if (mId === clientId) payload.newMoney = player.money;
-            mWs.send(JSON.stringify(payload));
+            safeSend(mWs, payload);
         }
     });
 
@@ -4561,7 +4584,7 @@ function handlePostBounty(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'bounty_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'bounty_result', success: false, error: err }); };
 
     const targetName = (message.targetPlayer || '').trim();
     const reward = Math.max(0, Math.min(parseInt(message.reward) || 0, BOUNTY_MAX));
@@ -4611,19 +4634,19 @@ function handlePostBounty(clientId, message) {
     console.log(` BOUNTY POSTED: ${player.name} placed $${reward.toLocaleString()} bounty on ${targetName}`);
 
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({ type: 'bounty_result', success: true, action: 'posted', bounty: bounty, newMoney: player.money }));
+        safeSend(ws, { type: 'bounty_result', success: true, action: 'posted', bounty: bounty, newMoney: player.money });
     }
 
     // Notify target
     const tgtWs = clients.get(targetId);
     if (tgtWs && tgtWs.readyState === 1) {
-        tgtWs.send(JSON.stringify({
+        safeSend(tgtWs, {
             type: 'bounty_alert',
             bounty: bounty,
             message: anonymous
                 ? `Someone put a $${reward.toLocaleString()} bounty on your head! Watch your back...`
                 : `${player.name} put a $${reward.toLocaleString()} bounty on your head!`
-        }));
+        });
     }
 
     addGlobalChatMessage('System', anonymous
@@ -4637,7 +4660,7 @@ function handleCancelBounty(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!player) return;
     const ws = clients.get(clientId);
-    const fail = (err) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'bounty_result', success: false, error: err })); };
+    const fail = (err) => { safeSend(ws, { type: 'bounty_result', success: false, error: err }); };
 
     const bountyIdx = gameState.bounties.findIndex(b => b.id === message.bountyId && b.posterId === clientId);
     if (bountyIdx === -1) return fail('Bounty not found or you are not the poster.');
@@ -4652,7 +4675,7 @@ function handleCancelBounty(clientId, message) {
     gameState.bounties.splice(bountyIdx, 1);
 
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({ type: 'bounty_result', success: true, action: 'cancelled', refund: refund, newMoney: player.money }));
+        safeSend(ws, { type: 'bounty_result', success: true, action: 'cancelled', refund: refund, newMoney: player.money });
     }
 
     console.log(` ${player.name} cancelled bounty on ${bounty.targetName} (refund: $${refund})`);
@@ -4665,7 +4688,7 @@ function handleBountyList(clientId, _message) {
 
     pruneExpiredBounties();
 
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'bounty_list_result',
         bounties: gameState.bounties.map(b => ({
             id: b.id,
@@ -4678,7 +4701,7 @@ function handleBountyList(clientId, _message) {
             expiresAt: b.expiresAt,
             timeLeft: Math.max(0, b.expiresAt - Date.now())
         }))
-    }));
+    });
 }
 
 function autoClaimBounty(winnerId, loserId) {
@@ -4804,7 +4827,7 @@ function handleSeasonInfo(clientId, _message) {
     }
     topRatings.sort((a, b) => b.elo - a.elo);
 
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'season_info_result',
         season: {
             number: gameState.season.number,
@@ -4814,7 +4837,7 @@ function handleSeasonInfo(clientId, _message) {
         },
         myRating: { elo: myRating.elo, tier: myTier.name, icon: myTier.icon, wins: myRating.wins, losses: myRating.losses },
         topPlayers: topRatings.slice(0, 10)
-    }));
+    });
 }
 
 function checkSeasonRotation() {
@@ -4866,7 +4889,7 @@ function handleMarketList(clientId, message) {
 
     const fail = (err) => {
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'market_error', error: err }));
+            safeSend(ws, { type: 'market_error', error: err });
         }
     };
 
@@ -4921,14 +4944,14 @@ function handleMarketList(clientId, message) {
 
     // Confirm to seller
     if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'market_listed',
             category: category,
             itemName: itemName,
             quantity: quantity,
             price: listing.price,
             listings: gameState.playerMarket
-        }));
+        });
     }
 
     addGlobalChatMessage('System', ` ${seller.name} listed ${displayQty}${itemName} for $${listing.price.toLocaleString()} on the Player Market!`, '#a08850');
@@ -4942,7 +4965,7 @@ function handleMarketBuy(clientId, message) {
 
     const fail = (err) => {
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'market_error', error: err }));
+            safeSend(ws, { type: 'market_error', error: err });
         }
     };
 
@@ -4980,7 +5003,7 @@ function handleMarketBuy(clientId, message) {
 
     // Notify buyer
     if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'market_purchased',
             category: listing.category,
             itemName: listing.itemName,
@@ -4989,13 +5012,13 @@ function handleMarketBuy(clientId, message) {
             price: listing.price,
             sellerName: listing.sellerName,
             listings: gameState.playerMarket
-        }));
+        });
     }
 
     // Notify seller
     const sellerWs = clients.get(listing.sellerId);
     if (sellerWs && sellerWs.readyState === WebSocket.OPEN) {
-        sellerWs.send(JSON.stringify({
+        safeSend(sellerWs, {
             type: 'market_sold',
             category: listing.category,
             itemName: listing.itemName,
@@ -5003,7 +5026,7 @@ function handleMarketBuy(clientId, message) {
             buyerName: buyer.name,
             amount: sellerReceives,
             listings: gameState.playerMarket
-        }));
+        });
     }
 
     addGlobalChatMessage('System', ` ${buyer.name} bought ${displayQty}${listing.itemName} from ${listing.sellerName} for $${listing.price.toLocaleString()}!`, '#27ae60');
@@ -5017,7 +5040,7 @@ function handleMarketCancel(clientId, message) {
 
     const fail = (err) => {
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'market_error', error: err }));
+            safeSend(ws, { type: 'market_error', error: err });
         }
     };
 
@@ -5032,14 +5055,14 @@ function handleMarketCancel(clientId, message) {
 
     // Return item to seller
     if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'market_cancelled',
             category: listing.category,
             itemName: listing.itemName,
             itemData: listing.itemData,
             quantity: listing.quantity,
             listings: gameState.playerMarket
-        }));
+        });
     }
 }
 
@@ -5052,10 +5075,10 @@ function handleMarketGetListings(clientId) {
     const expiry = 24 * 60 * 60 * 1000;
     gameState.playerMarket = gameState.playerMarket.filter(l => (now - l.listedAt) < expiry);
 
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'market_listings',
         listings: gameState.playerMarket
-    }));
+    });
 }
 
 // ==================== BULLET SHOP — Server-wide 10/day limit ====================
@@ -5075,7 +5098,7 @@ function handleBuyBullets(clientId, message) {
 
     const fail = (err) => {
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'bullets_error', error: err }));
+            safeSend(ws, { type: 'bullets_error', error: err });
         }
     };
 
@@ -5095,21 +5118,21 @@ function handleBuyBullets(clientId, message) {
     const remaining = MAX_BULLETS_PER_DAY - gameState.bulletShop.soldToday;
 
     if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'bullets_purchased',
             remaining: remaining,
             totalToday: gameState.bulletShop.soldToday
-        }));
+        });
     }
 
     // Broadcast stock update to all connected players
     for (const [_cId, cWs] of clients) {
         if (cWs.readyState === WebSocket.OPEN) {
-            cWs.send(JSON.stringify({
+            safeSend(cWs, {
                 type: 'bullet_stock_update',
                 remaining: remaining,
                 soldToday: gameState.bulletShop.soldToday
-            }));
+            });
         }
     }
 
@@ -5132,11 +5155,11 @@ function handleGetBulletStock(clientId) {
     const MAX_BULLETS_PER_DAY = Math.min(100, 10 + (onlineCount * 3));
     const remaining = MAX_BULLETS_PER_DAY - gameState.bulletShop.soldToday;
 
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'bullet_stock_update',
         remaining: remaining,
         soldToday: gameState.bulletShop.soldToday
-    }));
+    });
 }
 
 // ==================== FRIENDS & SOCIAL SYSTEM ====================
@@ -5146,12 +5169,12 @@ function handleFriendAdd(clientId, message) {
     const player = gameState.players.get(clientId);
     if (!ws || !player) return;
     const targetName = (message.targetName || '').trim();
-    if (!targetName) return ws.send(JSON.stringify({ type: 'friend_result', success: false, error: 'Invalid name.' }));
-    if (targetName === player.name) return ws.send(JSON.stringify({ type: 'friend_result', success: false, error: 'Cannot add yourself.' }));
+    if (!targetName) return safeSend(ws, { type: 'friend_result', success: false, error: 'Invalid name.' });
+    if (targetName === player.name) return safeSend(ws, { type: 'friend_result', success: false, error: 'Cannot add yourself.' });
     
     // Check if already friends (client-side list, but prevent duplicate server notifications)
     if (player.friends && player.friends.includes(targetName)) {
-        return ws.send(JSON.stringify({ type: 'friend_result', success: false, error: 'Already friends with this player.' }));
+        return safeSend(ws, { type: 'friend_result', success: false, error: 'Already friends with this player.' });
     }
     
     // Check target exists online
@@ -5159,14 +5182,14 @@ function handleFriendAdd(clientId, message) {
     for (const [id, p] of gameState.players) {
         if (p.name === targetName) { targetId = id; break; }
     }
-    if (!targetId) return ws.send(JSON.stringify({ type: 'friend_result', success: false, error: 'Player not found online.' }));
+    if (!targetId) return safeSend(ws, { type: 'friend_result', success: false, error: 'Player not found online.' });
     
     // Send as pending request — not auto-added
-    ws.send(JSON.stringify({ type: 'friend_result', success: true, action: 'requested', targetName }));
+    safeSend(ws, { type: 'friend_result', success: true, action: 'requested', targetName });
     // Notify target with a friend request they must accept/decline
     const targetWs = clients.get(targetId);
     if (targetWs && targetWs.readyState === WebSocket.OPEN) {
-        targetWs.send(JSON.stringify({ type: 'friend_request', fromName: player.name }));
+        safeSend(targetWs, { type: 'friend_request', fromName: player.name });
     }
     scheduleWorldSave();
 }
@@ -5179,7 +5202,7 @@ function handleFriendAccept(clientId, message) {
     if (!fromName) return;
 
     // Add to this player's friends
-    ws.send(JSON.stringify({ type: 'friend_result', success: true, action: 'added', targetName: fromName }));
+    safeSend(ws, { type: 'friend_result', success: true, action: 'added', targetName: fromName });
 
     // Find the requester and add them too
     let requesterId = null;
@@ -5189,7 +5212,7 @@ function handleFriendAccept(clientId, message) {
     if (requesterId) {
         const requesterWs = clients.get(requesterId);
         if (requesterWs && requesterWs.readyState === WebSocket.OPEN) {
-            requesterWs.send(JSON.stringify({ type: 'friend_result', success: true, action: 'added', targetName: player.name }));
+            safeSend(requesterWs, { type: 'friend_result', success: true, action: 'added', targetName: player.name });
         }
     }
     scheduleWorldSave();
@@ -5199,25 +5222,25 @@ function handleFriendDecline(clientId, message) {
     const ws = clients.get(clientId);
     if (!ws) return;
     // Just acknowledge — no state change needed
-    ws.send(JSON.stringify({ type: 'friend_result', success: true, action: 'declined', targetName: message.fromName }));
+    safeSend(ws, { type: 'friend_result', success: true, action: 'declined', targetName: message.fromName });
 }
 
 function handleFriendRemove(clientId, message) {
     const ws = clients.get(clientId);
     if (!ws) return;
-    ws.send(JSON.stringify({ type: 'friend_result', success: true, action: 'removed', targetName: message.targetName }));
+    safeSend(ws, { type: 'friend_result', success: true, action: 'removed', targetName: message.targetName });
 }
 
 function handleBlockPlayer(clientId, message) {
     const ws = clients.get(clientId);
     if (!ws) return;
-    ws.send(JSON.stringify({ type: 'block_result', success: true, action: 'blocked', targetName: message.targetName }));
+    safeSend(ws, { type: 'block_result', success: true, action: 'blocked', targetName: message.targetName });
 }
 
 function handleUnblockPlayer(clientId, message) {
     const ws = clients.get(clientId);
     if (!ws) return;
-    ws.send(JSON.stringify({ type: 'block_result', success: true, action: 'unblocked', targetName: message.targetName }));
+    safeSend(ws, { type: 'block_result', success: true, action: 'unblocked', targetName: message.targetName });
 }
 
 function handleGetFriendsList(clientId) {
@@ -5230,7 +5253,7 @@ function handleGetFriendsList(clientId) {
             onlinePlayers.push({ name: p.name, level: p.level || 1, playerId: id });
         }
     }
-    ws.send(JSON.stringify({ type: 'friends_list_result', onlinePlayers }));
+    safeSend(ws, { type: 'friends_list_result', onlinePlayers });
 }
 
 // ==================== SERVER-SIDE LEADERBOARDS ====================
@@ -5246,10 +5269,10 @@ function handleGetLeaderboards(clientId) {
         gameState.leaderboards.lastGenerated = now;
     }
     
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'leaderboards_result',
         leaderboards: gameState.leaderboards.cached
-    }));
+    });
 }
 
 // ==================== HEIST MATCHMAKING QUEUE ====================
@@ -5261,11 +5284,11 @@ function handleHeistQueueJoin(clientId, _message) {
     
     // Check not already in queue
     if (gameState.heistQueue.find(q => q.playerId === clientId)) {
-        return ws.send(JSON.stringify({ type: 'heist_queue_result', success: false, error: 'Already in queue.' }));
+        return safeSend(ws, { type: 'heist_queue_result', success: false, error: 'Already in queue.' });
     }
     
     gameState.heistQueue.push({ playerId: clientId, playerName: player.name, reputation: player.reputation || 0, joinedAt: Date.now() });
-    ws.send(JSON.stringify({ type: 'heist_queue_result', success: true, position: gameState.heistQueue.length }));
+    safeSend(ws, { type: 'heist_queue_result', success: true, position: gameState.heistQueue.length });
     
     // Auto-match: if 3+ players in queue, form a heist
     if (gameState.heistQueue.length >= 3) {
@@ -5289,7 +5312,7 @@ function handleHeistQueueJoin(clientId, _message) {
         team.forEach(t => {
             const tWs = clients.get(t.playerId);
             if (tWs && tWs.readyState === WebSocket.OPEN) {
-                tWs.send(JSON.stringify({ type: 'heist_queue_matched', heist }));
+                safeSend(tWs, { type: 'heist_queue_matched', heist });
             }
         });
         
@@ -5302,7 +5325,7 @@ function handleHeistQueueLeave(clientId) {
     const ws = clients.get(clientId);
     gameState.heistQueue = gameState.heistQueue.filter(q => q.playerId !== clientId);
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'heist_queue_result', success: true, action: 'left' }));
+        safeSend(ws, { type: 'heist_queue_result', success: true, action: 'left' });
     }
 }
 
@@ -5354,13 +5377,13 @@ function handleCrewCreate(clientId, message) {
     
     const crewName = (message.name || '').trim().substring(0, 24);
     const crewTag = (message.tag || '').trim().substring(0, 5).toUpperCase();
-    if (!crewName || crewName.length < 3) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Crew name must be 3-24 characters.' }));
-    if (!crewTag || crewTag.length < 2) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Crew tag must be 2-5 characters.' }));
+    if (!crewName || crewName.length < 3) return safeSend(ws, { type: 'crew_result', success: false, error: 'Crew name must be 3-24 characters.' });
+    if (!crewTag || crewTag.length < 2) return safeSend(ws, { type: 'crew_result', success: false, error: 'Crew tag must be 2-5 characters.' });
     
     // Check duplicate name
     for (const [, c] of gameState.crews) {
         if (c.name.toLowerCase() === crewName.toLowerCase()) {
-            return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Crew name taken.' }));
+            return safeSend(ws, { type: 'crew_result', success: false, error: 'Crew name taken.' });
         }
     }
     
@@ -5380,7 +5403,7 @@ function handleCrewCreate(clientId, message) {
     };
     gameState.crews.set(crewId, crew);
     
-    ws.send(JSON.stringify({ type: 'crew_result', success: true, action: 'created', crew }));
+    safeSend(ws, { type: 'crew_result', success: true, action: 'created', crew });
     addGlobalChatMessage('System', `[${crewTag}] ${crewName} crew founded by ${player.name}!`, '#c0a062');
     scheduleWorldSave();
 }
@@ -5395,21 +5418,21 @@ function handleCrewInvite(clientId, message) {
     for (const [, c] of gameState.crews) {
         if (c.leader === clientId || c.officers.includes(clientId)) { playerCrew = c; break; }
     }
-    if (!playerCrew) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'You are not a crew leader or officer.' }));
-    if (playerCrew.members.length >= 10) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Crew is full (max 10).' }));
+    if (!playerCrew) return safeSend(ws, { type: 'crew_result', success: false, error: 'You are not a crew leader or officer.' });
+    if (playerCrew.members.length >= 10) return safeSend(ws, { type: 'crew_result', success: false, error: 'Crew is full (max 10).' });
     
     const targetName = (message.targetName || '').trim();
     let targetId = null;
     for (const [id, p] of gameState.players) {
         if (p.name === targetName) { targetId = id; break; }
     }
-    if (!targetId) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Player not found online.' }));
+    if (!targetId) return safeSend(ws, { type: 'crew_result', success: false, error: 'Player not found online.' });
     
     const targetWs = clients.get(targetId);
     if (targetWs && targetWs.readyState === WebSocket.OPEN) {
-        targetWs.send(JSON.stringify({ type: 'crew_invite', crewId: playerCrew.id, crewName: playerCrew.name, crewTag: playerCrew.tag, fromName: player.name }));
+        safeSend(targetWs, { type: 'crew_invite', crewId: playerCrew.id, crewName: playerCrew.name, crewTag: playerCrew.tag, fromName: player.name });
     }
-    ws.send(JSON.stringify({ type: 'crew_result', success: true, action: 'invited', targetName }));
+    safeSend(ws, { type: 'crew_result', success: true, action: 'invited', targetName });
 }
 
 function handleCrewJoin(clientId, message) {
@@ -5418,21 +5441,21 @@ function handleCrewJoin(clientId, message) {
     if (!ws || !player) return;
     
     const crew = gameState.crews.get(message.crewId);
-    if (!crew) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Crew not found.' }));
-    if (crew.members.length >= 10) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Crew is full.' }));
+    if (!crew) return safeSend(ws, { type: 'crew_result', success: false, error: 'Crew not found.' });
+    if (crew.members.length >= 10) return safeSend(ws, { type: 'crew_result', success: false, error: 'Crew is full.' });
     // Check if already in any crew
     for (const [, c] of gameState.crews) {
-        if (c.members.find(m => m.name === player.name)) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'You are already in a crew. Leave it first.' }));
+        if (c.members.find(m => m.name === player.name)) return safeSend(ws, { type: 'crew_result', success: false, error: 'You are already in a crew. Leave it first.' });
     }
-    if (crew.members.find(m => m.playerId === clientId)) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Already in this crew.' }));
+    if (crew.members.find(m => m.playerId === clientId)) return safeSend(ws, { type: 'crew_result', success: false, error: 'Already in this crew.' });
     
     crew.members.push({ playerId: clientId, name: player.name, role: 'member', joinedAt: Date.now() });
-    ws.send(JSON.stringify({ type: 'crew_result', success: true, action: 'joined', crew }));
+    safeSend(ws, { type: 'crew_result', success: true, action: 'joined', crew });
     
     // Notify crew leader
     const leaderWs = clients.get(crew.leader);
     if (leaderWs && leaderWs.readyState === WebSocket.OPEN) {
-        leaderWs.send(JSON.stringify({ type: 'crew_member_joined', playerName: player.name }));
+        safeSend(leaderWs, { type: 'crew_member_joined', playerName: player.name });
     }
     scheduleWorldSave();
 }
@@ -5455,12 +5478,12 @@ function handleCrewLeave(clientId) {
                     gameState.crews.delete(crewId);
                 }
             }
-            ws.send(JSON.stringify({ type: 'crew_result', success: true, action: 'left' }));
+            safeSend(ws, { type: 'crew_result', success: true, action: 'left' });
             scheduleWorldSave();
             return;
         }
     }
-    ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Not in a crew.' }));
+    safeSend(ws, { type: 'crew_result', success: false, error: 'Not in a crew.' });
 }
 
 function handleCrewKick(clientId, message) {
@@ -5471,18 +5494,18 @@ function handleCrewKick(clientId, message) {
     for (const [, c] of gameState.crews) {
         if (c.leader === clientId) { playerCrew = c; break; }
     }
-    if (!playerCrew) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Only the leader can kick.' }));
+    if (!playerCrew) return safeSend(ws, { type: 'crew_result', success: false, error: 'Only the leader can kick.' });
     
     const targetName = (message.targetName || '').trim();
     const idx = playerCrew.members.findIndex(m => m.name === targetName);
-    if (idx === -1) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Member not found.' }));
+    if (idx === -1) return safeSend(ws, { type: 'crew_result', success: false, error: 'Member not found.' });
     
     const kicked = playerCrew.members.splice(idx, 1)[0];
-    ws.send(JSON.stringify({ type: 'crew_result', success: true, action: 'kicked', targetName }));
+    safeSend(ws, { type: 'crew_result', success: true, action: 'kicked', targetName });
     
     const targetWs = clients.get(kicked.playerId);
     if (targetWs && targetWs.readyState === WebSocket.OPEN) {
-        targetWs.send(JSON.stringify({ type: 'crew_kicked', crewName: playerCrew.name }));
+        safeSend(targetWs, { type: 'crew_kicked', crewName: playerCrew.name });
     }
     scheduleWorldSave();
 }
@@ -5521,7 +5544,7 @@ function handleCrewInfo(clientId) {
         allCrews.push({ id: c.id, name: c.name, tag: c.tag, emblem: c.emblem, memberCount: c.members.length, leaderName: c.leaderName, open: !!c.open, motto: c.motto || '' });
     }
     
-    ws.send(JSON.stringify({ type: 'crew_info_result', myCrew: playerCrew, allCrews }));
+    safeSend(ws, { type: 'crew_info_result', myCrew: playerCrew, allCrews });
 }
 
 function handleCrewUpdate(clientId, message) {
@@ -5532,7 +5555,7 @@ function handleCrewUpdate(clientId, message) {
     for (const [, c] of gameState.crews) {
         if (c.leader === clientId) { playerCrew = c; break; }
     }
-    if (!playerCrew) return ws.send(JSON.stringify({ type: 'crew_result', success: false, error: 'Only the leader can update crew.' }));
+    if (!playerCrew) return safeSend(ws, { type: 'crew_result', success: false, error: 'Only the leader can update crew.' });
     
     if (message.motto !== undefined) playerCrew.motto = (message.motto || '').substring(0, 64);
     if (message.emblem !== undefined) playerCrew.emblem = (message.emblem || '🔱').substring(0, 4);
@@ -5549,7 +5572,7 @@ function handleCrewUpdate(clientId, message) {
         }
     }
     
-    ws.send(JSON.stringify({ type: 'crew_result', success: true, action: 'updated', crew: playerCrew }));
+    safeSend(ws, { type: 'crew_result', success: true, action: 'updated', crew: playerCrew });
     scheduleWorldSave();
 }
 
@@ -5563,10 +5586,10 @@ function handleGamblingCreateTable(clientId, message) {
     const bet = parseInt(message.bet) || 0;
     const gameType = message.gameType || 'dice'; // dice, coinflip, highcard
     
-    if (bet < 1000) return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Minimum bet is $1,000.' }));
-    if (bet > 500000) return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Maximum bet is $500,000.' }));
-    if (!['dice', 'coinflip', 'highcard'].includes(gameType)) return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Invalid game type.' }));
-    if ((player.money || 0) < bet) return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Not enough money.' }));
+    if (bet < 1000) return safeSend(ws, { type: 'gambling_result', success: false, error: 'Minimum bet is $1,000.' });
+    if (bet > 500000) return safeSend(ws, { type: 'gambling_result', success: false, error: 'Maximum bet is $500,000.' });
+    if (!['dice', 'coinflip', 'highcard'].includes(gameType)) return safeSend(ws, { type: 'gambling_result', success: false, error: 'Invalid game type.' });
+    if ((player.money || 0) < bet) return safeSend(ws, { type: 'gambling_result', success: false, error: 'Not enough money.' });
     
     const tableId = 'table_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
     const table = {
@@ -5583,7 +5606,7 @@ function handleGamblingCreateTable(clientId, message) {
     };
     gameState.gamblingTables.set(tableId, table);
     
-    ws.send(JSON.stringify({ type: 'gambling_result', success: true, action: 'created', table }));
+    safeSend(ws, { type: 'gambling_result', success: true, action: 'created', table });
     
     // Broadcast to all players
     broadcastToAll({ type: 'gambling_table_update', table: { id: tableId, type: gameType, hostName: player.name, bet, state: 'waiting' } });
@@ -5596,11 +5619,11 @@ function handleGamblingJoinTable(clientId, message) {
     if (!ws || !player) return;
     
     const table = gameState.gamblingTables.get(message.tableId);
-    if (!table) return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Table not found.' }));
-    if (table.state !== 'waiting') return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Game already in progress.' }));
-    if (table.hostId === clientId) return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Cannot join your own table.' }));
-    if (table.guestId) return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Table already has an opponent.' }));
-    if ((player.money || 0) < table.bet) return ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Not enough money to match the bet.' }));
+    if (!table) return safeSend(ws, { type: 'gambling_result', success: false, error: 'Table not found.' });
+    if (table.state !== 'waiting') return safeSend(ws, { type: 'gambling_result', success: false, error: 'Game already in progress.' });
+    if (table.hostId === clientId) return safeSend(ws, { type: 'gambling_result', success: false, error: 'Cannot join your own table.' });
+    if (table.guestId) return safeSend(ws, { type: 'gambling_result', success: false, error: 'Table already has an opponent.' });
+    if ((player.money || 0) < table.bet) return safeSend(ws, { type: 'gambling_result', success: false, error: 'Not enough money to match the bet.' });
     
     table.guestId = clientId;
     table.guestName = player.name;
@@ -5658,8 +5681,8 @@ function handleGamblingJoinTable(clientId, message) {
         isTie: result.winner === 'tie'
     };
     
-    if (hostWs && hostWs.readyState === WebSocket.OPEN) hostWs.send(JSON.stringify(payload));
-    if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(payload));
+    safeSend(hostWs, payload);
+    if (ws.readyState === WebSocket.OPEN) safeSend(ws, payload);
     
     if (winnerName) {
         addGlobalChatMessage('PvP Gambling', `${winnerName} won $${table.bet.toLocaleString()} playing ${table.type} against ${winnerId === table.hostId ? table.guestName : table.hostName}!`, '#d4af37');
@@ -5673,7 +5696,7 @@ function handleGamblingJoinTable(clientId, message) {
 function handleGamblingAction(clientId, _message) {
     // Reserved for future interactive game types (poker rounds, etc.)
     const ws = clients.get(clientId);
-    if (ws) ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'Not implemented for this game type.' }));
+    safeSend(ws, { type: 'gambling_result', success: false, error: 'Not implemented for this game type.' });
 }
 
 function handleGamblingListTables(clientId) {
@@ -5693,7 +5716,7 @@ function handleGamblingListTables(clientId) {
         }
     }
     
-    ws.send(JSON.stringify({ type: 'gambling_tables_list', tables }));
+    safeSend(ws, { type: 'gambling_tables_list', tables });
 }
 
 function handleGamblingLeaveTable(clientId) {
@@ -5701,11 +5724,11 @@ function handleGamblingLeaveTable(clientId) {
     for (const [id, t] of gameState.gamblingTables) {
         if (t.hostId === clientId && t.state === 'waiting') {
             gameState.gamblingTables.delete(id);
-            if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'gambling_result', success: true, action: 'left' }));
+            if (ws && ws.readyState === WebSocket.OPEN) safeSend(ws, { type: 'gambling_result', success: true, action: 'left' });
             return;
         }
     }
-    if (ws) ws.send(JSON.stringify({ type: 'gambling_result', success: false, error: 'No table to leave.' }));
+    safeSend(ws, { type: 'gambling_result', success: false, error: 'No table to leave.' });
 }
 
 // ==================== SUPERBOSS SYSTEM ====================
@@ -5724,13 +5747,13 @@ function handleSuperbossStart(clientId, message) {
     
     const bossId = message.bossId;
     const boss = SUPERBOSSES.find(b => b.id === bossId);
-    if (!boss) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Unknown superboss.' }));
-    if ((player.reputation || 0) < (boss.minReputation || 0)) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: `Requires ${boss.minReputation}+ reputation.` }));
+    if (!boss) return safeSend(ws, { type: 'superboss_result', success: false, error: 'Unknown superboss.' });
+    if ((player.reputation || 0) < (boss.minReputation || 0)) return safeSend(ws, { type: 'superboss_result', success: false, error: `Requires ${boss.minReputation}+ reputation.` });
     
     // Check not already in a fight
     for (const [, f] of gameState.activeSuperbossFights) {
         if (f.participants.find(p => p.playerId === clientId)) {
-            return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Already in a superboss fight.' }));
+            return safeSend(ws, { type: 'superboss_result', success: false, error: 'Already in a superboss fight.' });
         }
     }
     
@@ -5751,7 +5774,7 @@ function handleSuperbossStart(clientId, message) {
     fight.equipment[clientId] = _sanitizeEquipment(message.equipment) || player.equipment || {};
     gameState.activeSuperbossFights.set(fightId, fight);
     
-    ws.send(JSON.stringify({ type: 'superboss_result', success: true, action: 'started', fight }));
+    safeSend(ws, { type: 'superboss_result', success: true, action: 'started', fight });
     addGlobalChatMessage('System', `${player.name} has challenged ${boss.name}! Join the fight before it's too late!`, '#ff4444');
     scheduleWorldSave();
 }
@@ -5762,27 +5785,27 @@ function handleSuperbossInvite(clientId, message) {
     if (!ws || !player) return;
     
     const fight = gameState.activeSuperbossFights.get(message.fightId);
-    if (!fight) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Fight not found.' }));
-    if (fight.phase !== 'recruiting') return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Fight already in progress.' }));
+    if (!fight) return safeSend(ws, { type: 'superboss_result', success: false, error: 'Fight not found.' });
+    if (fight.phase !== 'recruiting') return safeSend(ws, { type: 'superboss_result', success: false, error: 'Fight already in progress.' });
     
     const targetName = (message.targetName || '').trim();
     for (const [id, p] of gameState.players) {
         if (p.name === targetName) {
             const tWs = clients.get(id);
             if (tWs && tWs.readyState === WebSocket.OPEN) {
-                tWs.send(JSON.stringify({
+                safeSend(tWs, {
                     type: 'superboss_invite',
                     fightId: fight.id,
                     bossName: fight.bossName,
                     fromName: player.name,
                     currentParticipants: fight.participants.length
-                }));
+                });
             }
-            ws.send(JSON.stringify({ type: 'superboss_result', success: true, action: 'invited', targetName }));
+            safeSend(ws, { type: 'superboss_result', success: true, action: 'invited', targetName });
             return;
         }
     }
-    ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Player not found online.' }));
+    safeSend(ws, { type: 'superboss_result', success: false, error: 'Player not found online.' });
 }
 
 function handleSuperbossJoin(clientId, message) {
@@ -5791,10 +5814,10 @@ function handleSuperbossJoin(clientId, message) {
     if (!ws || !player) return;
     
     const fight = gameState.activeSuperbossFights.get(message.fightId);
-    if (!fight) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Fight not found.' }));
-    if (fight.phase !== 'recruiting') return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Fight already started.' }));
-    if (fight.participants.length >= 5) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Fight is full (max 5).' }));
-    if (fight.participants.find(p => p.playerId === clientId)) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Already in this fight.' }));
+    if (!fight) return safeSend(ws, { type: 'superboss_result', success: false, error: 'Fight not found.' });
+    if (fight.phase !== 'recruiting') return safeSend(ws, { type: 'superboss_result', success: false, error: 'Fight already started.' });
+    if (fight.participants.length >= 5) return safeSend(ws, { type: 'superboss_result', success: false, error: 'Fight is full (max 5).' });
+    if (fight.participants.find(p => p.playerId === clientId)) return safeSend(ws, { type: 'superboss_result', success: false, error: 'Already in this fight.' });
     
     fight.participants.push({ playerId: clientId, name: player.name, damage: 0, alive: true });
     fight.equipment[clientId] = _sanitizeEquipment(message.equipment) || player.equipment || {};
@@ -5803,11 +5826,11 @@ function handleSuperbossJoin(clientId, message) {
     fight.participants.forEach(p => {
         const pWs = clients.get(p.playerId);
         if (pWs && pWs.readyState === WebSocket.OPEN) {
-            pWs.send(JSON.stringify({ type: 'superboss_update', fight }));
+            safeSend(pWs, { type: 'superboss_update', fight });
         }
     });
     
-    ws.send(JSON.stringify({ type: 'superboss_result', success: true, action: 'joined', fight }));
+    safeSend(ws, { type: 'superboss_result', success: true, action: 'joined', fight });
 }
 
 function handleSuperbossAttack(clientId, message) {
@@ -5816,14 +5839,14 @@ function handleSuperbossAttack(clientId, message) {
     if (!ws || !player) return;
     
     const fight = gameState.activeSuperbossFights.get(message.fightId);
-    if (!fight) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Fight not found.' }));
+    if (!fight) return safeSend(ws, { type: 'superboss_result', success: false, error: 'Fight not found.' });
     
     // Transition to fighting phase on first attack
     if (fight.phase === 'recruiting') fight.phase = 'fighting';
-    if (fight.phase !== 'fighting') return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'Fight is over.' }));
+    if (fight.phase !== 'fighting') return safeSend(ws, { type: 'superboss_result', success: false, error: 'Fight is over.' });
     
     const participant = fight.participants.find(p => p.playerId === clientId);
-    if (!participant || !participant.alive) return ws.send(JSON.stringify({ type: 'superboss_result', success: false, error: 'You are not alive in this fight.' }));
+    if (!participant || !participant.alive) return safeSend(ws, { type: 'superboss_result', success: false, error: 'You are not alive in this fight.' });
     
     // Player attack: damage based on player power + RNG
     const playerPower = player.power || Math.floor((player.reputation || 0) * 5);
@@ -5869,7 +5892,7 @@ function handleSuperbossAttack(clientId, message) {
             const xpReward = Math.floor(fight.reward.xp * share);
             const pWs = clients.get(p.playerId);
             if (pWs && pWs.readyState === WebSocket.OPEN) {
-                pWs.send(JSON.stringify({
+                safeSend(pWs, {
                     type: 'superboss_victory',
                     bossName: fight.bossName,
                     moneyReward,
@@ -5878,7 +5901,7 @@ function handleSuperbossAttack(clientId, message) {
                     damageDealt: p.damage,
                     damageShare: Math.round(share * 100),
                     crewLoadout
-                }));
+                });
             }
         });
         
@@ -5890,7 +5913,7 @@ function handleSuperbossAttack(clientId, message) {
     fight.participants.forEach(p => {
         const pWs = clients.get(p.playerId);
         if (pWs && pWs.readyState === WebSocket.OPEN) {
-            pWs.send(JSON.stringify({
+            safeSend(pWs, {
                 type: 'superboss_attack_result',
                 fightId: fight.id,
                 attackerName: player.name,
@@ -5900,7 +5923,7 @@ function handleSuperbossAttack(clientId, message) {
                 bossMaxHP: fight.bossMaxHP,
                 bossAttack: bossAttackResult,
                 phase: fight.phase
-            }));
+            });
         }
     });
     
@@ -5923,11 +5946,11 @@ function handleSuperbossList(clientId) {
         });
     }
     
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'superboss_list_result',
         bosses: SUPERBOSSES.map(b => ({ id: b.id, name: b.name, level: b.level, hp: b.hp, description: b.description })),
         activeFights
-    }));
+    });
 }
 
 // ==================== SEASONAL EVENTS ====================
@@ -6005,11 +6028,11 @@ function handleSeasonalEventInfo(clientId) {
     if (!ws) return;
     
     const evt = gameState.seasonalEvent;
-    if (!evt.active) return ws.send(JSON.stringify({ type: 'seasonal_event_result', active: false }));
+    if (!evt.active) return safeSend(ws, { type: 'seasonal_event_result', active: false });
     
     const progress = evt.playerProgress.get(clientId) || { score: 0, completed: [] };
     
-    ws.send(JSON.stringify({
+    safeSend(ws, {
         type: 'seasonal_event_result',
         active: true,
         name: evt.name,
@@ -6019,7 +6042,7 @@ function handleSeasonalEventInfo(clientId) {
         objectives: evt.objectives,
         globalEffects: evt.globalEffects,
         playerProgress: progress
-    }));
+    });
 }
 
 function handleSeasonalEventProgress(clientId, message) {
@@ -6046,11 +6069,11 @@ function handleSeasonalEventProgress(clientId, message) {
         progress.completed.push(objId);
         progress.score += 100;
         
-        ws.send(JSON.stringify({
+        safeSend(ws, {
             type: 'seasonal_objective_complete',
             objectiveId: objId,
             reward: obj.reward
-        }));
+        });
     }
     
     scheduleWorldSave();
@@ -6070,7 +6093,7 @@ function handleDailyLoginClaim(clientId, message) {
         addGlobalChatMessage('System', `${player.name} has logged in ${streak} days in a row! Dedication!`, '#27ae60');
     }
     
-    ws.send(JSON.stringify({ type: 'daily_login_result', success: true, streak }));
+    safeSend(ws, { type: 'daily_login_result', success: true, streak });
 }
 
 function generateLeaderboard() {
@@ -6159,6 +6182,15 @@ function generateClientId() {
 // Handle server shutdown to save world state
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('UNHANDLED REJECTION:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('UNCAUGHT EXCEPTION:', error);
+    gracefulShutdown();
+});
 
 async function gracefulShutdown() {
     console.log('\n Server shutting down gracefully...');
