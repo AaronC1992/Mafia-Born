@@ -496,6 +496,16 @@
             </div>
         </div>
 
+        <!-- Policy Newspaper Popup (full-screen overlay) -->
+        <div id="policy-newspaper-overlay" style="display:none;" onclick="if(event.target===this)closePolicyNewspaper()">
+            <div id="policy-newspaper">
+                <button class="newspaper-close-btn" onclick="closePolicyNewspaper()" title="Close">&times;</button>
+                <div id="policy-newspaper-content">
+                    <!-- Filled dynamically by showPolicyNewspaper() -->
+                </div>
+            </div>
+        </div>
+
 
         <!-- Casino Screen -->
         <div id="casino-screen" class="game-screen" style="display:none;">

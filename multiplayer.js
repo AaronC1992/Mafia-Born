@@ -2124,6 +2124,12 @@ async function handleServerMessage(message) {
         case 'politics_policy_result':
             handlePoliticsPolicyResult(message);
             break;
+        case 'politics_submit_result':
+            handlePoliticsSubmitResult(message);
+            break;
+        case 'politics_newspaper':
+            showPolicyNewspaper(message);
+            break;
         case 'politics_update':
             if (message.politics) {
                 onlineWorldState.politics = message.politics;
@@ -6287,7 +6293,7 @@ function renderPoliticsTab() {
         <div style="background: rgba(192, 160, 98, 0.1); padding: 12px; border-radius: 8px; border: 1px solid #c0a062;">
             <p style="color: #ccc; margin: 0; font-size: 0.85em; line-height: 1.6;">
                 <strong style="color: #c0a062;">How Politics Work:</strong> The player or alliance controlling the most territories becomes the <strong style="color: #ffd700;">Top Don</strong>. 
-                The Top Don can adjust city-wide policies that affect all players — tax rates, crime bonuses, jail times, and more. 
+                The Top Don gets a <strong>30-point policy budget</strong> to set city-wide policies. Favorable changes (lower taxes, crime bonuses) cost points, while harsh changes (higher taxes, longer jail) earn points back. 
                 Policies have a 10-minute cooldown between changes. Conquer more territory to seize political power!
             </p>
         </div>
@@ -6314,6 +6320,7 @@ function handlePoliticsInfoResult(message) {
     if (controlsContainer) {
         if (_isTopDon) {
             controlsContainer.innerHTML = renderTopDonControls(message.politics);
+            updatePolicyBudgetDisplay();
         } else {
             controlsContainer.innerHTML = '';
         }
@@ -6325,12 +6332,20 @@ function renderTopDonControls(pol) {
 
     const cooldownActive = _politicsCooldown > 0;
     const cooldownMin = Math.ceil(_politicsCooldown / 60000);
+    const budget = pol.policyBudget || 30;
 
     let html = `
         <div style="background: linear-gradient(180deg, rgba(255,215,0,0.08) 0%, rgba(0,0,0,0.8) 100%); padding: 20px; border-radius: 12px; border: 2px solid #ffd700; margin-bottom: 20px;">
             <h4 style="color: #ffd700; margin: 0 0 5px 0; font-family: 'Georgia', serif; text-align: center;">Top Don Controls</h4>
-            <p style="color: #c0a062; text-align: center; margin: 0 0 15px 0; font-size: 0.85em;">You are the Top Don. Set policies for the entire city.</p>
-            ${cooldownActive ? `<div style="text-align: center; color: #8b3a3a; margin-bottom: 12px; font-size: 0.9em;">? Policy changes on cooldown — ${cooldownMin} min remaining</div>` : ''}
+            <p style="color: #c0a062; text-align: center; margin: 0 0 8px 0; font-size: 0.85em;">Set policies for the entire city. Favorable policies cost points; harsh policies earn them back.</p>
+            <div id="policy-budget-bar" style="text-align: center; margin-bottom: 14px;">
+                <div style="display: inline-block; background: rgba(0,0,0,0.6); padding: 8px 20px; border-radius: 20px; border: 1px solid #ffd700;">
+                    <span style="color: #ccc; font-size: 0.85em;">Budget:</span>
+                    <span id="policy-budget-display" style="color: #ffd700; font-weight: bold; font-size: 1.1em; margin: 0 4px;">${budget - (pol.budgetUsed || 0)}</span>
+                    <span style="color: #888; font-size: 0.85em;">/ ${budget} pts remaining</span>
+                </div>
+            </div>
+            ${cooldownActive ? `<div style="text-align: center; color: #8b3a3a; margin-bottom: 12px; font-size: 0.9em;">Policy changes on cooldown -- ${cooldownMin} min remaining</div>` : ''}
             <div style="display: grid; gap: 12px;">
     `;
 
@@ -6341,24 +6356,30 @@ function renderTopDonControls(pol) {
         const unit = lim.unit || '';
         const min = lim.min !== undefined ? lim.min : 0;
         const max = lim.max !== undefined ? lim.max : 100;
+        const neutral = lim.neutral !== undefined ? lim.neutral : 0;
+
+        // Describe the tradeoff
+        let tradeoffDesc = '';
+        if (key === 'worldTaxRate') tradeoffDesc = `Neutral: ${neutral}${unit}. Lower costs ${lim.costPer} pts/${unit}, higher earns ${lim.earnPer} pt/${unit}`;
+        else if (key === 'marketFee') tradeoffDesc = `Neutral: ${neutral}${unit}. Lower costs ${lim.costPer} pts/${unit}, higher earns ${lim.earnPer} pt/${unit}`;
+        else if (key === 'jailTimeMod') tradeoffDesc = `Neutral: ${neutral}${unit}. Shorter costs ${lim.costPer} pt/${unit}, longer earns ${lim.earnPer} pt/${unit}`;
+        else tradeoffDesc = `Costs ${lim.costPer} pts per ${unit}`;
 
         html += `
             <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px solid #555;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                     <span style="color: #ccc; font-weight: bold;">${icon} ${label}</span>
                     <span id="policy-val-${key}" style="color: #ffd700; font-weight: bold; font-size: 1.2em;">${value}${unit}</span>
                 </div>
+                <div style="color: #777; font-size: 0.72em; margin-bottom: 6px;">${tradeoffDesc}</div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="color: #666; font-size: 0.8em;">${min}${unit}</span>
-                    <input type="range" id="policy-slider-${key}" min="${min}" max="${max}" value="${value}" 
-                           oninput="document.getElementById('policy-val-${key}').textContent = this.value + '${unit}'"
+                    <input type="range" id="policy-slider-${key}" min="${min}" max="${max}" value="${value}"
+                           data-policy="${key}" data-neutral="${neutral}" data-costper="${lim.costPer}" data-earnper="${lim.earnPer}" data-unit="${unit}"
+                           oninput="updatePolicyBudgetDisplay()"
                            style="flex: 1; accent-color: #ffd700; cursor: pointer;" ${cooldownActive ? 'disabled' : ''}>
                     <span style="color: #666; font-size: 0.8em;">${max}${unit}</span>
-                    <button onclick="applyPolicy('${key}')" 
-                            style="background: ${cooldownActive ? '#444' : '#ffd700'}; color: #000; padding: 6px 14px; border: none; border-radius: 6px; cursor: ${cooldownActive ? 'not-allowed' : 'pointer'}; font-weight: bold; font-size: 0.85em;"
-                            ${cooldownActive ? 'disabled' : ''}>
-                        Set
-                    </button>
+                    <span id="policy-cost-${key}" style="color: #888; font-size: 0.75em; min-width: 42px; text-align: right;"></span>
                 </div>
             </div>
         `;
@@ -6366,10 +6387,90 @@ function renderTopDonControls(pol) {
 
     html += `
             </div>
+            <div style="text-align: center; margin-top: 16px;">
+                <button id="submit-policies-btn" onclick="submitPolicies()"
+                        style="background: ${cooldownActive ? '#444' : 'linear-gradient(135deg, #ffd700, #c0a030)'}; color: #000; padding: 12px 30px; border: none; border-radius: 8px; cursor: ${cooldownActive ? 'not-allowed' : 'pointer'}; font-weight: bold; font-size: 1em; font-family: 'Georgia', serif; letter-spacing: 1px; box-shadow: 0 2px 8px rgba(255,215,0,0.3);"
+                        ${cooldownActive ? 'disabled' : ''}>
+                    Submit Policy
+                </button>
+            </div>
         </div>
     `;
     return html;
 }
+
+// Live budget calculation as sliders move
+function updatePolicyBudgetDisplay() {
+    const pol = _politicsCache;
+    if (!pol || !pol.policyLimits) return;
+    const budget = pol.policyBudget || 30;
+    let totalCost = 0;
+    let totalEarned = 0;
+
+    for (const [key, lim] of Object.entries(pol.policyLimits)) {
+        const slider = document.getElementById(`policy-slider-${key}`);
+        if (!slider) continue;
+        const val = parseInt(slider.value);
+        const neutral = lim.neutral !== undefined ? lim.neutral : 0;
+        const unit = lim.unit || '';
+        const diff = val - neutral;
+        const costEl = document.getElementById(`policy-cost-${key}`);
+        const valEl = document.getElementById(`policy-val-${key}`);
+        if (valEl) valEl.textContent = val + unit;
+
+        let itemCost = 0;
+        let itemEarned = 0;
+        const favorDown = (key === 'worldTaxRate' || key === 'marketFee' || key === 'jailTimeMod');
+        if (favorDown ? diff < 0 : diff > 0) {
+            itemCost = Math.abs(diff) * (lim.costPer || 0);
+        } else if (favorDown ? diff > 0 : diff < 0) {
+            itemEarned = Math.abs(diff) * (lim.earnPer || 0);
+        }
+        totalCost += itemCost;
+        totalEarned += itemEarned;
+
+        if (costEl) {
+            if (itemCost > 0) {
+                costEl.textContent = `-${itemCost} pts`;
+                costEl.style.color = '#e74c3c';
+            } else if (itemEarned > 0) {
+                costEl.textContent = `+${itemEarned} pts`;
+                costEl.style.color = '#8a9a6a';
+            } else {
+                costEl.textContent = '0 pts';
+                costEl.style.color = '#888';
+            }
+        }
+    }
+
+    const net = totalCost - totalEarned;
+    const remaining = budget - net;
+    const budgetEl = document.getElementById('policy-budget-display');
+    const submitBtn = document.getElementById('submit-policies-btn');
+    if (budgetEl) {
+        budgetEl.textContent = remaining;
+        budgetEl.style.color = remaining < 0 ? '#e74c3c' : '#ffd700';
+    }
+    if (submitBtn) {
+        const overBudget = remaining < 0;
+        submitBtn.disabled = overBudget || (_politicsCooldown > 0);
+        submitBtn.style.opacity = overBudget ? '0.5' : '1';
+    }
+}
+window.updatePolicyBudgetDisplay = updatePolicyBudgetDisplay;
+
+function submitPolicies() {
+    if (!ensureConnected()) return;
+    const pol = _politicsCache;
+    if (!pol || !pol.policyLimits) return;
+    const policies = {};
+    for (const key of Object.keys(pol.policyLimits)) {
+        const slider = document.getElementById(`policy-slider-${key}`);
+        if (slider) policies[key] = parseInt(slider.value);
+    }
+    sendMP({ type: 'politics_submit_all', policies });
+}
+window.submitPolicies = submitPolicies;
 
 function applyPolicy(policyKey) {
     if (!ensureConnected()) return;
@@ -6384,6 +6485,18 @@ function applyPolicy(policyKey) {
     });
 }
 window.applyPolicy = applyPolicy;
+
+function handlePoliticsSubmitResult(message) {
+    if (message.success) {
+        const summary = message.changes.map(c => `${c.label}: ${c.oldValue}${c.unit} -> ${c.newValue}${c.unit}`).join(', ');
+        window.ui.toast(`Policies enacted: ${summary}`, 'success');
+        _politicsCooldown = message.cooldownRemaining || 0;
+        sendMP({ type: 'politics_info' });
+        setTimeout(() => showOnlineWorld('politics'), 500);
+    } else {
+        window.ui.toast(message.error, 'error');
+    }
+}
 
 function handlePoliticsPolicyResult(message) {
     if (message.success) {
@@ -6409,6 +6522,137 @@ function refreshPoliticsTab() {
     const policiesList = document.getElementById('politics-policies-list');
     if (!policiesList) return;
     showOnlineWorld('politics');
+}
+
+// ==================== POLICY NEWSPAPER ====================
+
+function showPolicyNewspaper(data) {
+    if (!data || !data.changes || data.changes.length === 0) return;
+    const overlay = document.getElementById('policy-newspaper-overlay');
+    const content = document.getElementById('policy-newspaper-content');
+    if (!overlay || !content) return;
+    content.innerHTML = buildPolicyNewspaperHTML(data);
+    overlay.style.display = 'flex';
+}
+window.showPolicyNewspaper = showPolicyNewspaper;
+
+function closePolicyNewspaper() {
+    const overlay = document.getElementById('policy-newspaper-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+window.closePolicyNewspaper = closePolicyNewspaper;
+
+function buildPolicyNewspaperHTML(data) {
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    const ts = new Date(data.timestamp || Date.now());
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const dateStr = `${months[ts.getMonth()]} ${ts.getDate()}, ${ts.getFullYear()}`;
+    const edition = pick(['Morning','Evening','Late','Final']) + ' Edition';
+    const donName = data.topDonName || 'Unknown';
+    const DON = donName.toUpperCase();
+    const changeCount = data.changes.length;
+
+    // Headlines
+    const headlines = [
+        `${DON} ISSUES SWEEPING NEW CITY POLICIES`,
+        `TOP DON ${DON} RESHAPES THE CITY&rsquo;S ECONOMY`,
+        `NEW DECREES FROM ${DON} SHAKE THE UNDERWORLD`,
+        `${DON} TIGHTENS GRIP &mdash; ${changeCount} POLICIES CHANGED`,
+        `CITY BRACES FOR IMPACT AS ${DON} REWRITES THE RULES`,
+        `${DON} PLAYS GOD WITH THE CITY&rsquo;S FUTURE`,
+    ];
+
+    // Subheads
+    const subheads = [
+        `${changeCount} policy change${changeCount > 1 ? 's' : ''} announced from the top -- residents brace for impact`,
+        `Sources close to ${donName} say the changes are "non-negotiable"`,
+        `City officials scramble to interpret the new directives from the Don&rsquo;s office`,
+        `Insiders warn: "This changes everything for the families"`,
+    ];
+
+    // Opening lines
+    const openings = [
+        `In a bold move that sent shockwaves through the underworld, Top Don ${donName} announced sweeping changes to the city&rsquo;s governing policies today.`,
+        `${donName}, the undisputed ruler of the city&rsquo;s territories, has issued a series of new decrees that will reshape how business is conducted on every corner.`,
+        `The word came down from the top this morning: ${donName} is changing the rules. Those who don&rsquo;t adapt may find themselves on the wrong side of the new order.`,
+        `Every family in the city received the same message today -- the Top Don has spoken, and the city&rsquo;s policies are shifting.`,
+    ];
+
+    // Build change details
+    let changesHTML = '';
+    const favorableLabels = [];
+    const harshLabels = [];
+    data.changes.forEach(c => {
+        const arrow = c.newValue > c.oldValue ? '&#9650;' : '&#9660;';
+        const color = '#1a0a00';
+        changesHTML += `
+            <div class="newspaper-stat-row">
+                <span>${c.label}</span>
+                <span>${arrow} ${c.oldValue}${c.unit} &rarr; ${c.newValue}${c.unit}</span>
+            </div>`;
+        // Categorize for flavor text
+        if (c.policy === 'crimeBonus' || c.policy === 'heistBonus') {
+            if (c.newValue > c.oldValue) favorableLabels.push(c.label.toLowerCase());
+            else harshLabels.push(c.label.toLowerCase());
+        } else if (c.policy === 'worldTaxRate' || c.policy === 'marketFee') {
+            if (c.newValue < c.oldValue) favorableLabels.push('lower ' + c.label.toLowerCase());
+            else harshLabels.push('higher ' + c.label.toLowerCase());
+        } else if (c.policy === 'jailTimeMod') {
+            if (c.newValue < c.oldValue) favorableLabels.push('shorter jail sentences');
+            else harshLabels.push('longer jail sentences');
+        }
+    });
+
+    // Reaction paragraph
+    let reactionP = '';
+    if (favorableLabels.length > 0 && harshLabels.length > 0) {
+        reactionP = `The new policies are a mixed bag. Residents will welcome ${favorableLabels.join(' and ')}, but ${harshLabels.join(' and ')} have drawn sharp criticism from the streets. "You give with one hand and take with the other," muttered one veteran enforcer.`;
+    } else if (favorableLabels.length > 0) {
+        reactionP = `The changes are being hailed as generous by the city&rsquo;s criminal element. ${favorableLabels.join(', ')} -- all music to the ears of anyone making a dishonest living. But veterans know: nothing from the Top Don comes free.`;
+    } else if (harshLabels.length > 0) {
+        reactionP = `The new policies have sent a chill through the underworld. ${harshLabels.join(', ')} -- every last one designed to tighten the screws. "The Don&rsquo;s getting greedy," whispered one unnamed source.`;
+    }
+
+    // Budget paragraph
+    const budgetP = `City accountants note that the new policy configuration uses ${data.budgetUsed} of ${data.budgetMax} available governance points, leaving ${data.budgetMax - data.budgetUsed} points in reserve. The balance of power, it seems, is a careful calculus.`;
+
+    // Footer quotes
+    const footerQuotes = [
+        'Power is not given. It is taken -- and taxed.',
+        'When the Don changes the rules, the only safe bet is to adapt.',
+        'The city never sleeps, and neither does its ruler.',
+        'New policies, same old game. Only the numbers change.',
+        'In this city, the pen of the Top Don is mightier than any gun.',
+        'The families will adjust. They always do. The question is: at what cost?',
+    ];
+
+    return `
+        <div class="newspaper-masthead">
+            <h2 class="newspaper-title">The Daily Racketeer</h2>
+            <p class="newspaper-subtitle">All the News That&rsquo;s Fit to Print &mdash; And Plenty That Isn&rsquo;t</p>
+        </div>
+        <div class="newspaper-dateline">
+            <span>${dateStr}</span>
+            <span>${edition}</span>
+            <span>Price: Two Cents</span>
+        </div>
+        <h3 class="newspaper-headline">${pick(headlines)}</h3>
+        <p class="newspaper-subhead">${pick(subheads)}</p>
+        <hr class="newspaper-rule-double">
+        <div class="newspaper-body">
+            <p>${pick(openings)}</p>
+            <div class="newspaper-stats-box">
+                <h4>Policy Changes</h4>
+                ${changesHTML}
+            </div>
+            ${reactionP ? `<p>${reactionP}</p>` : ''}
+            <p>${budgetP}</p>
+        </div>
+        <div class="newspaper-footer">
+            &ldquo;${pick(footerQuotes)}&rdquo;<br>
+            &mdash; The Daily Racketeer, est. 1923
+        </div>
+    `;
 }
 
 // ==================== FRIENDS & SOCIAL SYSTEM ====================

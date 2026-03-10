@@ -1085,6 +1085,9 @@ function handleClientMessage(clientId, message, ws) {
         case 'politics_set_policy':
             handlePoliticsSetPolicy(clientId, message);
             break;
+        case 'politics_submit_all':
+            handlePoliticsSubmitAll(clientId, message);
+            break;
 
         case 'post_bounty':
             handlePostBounty(clientId, message);
@@ -4303,18 +4306,39 @@ function handleAllianceDiscipline(clientId, message) {
 // the "Top Don" and can set server-wide policies that affect all players.
 
 const POLICY_LIMITS = {
-    worldTaxRate: { min: 5, max: 25, label: 'World Tax Rate', unit: '%', icon: '' },
-    marketFee: { min: 0, max: 15, label: 'Market Fee', unit: '%', icon: '' },
-    crimeBonus: { min: 0, max: 20, label: 'Crime Bonus', unit: '%', icon: '' },
-    jailTimeMod: { min: -30, max: 30, label: 'Jail Time Modifier', unit: '%', icon: '' },
-    heistBonus: { min: 0, max: 25, label: 'Heist Bonus', unit: '%', icon: '' }
+    worldTaxRate: { min: 5, max: 25, label: 'World Tax Rate', unit: '%', icon: '', neutral: 10, costPer: 2, earnPer: 1 },
+    marketFee:    { min: 0, max: 15, label: 'Market Fee',     unit: '%', icon: '', neutral: 5,  costPer: 2, earnPer: 1 },
+    crimeBonus:   { min: 0, max: 20, label: 'Crime Bonus',    unit: '%', icon: '', neutral: 0,  costPer: 2, earnPer: 0 },
+    jailTimeMod:  { min: -30, max: 30, label: 'Jail Time Modifier', unit: '%', icon: '', neutral: 0, costPer: 1, earnPer: 1 },
+    heistBonus:   { min: 0, max: 25, label: 'Heist Bonus',    unit: '%', icon: '', neutral: 0,  costPer: 2, earnPer: 0 }
 };
+const POLICY_BUDGET = 30; // total points the Top Don can spend on favorable policies
 const POLICY_CHANGE_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes between policy changes
 const MIN_TERRITORIES_FOR_TOP_DON = 1; // Need at least 1 territory to qualify
+
+// Calculate net budget cost for a set of policies (positive = spent, negative = surplus)
+function calculatePolicyCost(policies) {
+    let cost = 0;
+    let earned = 0;
+    for (const [key, lim] of Object.entries(POLICY_LIMITS)) {
+        const val = policies[key] !== undefined ? policies[key] : lim.neutral;
+        const diff = val - lim.neutral;
+        // For tax, fee, jail: lower is favorable (costs budget), higher is harsh (earns budget)
+        // For crimeBonus, heistBonus: higher is favorable (costs budget)
+        const favorDown = (key === 'worldTaxRate' || key === 'marketFee' || key === 'jailTimeMod');
+        if (favorDown ? diff < 0 : diff > 0) {
+            cost += Math.abs(diff) * lim.costPer;
+        } else if (favorDown ? diff > 0 : diff < 0) {
+            earned += Math.abs(diff) * lim.earnPer;
+        }
+    }
+    return { cost, earned, net: cost - earned };
+}
 
 // Sanitize politics for client consumption (no internal IDs)
 function sanitizePolitics() {
     const p = gameState.politics;
+    const budget = calculatePolicyCost(p.policies);
     return {
         topDonName: p.topDonName,
         territoryCount: p.territoryCount,
@@ -4322,7 +4346,9 @@ function sanitizePolitics() {
         allianceName: p.allianceName,
         allianceTag: p.allianceTag,
         policies: { ...p.policies },
-        policyLimits: POLICY_LIMITS
+        policyLimits: POLICY_LIMITS,
+        policyBudget: POLICY_BUDGET,
+        budgetUsed: budget.net
     };
 }
 
@@ -4496,6 +4522,102 @@ function handlePoliticsSetPolicy(clientId, message) {
     addGlobalChatMessage('System', changeMsg, '#ffd700');
 
     // Broadcast updated politics to all
+    broadcastToAll({
+        type: 'politics_update',
+        politics: sanitizePolitics()
+    });
+
+    scheduleWorldSave();
+}
+
+function handlePoliticsSubmitAll(clientId, message) {
+    const player = gameState.players.get(clientId);
+    if (!player) return;
+    const ws = clients.get(clientId);
+    const fail = (err) => { if (ws && ws.readyState === 1) safeSend(ws, { type: 'politics_submit_result', success: false, error: err }); };
+
+    if (gameState.politics.topDonClientId !== clientId) {
+        return fail('Only the Top Don can set city policies.');
+    }
+
+    const incoming = message.policies;
+    if (!incoming || typeof incoming !== 'object') return fail('Invalid policy data.');
+
+    // Cooldown check
+    const now = Date.now();
+    const timeSinceLastChange = now - (gameState.politics.policyChangedAt || 0);
+    if (timeSinceLastChange < POLICY_CHANGE_COOLDOWN_MS) {
+        const remaining = Math.ceil((POLICY_CHANGE_COOLDOWN_MS - timeSinceLastChange) / 60000);
+        return fail(`Policy changes are on cooldown. Wait ${remaining} more minute(s).`);
+    }
+
+    // Validate each value
+    const validated = {};
+    for (const [key, lim] of Object.entries(POLICY_LIMITS)) {
+        const raw = incoming[key];
+        const numVal = raw !== undefined ? parseInt(raw) : gameState.politics.policies[key];
+        if (isNaN(numVal) || numVal < lim.min || numVal > lim.max) {
+            return fail(`${lim.label} must be between ${lim.min}${lim.unit} and ${lim.max}${lim.unit}.`);
+        }
+        validated[key] = numVal;
+    }
+
+    // Budget check
+    const budget = calculatePolicyCost(validated);
+    if (budget.net > POLICY_BUDGET) {
+        return fail(`Policy budget exceeded (${budget.net}/${POLICY_BUDGET} points used). Adjust your policies.`);
+    }
+
+    // Build list of changes
+    const changes = [];
+    for (const [key, newVal] of Object.entries(validated)) {
+        const oldVal = gameState.politics.policies[key];
+        if (oldVal !== newVal) {
+            const lim = POLICY_LIMITS[key];
+            changes.push({ policy: key, label: lim.label, unit: lim.unit, oldValue: oldVal, newValue: newVal });
+        }
+    }
+
+    if (changes.length === 0) {
+        return fail('No policy changes detected.');
+    }
+
+    // Apply all changes
+    for (const [key, val] of Object.entries(validated)) {
+        gameState.politics.policies[key] = val;
+    }
+    gameState.politics.policyChangedAt = now;
+
+    console.log(` Policies submitted by ${player.name}: ${changes.map(c => `${c.label} ${c.oldValue}→${c.newValue}`).join(', ')}`);
+
+    // Notify the Top Don
+    if (ws && ws.readyState === 1) {
+        safeSend(ws, {
+            type: 'politics_submit_result',
+            success: true,
+            changes: changes,
+            cooldownRemaining: POLICY_CHANGE_COOLDOWN_MS
+        });
+    }
+
+    // Build chat summary
+    const chatLines = changes.map(c => {
+        const dir = c.newValue > c.oldValue ? 'raised' : 'lowered';
+        return `${c.label}: ${c.oldValue}${c.unit} → ${c.newValue}${c.unit}`;
+    });
+    addGlobalChatMessage('System', ` Top Don ${player.name} issued new city policies: ${chatLines.join(' | ')}`, '#ffd700');
+
+    // Broadcast newspaper to all players
+    broadcastToAll({
+        type: 'politics_newspaper',
+        topDonName: player.name,
+        changes: changes,
+        budgetUsed: budget.net,
+        budgetMax: POLICY_BUDGET,
+        timestamp: now
+    });
+
+    // Broadcast updated politics
     broadcastToAll({
         type: 'politics_update',
         politics: sanitizePolitics()
