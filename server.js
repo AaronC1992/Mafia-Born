@@ -2560,10 +2560,17 @@ function handleJailStatusSync(clientId, message) {
     const wasInJail = !!playerState.inJail;
     const isNowInJail = !!message.inJail;
 
-    // Only allow clients to report going TO jail, never releasing themselves
+    // Allow clients to sync jail release (breakout, bribe, gang rescue).
+    // These mechanics are computed client-side, so the client must be able
+    // to report the release.  The server timer handles natural sentence
+    // completion independently.
     if (!isNowInJail) {
         if (wasInJail) {
-            console.log(` BLOCKED: ${player.name} tried to sync release — only server can release`);
+            playerState.inJail = false;
+            playerState.jailTime = 0;
+            console.log(` ${player.name} released from jail (client-synced breakout/bribe/rescue)`);
+            broadcastPlayerStates();
+            broadcastJailRoster();
         }
         return;
     }

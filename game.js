@@ -12079,6 +12079,7 @@ function bribeGuard() {
   player.heat = Math.max(0, (player.heat || 0) - 3);
 
   stopJailTimer();
+  window._jailReleaseGrace = Date.now();
 
   if (window.EventBus) {
     try { EventBus.emit('jailStatusChanged', { inJail: false, jailTime: 0 }); } catch(e) { console.warn('EventBus emit error:', e); }
@@ -12118,6 +12119,9 @@ function attemptBreakout() {
     player.breakoutAttempts = 3; // Reset breakout attempts
 
     stopJailTimer();
+    // Grace period: prevent multiplayer sync from re-jailing us before the
+    // server has processed our release (fixes race condition with world_update).
+    window._jailReleaseGrace = Date.now();
 
     if (window.EventBus) {
       try { EventBus.emit('jailStatusChanged', { inJail: false, jailTime: 0 }); } catch(e) { console.warn('EventBus emit error:', e); }
@@ -12583,6 +12587,7 @@ async function attemptGangRescue() {
     player.jailTime = 0;
     player.breakoutAttempts = 3;
     stopJailTimer();
+    window._jailReleaseGrace = Date.now();
 
     if (window.EventBus) {
       try { EventBus.emit('jailStatusChanged', { inJail: false, jailTime: 0 }); } catch(e) { console.warn('EventBus emit error:', e); }
@@ -17552,7 +17557,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.33.3';
+const CURRENT_VERSION = '1.33.4';
 const VERSION_UPDATES = {
   '1.30.0': {
     title: 'Server-Only Saves',
@@ -18836,6 +18841,7 @@ function updateJailTimer() {
       stopJailTimer();
       player.inJail = false;
       player.jailTime = 0;
+      window._jailReleaseGrace = Date.now();
       if (window.EventBus) {
         try { EventBus.emit('jailStatusChanged', { inJail: false, jailTime: 0 }); } catch (e) { console.warn('EventBus emit error:', e); }
       }

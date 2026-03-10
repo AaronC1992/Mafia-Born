@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Playfair+Display+SC:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.33.3">
+    <link rel="stylesheet" href="styles.css?v=1.33.4">
 </head>
 <body>
     <noscript>
@@ -164,6 +164,30 @@
                             box-shadow: 0 0 30px rgba(0,0,0,0.8); border: 2px solid #d4af37;" />
             </div>
             <h1>Welcome to the Family</h1>
+
+            <!-- Game pitch section -->
+            <div class="intro-pitch">
+                <p class="intro-tagline">Rise from the gutter. Build an empire. Own the city.</p>
+                <div class="intro-features">
+                    <div class="intro-feature">
+                        <span class="intro-feature-title">Run Jobs & Heists</span>
+                        <span class="intro-feature-desc">Pull off robberies, smuggle contraband, and climb the ranks of the underworld.</span>
+                    </div>
+                    <div class="intro-feature">
+                        <span class="intro-feature-title">Build Your Empire</span>
+                        <span class="intro-feature-desc">Buy businesses, launder money, recruit a gang, and control turf across the city.</span>
+                    </div>
+                    <div class="intro-feature">
+                        <span class="intro-feature-title">Live the Life</span>
+                        <span class="intro-feature-desc">Bribe cops, break out of jail, gamble at the casino, and make a name for yourself.</span>
+                    </div>
+                    <div class="intro-feature">
+                        <span class="intro-feature-title">Multiplayer Underworld</span>
+                        <span class="intro-feature-desc">Compete with other players for territory, reputation, and bragging rights.</span>
+                    </div>
+                </div>
+            </div>
+
             <button onclick="startGame()">Join the Family</button>
             <button onclick="loadGameFromIntro()" style="background: linear-gradient(to bottom, #1a1a1a, #000); margin-left: 10px; border-color: #c0a062; color: #c0a062;">Resume Business</button>
             <button onclick="forceNewGame()" style="background: linear-gradient(to bottom, #8b0000, #500000); margin-left: 10px; font-size: 12px; border-color: #ff0000; color: #fff;">Burn Records</button>
@@ -995,6 +1019,6 @@
     <!-- Multiplayer client (global script, must load before game.js module) -->
     <script src="multiplayer.js"></script>
     <!-- Main game logic (Module) -->
-    <script type="module" src="game.js?v=1.33.3"></script>
+    <script type="module" src="game.js?v=1.33.4"></script>
 </body>
 </html>

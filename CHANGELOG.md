@@ -5,6 +5,15 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.33.4] - 2026-03-10
+
+### Fixed
+- **Jail breakout race condition** -- breaking out of jail (breakout, bribe, gang rescue) no longer gets overwritten by stale multiplayer sync; server now accepts client-synced jail releases, and a 10-second grace period prevents world_update from re-jailing freed players
+- **Server jail release blocking** -- `handleJailStatusSync` on the server no longer blocks legitimate jail release syncs from breakout/bribe/rescue
+
+### Added
+- **Intro screen game pitch** -- new players now see a tagline and 4 feature highlights (Jobs & Heists, Build Your Empire, Live the Life, Multiplayer) before signing up, selling them on the game before account creation
+
 ## [1.30.0] - 2026-03-08
 
 ### Changed -- Server-Only Saves

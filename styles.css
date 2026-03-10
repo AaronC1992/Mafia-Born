@@ -2013,6 +2013,62 @@ p, ul {
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
 }
 
+/* Intro pitch / game description section */
+.intro-pitch {
+    max-width: 560px;
+    width: 90%;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.intro-tagline {
+    font-size: 1.15em;
+    color: #d4c4a0;
+    font-style: italic;
+    margin: 0 0 22px;
+    letter-spacing: 1px;
+    line-height: 1.5;
+}
+
+.intro-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.intro-feature {
+    background: linear-gradient(135deg, rgba(20, 18, 10, 0.7), rgba(30, 25, 15, 0.5));
+    border: 1px solid rgba(192, 160, 98, 0.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: left;
+}
+
+.intro-feature-title {
+    display: block;
+    color: #c0a062;
+    font-family: var(--font-heading);
+    font-size: 0.95em;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.intro-feature-desc {
+    display: block;
+    color: #8a7a5a;
+    font-size: 0.82em;
+    line-height: 1.4;
+}
+
+@media (max-width: 520px) {
+    .intro-features {
+        grid-template-columns: 1fr;
+    }
+    .intro-tagline {
+        font-size: 1em;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     /* Page Header — narrower sidebars at this breakpoint */

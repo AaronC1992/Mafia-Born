@@ -1353,9 +1353,17 @@ async function handleServerMessage(message) {
                             }
                         }
                     } else {
-                        // No local timer — accept server state wholesale
-                        player.inJail = !!selfPs.inJail;
-                        player.jailTime = selfPs.jailTime || 0;
+                        // No local timer — accept server state, but respect
+                        // the grace period after a local breakout/bribe/rescue
+                        // so we don't re-jail the player before the server has
+                        // processed the release sync.
+                        const graceActive = window._jailReleaseGrace && (Date.now() - window._jailReleaseGrace < 10000);
+                        if (graceActive && !player.inJail) {
+                            // Skip — local release is authoritative during grace
+                        } else {
+                            player.inJail = !!selfPs.inJail;
+                            player.jailTime = selfPs.jailTime || 0;
+                        }
                     }
                     // Heat is NOT synced from world_update — it's managed locally
                     // (jobs, admin panel, skills, turf, etc.) and would be overwritten
