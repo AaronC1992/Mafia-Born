@@ -5,6 +5,23 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.34.0] - 2026-03-10
+
+### Added
+- **Tribute ready notifications** -- gang tribute and turf tribute buttons now show a red dot when ready; SafeHouse menu badges light up for The Family and Territories
+- **Tribute cooldown timers** -- tribute buttons grey out and display remaining time while on cooldown
+- **Bookie turf tribute** -- bookie service now auto-collects turf tribute alongside businesses and gang tribute
+- **Superboss cooldown timers** -- boss list displays power stats and per-boss 1-hour cooldowns
+- **Superboss wipe mechanic** -- all participants downed by cumulative boss damage triggers a full wipe
+
+### Changed
+- **Superboss rebalance** -- massively increased HP (75K-500K) and power (12K-50K), reduced rewards ($500K-$5M), capped player attack power at 5,000 per hit, crit chance lowered to 10% with 1.5x multiplier
+- **Boss counter-attacks** -- boss damage no longer divided by participant count; visible hit notifications shown to players; scaling down chance from 15% to 50% based on cumulative damage taken
+
+### Fixed
+- **Bookie notification types** -- bookie messages now use correct notification types instead of raw numbers
+- **Turf heat display** -- removed "/100" from heat display, heat reduction is a flat $20,000 cost
+
 ## [1.33.9] - 2026-03-10
 
 ### Fixed

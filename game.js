@@ -17880,8 +17880,25 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.33.9';
+const CURRENT_VERSION = '1.34.0';
 const VERSION_UPDATES = {
+  '1.34.0': {
+    title: 'Tribute Alerts, Bookie Fix & Superboss Overhaul',
+    date: 'March 2026',
+    changes: [
+      'Gang tribute and turf tribute buttons now show a red notification dot when ready to collect',
+      'Tribute buttons grey out with a countdown timer while on cooldown',
+      'SafeHouse menu badges now light up for The Family and Territories when tribute is available',
+      'Bookie service now auto-collects turf tribute alongside businesses and gang tribute',
+      'Superboss HP, power, and rewards rebalanced for a much harder fight',
+      'Superbosses now have a 1-hour per-boss cooldown between fights',
+      'Boss counter-attacks now deal full damage and show visible hit notifications',
+      'Cumulative boss damage scales down chance from 15% to 50% -- all participants downed means a wipe',
+      'Player attack power capped at 5,000 per hit against superbosses',
+      'Superboss list now displays boss power and cooldown timers',
+      'Turf heat display cleaned up and heat reduction is a flat $20k cost',
+    ]
+  },
   '1.33.9': {
     title: 'Side Ops & Newspaper Overhaul',
     date: 'March 2026',
