@@ -6453,7 +6453,6 @@ function renderTurfControlContent() {
         </div>
       </div>`;
     });
-    });
     html += '</div></div>';
   } else {
     html += '<div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;"><h3 style="color: #8b3a3a; margin: 0 0 10px 0;">No Turf Controlled</h3><p style="color: #d4c4a0; margin: 0;">Every zone is held by a rival family. Complete missions and fight for control!</p></div>';
