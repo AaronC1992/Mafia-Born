@@ -5759,11 +5759,13 @@ function handleGamblingLeaveTable(clientId) {
 
 // ==================== SUPERBOSS SYSTEM ====================
 
+const SUPERBOSS_COOLDOWN = 3600000; // 1 hour cooldown per boss after defeating it
+
 const SUPERBOSSES = [
-    { id: 'don_sanguine', name: 'Don Sanguine, The Blood King', level: 30, minReputation: 75, hp: 10000, power: 8000, reward: { money: 1000000, xp: 15, buff: { id: 'blood_king_fury', name: 'Blood King\'s Fury', effect: 'power', value: 500, duration: 3600000 } }, description: 'The crimson tyrant who ruled the underworld for decades.' },
-    { id: 'iron_widow', name: 'The Iron Widow', level: 40, minReputation: 150, hp: 15000, power: 12000, reward: { money: 2500000, xp: 25, buff: { id: 'widow_veil', name: 'Widow\'s Veil', effect: 'stealth', value: 50, duration: 3600000 } }, description: 'A legendary assassin who has never been seen twice.' },
-    { id: 'ghost_of_alcatraz', name: 'Ghost of Alcatraz', level: 50, minReputation: 350, hp: 25000, power: 20000, reward: { money: 5000000, xp: 40, buff: { id: 'ghost_form', name: 'Spectral Form', effect: 'evasion', value: 30, duration: 7200000 } }, description: 'The spirit of the most dangerous prisoner to ever live.' },
-    { id: 'the_commissioner', name: 'The Commissioner', level: 60, minReputation: 500, hp: 40000, power: 30000, reward: { money: 10000000, xp: 60, buff: { id: 'untouchable', name: 'Untouchable', effect: 'immunity', value: 100, duration: 3600000 } }, description: 'The corrupt police chief who controls everything from the shadows.' }
+    { id: 'don_sanguine', name: 'Don Sanguine, The Blood King', level: 30, minReputation: 75, hp: 75000, power: 12000, reward: { money: 500000, xp: 15, buff: { id: 'blood_king_fury', name: 'Blood King\'s Fury', effect: 'power', value: 500, duration: 3600000 } }, description: 'The crimson tyrant who ruled the underworld for decades.' },
+    { id: 'iron_widow', name: 'The Iron Widow', level: 40, minReputation: 150, hp: 150000, power: 20000, reward: { money: 1000000, xp: 25, buff: { id: 'widow_veil', name: 'Widow\'s Veil', effect: 'stealth', value: 50, duration: 3600000 } }, description: 'A legendary assassin who has never been seen twice.' },
+    { id: 'ghost_of_alcatraz', name: 'Ghost of Alcatraz', level: 50, minReputation: 350, hp: 300000, power: 35000, reward: { money: 2500000, xp: 40, buff: { id: 'ghost_form', name: 'Spectral Form', effect: 'evasion', value: 30, duration: 7200000 } }, description: 'The spirit of the most dangerous prisoner to ever live.' },
+    { id: 'the_commissioner', name: 'The Commissioner', level: 60, minReputation: 500, hp: 500000, power: 50000, reward: { money: 5000000, xp: 60, buff: { id: 'untouchable', name: 'Untouchable', effect: 'immunity', value: 100, duration: 3600000 } }, description: 'The corrupt police chief who controls everything from the shadows.' }
 ];
 
 function handleSuperbossStart(clientId, message) {
@@ -5775,6 +5777,15 @@ function handleSuperbossStart(clientId, message) {
     const boss = SUPERBOSSES.find(b => b.id === bossId);
     if (!boss) return safeSend(ws, { type: 'superboss_result', success: false, error: 'Unknown superboss.' });
     if ((player.reputation || 0) < (boss.minReputation || 0)) return safeSend(ws, { type: 'superboss_result', success: false, error: `Requires ${boss.minReputation}+ reputation.` });
+    
+    // Check cooldown
+    if (!player.superbossCooldowns) player.superbossCooldowns = {};
+    const lastDefeat = player.superbossCooldowns[bossId] || 0;
+    const cooldownRemaining = SUPERBOSS_COOLDOWN - (Date.now() - lastDefeat);
+    if (cooldownRemaining > 0) {
+        const mins = Math.ceil(cooldownRemaining / 60000);
+        return safeSend(ws, { type: 'superboss_result', success: false, error: `${boss.name} is recovering. Try again in ${mins} minute${mins === 1 ? '' : 's'}.` });
+    }
     
     // Check not already in a fight
     for (const [, f] of gameState.activeSuperbossFights) {
@@ -5874,12 +5885,21 @@ function handleSuperbossAttack(clientId, message) {
     const participant = fight.participants.find(p => p.playerId === clientId);
     if (!participant || !participant.alive) return safeSend(ws, { type: 'superboss_result', success: false, error: 'You are not alive in this fight.' });
     
+    // Rate limit: 1 attack per 2 seconds per player
+    const now = Date.now();
+    if (participant.lastAttackTime && now - participant.lastAttackTime < 2000) {
+        return safeSend(ws, { type: 'superboss_result', success: false, error: 'Too fast! Wait a moment between attacks.' });
+    }
+    participant.lastAttackTime = now;
+    
     // Player attack: damage based on player power + RNG
     const playerPower = player.power || Math.floor((player.reputation || 0) * 5);
-    const baseDamage = Math.floor(playerPower * (0.5 + Math.random() * 0.5));
-    const critChance = 0.15;
+    // Cap effective power so huge gang armies don't trivialize it
+    const effectivePower = Math.min(playerPower, 5000);
+    const baseDamage = Math.floor(effectivePower * (0.5 + Math.random() * 0.5));
+    const critChance = 0.1;
     const isCrit = Math.random() < critChance;
-    const damage = isCrit ? baseDamage * 2 : baseDamage;
+    const damage = isCrit ? Math.floor(baseDamage * 1.5) : baseDamage;
     
     fight.bossHP -= damage;
     participant.damage += damage;
@@ -5889,12 +5909,37 @@ function handleSuperbossAttack(clientId, message) {
     const aliveParticipants = fight.participants.filter(p => p.alive);
     if (aliveParticipants.length > 0 && fight.bossHP > 0) {
         const target = aliveParticipants[Math.floor(Math.random() * aliveParticipants.length)];
-        const bossDamage = Math.floor(fight.bossPower * (0.3 + Math.random() * 0.4) / aliveParticipants.length);
-        bossAttackResult = { targetName: target.name, damage: bossDamage };
-        // 10% chance to "down" a participant per hit
-        if (Math.random() < 0.1) {
+        // Boss deals real damage — not divided by participant count
+        const bossDamage = Math.floor(fight.bossPower * (0.3 + Math.random() * 0.4));
+        bossAttackResult = { targetName: target.name, targetId: target.playerId, damage: bossDamage };
+        
+        // Track cumulative boss damage on each participant
+        if (!target.damageTaken) target.damageTaken = 0;
+        target.damageTaken += bossDamage;
+        
+        // Down chance scales with damage taken — base 15% + 1% per 5000 damage taken
+        const downChance = Math.min(0.5, 0.15 + (target.damageTaken / 500000));
+        if (Math.random() < downChance) {
             target.alive = false;
             bossAttackResult.downed = true;
+        }
+        
+        // Check if ALL participants are downed = boss wins (wipe)
+        const anyAlive = fight.participants.some(p => p.alive);
+        if (!anyAlive) {
+            fight.phase = 'resolved';
+            fight.participants.forEach(p => {
+                const pWs = clients.get(p.playerId);
+                if (pWs && pWs.readyState === WebSocket.OPEN) {
+                    safeSend(pWs, {
+                        type: 'superboss_defeat',
+                        bossName: fight.bossName,
+                        message: `${fight.bossName} has wiped out your entire crew!`
+                    });
+                }
+            });
+            addGlobalChatMessage('System', `${fight.bossName} has wiped out all challengers!`, '#e74c3c');
+            setTimeout(() => gameState.activeSuperbossFights.delete(fight.id), 15000);
         }
     }
     
@@ -5921,6 +5966,7 @@ function handleSuperbossAttack(clientId, message) {
                 safeSend(pWs, {
                     type: 'superboss_victory',
                     bossName: fight.bossName,
+                    bossId: fight.bossId,
                     moneyReward,
                     xpReward,
                     buff: fight.reward.buff,
@@ -5928,6 +5974,12 @@ function handleSuperbossAttack(clientId, message) {
                     damageShare: Math.round(share * 100),
                     crewLoadout
                 });
+            }
+            // Set cooldown for this boss per player
+            const pState = gameState.players.get(p.playerId);
+            if (pState) {
+                if (!pState.superbossCooldowns) pState.superbossCooldowns = {};
+                pState.superbossCooldowns[fight.bossId] = Date.now();
             }
         });
         
@@ -5972,9 +6024,15 @@ function handleSuperbossList(clientId) {
         });
     }
     
+    // Include per-player cooldown info
+    const player = gameState.players.get(clientId);
+    const cooldowns = (player && player.superbossCooldowns) || {};
+
     safeSend(ws, {
         type: 'superboss_list_result',
-        bosses: SUPERBOSSES.map(b => ({ id: b.id, name: b.name, level: b.level, hp: b.hp, description: b.description })),
+        bosses: SUPERBOSSES.map(b => ({ id: b.id, name: b.name, level: b.level, minReputation: b.minReputation, hp: b.hp, power: b.power, description: b.description })),
+        cooldowns,
+        cooldownDuration: SUPERBOSS_COOLDOWN,
         activeFights
     });
 }

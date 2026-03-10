@@ -2296,6 +2296,9 @@ async function handleServerMessage(message) {
         case 'superboss_victory':
             handleSuperbossVictory(message);
             break;
+        case 'superboss_defeat':
+            handleSuperbossDefeat(message);
+            break;
         case 'superboss_list_result':
             handleSuperbossListResult(message);
             break;
@@ -6982,6 +6985,11 @@ function handleSuperbossUpdate(message) {
             _activeSuperbossFight.bossHP = message.bossHP;
             _activeSuperbossFight.bossMaxHP = message.bossMaxHP;
             _activeSuperbossFight.phase = message.phase;
+            // Update participant status from server
+            if (message.bossAttack && message.bossAttack.downed) {
+                const downed = _activeSuperbossFight.participants.find(p => p.name === message.bossAttack.targetName);
+                if (downed) downed.alive = false;
+            }
         }
         renderSuperbossScreen();
     }
@@ -6991,7 +6999,11 @@ function handleSuperbossUpdate(message) {
         const critText = message.isCrit ? ' (CRITICAL!)' : '';
         if (typeof logAction === 'function') _safeLogAction(`${message.attackerName} hit the boss for ${message.damage} damage${critText}!`, 'combat');
         if (message.bossAttack) {
-            const downText = message.bossAttack.downed ? ' — DOWNED!' : '';
+            const downText = message.bossAttack.downed ? ' -- DOWNED!' : '';
+            if (typeof showBriefNotification === 'function') {
+                const notifType = message.bossAttack.downed ? 'danger' : 'warning';
+                showBriefNotification(`Boss strikes ${message.bossAttack.targetName} for ${message.bossAttack.damage} damage${downText}`, notifType);
+            }
             _safeLogAction(`Boss counter-attacks ${message.bossAttack.targetName} for ${message.bossAttack.damage} damage${downText}!`, 'combat');
         }
     }
@@ -7013,8 +7025,11 @@ function handleSuperbossVictory(message) {
     
     // Track for achievement
     if (!player.superbossesDefeated) player.superbossesDefeated = [];
-    const bossId = message.bossName; // Use name as fallback ID
+    const bossId = message.bossId || message.bossName; // Prefer ID, fallback to name
     if (!player.superbossesDefeated.includes(bossId)) player.superbossesDefeated.push(bossId);
+    
+    // Invalidate boss list cache so cooldowns refresh on next render
+    _superbossListCache = null;
     
     _safeUpdateUI();
     
@@ -7034,6 +7049,13 @@ function handleSuperbossVictory(message) {
         });
     }
     
+    renderSuperbossScreen();
+}
+
+function handleSuperbossDefeat(message) {
+    _activeSuperbossFight = null;
+    if (typeof showBriefNotification === 'function') showBriefNotification(message.message || 'Your crew was wiped out!', 'danger');
+    if (typeof logAction === 'function') _safeLogAction(`SUPERBOSS WIPE: ${message.bossName} destroyed your entire crew! Regroup and try again.`, 'combat');
     renderSuperbossScreen();
 }
 
@@ -7096,17 +7118,33 @@ function renderSuperbossScreen() {
     // Boss list
     if (_superbossListCache) {
         html += `<h3 style="color:#c0a062;margin:16px 0 8px;">Legendary Crime Lords</h3>`;
+        const cooldowns = _superbossListCache.cooldowns || {};
+        const cooldownDuration = _superbossListCache.cooldownDuration || 3600000;
         _superbossListCache.bosses.forEach(b => {
             const canFight = (player.reputation || 0) >= (b.minReputation || b.level || 1);
             const defeated = (player.superbossesDefeated || []).includes(b.id);
-            html += `<div ${style} style="opacity:${canFight?1:0.5};">
+            const lastDefeat = cooldowns[b.id] || 0;
+            const cdRemaining = Math.max(0, cooldownDuration - (Date.now() - lastDefeat));
+            const onCooldown = cdRemaining > 0;
+            const cdMins = Math.ceil(cdRemaining / 60000);
+            let actionBtn = '';
+            if (!canFight) {
+                actionBtn = `<span style="color:#8a7a5a;">Locked</span>`;
+            } else if (_activeSuperbossFight) {
+                actionBtn = `<span style="color:#8a7a5a;">In fight</span>`;
+            } else if (onCooldown) {
+                actionBtn = `<span style="color:#e67e22;">Cooldown: ${cdMins}m</span>`;
+            } else {
+                actionBtn = `<button onclick="window.startSuperbossFight('${b.id}')" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Challenge</button>`;
+            }
+            html += `<div ${style} style="opacity:${canFight && !onCooldown ? 1 : 0.5};">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
                     <div>
-                        <strong style="color:#e74c3c;">${defeated?'[Defeated]':''} ${escapeHTML(b.name)}</strong>
+                        <strong style="color:#e74c3c;">${defeated ? '[Defeated] ' : ''}${escapeHTML(b.name)}</strong>
                         <p style="color:#8a7a5a;margin:4px 0;">${escapeHTML(b.description)}</p>
-                        <small style="color:#8a7a5a;">Requires ${b.minReputation || b.level || 1}+ Rep — HP: ${b.hp.toLocaleString()}</small>
+                        <small style="color:#8a7a5a;">Requires ${b.minReputation || b.level || 1}+ Rep -- HP: ${b.hp.toLocaleString()} -- Power: ${(b.power || 0).toLocaleString()}</small>
                     </div>
-                    ${canFight && !_activeSuperbossFight ? `<button onclick="window.startSuperbossFight('${b.id}')" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Challenge</button>` : `<span style="color:#8a7a5a;">${!canFight ? 'Locked' : 'In fight'}</span>`}
+                    ${actionBtn}
                 </div>
             </div>`;
         });
