@@ -963,6 +963,48 @@ export const STREET_STORIES = [
 
 export const SIDE_QUESTS = [
   {
+    id: "sq_code_of_honor",
+    title: "The Code",
+    description: "Establish your personal code of conduct — the rules that define your criminal empire.",
+    icon: "📜",
+    minReputation: 10,
+    steps: [
+      {
+        id: "sq_code_1",
+        title: "No Women, No Children",
+        narrative: "A dispute with a rival escalates. One of your lieutenants suggests targeting the rival's family. This is the moment that defines what kind of organization you run.",
+        objective: { type: "jobs", target: 15, text: "Complete 15 jobs without harming civilians" },
+        reward: { respect: 15, reputation: 5 },
+        completionText: "You lay down the law: families are off-limits. Some of your crew grumble, but the ones who matter — the ones with brains — understand. Honor isn't just a word. It's a weapon.",
+        timerMinutes: 3,
+        linkedStories: [{ storyId: "ss_the_kid", trigger: "start" }, { storyId: "ss_the_stray", trigger: "start" }]
+      },
+      {
+        id: "sq_code_2",
+        title: "Omertà",
+        narrative: "One of your men gets pinched. The cops are offering him a deal. This is the test of your organization's loyalty.",
+        objective: { type: "money", target: 20000, text: "Fund legal defense ($20,000)" },
+        reward: { money: -20000, respect: 20 },
+        completionText: "You hire the best lawyer in the city. Your man keeps his mouth shut. The case falls apart. The message is clear: loyalty is rewarded. Always.",
+        timerMinutes: 5,
+        linkedStories: [{ storyId: "ss_the_confession", trigger: "start" }]
+      },
+      {
+        id: "sq_code_3",
+        title: "The Tithe",
+        narrative: "Every week, you set aside a percentage of earnings for the families of imprisoned members. It's expensive. It's also what separates a crew from a family.",
+        objective: { type: "money", target: 50000, text: "Establish the weekly tithe fund ($50,000)" },
+        reward: { money: -50000, respect: 25, reputation: 10 },
+        completionText: "The tithe becomes sacred. Wives and children of imprisoned members receive weekly envelopes — enough to cover rent, food, and school. In return, you have absolute loyalty from every man who walks through your door.",
+        timerMinutes: 8,
+        linkedStories: [{ storyId: "ss_old_debts", trigger: "complete" }, { storyId: "ss_mothers_visit", trigger: "complete" }]
+      }
+    ],
+    completionReward: { money: 10000, respect: 50, reputation: 25 },
+    completionNarrative: "They whisper about your Code on every corner. No women. No children. Omertà. The Tithe. In a world of animals, you've built something with honor. Not everyone agrees — some call it weakness. But the men who follow you? They'd walk through fire. And that's worth more than all the money in the world."
+  },
+
+  {
     id: "sq_informant_network",
     title: "The Informant Network",
     description: "Build a web of informants across the city — bartenders, taxi drivers, hotel clerks — people who see everything and tell only you.",
@@ -1047,90 +1089,6 @@ export const SIDE_QUESTS = [
   },
 
   {
-    id: "sq_ghost_money",
-    title: "Ghost Money",
-    description: "Build an untraceable money laundering operation that turns dirty cash into clean investments.",
-    icon: "💰",
-    minReputation: 100,
-    steps: [
-      {
-        id: "sq_ghost_1",
-        title: "The Laundromat",
-        narrative: "Every criminal empire starts with a front. A chain of laundromats is classic for a reason — high cash volume, minimal paper trail.",
-        objective: { type: "money", target: 30000, text: "Open a laundromat chain ($30,000)" },
-        reward: { money: -30000, respect: 5 },
-        completionText: "Three locations, all cash businesses. Every week, dirty money goes in as 'revenue' and comes out squeaky clean. Pun intended.",
-        timerMinutes: 10,
-        linkedStories: [{ storyId: "ss_dock_strike", trigger: "start" }]
-      },
-      {
-        id: "sq_ghost_2",
-        title: "The Accountant",
-        narrative: "A forensic accountant named Gerald has been disbarred for 'creative bookkeeping.' His skills are exactly what you need to layer your money through a maze of shell companies.",
-        objective: { type: "reputation", target: 130, text: "Reach 130 Rep to recruit Gerald" },
-        reward: { respect: 10 },
-        completionText: "Gerald builds you a financial labyrinth. Money flows through twelve shell companies in four countries before landing in your offshore accounts. The IRS would need a decade to untangle it.",
-        timerMinutes: 15,
-        linkedStories: [{ storyId: "ss_the_painting", trigger: "start" }]
-      },
-      {
-        id: "sq_ghost_3",
-        title: "The Real Estate Play",
-        narrative: "The final piece: buying and flipping commercial real estate. Clean money buys property, property generates income, income buys more property. An infinite loop of legitimacy.",
-        objective: { type: "money", target: 100000, text: "Invest $100,000 in real estate" },
-        reward: { money: -100000, respect: 15 },
-        completionText: "Your real estate portfolio is your crown jewel. On paper, you're a successful property developer. In reality, every building is a monument to the streets that built you.",
-        timerMinutes: 20,
-        linkedStories: [{ storyId: "ss_casino_whale", trigger: "complete" }]
-      }
-    ],
-    completionReward: { money: 200000, respect: 40, reputation: 20 },
-    completionNarrative: "Ghost Money. That's what they call your operation — because the cash appears from nowhere and vanishes into thin air. The IRS, the FBI, Interpol — they can smell the money but they can't see it. You've built the perfect financial machine."
-  },
-
-  {
-    id: "sq_code_of_honor",
-    title: "The Code",
-    description: "Establish your personal code of conduct — the rules that define your criminal empire.",
-    icon: "📜",
-    minReputation: 10,
-    steps: [
-      {
-        id: "sq_code_1",
-        title: "No Women, No Children",
-        narrative: "A dispute with a rival escalates. One of your lieutenants suggests targeting the rival's family. This is the moment that defines what kind of organization you run.",
-        objective: { type: "jobs", target: 15, text: "Complete 15 jobs without harming civilians" },
-        reward: { respect: 15, reputation: 5 },
-        completionText: "You lay down the law: families are off-limits. Some of your crew grumble, but the ones who matter — the ones with brains — understand. Honor isn't just a word. It's a weapon.",
-        timerMinutes: 3,
-        linkedStories: [{ storyId: "ss_the_kid", trigger: "start" }, { storyId: "ss_the_stray", trigger: "start" }]
-      },
-      {
-        id: "sq_code_2",
-        title: "Omertà",
-        narrative: "One of your men gets pinched. The cops are offering him a deal. This is the test of your organization's loyalty.",
-        objective: { type: "money", target: 20000, text: "Fund legal defense ($20,000)" },
-        reward: { money: -20000, respect: 20 },
-        completionText: "You hire the best lawyer in the city. Your man keeps his mouth shut. The case falls apart. The message is clear: loyalty is rewarded. Always.",
-        timerMinutes: 5,
-        linkedStories: [{ storyId: "ss_the_confession", trigger: "start" }]
-      },
-      {
-        id: "sq_code_3",
-        title: "The Tithe",
-        narrative: "Every week, you set aside a percentage of earnings for the families of imprisoned members. It's expensive. It's also what separates a crew from a family.",
-        objective: { type: "money", target: 50000, text: "Establish the weekly tithe fund ($50,000)" },
-        reward: { money: -50000, respect: 25, reputation: 10 },
-        completionText: "The tithe becomes sacred. Wives and children of imprisoned members receive weekly envelopes — enough to cover rent, food, and school. In return, you have absolute loyalty from every man who walks through your door.",
-        timerMinutes: 8,
-        linkedStories: [{ storyId: "ss_old_debts", trigger: "complete" }, { storyId: "ss_mothers_visit", trigger: "complete" }]
-      }
-    ],
-    completionReward: { money: 10000, respect: 50, reputation: 25 },
-    completionNarrative: "They whisper about your Code on every corner. No women. No children. Omertà. The Tithe. In a world of animals, you've built something with honor. Not everyone agrees — some call it weakness. But the men who follow you? They'd walk through fire. And that's worth more than all the money in the world."
-  },
-
-  {
     id: "sq_nightlife_empire",
     title: "King of the Night",
     description: "Build a string of nightclubs, lounges, and speakeasies that become the social hub of the city's underworld.",
@@ -1170,6 +1128,48 @@ export const SIDE_QUESTS = [
     ],
     completionReward: { money: 100000, respect: 35, reputation: 20 },
     completionNarrative: "They call you the King of the Night. Your venues are where the city does its real business — not in boardrooms or council chambers, but in dark booths over expensive drinks. You didn't just build nightclubs. You built the stage where the city's power plays out. And you own every seat in the house."
+  },
+
+  {
+    id: "sq_ghost_money",
+    title: "Ghost Money",
+    description: "Build an untraceable money laundering operation that turns dirty cash into clean investments.",
+    icon: "💰",
+    minReputation: 100,
+    steps: [
+      {
+        id: "sq_ghost_1",
+        title: "The Laundromat",
+        narrative: "Every criminal empire starts with a front. A chain of laundromats is classic for a reason — high cash volume, minimal paper trail.",
+        objective: { type: "money", target: 30000, text: "Open a laundromat chain ($30,000)" },
+        reward: { money: -30000, respect: 5 },
+        completionText: "Three locations, all cash businesses. Every week, dirty money goes in as 'revenue' and comes out squeaky clean. Pun intended.",
+        timerMinutes: 10,
+        linkedStories: [{ storyId: "ss_dock_strike", trigger: "start" }]
+      },
+      {
+        id: "sq_ghost_2",
+        title: "The Accountant",
+        narrative: "A forensic accountant named Gerald has been disbarred for 'creative bookkeeping.' His skills are exactly what you need to layer your money through a maze of shell companies.",
+        objective: { type: "reputation", target: 130, text: "Reach 130 Rep to recruit Gerald" },
+        reward: { respect: 10 },
+        completionText: "Gerald builds you a financial labyrinth. Money flows through twelve shell companies in four countries before landing in your offshore accounts. The IRS would need a decade to untangle it.",
+        timerMinutes: 15,
+        linkedStories: [{ storyId: "ss_the_painting", trigger: "start" }]
+      },
+      {
+        id: "sq_ghost_3",
+        title: "The Real Estate Play",
+        narrative: "The final piece: buying and flipping commercial real estate. Clean money buys property, property generates income, income buys more property. An infinite loop of legitimacy.",
+        objective: { type: "money", target: 100000, text: "Invest $100,000 in real estate" },
+        reward: { money: -100000, respect: 15 },
+        completionText: "Your real estate portfolio is your crown jewel. On paper, you're a successful property developer. In reality, every building is a monument to the streets that built you.",
+        timerMinutes: 20,
+        linkedStories: [{ storyId: "ss_casino_whale", trigger: "complete" }]
+      }
+    ],
+    completionReward: { money: 200000, respect: 40, reputation: 20 },
+    completionNarrative: "Ghost Money. That's what they call your operation — because the cash appears from nowhere and vanishes into thin air. The IRS, the FBI, Interpol — they can smell the money but they can't see it. You've built the perfect financial machine."
   }
 ];
 
