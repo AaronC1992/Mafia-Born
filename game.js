@@ -6421,10 +6421,23 @@ function renderTurfControlContent() {
     <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
       <button onclick="showTurfMap()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">Turf Map</button>
       <button onclick="showProtectionRackets()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #c0a040); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">Protection Rackets</button>
+      <button onclick="showCityPolicies()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #c0a062, #ffd700); border: none; border-radius: 10px; color: #14120a; font-weight: bold; cursor: pointer;">City Policies</button>
     </div>`;
 
   if (ownedZones.length > 0) {
-    html += '<div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;"><h3 style="color: #8b3a3a; margin-bottom: 15px;">Your Turf</h3><div style="display: grid; gap: 15px;">';
+    const turfHoursSince = (Date.now() - (player.turf.lastTributeCollection || 0)) / 3600000;
+    const turfReady = turfHoursSince >= 1;
+    const tributeMinsLeft = turfReady ? 0 : Math.ceil(60 - turfHoursSince * 60);
+
+    // Collect All Tribute button at the top
+    html += '<div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;"><h3 style="color: #8b3a3a; margin: 0;">Your Turf</h3>';
+    if (turfReady) {
+      html += `<button onclick="collectTurfTribute('${ownedZones[0].id}'); setTimeout(showTerritoryControl, 300);" style="padding:8px 18px;background:linear-gradient(135deg,#7a8a5a,#229954);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.85em;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
+    } else {
+      html += `<button style="padding:8px 18px;background:linear-gradient(135deg,#555,#444);border:none;border-radius:8px;color:#999;font-weight:bold;font-size:0.85em;cursor:default;" disabled>Tribute (${tributeMinsLeft}m)</button>`;
+    }
+    html += '</div><div style="display: grid; gap: 15px;">';
+
     ownedZones.forEach(zone => {
       const income = calculateTurfZoneIncome(zone);
       const heatLevel = player.heat || 0;
@@ -6439,6 +6452,7 @@ function renderTurfControlContent() {
           <button onclick="fortifyTurf('${zone.id}')" style="padding: 5px 10px; background: #e67e22; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">Fortify</button>
         </div>
       </div>`;
+    });
     });
     html += '</div></div>';
   } else {
@@ -6635,6 +6649,90 @@ function showTurfMap() {
   document.getElementById('territory-control-screen').style.display = 'block';
 }
 window.showTurfMap = showTurfMap;
+
+// Show City Policies -- read-only view of Top Don policies for all players
+function showCityPolicies() {
+  const pol = (typeof onlineWorldState !== 'undefined' && onlineWorldState.politics) ? onlineWorldState.politics : null;
+  const policyDescriptions = {
+    worldTaxRate: 'Tax on all job earnings',
+    marketFee: 'Fee on marketplace transactions',
+    crimeBonus: 'Bonus earnings from crime jobs',
+    jailTimeMod: 'Modifier to jail sentence duration',
+    heistBonus: 'Bonus payout on successful heists'
+  };
+
+  let html = '<h2 style="color:#ffd700;text-align:center;font-family:\'Georgia\',serif;margin-bottom:5px;text-shadow:2px 2px 6px rgba(255,215,0,0.5);">City Policies</h2>';
+  html += '<p style="color:#ccc;text-align:center;margin:0 0 20px 0;">Current laws set by the <strong style="color:#ffd700;">Top Don</strong> affecting all players in the city.</p>';
+
+  // Top Don banner
+  if (pol && pol.topDonName) {
+    const allianceStr = pol.isAlliance ? `<div style="color:#c0a062;font-size:0.9em;margin-top:3px;">[${pol.allianceTag || ''}] ${pol.allianceName || ''}</div>` : '';
+    html += `<div style="background:linear-gradient(180deg,rgba(255,215,0,0.15) 0%,rgba(0,0,0,0.9) 100%);padding:20px;border-radius:12px;border:2px solid #ffd700;margin-bottom:20px;text-align:center;">
+      <div style="font-size:2em;">&#9813;</div>
+      <div style="color:#ffd700;font-size:1.4em;font-weight:bold;font-family:'Georgia',serif;">${pol.topDonName}</div>
+      ${allianceStr}
+      <div style="color:#c0a062;font-size:0.85em;margin-top:5px;">Top Don — ${pol.territoryCount} Territories</div>
+    </div>`;
+  } else {
+    html += `<div style="background:rgba(100,100,100,0.15);padding:20px;border-radius:12px;border:2px dashed #555;margin-bottom:20px;text-align:center;">
+      <div style="font-size:2em;opacity:0.4;">&#9813;</div>
+      <div style="color:#888;font-size:1.2em;font-family:'Georgia',serif;">No Top Don</div>
+      <p style="color:#666;margin:10px 0 0 0;">All territories are under NPC control. Conquer territory to become Top Don!</p>
+    </div>`;
+  }
+
+  // Policy list
+  html += '<div style="background:rgba(0,0,0,0.6);padding:20px;border-radius:12px;border:1px solid #c0a062;margin-bottom:20px;"><h4 style="color:#c0a062;margin:0 0 15px 0;font-family:\'Georgia\',serif;text-align:center;">Active Policies</h4><div style="display:grid;gap:12px;">';
+
+  if (pol && pol.policies) {
+    const limits = pol.policyLimits || {};
+    for (const [key, value] of Object.entries(pol.policies)) {
+      const lim = limits[key] || {};
+      const label = lim.label || key;
+      const unit = lim.unit || '';
+      const neutral = lim.neutral !== undefined ? lim.neutral : 0;
+      const desc = policyDescriptions[key] || '';
+
+      let valueColor = '#ccc';
+      if (key === 'crimeBonus' || key === 'heistBonus') {
+        valueColor = value > 0 ? '#8a9a6a' : '#ccc';
+      } else if (key === 'worldTaxRate' || key === 'marketFee') {
+        valueColor = value > neutral ? '#8b3a3a' : value < neutral ? '#8a9a6a' : '#ccc';
+      } else if (key === 'jailTimeMod') {
+        valueColor = value < 0 ? '#8a9a6a' : value > 0 ? '#8b3a3a' : '#ccc';
+      }
+
+      let tag = '';
+      if (value !== neutral) {
+        const favorable = (key === 'crimeBonus' || key === 'heistBonus') ? value > 0
+          : (key === 'jailTimeMod') ? value < 0
+          : value < neutral;
+        tag = favorable
+          ? '<span style="color:#8a9a6a;font-size:0.75em;margin-left:8px;">FAVORABLE</span>'
+          : '<span style="color:#8b3a3a;font-size:0.75em;margin-left:8px;">HARSH</span>';
+      }
+
+      html += `<div style="background:rgba(255,255,255,0.03);padding:12px 15px;border-radius:8px;border-left:3px solid ${valueColor};display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="color:#ccc;font-weight:bold;">${label}${tag}</div><div style="color:#666;font-size:0.8em;margin-top:2px;">${desc}</div></div>
+        <div style="color:${valueColor};font-size:1.4em;font-weight:bold;min-width:60px;text-align:right;">${value > 0 && (key === 'jailTimeMod' || key === 'crimeBonus' || key === 'heistBonus') ? '+' : ''}${value}${unit}</div>
+      </div>`;
+    }
+  } else {
+    html += '<div style="color:#666;text-align:center;padding:20px;">Not connected to the server. Join the online world to see active policies.</div>';
+  }
+
+  html += '</div></div>';
+
+  // Back button
+  html += `<div style="text-align:center;margin-top:25px;">
+    <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+  </div>`;
+
+  document.getElementById('territory-control-content').innerHTML = html;
+  hideAllScreens();
+  document.getElementById('territory-control-screen').style.display = 'block';
+}
+window.showCityPolicies = showCityPolicies;
 
 // Helper: find a boss/don/capo by ID across all families + independents
 function findBossById(bossId) {
@@ -17880,8 +17978,19 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.34.0';
+const CURRENT_VERSION = '1.34.1';
 const VERSION_UPDATES = {
+  '1.34.1': {
+    title: 'Top Don Policy Budget, Territory Tribute & City Policies',
+    date: 'March 2026',
+    changes: [
+      'Top Don policy system now uses a 30-point budget with tradeoffs -- favorable policies cost points, harsh policies earn them back',
+      'Single Submit Policy button replaces individual Set buttons; all changes validated at once',
+      'Policy newspaper broadcast to all players when the Top Don submits new policies',
+      'Collect Tribute button added to the Territory overview screen with ready/cooldown state',
+      'City Policies viewer added to the Territory screen so all players can see active Top Don policies',
+    ]
+  },
   '1.34.0': {
     title: 'Tribute Alerts, Bookie Fix & Superboss Overhaul',
     date: 'March 2026',

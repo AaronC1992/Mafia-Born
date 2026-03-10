@@ -5,6 +5,15 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.34.1] - 2026-03-10
+
+### Added
+- **Top Don policy budget system** -- 30-point budget with tradeoffs; favorable policies (lower taxes, crime bonuses) cost points, harsh policies (higher taxes, longer jail) earn points back
+- **Submit Policy button** -- replaces individual per-policy Set buttons; all changes validated and applied at once with budget check
+- **Policy newspaper** -- broadcast to all players when the Top Don submits new policies, with randomized headlines and reaction paragraphs
+- **Collect Tribute button** -- added to Territory overview screen with ready/cooldown visual state
+- **City Policies viewer** -- new button on Territory screen lets all players view active Top Don policies with favorable/harsh indicators
+
 ## [1.34.0] - 2026-03-10
 
 ### Added
