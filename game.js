@@ -17859,8 +17859,17 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.33.7';
+const CURRENT_VERSION = '1.33.8';
 const VERSION_UPDATES = {
+  '1.33.8': {
+    title: 'Newspaper Flavor Text Overhaul',
+    date: 'March 2026',
+    changes: [
+      'Death screen now picks from 35 flavor text variations across 6 categories (combat, job, hit, turf, executed, generic)',
+      'Death newspaper completely rewritten with context-aware headlines, subheads, openings, and paragraphs per death type',
+      'Jail newspaper expanded with 25+ headlines, 20+ subheads, and randomized detail/sentence/footer paragraphs per tone',
+    ]
+  },
   '1.33.7': {
     title: 'Training Prerequisites',
     date: 'March 2026',
@@ -20118,16 +20127,71 @@ function showDeathScreen(causeOfDeath) {
   else if ((player.reputation || 0) >= 75) legacyTitle = 'Enforcer';
   else if ((player.reputation || 0) >= 25) legacyTitle = 'Hustler';
 
-  // Flavor text based on how they died
-  const flavorTexts = [
-    'The streets always collect their debt.',
-    "Another name etched into the city's dark history.",
-    "They'll pour one out for you... maybe.",
-    'The empire crumbles. The throne sits empty.',
-    "In this business, everyone's time runs out eventually."
-  ];
+  // Flavor text categorized by how they died
+  const cause = causeOfDeath || 'Died on the streets';
+  const causeLower = cause.toLowerCase();
+
+  // Determine death category for flavor text
+  let deathCategory = 'generic';
+  if (causeLower.includes('fighting') || causeLower.includes('assault') || causeLower.includes('killed by')) deathCategory = 'combat';
+  else if (causeLower.includes('on the job') || causeLower.includes('laundering') || causeLower.includes('car theft')) deathCategory = 'job';
+  else if (causeLower.includes('hit on') || causeLower.includes('bounty')) deathCategory = 'hit';
+  else if (causeLower.includes('attacking') || causeLower.includes('zone') || causeLower.includes('turf')) deathCategory = 'turf';
+  else if (causeLower.includes('executed')) deathCategory = 'executed';
+
+  const flavorByCategory = {
+    combat: [
+      'They brought fists to a gunfight. The outcome was inevitable.',
+      'The last thing they saw was the flash of a muzzle.',
+      'Died the way they lived -- swinging until the very end.',
+      'Some fights you walk away from. This wasn\'t one of them.',
+      'The other guy was faster. That\'s all it takes in this business.',
+    ],
+    job: [
+      'Should\'ve called in sick today.',
+      'Crime doesn\'t pay. But it really doesn\'t pay when it kills you.',
+      'Occupational hazard. The severance package is a pine box.',
+      'They always said the job would be the death of them. They were right.',
+      'Another day at the office. Except this time, the office fought back.',
+    ],
+    hit: [
+      'Turns out the hunter became the hunted.',
+      'Went looking for trouble. Trouble was already waiting.',
+      'The contract was fulfilled -- just not the way they planned.',
+      'Some targets shoot back. Lesson learned. Lesson fatal.',
+      'They pulled the trigger, but fate pulled it first.',
+    ],
+    turf: [
+      'Died fighting for a piece of concrete and pride. Mostly pride.',
+      'The turf didn\'t change hands. The body did.',
+      'Territory wars have only one rule: winner takes all. Loser takes a bullet.',
+      'Tried to plant a flag. Got planted instead.',
+      'Every block in this city is soaked in blood. Today it was theirs.',
+    ],
+    executed: [
+      'The Don\'s word is law. The sentence was death.',
+      'No trial. No jury. Just a verdict and a shallow grave.',
+      'They knew the rules when they joined. Betrayal has only one punishment.',
+      'Executed with the cold efficiency of a well-run organization.',
+      'The family giveth, and the family taketh away.',
+    ],
+    generic: [
+      'The streets always collect their debt.',
+      'Another name etched into the city\'s dark history.',
+      'They\'ll pour one out for you... maybe.',
+      'The empire crumbles. The throne sits empty.',
+      'In this business, everyone\'s time runs out eventually.',
+      'Another body. Another chalk outline. Another Tuesday.',
+      'The city chews people up. Today it swallowed one whole.',
+      'Lived fast. Died faster.',
+      'The only retirement plan in this line of work.',
+      'Nobody sends flowers in this business. Just bullets.',
+    ]
+  };
+
+  const flavorPool = flavorByCategory[deathCategory] || flavorByCategory.generic;
   const flavorEl = document.getElementById('death-flavor');
-  if (flavorEl) flavorEl.textContent = flavorTexts[Math.floor(Math.random() * flavorTexts.length)];
+  if (flavorEl) flavorEl.textContent = flavorPool[Math.floor(Math.random() * flavorPool.length)];
 
   const obituaryEl = document.getElementById('death-obituary');
   if (obituaryEl) {
@@ -20273,25 +20337,224 @@ function buildNewspaperHTML(data) {
   const dateStr = `${months[deathDate.getMonth()]} ${deathDate.getDate()}, ${deathDate.getFullYear()}`;
   const edition = ['Morning','Evening','Late','Final'][Math.floor(Math.random() * 4)] + ' Edition';
   const price = 'Price: Two Cents';
-
-  // Generate the prose obituary
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
   const netWorthStr = '$' + data.money.toLocaleString();
-  let openingLine = `The city mourns -- or celebrates -- the demise of <strong>${data.name}</strong>, a ${data.legacyTitle} of the ${data.family} family, found dead under grim circumstances.`;
-  let causeP = `Authorities report the cause of death as: <em>"${data.causeOfDeath}."</em> Police have closed the case, citing the dangers of the underworld as a sufficient explanation.`;
-  let legacyP = '';
-  if (data.level >= 25) {
-    legacyP = `At level ${data.level}, ${data.name} had risen to the rank of ${data.legacyTitle}, amassing a fortune of ${netWorthStr} and leaving behind an empire spanning ${data.territories} territories and ${data.businesses} businesses. Associates say the streets will never be the same.`;
-  } else if (data.level >= 10) {
-    legacyP = `Having reached level ${data.level}, ${data.name} was beginning to make a name in the organization as a ${data.legacyTitle}, with ${netWorthStr} to their name. Those who knew them say they had potential -- if only they'd lived long enough to see it through.`;
-  } else {
-    legacyP = `At only level ${data.level}, ${data.name} was still a relative nobody -- a ${data.legacyTitle} with ${netWorthStr} in crumpled bills and little else. The city barely noticed their passing, and the gutter claimed another soul.`;
-  }
-  let crimeP = data.totalCrimes > 0
-    ? `During their career, ${data.name} committed ${data.totalCrimes} known crimes, commanded a gang of ${data.gangSize}, and ${data.gamblingWins > 0 ? `won ${data.gamblingWins} times at the gambling tables` : 'never had any luck at the tables'}.`
-    : `${data.name} had no known criminal record -- at least, none that survived the filing cabinet fire at the precinct.`;
-  let skillP = data.bestSkillRank > 0
-    ? `Their most notable talent was ${data.bestSkill} (Rank ${data.bestSkillRank}), a skill that ultimately could not save them from fate.`
-    : '';
+  const nm = data.name;
+  const NM = nm.toUpperCase();
+  const cod = data.causeOfDeath;
+
+  // Determine death category
+  const codLower = cod.toLowerCase();
+  let deathCat = 'generic';
+  if (codLower.includes('fighting') || codLower.includes('assault on')) deathCat = 'combat';
+  else if (codLower.includes('on the job')) deathCat = 'job';
+  else if (codLower.includes('hit on') || codLower.includes('bounty')) deathCat = 'hit';
+  else if (codLower.includes('attacking') || codLower.includes('zone') || codLower.includes('turf')) deathCat = 'turf';
+  else if (codLower.includes('laundering')) deathCat = 'laundering';
+  else if (codLower.includes('car theft')) deathCat = 'cartheft';
+  else if (codLower.includes('executed')) deathCat = 'executed';
+
+  // ---- HEADLINES by category ----
+  const headlines = {
+    combat: [
+      `${NM} SLAIN IN BLOODY SHOOTOUT`,
+      `DEADLY CONFRONTATION CLAIMS ${NM}`,
+      `${NM} KILLED IN VIOLENT STANDOFF`,
+      `GUNFIRE ERUPTS &mdash; ${NM} FOUND DEAD AT THE SCENE`,
+    ],
+    job: [
+      `${NM} DIES ON THE JOB &mdash; LITERALLY`,
+      `CRIMINAL CAREER ENDS IN TRAGEDY FOR ${NM}`,
+      `OCCUPATIONAL HAZARD CLAIMS ${NM}`,
+      `${NM} FOUND DEAD AFTER BOTCHED SCORE`,
+    ],
+    hit: [
+      `HITMAN BECOMES THE TARGET: ${NM} DEAD`,
+      `${NM} KILLED IN FAILED ASSASSINATION ATTEMPT`,
+      `TABLES TURNED: ${NM} DEAD AFTER BUNGLED HIT`,
+      `CONTRACT KILLER ${NM} MEETS OWN FATE`,
+    ],
+    turf: [
+      `TURF WAR CLAIMS ${NM}`,
+      `${NM} KILLED IN TERRITORIAL DISPUTE`,
+      `BLOOD ON THE PAVEMENT: ${NM} DIES IN TURF BATTLE`,
+      `${NM} FALLS IN FIGHT FOR THE STREETS`,
+    ],
+    laundering: [
+      `${NM} KILLED IN LAUNDERING OPERATION GONE WRONG`,
+      `MONEY TRAIL LEADS TO MORGUE FOR ${NM}`,
+      `DIRTY MONEY, DIRTY END: ${NM} DEAD`,
+    ],
+    cartheft: [
+      `${NM} KILLED DURING CAR THEFT GONE WRONG`,
+      `STOLEN WHEELS, STOLEN LIFE: ${NM} DEAD`,
+      `GRAND THEFT FATAL: ${NM} DIES BEHIND THE WHEEL`,
+    ],
+    executed: [
+      `${NM} EXECUTED BY ORDER OF THE DON`,
+      `${NM} FOUND DEAD &mdash; FAMILY INVOLVEMENT SUSPECTED`,
+      `SWIFT JUSTICE: ${NM} ELIMINATED`,
+      `THE DON SENDS A MESSAGE: ${NM} IS DEAD`,
+    ],
+    generic: [
+      `EXTRA! EXTRA! ${NM} FOUND DEAD`,
+      `${NM} DEAD &mdash; CITY REACTS`,
+      `END OF THE LINE FOR ${NM}`,
+      `${NM} MEETS UNTIMELY END`,
+      `THE STREETS CLAIM ANOTHER: ${NM} IS GONE`,
+    ]
+  };
+
+  // ---- SUBHEADS ----
+  const subheads = {
+    combat: [
+      `${data.legacyTitle} of the ${data.family} Family dies in violent clash`,
+      `Witnesses describe "absolute chaos" at the scene`,
+      `Police recover multiple shell casings near the body`,
+    ],
+    job: [
+      `${data.legacyTitle} of the ${data.family} Family killed mid-operation`,
+      `Associates say the score "went sideways fast"`,
+      `Police urge other criminals to reconsider their career choices`,
+    ],
+    hit: [
+      `Failed assassination ends in death of the would-be killer`,
+      `Target survived; ${nm} did not`,
+      `"They picked the wrong mark," says anonymous source`,
+    ],
+    turf: [
+      `Territory dispute between rival factions turns deadly`,
+      `${data.family} Family loses ground and a soldier`,
+      `Control of the block remains contested after the bloodshed`,
+    ],
+    laundering: [
+      `Financial crime turns fatal for ${data.legacyTitle}`,
+      `"Should have stuck to cash," says former associate`,
+    ],
+    cartheft: [
+      `Car theft gone wrong leaves ${data.legacyTitle} dead`,
+      `"They didn't even get the keys in the ignition," reports witness`,
+    ],
+    executed: [
+      `Insiders whisper of betrayal within the ${data.family} Family`,
+      `No witnesses. No evidence. Just a body.`,
+      `"The family handles its own problems," says anonymous source`,
+    ],
+    generic: [
+      `${data.legacyTitle} of the ${data.family} Family meets untimely end &mdash; "${cod}"`,
+      `Police close the case, citing "occupational hazard"`,
+      `"Honestly, we're surprised they lasted this long," says detective`,
+      `Funeral expected to be poorly attended`,
+    ]
+  };
+
+  // ---- OPENING paragraphs ----
+  const openings = {
+    combat: [
+      `In a violent confrontation that left the neighborhood rattled, <strong>${nm}</strong>, a ${data.legacyTitle} of the ${data.family} family, was found dead among the debris of a brutal fight.`,
+      `The sound of gunfire echoed through the streets last night as <strong>${nm}</strong> of the ${data.family} family was killed in a clash that neighbors say was "bound to happen sooner or later."`,
+      `<strong>${nm}</strong> went down fighting, witnesses say &mdash; though that's small consolation to the ${data.family} family, who lost one of their own in a confrontation that turned lethal.`,
+    ],
+    job: [
+      `What should have been a routine score turned into a death sentence for <strong>${nm}</strong>, a ${data.legacyTitle} of the ${data.family} family who was found dead at the scene of a botched criminal operation.`,
+      `<strong>${nm}</strong> of the ${data.family} family always said the job would never kill them. The job had other ideas.`,
+      `Another day, another dollar &mdash; or so <strong>${nm}</strong> thought before heading out for what would be their final score. The ${data.legacyTitle} was found dead hours later.`,
+    ],
+    hit: [
+      `<strong>${nm}</strong>, the ${data.legacyTitle} of the ${data.family} family, was killed during a botched assassination &mdash; except they were the one holding the gun.`,
+      `The hunter became prey last night when <strong>${nm}</strong> attempted a hit that went catastrophically wrong. The ${data.family} family is down one soldier.`,
+      `<strong>${nm}</strong> pulled up on their mark with every intention of leaving alone. Instead, the ${data.legacyTitle} left in a body bag.`,
+    ],
+    turf: [
+      `The turf wars claimed another life today as <strong>${nm}</strong>, ${data.legacyTitle} of the ${data.family} family, was killed in a territorial dispute that has been escalating for weeks.`,
+      `<strong>${nm}</strong> died fighting for a few blocks of concrete and the pride that comes with it. The ${data.family} family lost both the soldier and the ground.`,
+      `Blood soaked the pavement in the latest chapter of the city's endless turf wars. This time, <strong>${nm}</strong> paid the ultimate price.`,
+    ],
+    laundering: [
+      `A money laundering operation went fatally wrong for <strong>${nm}</strong>, a ${data.legacyTitle} of the ${data.family} family, who was found dead amid stacks of marked bills.`,
+      `<strong>${nm}</strong> always said clean money was boring. Dirty money turned out to be deadly.`,
+    ],
+    cartheft: [
+      `What started as a quick car job turned into a tragedy when <strong>${nm}</strong> of the ${data.family} family was killed during a theft gone sideways.`,
+      `<strong>${nm}</strong> died behind the wheel of someone else's car. The ${data.legacyTitle} didn't even make it out of the parking lot.`,
+    ],
+    executed: [
+      `Sources confirm that <strong>${nm}</strong>, a ${data.legacyTitle} of the ${data.family} family, was executed in what appears to be an internal matter. No witnesses have come forward.`,
+      `There was no trial and no jury &mdash; just a verdict. <strong>${nm}</strong> was found dead, and those close to the ${data.family} family say nobody is asking questions.`,
+      `<strong>${nm}</strong> knew the rules when they joined the family. Apparently they broke one, because the ${data.legacyTitle} was found dead with a single bullet and a clear message.`,
+    ],
+    generic: [
+      `The city mourns &mdash; or celebrates &mdash; the demise of <strong>${nm}</strong>, a ${data.legacyTitle} of the ${data.family} family, found dead under grim circumstances.`,
+      `<strong>${nm}</strong>, the ${data.legacyTitle} of the ${data.family} family, has been found dead. The circumstances are as murky as the water in the harbor.`,
+      `The body of <strong>${nm}</strong> was discovered early this morning. Police confirm the ${data.legacyTitle} of the ${data.family} family is dead, and the investigation is already being quietly shelved.`,
+      `Another day, another body. This time it's <strong>${nm}</strong>, ${data.legacyTitle} of the ${data.family} family, whose luck finally ran out.`,
+    ]
+  };
+
+  // ---- CAUSE paragraphs ----
+  const causeParagraphs = [
+    `Authorities report the cause of death as: <em>"${cod}."</em> Police have closed the case, citing the dangers of the underworld as a sufficient explanation.`,
+    `The official report lists the cause of death as: <em>"${cod}."</em> No further investigation is expected &mdash; the coroner's office has a backlog, and the police have bigger fish to fry.`,
+    `<em>"${cod}"</em> is all the paperwork says. The detective on the case shrugged when asked for details. "It's the streets," he said. "What else do you need to know?"`,
+    `The circumstances of death are listed simply as: <em>"${cod}."</em> The funeral home is offering a discount for bulk bookings this month.`,
+    `According to sources, ${nm}'s final moments can be summed up as: <em>"${cod}."</em> The chaplain at the precinct offered a prayer. The desk sergeant offered a shrug.`,
+  ];
+
+  // ---- LEGACY paragraph by level ----
+  const legacyHigh = [
+    `At level ${data.level}, ${nm} had risen to the rank of ${data.legacyTitle}, amassing a fortune of ${netWorthStr} and leaving behind an empire spanning ${data.territories} territories and ${data.businesses} businesses. Associates say the streets will never be the same.`,
+    `${nm} reached level ${data.level} and the title of ${data.legacyTitle}, building a criminal empire worth ${netWorthStr} with ${data.territories} territories and ${data.businesses} businesses. The power vacuum left behind threatens to plunge the city into chaos.`,
+    `With a reputation that preceded them through every borough, ${nm} had clawed their way to level ${data.level} and the rank of ${data.legacyTitle}. Their ${netWorthStr} fortune and ${data.territories} territories will be fought over for months.`,
+  ];
+  const legacyMid = [
+    `Having reached level ${data.level}, ${nm} was beginning to make a name in the organization as a ${data.legacyTitle}, with ${netWorthStr} to their name. Those who knew them say they had potential &mdash; if only they'd lived long enough to see it through.`,
+    `At level ${data.level}, ${nm} was a rising ${data.legacyTitle} with ${netWorthStr} and growing ambitions. The ${data.family} family is said to be "disappointed but unsurprised" by the loss.`,
+    `${nm} had reached level ${data.level} and was starting to turn heads as a ${data.legacyTitle}. With ${netWorthStr} in the bank and a reputation on the rise, the city lost someone who might have been somebody.`,
+  ];
+  const legacyLow = [
+    `At only level ${data.level}, ${nm} was still a relative nobody &mdash; a ${data.legacyTitle} with ${netWorthStr} in crumpled bills and little else. The city barely noticed their passing, and the gutter claimed another soul.`,
+    `Level ${data.level}. ${netWorthStr}. ${data.legacyTitle}. In another life, that might have been the beginning of something. In this one, it's the whole story.`,
+    `${nm} hadn't even made it past level ${data.level}. A ${data.legacyTitle} with ${netWorthStr} to their name, they died the way most small-timers do &mdash; fast, broke, and forgotten.`,
+  ];
+
+  let legacyP;
+  if (data.level >= 25) legacyP = pick(legacyHigh);
+  else if (data.level >= 10) legacyP = pick(legacyMid);
+  else legacyP = pick(legacyLow);
+
+  // ---- CRIME paragraph ----
+  const crimeParagraphs = data.totalCrimes > 0 ? [
+    `During their career, ${nm} committed ${data.totalCrimes} known crimes, commanded a gang of ${data.gangSize}, and ${data.gamblingWins > 0 ? `won ${data.gamblingWins} times at the gambling tables` : 'never had any luck at the tables'}.`,
+    `The rap sheet runs long: ${data.totalCrimes} crimes, a crew of ${data.gangSize}, and ${data.gamblingWins > 0 ? `${data.gamblingWins} gambling wins that kept the cash flowing` : 'a gambling record best described as "tragic"'}.`,
+    `Prosecutors had a file on ${nm} an inch thick &mdash; ${data.totalCrimes} crimes across every category. With ${data.gangSize} soldiers under their command, ${nm} was more than just a solo act.`,
+  ] : [
+    `${nm} had no known criminal record &mdash; at least, none that survived the filing cabinet fire at the precinct.`,
+    `Remarkably, ${nm} had zero crimes on the official books. Either they were very clean or the evidence was very flammable.`,
+  ];
+
+  // ---- SKILL paragraph ----
+  const skillParagraphs = data.bestSkillRank > 0 ? [
+    `Their most notable talent was ${data.bestSkill} (Rank ${data.bestSkillRank}), a skill that ultimately could not save them from fate.`,
+    `Known for their expertise in ${data.bestSkill} (Rank ${data.bestSkillRank}), ${nm} was respected in certain circles. It wasn't enough.`,
+    `Associates recall ${nm}'s knack for ${data.bestSkill} (Rank ${data.bestSkillRank}). "Best in the business," one said. "Except at staying alive."`,
+  ] : [];
+
+  // ---- FOOTER quotes ----
+  const footerQuotes = [
+    'In this business, everyone&rsquo;s time runs out eventually.',
+    'The city never runs out of bodies or headlines.',
+    'Another day, another obituary. The presses keep rolling.',
+    'Live by the gun, die by the gun. We just report it.',
+    'The underworld giveth, and the underworld taketh away.',
+    'Tomorrow&rsquo;s paper will have someone new. It always does.',
+  ];
+
+  const headline = pick(headlines[deathCat] || headlines.generic);
+  const subhead = pick(subheads[deathCat] || subheads.generic);
+  const openingLine = pick(openings[deathCat] || openings.generic);
+  const causeP = pick(causeParagraphs);
+  const crimeP = pick(crimeParagraphs);
+  const skillP = skillParagraphs.length > 0 ? pick(skillParagraphs) : '';
 
   const portraitHTML = data.portrait
     ? `<div class="newspaper-portrait-wrap"><img src="${data.portrait}" alt="${data.name}"><div class="newspaper-portrait-caption">${data.name}</div></div>`
@@ -20307,8 +20570,8 @@ function buildNewspaperHTML(data) {
       <span>${edition}</span>
       <span>${price}</span>
     </div>
-    <h3 class="newspaper-headline">EXTRA! EXTRA!<br>${data.name.toUpperCase()} FOUND DEAD</h3>
-    <p class="newspaper-subhead">${data.legacyTitle} of the ${data.family} Family meets untimely end &mdash; "${data.causeOfDeath}"</p>
+    <h3 class="newspaper-headline">${headline}</h3>
+    <p class="newspaper-subhead">${subhead}</p>
     <hr class="newspaper-rule-double">
     <div class="newspaper-body">
       ${portraitHTML}
@@ -20331,7 +20594,7 @@ function buildNewspaperHTML(data) {
       </div>
     </div>
     <div class="newspaper-footer">
-      &ldquo;In this business, everyone&rsquo;s time runs out eventually.&rdquo;<br>
+      &ldquo;${pick(footerQuotes)}&rdquo;<br>
       &mdash; The Daily Racketeer, est. 1923
     </div>
   `;
@@ -20406,27 +20669,42 @@ function buildJailNewspaperHTML(data) {
   const price = 'Price: Two Cents';
   const crime = data.crimeName;
   const name = data.name;
+  const NM = name.toUpperCase();
+  const CRIME = crime.toUpperCase();
   const tone = data.tone;
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
   // ---- HEADLINES by tone ----
   const funnyHeadlines = [
-    `${name.toUpperCase()} NABBED IN COMICALLY BOTCHED ${crime.toUpperCase()} SCHEME`,
-    `WORLD'S WORST CRIMINAL: ${name.toUpperCase()} CAUGHT AT ${crime.toUpperCase()}`,
-    `"I WOULD HAVE GOTTEN AWAY WITH IT" &mdash; ${name.toUpperCase()} ARRESTED`,
-    `${name.toUpperCase()} TRIPS ALARM, TRIPS OVER CAT, TRIPS INTO HANDCUFFS`,
-    `PUBLIC MENACE OR PUBLIC JOKE? ${name.toUpperCase()} BEHIND BARS`
+    `${NM} NABBED IN COMICALLY BOTCHED ${CRIME} SCHEME`,
+    `WORLD'S WORST CRIMINAL: ${NM} CAUGHT AT ${CRIME}`,
+    `"I WOULD HAVE GOTTEN AWAY WITH IT" &mdash; ${NM} ARRESTED`,
+    `${NM} TRIPS ALARM, TRIPS OVER CAT, TRIPS INTO HANDCUFFS`,
+    `PUBLIC MENACE OR PUBLIC JOKE? ${NM} BEHIND BARS`,
+    `${NM} ARRESTED AFTER ${CRIME} SO BAD POLICE THOUGHT IT WAS A PRANK`,
+    `OFFICER SAYS CATCHING ${NM} WAS "THE EASIEST COLLAR OF MY CAREER"`,
+    `${NM} BUSTED MID-${CRIME} &mdash; FORGOT TO WEAR A DISGUISE`,
+    `CRIMINAL MASTERMIND? NOT ${NM}, SAY LAUGHING OFFICERS`,
+    `${NM} CAUGHT RED-HANDED, CLAIMS IT WAS "A MISUNDERSTANDING"`,
   ];
   const seriousHeadlines = [
-    `${name.toUpperCase()} ARRESTED IN ${crime.toUpperCase()} BUST`,
-    `POLICE CLOSE IN: ${name.toUpperCase()} BEHIND BARS`,
-    `AUTHORITIES NAB ${name.toUpperCase()} IN ${crime.toUpperCase()} CRACKDOWN`,
-    `${name.toUpperCase()} TAKEN INTO CUSTODY AFTER ${crime.toUpperCase()} GONE WRONG`
+    `${NM} ARRESTED IN ${CRIME} BUST`,
+    `POLICE CLOSE IN: ${NM} BEHIND BARS`,
+    `AUTHORITIES NAB ${NM} IN ${CRIME} CRACKDOWN`,
+    `${NM} TAKEN INTO CUSTODY AFTER ${CRIME} GONE WRONG`,
+    `DETECTIVES LINK ${NM} TO ${CRIME} RING &mdash; ARREST MADE`,
+    `${NM} IN CUFFS AFTER MONTHS-LONG ${CRIME} INVESTIGATION`,
+    `POLICE CHIEF: "${NM} THOUGHT THEY WERE UNTOUCHABLE"`,
+    `ORGANIZED CRIME UNIT BRINGS DOWN ${NM} IN ${CRIME} CASE`,
   ];
   const breakingHeadlines = [
-    `BREAKING: ${name.toUpperCase()} SEIZED IN MASSIVE ${crime.toUpperCase()} OPERATION`,
-    `BREAKING: NOTORIOUS ${name.toUpperCase()} FINALLY IN FEDERAL CUSTODY`,
-    `BREAKING: FEDS STORM ${crime.toUpperCase()} RING &mdash; ${name.toUpperCase()} IN CHAINS`,
-    `BREAKING: ${name.toUpperCase()} APPREHENDED IN LANDMARK ${crime.toUpperCase()} STING`
+    `BREAKING: ${NM} SEIZED IN MASSIVE ${CRIME} OPERATION`,
+    `BREAKING: NOTORIOUS ${NM} FINALLY IN FEDERAL CUSTODY`,
+    `BREAKING: FEDS STORM ${CRIME} RING &mdash; ${NM} IN CHAINS`,
+    `BREAKING: ${NM} APPREHENDED IN LANDMARK ${CRIME} STING`,
+    `BREAKING: FEDERAL RAID NETS ${NM} &mdash; ${CRIME} EMPIRE CRUMBLES`,
+    `BREAKING: ${NM} DRAGGED FROM HIDEOUT IN PRE-DAWN RAID`,
+    `BREAKING: MOST WANTED ${NM} CAPTURED AFTER ${CRIME} DRAGNET`,
   ];
 
   // ---- SUBHEADS by tone ----
@@ -20434,60 +20712,116 @@ function buildJailNewspaperHTML(data) {
     'Witnesses still laughing as police file report',
     'Arresting officer says suspect "made it easy"',
     '"Barely qualifies as a crime," says judge between chuckles',
-    'Onlookers give standing ovation to responding officers'
+    'Onlookers give standing ovation to responding officers',
+    'Fellow inmates pre-emptively ask for a different cell',
+    'Booking officer had to pause for composure before processing',
+    `Defense attorney reportedly sighed upon reviewing the case file`,
+    'Security camera footage expected to go viral',
   ];
   const seriousSubheads = [
     'District attorney vows to prosecute to full extent of the law',
     'Investigators say operation was months in the making',
     `${data.family} family connections under scrutiny`,
-    'Police urge remaining associates to cooperate'
+    'Police urge remaining associates to cooperate',
+    `Arrest sends message to the city's organized crime networks`,
+    'Sources say more arrests could follow',
+    `${data.legacyTitle} expected to face multiple charges`,
+    'Bail hearing set for tomorrow; prosecutors will oppose release',
   ];
   const breakingSubheads = [
     'Federal task force concludes year-long investigation',
     'Mayor calls arrest "a turning point for this city"',
     'DA presses for maximum sentence &mdash; city breathes easier',
-    'Joint federal operation dismantles criminal empire'
+    'Joint federal operation dismantles criminal empire',
+    'FBI director issues statement praising agents involved',
+    `Multiple ${data.family} family assets frozen pending investigation`,
+    'Informant reportedly provided key evidence in the case',
   ];
 
-  let headlines, subheads;
-  if (tone === 'funny') { headlines = funnyHeadlines; subheads = funnySubheads; }
-  else if (tone === 'serious') { headlines = seriousHeadlines; subheads = seriousSubheads; }
-  else { headlines = breakingHeadlines; subheads = breakingSubheads; }
+  let headlinePool, subheadPool;
+  if (tone === 'funny') { headlinePool = funnyHeadlines; subheadPool = funnySubheads; }
+  else if (tone === 'serious') { headlinePool = seriousHeadlines; subheadPool = seriousSubheads; }
+  else { headlinePool = breakingHeadlines; subheadPool = breakingSubheads; }
 
-  const headline = headlines[Math.floor(Math.random() * headlines.length)];
-  const subhead = subheads[Math.floor(Math.random() * subheads.length)];
+  const headline = pick(headlinePool);
+  const subhead = pick(subheadPool);
 
   // ---- BODY paragraphs by tone ----
   let openingP, detailP, sentenceP;
 
   if (tone === 'funny') {
-    const openings = [
+    openingP = pick([
       `In what can only be described as a masterclass in incompetence, <strong>${name}</strong> was arrested today after a ${crime} operation that fell apart faster than a house of cards in a hurricane.`,
       `Local authorities could barely contain their amusement as they booked <strong>${name}</strong>, self-styled ${data.legacyTitle} of the ${data.family} family, on charges related to a spectacularly bungled ${crime}.`,
-      `In what neighbors are calling "the least threatening criminal act in city history," <strong>${name}</strong> was apprehended mid-${crime} after reportedly alerting every officer within earshot.`
-    ];
-    openingP = openings[Math.floor(Math.random() * openings.length)];
-    detailP = `Eyewitnesses report that ${name} appeared genuinely surprised when the handcuffs came out. "I've seen smoother criminals in the funny pages," remarked one bystander. Police say the arrest required minimal effort and even less detective work.`;
-    sentenceP = `The judge, barely suppressing a grin, handed down a sentence of <strong>${data.jailTime} seconds</strong>. ${name} was led away muttering something about "next time."`;
+      `In what neighbors are calling "the least threatening criminal act in city history," <strong>${name}</strong> was apprehended mid-${crime} after reportedly alerting every officer within earshot.`,
+      `<strong>${name}</strong> was arrested today after what police are describing as "the dumbest ${crime} attempt we've ever seen." The ${data.legacyTitle} of the ${data.family} family apparently forgot that crime requires at least a basic plan.`,
+      `Patrol officers discovered <strong>${name}</strong> trying to carry out a ${crime} in broad daylight with all the subtlety of a marching band. The ${data.family} family associate was in handcuffs before they could finish saying "don't move."`,
+    ]);
+    detailP = pick([
+      `Eyewitnesses report that ${name} appeared genuinely surprised when the handcuffs came out. "I've seen smoother criminals in the funny pages," remarked one bystander. Police say the arrest required minimal effort and even less detective work.`,
+      `"They walked right past the security camera. Twice," said the arresting officer, shaking his head. ${name}'s mugshot is already being passed around the precinct as a morale booster.`,
+      `The responding officer reportedly didn't even need to run. ${name} was found sitting on a bench near the scene, seemingly unaware that the sirens were for them. "It's like they wanted to get caught," said one detective.`,
+      `Witnesses say ${name} attempted an escape that lasted approximately four seconds before tripping over a fire hydrant. The arresting officer said it was "the shortest foot chase in department history."`,
+      `A bystander who recorded the arrest on their phone described the scene as "like watching someone fail a tutorial level." ${name} had no comment, though their expression said plenty.`,
+    ]);
+    sentenceP = pick([
+      `The judge, barely suppressing a grin, handed down a sentence of <strong>${data.jailTime} seconds</strong>. ${name} was led away muttering something about "next time."`,
+      `Sentenced to <strong>${data.jailTime} seconds</strong>, ${name} asked if they could serve the time at home. The request was denied amid laughter from the courtroom.`,
+      `The judge sentenced ${name} to <strong>${data.jailTime} seconds</strong>, calling the crime "more embarrassing than dangerous." ${name} reportedly asked for a refund on their getaway vehicle.`,
+      `"<strong>${data.jailTime} seconds</strong> seems generous," the judge noted. "Consider it a learning opportunity." ${name} did not appear to appreciate the advice.`,
+    ]);
   } else if (tone === 'serious') {
-    const openings = [
+    openingP = pick([
       `Authorities confirmed today the arrest of <strong>${name}</strong>, a known associate of the ${data.family} family, in connection with a failed ${crime} operation that has drawn increased scrutiny on organized crime in the city.`,
       `In a significant blow to the city's underworld, <strong>${name}</strong> was taken into custody following a botched ${crime} that left investigators with a trail of evidence too damning to ignore.`,
-      `The long arm of the law caught up with <strong>${name}</strong> today as detectives closed in on the ${data.legacyTitle}'s involvement in a ${crime} ring operating across multiple districts.`
-    ];
-    openingP = openings[Math.floor(Math.random() * openings.length)];
-    detailP = `Sources close to the investigation say ${name} had been under surveillance for some time. With a reputation score of ${data.reputation} and ${data.totalCrimes} known crimes on the books, prosecutors are calling this arrest long overdue. The ${data.family} family has declined to comment.`;
-    sentenceP = `The presiding judge sentenced ${name} to <strong>${data.jailTime} seconds</strong> behind bars, citing the severity of the charges and the defendant's growing criminal record.`;
+      `The long arm of the law caught up with <strong>${name}</strong> today as detectives closed in on the ${data.legacyTitle}'s involvement in a ${crime} ring operating across multiple districts.`,
+      `After weeks of surveillance, police moved in on <strong>${name}</strong>, arresting the ${data.legacyTitle} of the ${data.family} family in connection with ${crime} charges that could carry serious time.`,
+      `<strong>${name}</strong>, a ${data.legacyTitle} of the ${data.family} family, was booked into county jail today after investigators linked them to a growing ${crime} operation that has plagued the city for months.`,
+    ]);
+    detailP = pick([
+      `Sources close to the investigation say ${name} had been under surveillance for some time. With a reputation score of ${data.reputation} and ${data.totalCrimes} known crimes on the books, prosecutors are calling this arrest long overdue. The ${data.family} family has declined to comment.`,
+      `Detectives say the case against ${name} is airtight, with physical evidence and witness testimony tying the ${data.legacyTitle} directly to the ${crime}. Associates are reportedly distancing themselves. With ${data.totalCrimes} prior offenses, leniency seems unlikely.`,
+      `The district attorney's office released a statement calling ${name} "a persistent threat to public safety." With ${data.totalCrimes} crimes on their rap sheet, a gang of ${data.gangSize} under their command, and ties to the ${data.family} family, the prosecution intends to make an example.`,
+      `Police recovered key evidence at the scene linking ${name} to the ${crime}. Investigators say this arrest is part of a broader effort to dismantle ${data.family} family operations in the area. ${name}'s criminal record now stands at ${data.totalCrimes} known offenses.`,
+    ]);
+    sentenceP = pick([
+      `The presiding judge sentenced ${name} to <strong>${data.jailTime} seconds</strong> behind bars, citing the severity of the charges and the defendant's growing criminal record.`,
+      `${name} received a <strong>${data.jailTime}-second</strong> sentence. The judge warned that future offenses would be met with "considerably less patience." The ${data.family} family's legal team offered no comment.`,
+      `Bail was denied. The sentence: <strong>${data.jailTime} seconds</strong>. The judge told ${name} to "reflect on the trajectory of your choices." The courtroom was silent.`,
+      `The gavel came down hard: <strong>${data.jailTime} seconds</strong>. Prosecutors called it "appropriate," while ${name}'s defense attorney was reportedly already preparing an appeal.`,
+    ]);
   } else {
-    const openings = [
+    openingP = pick([
       `In a dramatic operation that has sent shockwaves through the underworld, federal agents confirmed the high-profile arrest of <strong>${name}</strong>, the notorious ${data.legacyTitle} of the ${data.family} family, in connection with a ${crime} operation of unprecedented scale.`,
       `The city awoke to sirens and searchlights this morning as a joint federal task force descended on <strong>${name}</strong>, apprehending the ${data.legacyTitle} after a ${crime} operation that authorities say threatened the very fabric of civil order.`,
-      `Federal authorities today announced the capture of <strong>${name}</strong>, one of the most wanted figures in the city's criminal underworld, following a massive ${crime} bust that mobilized dozens of agents.`
-    ];
-    openingP = openings[Math.floor(Math.random() * openings.length)];
-    detailP = `With a feared reputation of ${data.reputation}, a gang of ${data.gangSize}, and ${data.totalCrimes} crimes attributed to their organization, ${name} had long been considered untouchable. "Today proves no one is above the law," declared the lead federal agent at a press conference. The arrest is expected to trigger a power vacuum in the ${data.family} family's operations.`;
-    sentenceP = `The judge threw the book at ${name}, handing down a <strong>${data.jailTime}-second</strong> sentence with no possibility of early release through good behavior. The district attorney hinted at further charges pending investigation.`;
+      `Federal authorities today announced the capture of <strong>${name}</strong>, one of the most wanted figures in the city's criminal underworld, following a massive ${crime} bust that mobilized dozens of agents.`,
+      `In what the FBI is calling "the biggest collar of the decade," <strong>${name}</strong> was dragged from a safehouse in a pre-dawn raid connected to a sprawling ${crime} enterprise. The ${data.legacyTitle} of the ${data.family} family offered no resistance.`,
+      `Armored vehicles, helicopters, and dozens of federal agents converged on <strong>${name}</strong>'s location this morning. The ${data.legacyTitle} of the ${data.family} family is now in federal custody, and the ${crime} operation they ran is in ruins.`,
+    ]);
+    detailP = pick([
+      `With a feared reputation of ${data.reputation}, a gang of ${data.gangSize}, and ${data.totalCrimes} crimes attributed to their organization, ${name} had long been considered untouchable. "Today proves no one is above the law," declared the lead federal agent at a press conference. The arrest is expected to trigger a power vacuum in the ${data.family} family's operations.`,
+      `Federal investigators had been building this case for months. The ${crime} ring, allegedly run by ${name}, moved millions through the city's underground economy. With ${data.totalCrimes} crimes tied to the operation and ${data.gangSize} known associates, the fallout is expected to reach every corner of the ${data.family} family's empire.`,
+      `The arrest marks the culmination of a joint operation between the FBI, state police, and local detectives. ${name}'s reputation of ${data.reputation}, their network of ${data.gangSize} soldiers, and the scale of the ${crime} made this case a top priority. Sources say several associates have already begun cooperating with prosecutors.`,
+      `"This individual thought they were above the law," the lead prosecutor stated at a packed press conference. With ${data.totalCrimes} offenses on record, a war chest rumored at $${data.money.toLocaleString()}, and the full muscle of the ${data.family} family behind them, ${name} was the city's most dangerous active criminal. Until now.`,
+    ]);
+    sentenceP = pick([
+      `The judge threw the book at ${name}, handing down a <strong>${data.jailTime}-second</strong> sentence with no possibility of early release through good behavior. The district attorney hinted at further charges pending investigation.`,
+      `Sentenced to <strong>${data.jailTime} seconds</strong> of hard time, ${name} was led from the courtroom in shackles. The gallery erupted in murmurs. The ${data.family} family's legal team remained conspicuously absent.`,
+      `The sentence came swiftly: <strong>${data.jailTime} seconds</strong>. The federal judge called ${name} "a cancer on this city" and promised the investigation into the ${data.family} family would continue. ${name} stared straight ahead.`,
+      `<strong>${data.jailTime} seconds</strong>. No bail. No plea deal. The judge described the sentence as "a down payment on justice" and warned that additional charges would follow. ${name} was escorted to a maximum-security holding cell.`,
+    ]);
   }
+
+  // ---- FOOTER quotes ----
+  const footerQuotes = [
+    'The law always catches up &mdash; sooner or later.',
+    'Another day, another mugshot for the wall.',
+    'The cells are always full. The streets are always empty.',
+    'Justice delayed is justice denied. But today, it showed up on time.',
+    'They all say they&rsquo;re innocent. The evidence says otherwise.',
+    'The booking desk never closes. Neither does the night shift.',
+    'Iron bars and cold concrete &mdash; the real cost of doing business.',
+  ];
 
   const portraitHTML = data.portrait
     ? `<div class="newspaper-portrait-wrap"><img src="${data.portrait}" alt="${name}"><div class="newspaper-portrait-caption">${name}, apprehended</div></div>`
@@ -20524,7 +20858,7 @@ function buildJailNewspaperHTML(data) {
       </div>
     </div>
     <div class="newspaper-footer">
-      &ldquo;The law always catches up &mdash; sooner or later.&rdquo;<br>
+      &ldquo;${pick(footerQuotes)}&rdquo;<br>
       &mdash; The Daily Racketeer, est. 1923
     </div>
   `;
