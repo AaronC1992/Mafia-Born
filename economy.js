@@ -30,10 +30,10 @@ export const storeItems = [
     { name: "Bullets", price: 100000, power: 0, type: "ammo", description: "Premium black-market ammunition. Extremely scarce — only 10 rounds hit the streets each day. Required for firearms." },
     { name: "Gasoline", price: 50000, power: 0, type: "gas", description: "Fuel for your vehicles. Hard to come by on the black market. Required to operate cars and planes. Consumed per use." },
     // === Utility Items ===
-    { name: "Lockpick Set", price: 15000, power: 0, type: "utility", description: "Passively grants +10% success chance on all jobs while owned." },
+    { name: "Lockpick Set", price: 15000, power: 0, type: "utility", description: "Passively reduces jail time by 5 seconds when arrested." },
     { name: "Police Scanner", price: 50000, power: 0, type: "utility", description: "Passively reduces heat gain by 20% on every job and combat action while owned." },
     { name: "Burner Phone", price: 12000, power: 0, type: "utility", description: "Passively reduces suspicion risk by 15% when laundering money while owned." },
-    { name: "Fake ID Kit", price: 35000, power: 0, type: "utility", description: "Passively reduces jail time by 5 seconds when arrested. Also required for the Counterfeiting Money job." },
+    { name: "Fake ID Kit", price: 35000, power: 0, type: "utility", description: "Passively grants +10% success chance on all jobs while owned. Also required for the Counterfeiting Money job." },
     // === High-Level Drugs (Trade Goods) ===
     { name: "Crate Moonshine", price: 75000, power: 0, type: "highLevelDrug", maxPayout: 100000, requiredVehicle: "Freight Truck", description: "Bootleg gold. Trade good worth up to $100,000. Requires a Freight Truck to deliver." },
     { name: "Bag of Mary Jane", price: 150000, power: 0, type: "highLevelDrug", maxPayout: 200000, requiredVehicle: "Freight Truck", description: "The green rush. Trade good worth up to $200,000. Requires a Freight Truck to deliver." },

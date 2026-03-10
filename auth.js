@@ -210,7 +210,7 @@ export async function verifySession() {
     }
 }
 
-// ── UI: Auth modal ─────────────────────────────────────────────
+// ── UI: Auth full-screen page ──────────────────────────────────
 // options: { required: bool, onAuth: fn, startOnRegister: bool }
 export function showAuthModal(onSuccessOrOpts) {
     let onSuccess = null;
@@ -230,43 +230,76 @@ export function showAuthModal(onSuccessOrOpts) {
 
     const overlay = document.createElement('div');
     overlay.id = 'auth-modal-overlay';
-    overlay.className = 'auth-overlay';
+    overlay.className = 'auth-fullscreen';
     overlay.innerHTML = `
-        <div class="auth-modal">
+        <div class="auth-fullscreen-inner">
             <button class="auth-close" id="auth-close-btn" ${required ? 'style="display:none;"' : ''}>&times;</button>
-            <h2 class="auth-title" id="auth-modal-title">${startOnRegister ? ' Create Account' : 'Sign In'}</h2>
-            <p class="auth-subtitle" id="auth-modal-subtitle">${required ? 'An account is required to play' : 'Play across all your devices'}</p>
-            
-            <div id="auth-form-area">
-                <div class="auth-field">
-                    <label for="auth-username">Username</label>
-                    <input type="text" id="auth-username" placeholder="Enter username" maxlength="20" autocomplete="username" />
-                </div>
-                <div class="auth-field">
-                    <label for="auth-password">Password</label>
-                    <input type="password" id="auth-password" placeholder="Enter password" maxlength="64" autocomplete="current-password" />
-                </div>
-                <div class="auth-field" id="auth-confirm-field" style="display:${startOnRegister ? 'block' : 'none'};">
-                    <label for="auth-confirm">Confirm Password</label>
-                    <input type="password" id="auth-confirm" placeholder="Confirm password" maxlength="64" autocomplete="new-password" />
-                </div>
-                <p class="auth-info-note" id="auth-info-note" style="display:${startOnRegister ? 'block' : 'none'}; color:#8a7a5a; font-size:0.82em; margin:8px 0 4px; line-height:1.4;">This is just to save your game progress. No email required.</p>
-                <p class="auth-error" id="auth-error"></p>
-                <button class="auth-btn auth-btn-primary" id="auth-submit-btn">${startOnRegister ? 'Create Account' : 'Sign In'}</button>
-                <p class="auth-toggle" id="auth-toggle">${startOnRegister ? 'Already have an account? <span class="auth-link" id="auth-switch-link">Sign in</span>' : 'Don\'t have an account? <span class="auth-link" id="auth-switch-link">Create one</span>'}</p>
-                <p style="margin-top:12px; font-size:0.75em; color:#666;"><a href="privacy-policy.html" target="_blank" style="color:#8a7a5a;">Privacy Policy</a> &middot; <a href="terms-of-use.html" target="_blank" style="color:#8a7a5a;">Terms of Use</a></p>
+
+            <!-- Game pitch header -->
+            <div class="auth-hero">
+                <img src="GameLogo.png" alt="Mafia Born" class="auth-hero-logo" />
+                <p class="auth-hero-tagline">Rise from the gutter. Build an empire. Own the city.</p>
             </div>
 
-            <div id="auth-logged-in-area" style="display:none;">
-                <div class="auth-profile-info">
-                    <p> Signed in as <strong id="auth-display-name"></strong></p>
-                    <p class="auth-save-info" id="auth-save-info"></p>
+            <div class="auth-content-wrap">
+                <!-- Left: game features -->
+                <div class="auth-features-col">
+                    <div class="auth-feature-card">
+                        <span class="auth-feature-title">Run Jobs & Heists</span>
+                        <span class="auth-feature-desc">Pull off robberies, smuggle contraband, and climb the ranks of the underworld.</span>
+                    </div>
+                    <div class="auth-feature-card">
+                        <span class="auth-feature-title">Build Your Empire</span>
+                        <span class="auth-feature-desc">Buy businesses, launder money, recruit a gang, and control turf across the city.</span>
+                    </div>
+                    <div class="auth-feature-card">
+                        <span class="auth-feature-title">Live the Life</span>
+                        <span class="auth-feature-desc">Bribe cops, break out of jail, gamble at the casino, and make a name for yourself.</span>
+                    </div>
+                    <div class="auth-feature-card">
+                        <span class="auth-feature-title">Multiplayer Underworld</span>
+                        <span class="auth-feature-desc">Compete with other players for territory, reputation, and bragging rights.</span>
+                    </div>
                 </div>
-                <button class="auth-btn auth-btn-primary" id="auth-cloud-save-btn"> Save to Cloud</button>
-                <button class="auth-btn auth-btn-secondary" id="auth-cloud-load-btn"> Load from Cloud</button>
-                <button class="auth-btn auth-btn-danger" id="auth-logout-btn">Sign Out</button>
-                <hr style="border-color: #333; margin: 15px 0;">
-                <button class="auth-btn auth-btn-danger" id="auth-delete-account-btn" style="border-color: #ff2222; margin-top: 5px;"> Delete Account & Save</button>
+
+                <!-- Right: auth form -->
+                <div class="auth-form-col">
+                    <h2 class="auth-title" id="auth-modal-title">${startOnRegister ? 'Create Your Identity' : 'Sign In'}</h2>
+                    <p class="auth-subtitle" id="auth-modal-subtitle">${startOnRegister ? 'Choose a name for the underworld' : 'Welcome back to the family'}</p>
+
+                    <div id="auth-form-area">
+                        <div class="auth-field">
+                            <label for="auth-username">Player Name</label>
+                            <input type="text" id="auth-username" placeholder="Choose your name" maxlength="20" autocomplete="username" />
+                            <p class="auth-field-hint" id="auth-username-hint" style="display:${startOnRegister ? 'block' : 'none'};">This is the name the underworld will know you by. Other players will see this name.</p>
+                        </div>
+                        <div class="auth-field">
+                            <label for="auth-password">Password</label>
+                            <input type="password" id="auth-password" placeholder="Enter password" maxlength="64" autocomplete="current-password" />
+                            <p class="auth-field-hint" id="auth-password-hint" style="display:${startOnRegister ? 'block' : 'none'};">Your password lets you play from anywhere -- PC, phone, or tablet. No email required.</p>
+                        </div>
+                        <div class="auth-field" id="auth-confirm-field" style="display:${startOnRegister ? 'block' : 'none'};">
+                            <label for="auth-confirm">Confirm Password</label>
+                            <input type="password" id="auth-confirm" placeholder="Confirm password" maxlength="64" autocomplete="new-password" />
+                        </div>
+                        <p class="auth-error" id="auth-error"></p>
+                        <button class="auth-btn auth-btn-primary" id="auth-submit-btn">${startOnRegister ? 'Enter the Underworld' : 'Sign In'}</button>
+                        <p class="auth-toggle" id="auth-toggle">${startOnRegister ? 'Already have an account? <span class="auth-link" id="auth-switch-link">Sign in</span>' : 'Don\'t have an account? <span class="auth-link" id="auth-switch-link">Create one</span>'}</p>
+                        <p style="margin-top:12px; font-size:0.75em; color:#666;"><a href="privacy-policy.html" target="_blank" style="color:#8a7a5a;">Privacy Policy</a> &middot; <a href="terms-of-use.html" target="_blank" style="color:#8a7a5a;">Terms of Use</a></p>
+                    </div>
+
+                    <div id="auth-logged-in-area" style="display:none;">
+                        <div class="auth-profile-info">
+                            <p>Signed in as <strong id="auth-display-name"></strong></p>
+                            <p class="auth-save-info" id="auth-save-info"></p>
+                        </div>
+                        <button class="auth-btn auth-btn-primary" id="auth-cloud-save-btn">Save to Cloud</button>
+                        <button class="auth-btn auth-btn-secondary" id="auth-cloud-load-btn">Load from Cloud</button>
+                        <button class="auth-btn auth-btn-danger" id="auth-logout-btn">Sign Out</button>
+                        <hr style="border-color: #333; margin: 15px 0;">
+                        <button class="auth-btn auth-btn-danger" id="auth-delete-account-btn" style="border-color: #ff2222; margin-top: 5px;">Delete Account & Save</button>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -283,7 +316,8 @@ export function showAuthModal(onSuccessOrOpts) {
     const passwordInput = document.getElementById('auth-password');
     const confirmInput = document.getElementById('auth-confirm');
     const confirmField = document.getElementById('auth-confirm-field');
-    const infoNote = document.getElementById('auth-info-note');
+    const usernameHint = document.getElementById('auth-username-hint');
+    const passwordHint = document.getElementById('auth-password-hint');
     const errorEl = document.getElementById('auth-error');
     const titleEl = document.getElementById('auth-modal-title');
     const subtitleEl = document.getElementById('auth-modal-subtitle');
@@ -295,7 +329,6 @@ export function showAuthModal(onSuccessOrOpts) {
 
     if (!required) {
         closeBtn.onclick = close;
-        overlay.onclick = (e) => { if (e.target === overlay) close(); };
     }
 
     // If already logged in, show account panel
@@ -308,18 +341,20 @@ export function showAuthModal(onSuccessOrOpts) {
     switchLink.onclick = () => {
         isRegisterMode = !isRegisterMode;
         if (isRegisterMode) {
-            titleEl.textContent = ' Create Account';
-            subtitleEl.textContent = 'Save your progress across devices';
-            submitBtn.textContent = 'Create Account';
+            titleEl.textContent = 'Create Your Identity';
+            subtitleEl.textContent = 'Choose a name for the underworld';
+            submitBtn.textContent = 'Enter the Underworld';
             confirmField.style.display = 'block';
-            infoNote.style.display = 'block';
+            usernameHint.style.display = 'block';
+            passwordHint.style.display = 'block';
             toggleEl.innerHTML = 'Already have an account? <span class="auth-link" id="auth-switch-link">Sign in</span>';
         } else {
             titleEl.textContent = 'Sign In';
-            subtitleEl.textContent = 'Play across all your devices';
+            subtitleEl.textContent = 'Welcome back to the family';
             submitBtn.textContent = 'Sign In';
             confirmField.style.display = 'none';
-            infoNote.style.display = 'none';
+            usernameHint.style.display = 'none';
+            passwordHint.style.display = 'none';
             toggleEl.innerHTML = 'Don\'t have an account? <span class="auth-link" id="auth-switch-link">Create one</span>';
         }
         errorEl.textContent = '';

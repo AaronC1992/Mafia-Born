@@ -12,7 +12,7 @@ import { GameLogging } from './logging.js';
 import { ui, ModalSystem } from './ui-modal.js';
 import { MobileSystem, updateMobileActionLog } from './mobile-responsive.js';
 import { initUIEvents } from './ui-events.js';
-import { initAuth, showAuthModal, emergencyCloudSave, cloudDeleteSave, cloudSave, cloudLoad, deleteAccount, getAuthState, updateAuthStatusUI, checkPlayerName, checkAdmin } from './auth.js';
+import { initAuth, showAuthModal, emergencyCloudSave, cloudDeleteSave, cloudSave, cloudLoad, deleteAccount, getAuthState, updateAuthStatusUI, checkAdmin } from './auth.js';
 import {
   initCasino, getCasinoWins,
   showCasino, showCasinoTab, startBlackjack, bjDeal, bjHit, bjStand, bjDouble,
@@ -5268,6 +5268,10 @@ function showGang(activeTab) {
                   'Available';
         const statusColor = member.arrested ? '#8b3a3a' : member.onOperation ? '#c0a040' : member.inTraining ? '#1abc9c' : member.assignedTo && member.assignedTo.startsWith('business_') ? '#c0a062' : '#8a9a6a';
 
+        if (member.arrested && member.arrestTime) {
+          const remaining = Math.max(0, member.arrestTime - Date.now());
+          statusText += remaining > 0 ? ` (${formatCountdown(remaining)})` : ' (Releasing...)';
+        }
         if (member.onOperation) {
           const opData = player.gang.activeOperations.find(op => op.memberName === member.name);
           if (opData) {
@@ -5336,8 +5340,11 @@ function showGang(activeTab) {
             <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:8px;">
               ${!member.onOperation && !member.inTraining && !member.arrested ? `
                 <button onclick="startTraining(${index})" style="background:#1abc9c; color:white; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:0.8em;">Train</button>
-                <button onclick="fireGangMember(${index});showGang('roster');" style="background:#8a7a5a; color:white; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:0.8em;">Fire</button>
               ` : ''}
+              ${member.arrested ? `
+                <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:0.8em;">Break Out</button>
+              ` : ''}
+              <button onclick="fireGangMember(${index});showGang('roster');" style="background:#8a7a5a; color:white; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:0.8em;">Fire</button>
             </div>
           </div>
         `;
@@ -5546,6 +5553,10 @@ function showGangManagementScreen() {
       const statusColor = member.arrested ? '#8b3a3a' : member.onOperation ? '#c0a040' : member.inTraining ? '#8b6a4a' : '#8a9a6a';
 
       // Add countdown timer to status
+      if (member.arrested && member.arrestTime) {
+        const remaining = Math.max(0, member.arrestTime - Date.now());
+        statusText += remaining > 0 ? ` (${formatCountdown(remaining)})` : ' (Releasing...)';
+      }
       if (member.onOperation) {
         const opData = player.gang.activeOperations.find(op => op.memberName === member.name);
         if (opData) {
@@ -5595,14 +5606,19 @@ function showGangManagementScreen() {
           </div>
 
           <div style="display:flex; flex-wrap:wrap; gap:5px;">
-            ${!member.onOperation && !member.inTraining ? `
+            ${!member.onOperation && !member.inTraining && !member.arrested ? `
               <button onclick="startTraining(${index})" style="background:#1abc9c; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
                 Train
               </button>
-              <button onclick="fireGangMember(${index})" style="background:#8a7a5a; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
-                Fire
+            ` : ''}
+            ${member.arrested ? `
+              <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
+                Break Out
               </button>
             ` : ''}
+            <button onclick="fireGangMember(${index})" style="background:#8a7a5a; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
+              Fire
+            </button>
           </div>
         </div>
       `;
@@ -5763,6 +5779,10 @@ function generateGangMembersHTML() {
              'Available';
 
     // Add countdown timer to status
+    if (member.arrested && member.arrestTime) {
+      const remaining = Math.max(0, member.arrestTime - Date.now());
+      statusText += remaining > 0 ? ` (${formatCountdown(remaining)})` : ' (Releasing...)';
+    }
     if (member.onOperation) {
       const opData = player.gang.activeOperations.find(op => op.memberName === member.name);
       if (opData) {
@@ -5828,11 +5848,19 @@ function generateGangMembersHTML() {
         ${businessHTML}
 
         <div style="margin-top: 10px;">
-          ${!member.onOperation && !member.inTraining ? `
+          ${!member.onOperation && !member.inTraining && !member.arrested ? `
             <button onclick="startTraining(${index})" style="background: #1abc9c; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
               Train
             </button>
           ` : ''}
+          ${member.arrested ? `
+            <button onclick="breakoutGangMember(${index})" style="background: #8b3a3a; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
+              Break Out
+            </button>
+          ` : ''}
+          <button onclick="fireGangMember(${index})" style="background: #8a7a5a; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
+            Fire
+          </button>
         </div>
       </div>
     `;
@@ -6871,6 +6899,104 @@ function recalcTurfIncome() {
   player.territoryIncome = player.turf.income;
 }
 
+// Build the Defenders management HTML for a turf zone
+function buildTurfDefendersHTML(zone) {
+  const defendingIds = zone.defendingMembers || [];
+  const allMembers = player.gang?.gangMembers || [];
+
+  // Currently assigned defenders
+  const assigned = defendingIds.map(id => allMembers.find(m => m.id === id)).filter(Boolean);
+
+  // Available members: not arrested, not on operation, not in training, not already defending ANY zone
+  const allDefendingIds = new Set();
+  (player.turf._zones || []).forEach(z => {
+    (z.defendingMembers || []).forEach(id => allDefendingIds.add(id));
+  });
+  const available = allMembers.filter(m =>
+    !m.arrested && !m.onOperation && !m.inTraining && !allDefendingIds.has(m.id)
+  );
+
+  let html = `<div style="background:rgba(0,0,0,0.3);border:1px solid #444;border-radius:10px;padding:15px;margin-bottom:20px;">
+    <h4 style="color:#5dade2;margin:0 0 10px;">Assigned Defenders</h4>
+    <p style="color:#8a7a5a;font-size:0.85em;margin:0 0 12px;">Station crew members here to defend this turf. Each defender adds +20 defense.</p>`;
+
+  if (assigned.length > 0) {
+    assigned.forEach(member => {
+      const expLevel = member.experienceLevel || 1;
+      html += `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(93,173,226,0.1);padding:10px 12px;border-radius:6px;margin-bottom:6px;border:1px solid rgba(93,173,226,0.3);">
+          <div>
+            <strong style="color:#f5e6c8;">${member.name}</strong>
+            <span style="color:#8a7a5a;font-size:0.85em;"> - Lv. ${expLevel} | Power: ${member.power || 5}</span>
+          </div>
+          <button onclick="removeDefenderFromTurf('${zone.id}','${member.id}')"
+            style="background:#8b3a3a;color:white;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;font-size:0.85em;">Recall</button>
+        </div>`;
+    });
+  } else {
+    html += '<p style="color:#8a7a5a;font-style:italic;text-align:center;margin:8px 0;">No defenders assigned. This zone is unguarded.</p>';
+  }
+
+  // Assign new defender dropdown
+  if (available.length > 0) {
+    html += `
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;">
+        <select id="turf-defender-select" style="flex:1;min-width:160px;padding:8px;background:#1a1610;color:#f5e6c8;border:1px solid #6a5a3a;border-radius:4px;font-size:0.9em;">
+          <option value="">Select a crew member...</option>
+          ${available.map(m => `<option value="${m.id}">${m.name} (Lv. ${m.experienceLevel || 1}, Pwr: ${m.power || 5})</option>`).join('')}
+        </select>
+        <button onclick="assignDefenderToTurf('${zone.id}')"
+          style="padding:8px 16px;background:linear-gradient(135deg,#5dade2,#2e86c1);border:none;border-radius:6px;color:white;cursor:pointer;font-weight:bold;font-size:0.9em;">Assign</button>
+      </div>`;
+  } else if (allMembers.length === 0) {
+    html += '<p style="color:#8a7a5a;font-size:0.85em;text-align:center;margin-top:8px;">Recruit crew members from the Gang screen first.</p>';
+  } else {
+    html += '<p style="color:#8a7a5a;font-size:0.85em;text-align:center;margin-top:8px;">No available crew members. They may be busy, arrested, or already assigned.</p>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+// Assign a single defender to a turf zone from the dropdown
+function assignDefenderToTurf(zoneId) {
+  const select = document.getElementById('turf-defender-select');
+  if (!select || !select.value) {
+    showBriefNotification('Select a crew member first.', 'warning');
+    return;
+  }
+  const memberId = select.value;
+  const zone = (player.turf._zones || []).find(z => z.id === zoneId);
+  if (!zone) return;
+  const member = (player.gang?.gangMembers || []).find(m => m.id === memberId);
+  if (!member) return;
+
+  if (!zone.defendingMembers) zone.defendingMembers = [];
+  zone.defendingMembers.push(memberId);
+  member.assignedTo = zoneId;
+
+  showBriefNotification(`${member.name} assigned to defend ${zone.name}!`, 'success');
+  logAction(`Stationed ${member.name} at ${zone.name} to defend your turf (+20 defense).`);
+  manageTurfDetails(zoneId);
+}
+window.assignDefenderToTurf = assignDefenderToTurf;
+
+// Remove a defender from a turf zone
+function removeDefenderFromTurf(zoneId, memberId) {
+  const zone = (player.turf._zones || []).find(z => z.id === zoneId);
+  if (!zone) return;
+  zone.defendingMembers = (zone.defendingMembers || []).filter(id => id !== memberId);
+  const member = (player.gang?.gangMembers || []).find(m => m.id === memberId);
+  if (member && member.assignedTo === zoneId) {
+    member.assignedTo = null;
+  }
+
+  showBriefNotification(`${member ? member.name : 'Member'} recalled from ${zone.name}.`, 'info');
+  logAction(`Recalled ${member ? member.name : 'a crew member'} from defending ${zone.name}.`);
+  manageTurfDetails(zoneId);
+}
+window.removeDefenderFromTurf = removeDefenderFromTurf;
+
 // Manage a specific turf zone
 function manageTurfDetails(zoneId) {
   initTurfZones();
@@ -6950,6 +7076,8 @@ function manageTurfDetails(zoneId) {
         ${chenIntelRow}
       </div>
     </div>
+
+    ${buildTurfDefendersHTML(zone)}
 
     <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;">
       <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Fortify ($${((fort+1)*5000).toLocaleString()})</button>
@@ -8622,7 +8750,16 @@ function refreshJobsList() {
     return;
   }
 
-  let jobListHTML = jobs.map((job, index) => {
+  // Sort jobs: available first, then cooldown, then locked
+  const sortedJobs = jobs.map((job, index) => {
+    const hasReqs = hasRequiredItems(job.requiredItems);
+    const cd = getJobCooldownRemaining(index);
+    const priority = !hasReqs ? 2 : cd > 0 ? 1 : 0;
+    return { job, index, priority };
+  });
+  sortedJobs.sort((a, b) => a.priority - b.priority);
+
+  let jobListHTML = sortedJobs.map(({ job, index }) => {
     const hasItems = hasRequiredItems(job.requiredItems);
     const hasRequirements = hasItems;
     const cooldownLeft = getJobCooldownRemaining(index);
@@ -8709,7 +8846,7 @@ function updateRightPanel() {
 
 // Quick Actions panel -- respects the progressive unlock system
 // Default shortcuts shown before the player customizes
-const DEFAULT_QUICK_ACTIONS = ['jobs', 'store', 'missions', 'gang', 'businesses', 'territory', 'casino', 'skills'];
+const DEFAULT_QUICK_ACTIONS = ['jobs', 'store', 'missions', 'gang', 'realestate', 'territories', 'casino', 'skills'];
 
 function getQuickActionIds() {
   if (player.quickActionPrefs && player.quickActionPrefs.length > 0) {
@@ -10367,7 +10504,7 @@ window.syncTutorialToggleButton = syncTutorialToggleButton;
 })();
 
 // Function to show jobs
-const JOB_REP_BY_RISK = { low: 0.5, medium: 1, high: 2, 'very high': 3, extreme: 5, legendary: 8 };
+const JOB_REP_BY_RISK = { low: 1, medium: 1.8, high: 3.5, 'very high': 5, extreme: 8, legendary: 12 };
 
 function showJobs() {
   if (player.inJail) {
@@ -10375,10 +10512,19 @@ function showJobs() {
     return;
   }
 
+  // Sort jobs: available first, then cooldown, then locked
+  const sortedJobs = jobs.map((job, index) => {
+    const hasReqs = hasRequiredItems(job.requiredItems);
+    const cd = getJobCooldownRemaining(index);
+    const priority = !hasReqs ? 2 : cd > 0 ? 1 : 0;
+    return { job, index, priority };
+  });
+  sortedJobs.sort((a, b) => a.priority - b.priority);
+
   let jobListHTML = `
     <h3>Available Jobs</h3>
     <ul>
-      ${jobs.map((job, index) => {
+      ${sortedJobs.map(({ job, index }) => {
         const hasItems = hasRequiredItems(job.requiredItems);
         const hasRequirements = hasItems;
 
@@ -10890,11 +11036,11 @@ async function startJob(index) {
     }
   }
 
-  // Utility item: Lockpick Set gives +10% success on all jobs
+  // Utility item: Fake ID Kit gives +10% success on all jobs
   let utilityBonus = 0;
-  if (hasUtilityItem('Lockpick Set')) {
+  if (hasUtilityItem('Fake ID Kit')) {
     utilityBonus += 10;
-    logAction('Your Lockpick Set gives you an edge on this job (+10% success).');
+    logAction('Your Fake ID Kit keeps you under the radar (+10% success).');
   }
 
   // Car bonus for jobs (if player has selected a car)
@@ -11243,33 +11389,33 @@ async function startJob(index) {
   if (job.risk === 'low') {
     hurtChance = Math.max(0, 1 - player.power * 0.01 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 5;
-    gainExperience(0.5);
+    gainExperience(1.0);
   } else if (job.risk === 'medium') {
     hurtChance = Math.max(0, 5 - player.power * 0.05 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 20;
-    gainExperience(1.0);
+    gainExperience(1.8);
   } else if (job.risk === 'high') {
     hurtChance = Math.max(0, 10 - player.power * 0.1 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 50;
-    gainExperience(2.0);
+    gainExperience(3.5);
   } else if (job.risk === 'very high') {
     hurtChance = Math.max(0, 15 - player.power * 0.12 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 60;
-    gainExperience(3.0);
+    gainExperience(5.0);
   } else if (job.risk === 'extreme') {
     hurtChance = Math.max(0, 20 - player.power * 0.15 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 75;
-    gainExperience(5.0);
+    gainExperience(8.0);
   } else if (job.risk === 'legendary') {
     hurtChance = Math.max(0, 25 - player.power * 0.18 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 90;
-    gainExperience(8.0);
+    gainExperience(12.0);
   }
 
   // Street Cred skill: +2% reputation gain per rank
   const streetCredLevel = player.skillTree.charisma?.street_cred || 0;
   if (streetCredLevel > 0) {
-    const riskRepMap = { low: 0.5, medium: 1.0, high: 2.0, 'very high': 3.0, extreme: 5.0, legendary: 8.0 };
+    const riskRepMap = { low: 1.0, medium: 1.8, high: 3.5, 'very high': 5.0, extreme: 8.0, legendary: 12.0 };
     const baseRep = riskRepMap[job.risk] || 0.5;
     const bonusRep = baseRep * streetCredLevel * 0.02;
     player.reputation += bonusRep;
@@ -12012,10 +12158,10 @@ function sendToJail(heatLoss, crimeContext) {
     logAction(`High heat draws extra scrutiny -- sentence increased by ${change}s.`);
   }
 
-  // Utility item: Fake ID Kit reduces jail time by 5 seconds
-  if (hasUtilityItem('Fake ID Kit')) {
+  // Utility item: Lockpick Set reduces jail time by 5 seconds
+  if (hasUtilityItem('Lockpick Set')) {
     calculatedJailTime = Math.max(5, calculatedJailTime - 5);
-    logAction(' Your Fake ID Kit confuses the booking officers -- shorter sentence!');
+    logAction(' Your Lockpick Set makes short work of the cell lock -- shorter sentence!');
   }
 
   player.jailTime = calculatedJailTime;
@@ -12219,6 +12365,36 @@ function formatTrainingTime(seconds) {
 // Currently selected tree in the skill UI
 let _activeSkillTree = 'stealth';
 
+// Compute current & next-rank stat text from a skill's effect string
+function getSkillStatLine(effect, rank, maxRank) {
+  // Split compound effects like "-2s jail time, +3% breakout per rank"
+  const parts = effect.split(',').map(s => s.trim());
+  const currentParts = [];
+  const nextParts = [];
+  for (const part of parts) {
+    // Match patterns like "+5%", "-2s", "8%" at the start or after a space
+    const m = part.match(/([+-]?)(\d+(?:\.\d+)?)\s*(%|s)/);
+    if (!m) continue;
+    const sign = m[1] || '+';
+    const perRank = parseFloat(m[2]);
+    const unit = m[3];
+    const curVal = perRank * rank;
+    const nxtVal = rank < maxRank ? perRank * (rank + 1) : curVal;
+    // Extract the label: strip the leading number+unit and "per rank" portion
+    const stripped = part.replace(/[+-]?\d+(?:\.\d+)?\s*(%|s)\s*/, '').replace(/\s*per rank\s*/i, ' ').trim();
+    currentParts.push(`${sign}${curVal}${unit} ${stripped}`);
+    if (rank < maxRank) {
+      nextParts.push(`${sign}${nxtVal}${unit} ${stripped}`);
+    }
+  }
+  if (currentParts.length === 0) return '';
+  const now = currentParts.join(', ');
+  const next = nextParts.length > 0 ? nextParts.join(', ') : null;
+  if (rank === 0 && next) return `<p class="rpg-node-stats"><span style="color:#8a7a5a;">Now: none</span> <span style="color:#8a9a6a;">Next: ${next}</span></p>`;
+  if (!next || rank >= maxRank) return `<p class="rpg-node-stats"><span style="color:#c0a062;">Now: ${now}</span> <span style="color:#d4af37;">MAXED</span></p>`;
+  return `<p class="rpg-node-stats"><span style="color:#c0a062;">Now: ${now}</span> <span style="color:#8a9a6a;">Next: ${next}</span></p>`;
+}
+
 function showSkills() {
   if (player.inJail) {
     showBriefNotification("You can't access skills while you're in jail!", 'danger');
@@ -12367,6 +12543,7 @@ function renderSkillTreeUI() {
           </div>
           <p class="rpg-node-desc">${nodeDef.desc}</p>
           <p class="rpg-node-effect">${nodeDef.effect}</p>
+          ${getSkillStatLine(nodeDef.effect, rank, maxRank)}
           ${prereqText ? `<div class="rpg-node-prereqs">Requires: ${prereqText}</div>` : ''}
           ${buttonHTML}
         </div>
@@ -12901,6 +13078,69 @@ async function fireGangMember(memberIndex) {
   checkAchievements();
 }
 
+// Break an arrested gang member out of jail
+async function breakoutGangMember(memberIndex) {
+  if (memberIndex < 0 || memberIndex >= player.gang.gangMembers.length) {
+    showBriefNotification('Invalid gang member selection.', 'warning');
+    return;
+  }
+
+  const member = player.gang.gangMembers[memberIndex];
+  if (!member.arrested) {
+    showBriefNotification(`${member.name} is not in jail.`, 'warning');
+    return;
+  }
+
+  // Cost and chance calculation
+  const bribeCost = 5000 + (member.experienceLevel || 1) * 2000;
+  const baseChance = 40;
+  const infiltrationBonus = (player.skillTree.stealth?.infiltration || 0) * 3;
+  const planningBonus = (player.skillTree.intelligence?.planning || 0) * 2;
+  const successChance = Math.min(85, baseChance + infiltrationBonus + planningBonus);
+
+  if (!await ui.confirm(
+    `<strong>Jailbreak: ${member.name}</strong><br><br>` +
+    'You\'ll need to grease some palms and pull some strings to get your crew member out.<br><br>' +
+    `Bribe cost: <strong>$${bribeCost.toLocaleString()}</strong><br>` +
+    `Success chance: <strong>${successChance}%</strong><br><br>` +
+    'If the attempt fails, your heat will increase.<br><br>Proceed?'
+  )) {
+    return;
+  }
+
+  if (player.money < bribeCost) {
+    showBriefNotification(`Not enough money! Need $${bribeCost.toLocaleString()}.`, 'danger');
+    return;
+  }
+
+  player.money -= bribeCost;
+
+  if (Math.random() * 100 < successChance) {
+    // Success
+    member.arrested = false;
+    member.arrestTime = null;
+    member.onOperation = false;
+    showBriefNotification(`${member.name} has been broken out of jail!`, 'success');
+    logAction(`The jailbreak worked! ${member.name} slips out through the back of the precinct, free and clear. Cost you $${bribeCost.toLocaleString()} in bribes, but loyalty like this isn't cheap.`);
+  } else {
+    // Failure
+    player.heat += 8;
+    showBriefNotification('Jailbreak failed! Heat increased.', 'danger');
+    logAction(`The jailbreak attempt for ${member.name} went sideways. The guards were tipped off, and now the heat is on you. $${bribeCost.toLocaleString()} wasted and the cops are watching closer than ever (+8 heat).`);
+  }
+
+  updateUI();
+
+  // Refresh whichever screen is currently visible
+  if (document.getElementById('jailbreak-screen').style.display === 'block') {
+    updateJailbreakPrisonerList();
+  } else if (document.getElementById('jail-screen').style.display === 'block') {
+    updatePrisonerList();
+  } else {
+    showGang('roster');
+  }
+}
+
 // Function to show the jail screen
 function showJailScreen() {
   hideAllScreens();
@@ -13064,6 +13304,31 @@ function updatePrisonerList() {
   const roster = (typeof onlineWorldState !== 'undefined' && onlineWorldState.jailRoster) ? onlineWorldState.jailRoster : null;
   const onlinePlayers = roster ? roster.realPlayers : [];
   const bots = roster ? roster.bots : [];
+
+  // === SECTION 0: Your Arrested Crew ===
+  const arrestedCrew = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.filter(m => m.arrested) : [];
+  if (arrestedCrew.length > 0) {
+    prisonerHTML += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(139, 58, 58, 0.15); border-radius: 8px; border: 1px solid #8b3a3a;">
+      <h4 style="color: #8b3a3a; margin: 0 0 10px 0;">Your Crew Behind Bars</h4>
+      <p style="color: #8a7a5a; margin-bottom: 8px; font-size: 0.85em;">Your people are locked up. ${player.inJail ? 'Get yourself out first before helping them.' : 'Grease some palms to get them out.'}</p>`;
+
+    arrestedCrew.forEach(member => {
+      const realIndex = player.gang.gangMembers.indexOf(member);
+      const remaining = member.arrestTime ? Math.max(0, member.arrestTime - Date.now()) : 0;
+      const timeLeft = remaining > 0 ? formatCountdown(remaining) : 'Releasing soon...';
+      const expLevel = member.experienceLevel || 1;
+      prisonerHTML += `
+        <div style="background: rgba(139, 0, 0, 0.2); padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid #8b3a3a;">
+          <strong style="color: #f5e6c8;">${member.name}</strong> (Lv. ${expLevel})
+          <br><small style="color: #8b3a3a;">Time Left: ${timeLeft}</small>
+          ${player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
+            `<br><button onclick="breakoutGangMember(${realIndex})" style="margin-top: 8px; background: #8b3a3a; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`}
+        </div>
+      `;
+    });
+
+    prisonerHTML += '</div>';
+  }
 
   // === SECTION 1: Online Players in Jail ===
   prisonerHTML += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(192, 160, 98, 0.15); border-radius: 8px; border: 1px solid #c0a062;">
@@ -14707,6 +14972,52 @@ function updateJailbreakPrisonerList() {
   const roster = (typeof onlineWorldState !== 'undefined' && onlineWorldState.jailRoster) ? onlineWorldState.jailRoster : null;
   const onlinePlayers = roster ? roster.realPlayers.filter(p => p.playerId !== (onlineWorldState.playerId || '')) : [];
   const serverBots = roster ? roster.bots : [];
+
+  // === SECTION 0: Your Arrested Crew ===
+  const arrestedCrew = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.filter(m => m.arrested) : [];
+  prisonerHTML += `
+    <div style="margin-bottom: 20px; padding: 15px; background: rgba(139, 58, 58, 0.15); border-radius: 10px; border: 2px solid #8b3a3a;">
+      <h3 style="color: #8b3a3a; margin: 0 0 5px 0;">Your Crew Behind Bars</h3>
+      <p style="color: #8a7a5a; margin-bottom: 15px; font-size: 0.9em;">Your people are doing time. Grease some palms to get them out.</p>`;
+
+  if (arrestedCrew.length > 0) {
+    arrestedCrew.forEach(member => {
+      const realIndex = player.gang.gangMembers.indexOf(member);
+      const remaining = member.arrestTime ? Math.max(0, member.arrestTime - Date.now()) : 0;
+      const timeLeft = remaining > 0 ? formatCountdown(remaining) : 'Releasing soon...';
+      const expLevel = member.experienceLevel || 1;
+      const bribeCost = 5000 + expLevel * 2000;
+      const baseChance = 40;
+      const infiltrationBonus = (player.skillTree.stealth?.infiltration || 0) * 3;
+      const planningBonus = (player.skillTree.intelligence?.planning || 0) * 2;
+      const successChance = Math.min(85, baseChance + infiltrationBonus + planningBonus);
+      const chanceColor = successChance >= 60 ? '#8a9a6a' : successChance >= 40 ? '#c0a062' : '#8b3a3a';
+      prisonerHTML += `
+        <div style="background: rgba(139, 0, 0, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border: 2px solid #8b3a3a;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+              <h3 style="color: #f5e6c8; margin: 0 0 8px 0;">${member.name}</h3>
+              <p><strong>Role:</strong> <span style="color: #c0a062;">${member.role ? (GANG_MEMBER_ROLES[member.role] ? GANG_MEMBER_ROLES[member.role].name : member.role) : 'Unassigned'}</span></p>
+              <p><strong>Level:</strong> ${expLevel} | <strong>Power:</strong> ${member.power || 5}</p>
+              <p><strong>Time Left:</strong> <span style="color: #8b3a3a;">${timeLeft}</span></p>
+            </div>
+            <div style="text-align: center; min-width: 180px;">
+              <p><strong>Success:</strong> <span style="color: ${chanceColor};">${successChance}%</span></p>
+              <p style="font-size: 0.85em; color: #8a7a5a;">Bribe: $${bribeCost.toLocaleString()}</p>
+              <button onclick="breakoutGangMember(${realIndex})"
+                      style="margin-top: 6px; width: 100%; background: #8b3a3a; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                Break Out Crew Member
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  } else {
+    prisonerHTML += '<p style="color: #8a7a5a; text-align: center; font-style: italic;">None of your crew are currently locked up.</p>';
+  }
+
+  prisonerHTML += '</div>';
 
   // === SECTION 1: Online Players in Jail ===
   prisonerHTML += `
@@ -16375,32 +16686,9 @@ async function showSimpleCharacterCreation() {
     resetPlayerForNewGame();
   }
 
-  // First ask for name
-  const playerName = await ui.prompt("What's your name, tough guy?");
-
-  if (!playerName || playerName.trim() === '') {
-    ui.alert('You need a name to make it in this world!');
-    // Re-prompt -- new players must create a character
-    showSimpleCharacterCreation();
-    return;
-  }
-
-  const trimmedName = playerName.trim();
-
-  // Check the cloud to make sure no other player already has this name
-  try {
-    const taken = await checkPlayerName(trimmedName);
-    if (taken) {
-      await ui.alert(`The name "${trimmedName}" is already taken by another player. Pick a different name.`);
-      showSimpleCharacterCreation();
-      return;
-    }
-  } catch (err) {
-    console.warn('[auth] Name check failed, allowing name:', err.message);
-    // If the server is unreachable, allow the name so the player isn't blocked
-  }
-
-  player.name = trimmedName;
+  // Use the auth username as the player name (already validated & unique at registration)
+  const auth = getAuthState();
+  player.name = auth.username;
 
   // Initialize playtime tracking
   if (!player.startTime) {
@@ -16433,14 +16721,12 @@ function selectPortraitForCreation(portraitFile) {
 
 // Function to update character preview
 function updateCharacterPreview() {
-  const nameInput = document.getElementById('character-name');
   const previewName = document.getElementById('preview-name');
   const selectedPortrait = document.getElementById('selected-portrait');
   const createBtn = document.getElementById('create-character-btn');
 
-  if (nameInput && previewName) {
-    const name = nameInput.value.trim();
-    previewName.textContent = name ? `Name: ${name}` : 'Name: Unknown';
+  if (previewName) {
+    previewName.textContent = player.name ? `Name: ${player.name}` : 'Name: Unknown';
   }
 
   // Show portrait if selected
@@ -16449,10 +16735,9 @@ function updateCharacterPreview() {
     selectedPortrait.style.display = 'block';
   }
 
-  // Enable create button if portrait selected and name entered
-  if (createBtn && nameInput) {
-    const name = nameInput.value.trim();
-    createBtn.disabled = !(selectedPortraitFile && name.length > 0);
+  // Enable create button if portrait selected
+  if (createBtn) {
+    createBtn.disabled = !selectedPortraitFile;
   }
 }
 
@@ -16611,12 +16896,10 @@ window.applyPortraitChange = applyPortraitChange;
 
 // Function to create character after all selections made
 function createCharacter() {
-  const nameInput = document.getElementById('character-name');
-  const name = nameInput ? nameInput.value.trim() : '';
-
-  if (!name) {
-    showBriefNotification('Enter your name first.', 'success');
-    return;
+  // player.name is already set from the auth username
+  if (!player.name) {
+    const auth = getAuthState();
+    player.name = auth.username || 'Unknown';
   }
 
   if (!selectedPortraitFile) {
@@ -16625,7 +16908,6 @@ function createCharacter() {
   }
 
   // Set player data
-  player.name = name;
   player.portrait = selectedPortraitFile;
 
   // Hide character creation screen
@@ -17557,8 +17839,18 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.33.4';
+const CURRENT_VERSION = '1.33.5';
 const VERSION_UPDATES = {
+  '1.33.5': {
+    title: 'Turf Defenders, Crew Jailbreaks & Mobile Fixes',
+    date: 'March 2026',
+    changes: [
+      'Assign crew members to defend your turf zones from the Manage screen -- each defender adds +20 defense',
+      'Jailbreak screen now shows your arrested crew at the top with break-out buttons and success odds',
+      'Jail screen shows which of your crew are also behind bars with time remaining',
+      'Fixed Family screen tabs overlapping on mobile (Operations colliding with Training)',
+    ]
+  },
   '1.30.0': {
     title: 'Server-Only Saves',
     date: 'March 2026',
@@ -24582,6 +24874,7 @@ window.dropProtection = dropProtection;
 window.fortifyTerritory = fortifyTerritory;
 window.acquireTerritory = function(zoneId) { attackTurfZone(zoneId); };
 window.fireGangMember = fireGangMember;
+window.breakoutGangMember = breakoutGangMember;
 window.startTraining = startTraining;
 window.hireSpecialRecruit = hireSpecialRecruit;
 window.showGangManagementScreen = showGangManagementScreen;

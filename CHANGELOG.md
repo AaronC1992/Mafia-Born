@@ -5,6 +5,17 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.33.5] - 2026-03-10
+
+### Added
+- **Turf defender assignment** -- manage screen now lets you assign/recall crew members to defend owned turf zones (+20 defense each), with a dropdown of available members and recall buttons for stationed defenders
+- **Jailbreak screen crew section** -- the Underground Network breakout screen now shows your arrested crew members at the top with break-out buttons, cost, and success chance
+- **Jail screen crew section** -- when locked up, you can see which of your crew are also behind bars (with time remaining)
+- **`breakoutGangMember` screen awareness** -- breaking out crew now refreshes whichever screen is active (jailbreak, jail, or gang roster)
+
+### Fixed
+- **Mobile tab overflow on Family screen** -- Operations tab no longer collides with Training tab on small screens; added tighter font/padding at 480px breakpoint with overflow protection
+
 ## [1.33.4] - 2026-03-10
 
 ### Fixed

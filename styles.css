@@ -4227,6 +4227,13 @@ p, ul {
   margin: 0 0 6px;
   font-style: italic;
 }
+.rpg-node-stats {
+  font-size: 0.78em;
+  margin: 0 0 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
 .rpg-node-prereqs {
   font-size: 0.78em;
   color: #8a7a5a;
@@ -4529,35 +4536,97 @@ p, ul {
     }
 }
 
-/* ==================== AUTH & CLOUD SAVE MODAL ==================== */
-.auth-overlay {
+/* ==================== AUTH & CLOUD SAVE ==================== */
+/* Full-screen auth page */
+.auth-fullscreen {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.85);
+    background: linear-gradient(135deg, #0a0908 0%, #14120a 40%, #0d0b07 100%);
     z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: authFadeIn 0.2s ease;
+    overflow-y: auto;
+    animation: authFadeIn 0.3s ease;
 }
 @keyframes authFadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
-.auth-modal {
+.auth-fullscreen-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 30px 60px;
+    position: relative;
+}
+
+/* Hero / header area */
+.auth-hero {
+    text-align: center;
+    margin-bottom: 35px;
+}
+.auth-hero-logo {
+    max-width: 340px;
+    width: 80%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    border: 2px solid #d4af37;
+    margin-bottom: 14px;
+}
+.auth-hero-tagline {
+    color: #c0a062;
+    font-size: 1.15em;
+    font-style: italic;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* Two-column layout: features | form */
+.auth-content-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* Features column */
+.auth-features-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.auth-feature-card {
+    background: rgba(20, 18, 10, 0.7);
+    border: 1px solid #3a3220;
+    border-radius: 2px;
+    padding: 16px 18px;
+}
+.auth-feature-title {
+    display: block;
+    color: #c0a062;
+    font-size: 1em;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+.auth-feature-desc {
+    display: block;
+    color: #8a7a5a;
+    font-size: 0.88em;
+    line-height: 1.4;
+}
+
+/* Form column */
+.auth-form-col {
+    flex: 1;
     background: linear-gradient(135deg, #14120a 0%, #1a1610 50%, #0d0b07 100%);
     border: 2px solid var(--color-gold);
     border-radius: 2px;
-    padding: 35px 30px;
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    box-shadow: 0 0 40px rgba(212, 175, 55, 0.15), 0 20px 60px rgba(0, 0, 0, 0.5);
+    padding: 30px 28px;
     text-align: center;
 }
+
 .auth-close {
     position: absolute;
-    top: 10px; right: 15px;
+    top: 12px; right: 18px;
     background: none;
     border: none;
     color: #888;
@@ -4566,22 +4635,23 @@ p, ul {
     padding: 0;
     line-height: 1;
     transition: color 0.2s;
+    z-index: 1;
 }
 .auth-close:hover { color: var(--color-cream); }
 .auth-title {
     color: var(--color-gold);
-    font-size: 1.6em;
+    font-size: 1.5em;
     margin: 0 0 5px;
     font-family: var(--font-heading);
-    letter-spacing: 3px;
+    letter-spacing: 2px;
 }
 .auth-subtitle {
     color: #8899aa;
     font-size: 0.9em;
-    margin: 0 0 25px;
+    margin: 0 0 22px;
 }
 .auth-field {
-    margin-bottom: 15px;
+    margin-bottom: 14px;
     text-align: left;
 }
 .auth-field label {
@@ -4607,6 +4677,12 @@ p, ul {
 }
 .auth-field input:focus {
     border-color: #d4af37;
+}
+.auth-field-hint {
+    color: #8a7a5a;
+    font-size: 0.8em;
+    margin: 5px 0 0;
+    line-height: 1.35;
 }
 .auth-error {
     color: #ff6b6b;
@@ -4683,6 +4759,34 @@ p, ul {
     color: #888 !important;
     margin-top: 8px !important;
 }
+
+/* Responsive: stack on mobile */
+@media (max-width: 700px) {
+    .auth-fullscreen-inner {
+        padding: 25px 16px 40px;
+    }
+    .auth-content-wrap {
+        flex-direction: column;
+        gap: 24px;
+    }
+    .auth-features-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .auth-form-col {
+        padding: 24px 18px;
+    }
+    .auth-hero-logo {
+        max-width: 260px;
+    }
+}
+@media (max-width: 440px) {
+    .auth-features-col {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Auth status in stats bar */
 .auth-status-indicator {
     cursor: pointer;
@@ -5942,6 +6046,17 @@ p, ul {
     }
     .ops-card .card-stats {
         gap: 4px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ops-tab {
+        padding: 8px 3px;
+        font-size: 0.68em;
+        letter-spacing: 0.5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
