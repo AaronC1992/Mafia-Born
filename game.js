@@ -17859,12 +17859,13 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.33.8';
+const CURRENT_VERSION = '1.33.9';
 const VERSION_UPDATES = {
-  '1.33.8': {
-    title: 'Newspaper Flavor Text Overhaul',
+  '1.33.9': {
+    title: 'Side Ops & Newspaper Overhaul',
     date: 'March 2026',
     changes: [
+      'Side operations now listed in correct ascending respect order (10, 25, 50, 75, 100)',
       'Death screen now picks from 35 flavor text variations across 6 categories (combat, job, hit, turf, executed, generic)',
       'Death newspaper completely rewritten with context-aware headlines, subheads, openings, and paragraphs per death type',
       'Jail newspaper expanded with 25+ headlines, 20+ subheads, and randomized detail/sentence/footer paragraphs per tone',

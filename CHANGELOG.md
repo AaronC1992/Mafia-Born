@@ -5,7 +5,10 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.33.8] - 2026-03-10
+## [1.33.9] - 2026-03-10
+
+### Fixed
+- **Side ops respect order** -- side operations now listed in correct ascending respect requirement order (The Code 10, Informant Network 25, Safe Houses 50, King of the Night 75, Ghost Money 100)
 
 ### Added
 - **Death screen flavor text overhaul** -- expanded from 5 generic death messages to 35 variations across 6 categories (combat, job, hit, turf, executed, generic), auto-detected from cause of death
