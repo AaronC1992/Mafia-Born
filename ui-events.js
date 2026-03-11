@@ -24,41 +24,49 @@ function refreshMoneyDisplay() {
     }
 }
 
+let _uiEventUnsubs = [];
+
 export function initUIEvents() {
     if (window._uiEventsInit) return;
     window._uiEventsInit = true;
 
-    EventBus.on('moneyChanged', ({ oldValue, newValue }) => {
+    _uiEventUnsubs.push(EventBus.on('moneyChanged', () => {
         refreshMoneyDisplay();
-    });
+    }));
 
-    EventBus.on('dirtyMoneyChanged', ({ oldValue, newValue }) => {
+    _uiEventUnsubs.push(EventBus.on('dirtyMoneyChanged', () => {
         refreshMoneyDisplay();
-    });
+    }));
 
-    EventBus.on('heatChanged', ({ oldValue, newValue }) => {
+    _uiEventUnsubs.push(EventBus.on('heatChanged', ({ oldValue, newValue }) => {
         const el = document.getElementById('wanted-level-display');
         if (el) el.innerText = `Heat: ${newValue}`;
-    });
+    }));
 
-    EventBus.on('reputationChanged', ({ oldValue, newValue }) => {
+    _uiEventUnsubs.push(EventBus.on('reputationChanged', ({ oldValue, newValue }) => {
         const el = document.getElementById('reputation-display');
         if (el) el.innerText = `Respect: ${newValue}`;
-    });
+    }));
 
-    EventBus.on('jailStatusChanged', ({ inJail, jailTime }) => {
+    _uiEventUnsubs.push(EventBus.on('jailStatusChanged', ({ inJail, jailTime }) => {
         const jailStatus = document.getElementById('jail-status');
         if (jailStatus) jailStatus.innerText = inJail ? `${jailTime}s` : 'Free';
-    });
+    }));
 
-    EventBus.on('jailTimeUpdated', ({ jailTime }) => {
+    _uiEventUnsubs.push(EventBus.on('jailTimeUpdated', ({ jailTime }) => {
         const jailStatus = document.getElementById('jail-status');
         if (jailStatus && player.inJail) jailStatus.innerText = `${jailTime}s`;
-    });
+    }));
 
     // Initial paint
     refreshMoneyDisplay();
     const wanted = document.getElementById('wanted-level-display');
     if (wanted) wanted.innerText = `Heat: ${player.heat}`;
+}
+
+export function cleanupUIEvents() {
+    _uiEventUnsubs.forEach(unsub => unsub());
+    _uiEventUnsubs = [];
+    window._uiEventsInit = false;
 }
 

@@ -20,7 +20,7 @@ export const EventBus = {
     if (!set || set.size === 0) return;
     // Copy to guard against mutations during iteration
     [...set].forEach(fn => {
-      try { fn(payload); } catch (e) { console.warn('EventBus handler error for', eventName, e); }
+      try { fn(payload); } catch (e) { console.error('EventBus handler error for', eventName, e); }
     });
   }
 };

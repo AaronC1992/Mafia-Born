@@ -39,7 +39,7 @@ export const jobs = [
     
     // Property-based jobs
     { name: "Illegal Gambling Den", payout: [5000, 11000], risk: "very high", jailChance: 30, heatGain: 4, healthLoss: 5, requiredItems: ["Criminal Safehouse"], reputation: 0, energyCost: 14 },
-    { name: "Money Laundering", payout: [6000, 15000], risk: "high", jailChance: 20, heatGain: 3, healthLoss: 0, requiredItems: ["Basement Hideout", "Luxury Automobile"], reputation: 0, energyCost: 15, special: "launder_money" },
+    { name: "Money Laundering", payout: [6000, 15000], risk: "high", jailChance: 20, heatGain: 3, healthLoss: 0, requiredItems: ["Luxury Automobile"], reputation: 0, energyCost: 15, special: "launder_money", requiresBusiness: true },
     
     // Counterfeiting job (pays dirty money only)
     { name: "Counterfeiting Money", payout: [6000, 18000], risk: "extreme", jailChance: 45, heatGain: 8, healthLoss: 0, requiredItems: ["Basement Hideout", "Fake ID Kit"], reputation: 0, energyCost: 13, paysDirty: true },

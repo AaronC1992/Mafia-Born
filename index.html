@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Playfair+Display+SC:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.34.2">
+    <link rel="stylesheet" href="styles.css?v=1.35.0">
 </head>
 <body>
     <noscript>
@@ -479,7 +479,7 @@
         <!-- Newspaper Death Popup (full-screen overlay) -->
         <div id="death-newspaper-overlay" style="display:none;" onclick="if(event.target===this)closeDeathNewspaper()">
             <div id="death-newspaper">
-                <button id="newspaper-close-btn" onclick="closeDeathNewspaper()" title="Close">&times;</button>
+                <button id="newspaper-close-btn" onclick="closeDeathNewspaper()" title="Close" aria-label="Close">&times;</button>
                 <div id="newspaper-content">
                     <!-- Filled dynamically by showDeathNewspaper() -->
                 </div>
@@ -489,7 +489,7 @@
         <!-- Newspaper Jail Popup (full-screen overlay) -->
         <div id="jail-newspaper-overlay" style="display:none;" onclick="if(event.target===this)closeJailNewspaper()">
             <div id="jail-newspaper">
-                <button class="newspaper-close-btn" onclick="closeJailNewspaper()" title="Close">&times;</button>
+                <button class="newspaper-close-btn" onclick="closeJailNewspaper()" title="Close" aria-label="Close">&times;</button>
                 <div id="jail-newspaper-content">
                     <!-- Filled dynamically by showJailNewspaper() -->
                 </div>
@@ -499,7 +499,7 @@
         <!-- Policy Newspaper Popup (full-screen overlay) -->
         <div id="policy-newspaper-overlay" style="display:none;" onclick="if(event.target===this)closePolicyNewspaper()">
             <div id="policy-newspaper">
-                <button class="newspaper-close-btn" onclick="closePolicyNewspaper()" title="Close">&times;</button>
+                <button class="newspaper-close-btn" onclick="closePolicyNewspaper()" title="Close" aria-label="Close">&times;</button>
                 <div id="policy-newspaper-content">
                     <!-- Filled dynamically by showPolicyNewspaper() -->
                 </div>
@@ -529,6 +529,7 @@
             <div id="panel-gambling">
                 <div id="casino-balance" style="text-align: center; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 2px; border: 1px solid #d4af37;">
                     <span style="color: #f1c40f; font-size: 1.2em; font-weight: bold;">Wallet: $<span id="casino-wallet">0</span></span>
+                    <span id="casino-luck-display" style="color: #8a9a6a; font-size: 0.85em; margin-left: 12px;"></span>
                 </div>
                 <div class="content-card" id="casino-game-select">
                     <p style="text-align:center; color:#d4c4a0;">Choose your game:</p>
@@ -546,6 +547,7 @@
             <!-- Mini Games Tab (hidden initially) -->
             <div id="panel-minigames" style="display:none;">
                 <p style="text-align: center; margin-bottom: 30px;">Kill some time. <strong style="color: #c0a062;">Win $100 for each victory!</strong></p>
+                <div id="minigame-stats-container"></div>
                 
                 <!-- Game Selection Grid -->
                 <div id="minigames-card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
@@ -1031,6 +1033,6 @@
     <!-- Multiplayer client (global script, must load before game.js module) -->
     <script src="multiplayer.js"></script>
     <!-- Main game logic (Module) -->
-    <script type="module" src="game.js?v=1.34.2"></script>
+    <script type="module" src="game.js?v=1.35.0"></script>
 </body>
 </html>

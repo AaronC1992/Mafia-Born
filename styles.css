@@ -1011,6 +1011,7 @@ button:disabled::after {
     transition: opacity 0.2s;
 }
 #newspaper-close-btn:hover { opacity: 1; }
+#newspaper-close-btn:focus { opacity: 1; outline: 2px solid #3a2a1a; outline-offset: 2px; }
 
 #newspaper-content {
     padding: 40px 36px 30px;
@@ -1258,6 +1259,7 @@ button:disabled::after {
     transition: opacity 0.2s;
 }
 #jail-newspaper .newspaper-close-btn:hover { opacity: 1; }
+#jail-newspaper .newspaper-close-btn:focus { opacity: 1; outline: 2px solid #3a2a1a; outline-offset: 2px; }
 
 /* Policy Newspaper Overlay (reuses .newspaper-* classes for content) */
 #policy-newspaper-overlay {
@@ -1320,6 +1322,7 @@ button:disabled::after {
     transition: opacity 0.2s;
 }
 #policy-newspaper .newspaper-close-btn:hover { opacity: 1; }
+#policy-newspaper .newspaper-close-btn:focus { opacity: 1; outline: 2px solid #3a2a1a; outline-offset: 2px; }
 
 /* Responsive: single column on small screens */
 @media (max-width: 600px) {
@@ -3106,7 +3109,7 @@ p, ul {
 
 /* Mobile bottom bar content occlusion fix — add bottom padding so content isn't hidden behind quick-actions bar */
 .mobile-device #game {
-    padding-bottom: 70px !important;
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
 /* Stats secondary always visible */
@@ -3142,7 +3145,7 @@ p, ul {
     left: 0;
     width: 100%;
     background: linear-gradient(90deg, #000000 0%, #1a1a1a 100%);
-    padding: 8px 5px;
+    padding: 8px 5px calc(8px + env(safe-area-inset-bottom, 0px)) 5px;
     box-sizing: border-box;
     z-index: 900;
     border-top: 2px solid #d4af37;
@@ -3874,7 +3877,7 @@ p, ul {
     font-size: 1.1em;
     line-height: 1.5;
     color: var(--color-aged-cream);
-    max-height: 40vh;
+    max-height: 60vh;
     overflow-y: auto;
 }
 
@@ -3920,7 +3923,7 @@ p, ul {
     }
     .modal-body {
         font-size: 15px;
-        max-height: 40vh;
+        max-height: 55vh;
         overflow-y: auto;
     }
     .modal-footer {
@@ -3940,6 +3943,11 @@ p, ul {
     font-size: 1em;
     font-family: var(--font-display);
     text-transform: uppercase;
+}
+
+.modal-btn:focus {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
 }
 
 .modal-btn-primary {

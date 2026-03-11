@@ -2156,6 +2156,12 @@ async function handleServerMessage(message) {
             handleBountyAlert(message);
             break;
 
+        case 'bounty_expired':
+            if (message.newMoney != null) player.money = message.newMoney;
+            showMPToast(message.message || `A bounty you posted has expired and been refunded.`, '#e67e22', 6000);
+            if (typeof updateUI === 'function') updateUI();
+            break;
+
         case 'bounty_list_result':
             handleBountyListResult(message);
             break;

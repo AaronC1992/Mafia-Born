@@ -5,6 +5,67 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.35.0] - 2025-07-11
+
+### Bug Fixes
+- Fixed stash durability divide-by-zero crash
+- Fixed bullet purchase refund crash (missing try-catch)
+- Fixed fence heat NaN when heat is undefined
+- Fixed gang power using 3 different formulas (unified to `recalculatePower`)
+- Fixed enforcer/bruiser role check using wrong role names
+- Fixed betrayal cooldown only checking 30 minutes instead of 10
+- Fixed training config crashing on undefined tier
+- Fixed UI event listener memory leak (added cleanup system)
+- Fixed EventBus swallowing errors silently (now logs with console.error)
+- Fixed forensics skill description being wrong
+
+### Economy
+- Money laundering capped at 85% conversion with heat-based jail risk
+- Lowered tribute base (200 -> 150, 50/territory -> 35)
+- Business cards now show hourly income rate and pending amount
+
+### Jobs
+- Car theft base find chance raised to 25%
+- Extreme and Legendary jobs now offer Loud/Quiet approach choice
+- Job failure now has consequences (heat, HP loss, cash loss)
+- Money laundering now requires owning a business front
+- Bank jobs yield 60/40 clean/dirty split; counterfeiting yields all dirty + intelligence bonuses
+
+### Gang
+- All role references migrated to expanded role names
+- Added Back-Alley Clinic hospital property (reduces gang heal time, passive 1 HP/min per level)
+- Gang operations now have difficulty tiers: Small Job, Standard, Big Score
+
+### Territory
+- Added income breakdown display (base, fortification, heat penalty, enforcers, milestones, reputation)
+
+### Casino
+- Added gambling luck percentage display next to wallet
+- Rebalanced horse racing probability formula to better match displayed odds
+
+### Mini-Games
+- Removed daily play limits and cooldowns
+- Added persistent win/loss/earnings stat tracking
+- Removed Training Gym from main menu (still accessible via Player Stats)
+
+### Multiplayer
+- Added bounty expiration WebSocket notification with refund toast
+
+### UI
+- Modal accessibility: role=dialog, aria-modal, aria-labelledby, focus trapping, Escape to close
+- Added aria-label to newspaper close buttons
+- Added visible focus indicators on close buttons and modal buttons
+- Added safe-area-inset-bottom padding for mobile quick actions bar
+- Increased modal body max-height for better content visibility
+- Stash tab now remembers last selected tab (Stash vs Motor Pool)
+
+### Narration
+- Added weather fallback guards in getActiveEffects() and buildEventsTabHTML()
+- Server weather now validated against known weather types before applying
+- World atmosphere notifications now display to player via toast (were previously invisible)
+- Family atmosphere narrations now blend into world narration (40% chance)
+- Added narrative flavor text to Empire Overview based on territory, gang size, and family
+
 ## [1.34.2] - 2026-03-11
 
 ### Fixed

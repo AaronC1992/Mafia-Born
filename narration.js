@@ -595,3 +595,18 @@ export function getFamilyNarration(category) {
   }
   return getRandomNarration(category);
 }
+
+/**
+ * Get a family atmosphere text if the player has chosen a family.
+ * Returns null if no family chosen or no atmosphere texts available.
+ */
+export function getFamilyAtmosphere() {
+  const chosenFamily = (typeof window !== 'undefined' && window.player?.chosenFamily) || null;
+  if (chosenFamily && familyNarrations[chosenFamily]) {
+    const texts = familyNarrations[chosenFamily].atmosphere;
+    if (texts && texts.length > 0) {
+      return texts[Math.floor(Math.random() * texts.length)];
+    }
+  }
+  return null;
+}

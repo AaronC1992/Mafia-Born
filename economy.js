@@ -104,6 +104,17 @@ export const realEstateProperties = [
         description: "Your own private island - the ultimate symbol of criminal success.",
         power: 500,
         income: 8000
+    },
+    { 
+        name: "Back-Alley Clinic", 
+        price: 500000, 
+        type: "hospital", 
+        gangCapacity: 0, 
+        description: "A discreet medical facility that patches up your crew -- no questions asked. Upgradeable.",
+        power: 20,
+        income: 0,
+        maxLevel: 5,
+        upgradeMultiplier: 1.6
     }
 ];
 
@@ -265,7 +276,7 @@ export const launderingMethods = [
         suspicionRisk: 25,
         minAmount: 200000,
         maxAmount: 10000000,
-        businessRequired: null // Any business works
+        requiresAnyBusiness: true // Must own at least one business
     },
     {
         id: "art_auction",
@@ -276,7 +287,8 @@ export const launderingMethods = [
         suspicionRisk: 30,
         minAmount: 1000000,
         maxAmount: 50000000,
-        minReputation: 40
+        minReputation: 40,
+        requiresAnyBusiness: true // Must own at least one business
     },
     {
         id: "offshore_account",
@@ -288,6 +300,7 @@ export const launderingMethods = [
         minAmount: 5000000,
         maxAmount: 100000000,
         minReputation: 60,
-        oneTimeSetupCost: 2500000
+        oneTimeSetupCost: 2500000,
+        requiresAnyBusiness: true // Must own at least one business
     }
 ];

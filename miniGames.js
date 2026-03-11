@@ -81,12 +81,14 @@ const tttContexts = {
       player.money += 100;
       _updateStatistic('miniGamesWon');
       _updateStatistic('totalMoneyEarned', 100);
+      recordMiniGameResult('tiktaktoe', true, 100);
       _updateUI();
       const msg = `Victory! You've proven your strategic superiority and earned $100! Your mind is as sharp as your criminal instincts!`;
       _logAction(`TikTakToe victory! Your strategic thinking pays off with $100 earned.`);
       return msg;
     },
     onLose: () => {
+      recordMiniGameResult('tiktaktoe', false, 0);
       const msg = `Defeat! The AI outmaneuvered you this time. Even master criminals can learn from failure.`;
       _logAction(`TikTakToe defeat! The AI proves its worth, but every loss is a lesson learned.`);
       return msg;
@@ -286,23 +288,38 @@ export function checkDailyReset(gameType) {
 }
 
 export function canPlayMiniGame(gameType) {
-  checkDailyReset(gameType);
-  const now = Date.now();
-  if (miniGameCooldowns[gameType] > now) {
-    const remaining = Math.ceil((miniGameCooldowns[gameType] - now) / 1000 / 60);
-    _alert(`Cool down! You need to wait ${remaining} more minute(s) before playing this again.`);
-    return false;
-  }
-  if (miniGameDailyPlays[gameType].count >= DAILY_GAME_LIMIT) {
-    _alert(`Daily limit reached! You've played this game ${DAILY_GAME_LIMIT} times today. Come back tomorrow!`);
-    return false;
-  }
   return true;
 }
 
 export function trackMiniGamePlay(gameType) {
-  miniGameCooldowns[gameType] = Date.now() + MINIGAME_COOLDOWN_MS;
-  miniGameDailyPlays[gameType].count++;
+  // No cooldowns or daily limits
+}
+
+// Mini-game stats tracking (persisted on player object)
+function recordMiniGameResult(gameType, won, moneyEarned) {
+  if (!player.miniGameStats) player.miniGameStats = {};
+  if (!player.miniGameStats[gameType]) player.miniGameStats[gameType] = { wins: 0, losses: 0, earnings: 0 };
+  const s = player.miniGameStats[gameType];
+  if (won) { s.wins++; } else { s.losses++; }
+  s.earnings += (moneyEarned || 0);
+}
+
+export function getMiniGameStatsHTML() {
+  const stats = player.miniGameStats || {};
+  const gameNames = { memory: 'Memory Match', quickDraw: 'Quick Draw', snake: 'Snake', tiktaktoe: 'Tic Tac Toe', rps: 'Rock Paper Scissors' };
+  const entries = Object.entries(gameNames).map(([key, name]) => {
+    const s = stats[key] || { wins: 0, losses: 0, earnings: 0 };
+    const total = s.wins + s.losses;
+    const rate = total > 0 ? Math.round((s.wins / total) * 100) : 0;
+    return `<tr><td style="padding:3px 8px;color:#f5e6c8;">${name}</td><td style="padding:3px 8px;text-align:center;">${s.wins}</td><td style="padding:3px 8px;text-align:center;">${s.losses}</td><td style="padding:3px 8px;text-align:center;">${rate}%</td><td style="padding:3px 8px;text-align:right;color:#8a9a6a;">$${(s.earnings || 0).toLocaleString()}</td></tr>`;
+  });
+  return `<div style="margin:10px 0;padding:12px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid #c0a062;">
+    <div style="font-weight:bold;color:#c0a062;margin-bottom:8px;">Mini-Game Stats</div>
+    <table style="width:100%;font-size:0.8em;color:#d4c4a0;border-collapse:collapse;">
+      <tr style="border-bottom:1px solid #333;"><th style="padding:3px 8px;text-align:left;">Game</th><th style="padding:3px 8px;">W</th><th style="padding:3px 8px;">L</th><th style="padding:3px 8px;">Win%</th><th style="padding:3px 8px;text-align:right;">Earned</th></tr>
+      ${entries.join('')}
+    </table>
+  </div>`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -554,9 +571,11 @@ export function playRPS(playerChoice) {
     if (rpsPlayerScore >= 3) {
       const rpsReward = 100 + Math.floor((player.reputation || 0) * 2.5);
       player.money += rpsReward;
+      recordMiniGameResult('rps', true, rpsReward);
       _updateUI();
       _logAction(`Rock Paper Scissors champion! Your tactical mind proves superior in this classic game of psychology and earned $${rpsReward.toLocaleString()}.`);
     } else if (rpsAIScore >= 3) {
+      recordMiniGameResult('rps', false, 0);
       _logAction("The AI outplays you in Rock Paper Scissors. Sometimes the algorithms know best.");
     }
   }, 1500);
@@ -674,6 +693,7 @@ export function flipMemoryCard(index) {
           }
 
           trackMiniGamePlay('memory');
+          recordMiniGameResult('memory', true, totalEarned);
 
           if (earnedPersonalBest && earnedTimeBonus) {
             bonusMessage = ` NEW PERSONAL BEST! You earned $600 total ($500 + $100)!`;
@@ -921,6 +941,7 @@ export function gameOverSnake() {
   }
 
   trackMiniGamePlay('snake');
+  recordMiniGameResult('snake', snakeGame.score > 0, earnings);
 
   _alert(`Game Over! Final Score: ${snakeGame.score}${bonusMessage}`);
 }
@@ -1060,6 +1081,7 @@ export function handleReactionClick() {
   }
 
   trackMiniGamePlay('quickDraw');
+  recordMiniGameResult('quickDraw', totalEarned > 0, totalEarned);
 
   let bonusText = '';
   if (personalBestBonus && earnedMoney) {

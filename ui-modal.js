@@ -31,10 +31,15 @@ export class ModalSystem {
             
             const container = document.createElement('div');
             container.className = 'modal-container';
+            container.setAttribute('role', 'dialog');
+            container.setAttribute('aria-modal', 'true');
+            
+            const titleId = 'modal-title-' + Date.now();
+            container.setAttribute('aria-labelledby', titleId);
             
             const header = document.createElement('div');
             header.className = 'modal-header';
-            header.innerHTML = `<h3 class="modal-title">${this.stripEmoji(title)}</h3>`;
+            header.innerHTML = `<h3 class="modal-title" id="${titleId}">${this.stripEmoji(title)}</h3>`;
             
             const body = document.createElement('div');
             body.className = 'modal-body';
@@ -51,9 +56,6 @@ export class ModalSystem {
                     inputElement.value = inputPlaceholder;
                 }
                 body.appendChild(inputElement);
-                
-                // Focus input after a short delay
-                setTimeout(() => inputElement.focus(), 100);
             }
             
             const footer = document.createElement('div');
@@ -95,6 +97,46 @@ export class ModalSystem {
             document.body.appendChild(overlay);
             this.activeModals.push(overlay);
             
+            // Store previous focus to restore on close
+            overlay._previousFocus = document.activeElement;
+            
+            // Focus the container so keyboard events work
+            container.setAttribute('tabindex', '-1');
+            setTimeout(() => {
+                if (hasInput && inputElement) {
+                    inputElement.focus();
+                } else {
+                    container.focus();
+                }
+            }, 100);
+            
+            // Escape key to close
+            overlay._escHandler = (e) => {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    this.close(overlay);
+                    resolve(null);
+                }
+            };
+            document.addEventListener('keydown', overlay._escHandler);
+            
+            // Focus trap
+            overlay._trapHandler = (e) => {
+                if (e.key !== 'Tab') return;
+                const focusable = container.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])');
+                if (!focusable.length) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            };
+            document.addEventListener('keydown', overlay._trapHandler);
+            
             // Handle Enter key for input
             if (hasInput && inputElement) {
                 inputElement.addEventListener('keypress', (e) => {
@@ -132,6 +174,13 @@ export class ModalSystem {
     }
 
     close(overlay) {
+        // Remove keyboard handlers
+        if (overlay._escHandler) document.removeEventListener('keydown', overlay._escHandler);
+        if (overlay._trapHandler) document.removeEventListener('keydown', overlay._trapHandler);
+        // Restore previous focus
+        if (overlay._previousFocus && overlay._previousFocus.focus) {
+            try { overlay._previousFocus.focus(); } catch(e) {}
+        }
         overlay.style.opacity = '0';
         setTimeout(() => {
             if (overlay.parentNode) {

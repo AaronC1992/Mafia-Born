@@ -28,6 +28,14 @@ let _rouletteState = { bets: [], totalBet: 0 };
 function updateCasinoWallet() {
   const walletEl = document.getElementById('casino-wallet');
   if (walletEl) walletEl.textContent = player.money.toLocaleString();
+  // Display active luck bonus
+  const luckEl = document.getElementById('casino-luck-display');
+  if (luckEl) {
+    const luckPct = Math.round(getGamblingLuckBonus() * 100);
+    const perkBonus = player.perk === 'lucky_devil' ? 20 : 0;
+    const total = luckPct + perkBonus;
+    luckEl.textContent = total > 0 ? `+${total}% payout bonus` : '';
+  }
 }
 
 function getCasinoBetRange() {
@@ -112,6 +120,11 @@ export function showCasinoTab(tab) {
     if (ttt) ttt.style.display = 'none';
     const other = document.getElementById('other-minigames');
     if (other) other.style.display = 'none';
+    // Populate mini-game stats
+    const statsContainer = document.getElementById('minigame-stats-container');
+    if (statsContainer && typeof getMiniGameStatsHTML === 'function') {
+      statsContainer.innerHTML = getMiniGameStatsHTML();
+    }
   } else if (tab === 'backroom') {
     // Request multiplayer gambling tables from server
     const content = document.getElementById('player-gambling-content');
@@ -935,13 +948,14 @@ export function horseStartRace() {
   if (resultEl) resultEl.style.display = 'none';
 
   // Generate horse speeds (weighted by inverse odds — lower odds = more likely faster)
+  // Base speed is dominant so actual win rates approximate displayed odds
   const positions = HORSES.map((h, i) => ({
     index: i,
     name: h.name,
     color: h.color,
     emoji: h.emoji,
     progress: 0,
-    speed: (1 / h.odds) * 2 + Math.random() * 1.5  // base speed from odds + randomness
+    speed: (1 / h.odds) * 3.5 + Math.random() * 1.0
   }));
 
   // Render initial track

@@ -417,7 +417,7 @@ export const SKILL_TREE_DEFS = {
       hacking:     { tier: 2, name: "Hacking",       icon: "💻", maxRank: 10, desc: "Master of digital infiltration", effect: "+7% cyber job success per rank", prereqs: [{ node: "quick_study", rank: 3 }] },
       planning:    { tier: 2, name: "Planning",       icon: "📋", maxRank: 10, desc: "Every detail accounted for", effect: "-5% crime cooldown per rank", prereqs: [{ node: "quick_study", rank: 3 }] },
       awareness:   { tier: 3, name: "Awareness",     icon: "🔍", maxRank: 5,  desc: "Nothing escapes your notice", effect: "+2% luck-based outcomes per rank", prereqs: [{ node: "hacking", rank: 5 }] },
-      forensics:   { tier: 3, name: "Forensics",     icon: "🔬", maxRank: 5,  desc: "Clean up evidence like a professional", effect: "8% chance per rank to reduce wanted", prereqs: [{ node: "planning", rank: 5 }] }
+      forensics:   { tier: 3, name: "Forensics",     icon: "🔬", maxRank: 5,  desc: "Clean up evidence like a professional", effect: "8% chance per rank to reduce heat", prereqs: [{ node: "planning", rank: 5 }] }
     }
   },
   luck: {

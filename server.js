@@ -4893,6 +4893,17 @@ function pruneExpiredBounties() {
             const ps = gameState.playerStates.get(b.posterId);
             if (ps) { ps.money = poster.money; ps.lastUpdate = Date.now(); }
             console.log(` Bounty on ${b.targetName} expired — refunded $${b.reward} to ${poster.name}`);
+            // Notify poster that their bounty expired and was refunded
+            const posterWs = clients.get(b.posterId);
+            if (posterWs && posterWs.readyState === 1) {
+                safeSend(posterWs, {
+                    type: 'bounty_expired',
+                    targetName: b.targetName,
+                    refund: b.reward,
+                    newMoney: poster.money,
+                    message: `Your bounty on ${b.targetName} expired. $${b.reward.toLocaleString()} has been refunded.`
+                });
+            }
         }
     });
 
