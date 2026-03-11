@@ -5,6 +5,13 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.34.2] - 2026-03-11
+
+### Fixed
+- **Scroll reset bug** -- timer-driven refreshes (5s/30s) no longer reset scroll position on the Family, Black Market, or crew details screens
+- **Operation start button** -- gang screen refresh no longer wipes dropdown selections while picking an operation or training target
+- **Mobile select styling** -- select dropdowns now have 16px font (prevents iOS zoom), larger padding, and themed dark/gold styling
+
 ## [1.34.1] - 2026-03-10
 
 ### Added

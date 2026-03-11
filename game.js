@@ -17996,8 +17996,17 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.34.1';
+const CURRENT_VERSION = '1.34.2';
 const VERSION_UPDATES = {
+  '1.34.2': {
+    title: 'Scroll Fix & Operation UX',
+    date: 'March 2026',
+    changes: [
+      'Fixed page jumping back to the top every few seconds on the Family, Black Market, and other screens',
+      'Fixed operation start button being reset by timer-driven screen refreshes',
+      'Mobile-friendly select dropdowns with larger tap targets and themed styling',
+    ]
+  },
   '1.34.1': {
     title: 'Top Don Policy Budget, Territory Tribute & City Policies',
     date: 'March 2026',
