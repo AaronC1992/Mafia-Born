@@ -1485,7 +1485,7 @@ export const familyStories = {
     { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
     { type: 'gang', target: 9, text: 'Secure loyalty of 9 crew members' },
     { type: 'properties', target: 2, text: 'Maintain 2 legitimate front properties' },
-    { type: 'reputation', target: 600, text: 'Reach 600 Respect's future" }
+    { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
   choice: {
@@ -1520,7 +1520,7 @@ export const familyStories = {
     { type: 'money', target: 80000, text: 'Manage $80,000 in Bratva revenue streams' },
     { type: 'gang', target: 10, text: 'Command 10 loyalists across all territories' },
     { type: 'properties', target: 3, text: 'Oversee 3 Bratva properties' },
-    { type: 'reputation', target: 625, text: 'Reach 625 Respect's acting leader" }
+    { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
   choice: null,
@@ -2448,7 +2448,7 @@ export const familyStories = {
     { type: 'money', target: 140000, text: 'Invest $140,000 in distributed infrastructure' },
     { type: 'gang', target: 12, text: 'Deploy 12 operatives across the mirror network' },
     { type: 'properties', target: 4, text: 'Establish 4 mirror node locations' },
-    { type: 'reputation', target: 800, text: 'Reach 800 Respect's architect" }
+    { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
   choice: {
