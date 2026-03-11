@@ -13137,13 +13137,7 @@ function renderSkillTreeUI() {
 
 function selectSkillTree(treeId) {
   _activeSkillTree = treeId;
-  // If skills tab is active in the Stats screen, re-render via lazy-load
-  const panelSkills = document.getElementById('panel-skills');
-  if (panelSkills && panelSkills.style.display !== 'none') {
-    showPlayerStatsTab('skills');
-  } else {
-    renderSkillTreeUI();
-  }
+  renderSkillTreeUI();
 }
 
 function startSkillTraining(treeName, nodeId) {
@@ -13258,14 +13252,9 @@ function tickSkillTraining() {
   if (nodeTimeEl) nodeTimeEl.textContent = formatTrainingTime(remainSec);
 }
 
-// Helper: re-render skill tree in correct context (stats tab or standalone)
+// Helper: re-render skill tree UI
 function _refreshSkillTreeUI() {
-  const panelSkills = document.getElementById('panel-skills');
-  if (panelSkills && panelSkills.style.display !== 'none') {
-    showPlayerStatsTab('skills');
-  } else {
-    renderSkillTreeUI();
-  }
+  renderSkillTreeUI();
 }
 
 // Start the 1-second skill training timer
@@ -14741,7 +14730,8 @@ const menuUnlockConfig = [
   { id: 'casino', fn: 'showCasino()', label: 'Gambling', tip: 'Slots, roulette, cards & mini games', level: 0 },
 
   // === EARLY GAME (Level 2-3) ===
-  { id: 'playerstats', fn: 'showPlayerStats()', label: 'Overview', tip: 'Stats, events, skills, empire & overview', level: 2 },
+  { id: 'playerstats', fn: 'showPlayerStats()', label: 'Overview', tip: 'Stats, events, empire & overview', level: 2 },
+  { id: 'skills', fn: 'showSkills()', label: 'Training Gym', tip: 'Train skills & upgrade abilities', level: 2 },
   { id: 'realestate', fn: 'showRealEstate()', label: 'Properties', tip: 'Real estate & business fronts', level: 3 },
 
   // === MID GAME (Level 5-8) ===
@@ -15067,7 +15057,6 @@ function showPlayerStats() {
       <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#8b6a4a;padding:8px 16px;border:1px solid #8b6a4a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Character Showcase</button>
       <button id="tab-empire" onclick="showPlayerStatsTab('empire')" style="background:rgba(231,76,60,0.3);color:#8b3a3a;padding:8px 16px;border:1px solid #8b3a3a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Rating</button>
       <button id="tab-overview" onclick="showPlayerStatsTab('overview')" style="background:rgba(230,126,34,0.3);color:#e67e22;padding:8px 16px;border:1px solid #e67e22;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Overview</button>
-      <button id="tab-skills" onclick="showPlayerStatsTab('skills')" style="background:rgba(138, 154, 106,0.3);color:#8a9a6a;padding:8px 16px;border:1px solid #8a9a6a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Training Gym</button>
       <button id="tab-events" onclick="showPlayerStatsTab('events')" style="background:rgba(192,160,98,0.3);color:#c0a062;padding:8px 16px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Events</button>
     </div>
 
@@ -15095,9 +15084,6 @@ function showPlayerStats() {
     <!-- Empire Overview Tab (hidden initially) -->
     <div id="panel-overview" style="display:none;"></div>
 
-    <!-- Skills/Expertise Tab (hidden initially) -->
-    <div id="panel-skills" style="display:none;"></div>
-
     <!-- Events Tab (hidden initially) -->
     <div id="panel-events" style="display:none;"></div>
   `;
@@ -15111,7 +15097,6 @@ const STATS_TAB_CONFIG = {
   showcase: { inactive: 'rgba(155,89,182,0.3)', color: '#8b6a4a', active: '#8b6a4a', activeText: '#fff' },
   empire: { inactive: 'rgba(231,76,60,0.3)', color: '#8b3a3a', active: '#8b3a3a', activeText: '#fff' },
   overview: { inactive: 'rgba(230,126,34,0.3)', color: '#e67e22', active: '#e67e22', activeText: '#fff' },
-  skills: { inactive: 'rgba(138, 154, 106,0.3)', color: '#8a9a6a', active: '#8a9a6a', activeText: '#fff' },
   events: { inactive: 'rgba(192,160,98,0.3)', color: '#c0a062', active: '#c0a062', activeText: '#fff' },
 };
 const STATS_TAB_IDS = Object.keys(STATS_TAB_CONFIG);
@@ -15173,19 +15158,6 @@ function showPlayerStatsTab(tab) {
     const panel = document.getElementById('panel-overview');
     if (panel) {
       panel.innerHTML = buildEmpireOverviewHTML();
-    }
-  }
-
-  // Lazy-load skills/expertise content (always refresh for current skill points)
-  if (tab === 'skills') {
-    const panel = document.getElementById('panel-skills');
-    if (panel) {
-      // Create the target div that renderSkillTreeUI() writes to
-      panel.innerHTML = '<div id="skills-content"></div>';
-      renderSkillTreeUI();
-      // Remove the "Back to SafeHouse" button since we're already inside the Stats screen
-      const backBtn = panel.querySelector('.nav-btn-back');
-      if (backBtn && backBtn.parentElement) backBtn.parentElement.remove();
     }
   }
 
