@@ -199,7 +199,7 @@ function formatCooldownTime(seconds) {
   return `${seconds}s`;
 }
 
-// Cooldown tick â€” refreshes job list UI every second while any cooldown is active
+// Cooldown tick -- refreshes job list UI every second while any cooldown is active
 let _cooldownTickInterval = null;
 function startCooldownTick() {
   if (_cooldownTickInterval) return; // Already running
@@ -3867,7 +3867,7 @@ const gangOperations = [
     name: 'Protection Racket',
     description: 'Collect protection money from local businesses',
     requiredRole: 'enforcer',
-    requiredReputation: 0,
+    requiredReputation: 100,
     duration: 4,
     energy: 0,
     rewards: {
@@ -3886,7 +3886,7 @@ const gangOperations = [
     name: 'Car Theft Ring',
     description: 'Organized vehicle theft operation',
     requiredRole: 'scout',
-    requiredReputation: 25,
+    requiredReputation: 125,
     duration: 6,
     energy: 0,
     rewards: {
@@ -3906,7 +3906,7 @@ const gangOperations = [
     name: 'Street Shakedown',
     description: 'Your bruiser leans on rival crews for tribute',
     requiredRole: 'bruiser',
-    requiredReputation: 50,
+    requiredReputation: 150,
     duration: 3,
     energy: 0,
     rewards: {
@@ -3925,7 +3925,7 @@ const gangOperations = [
     name: 'Getaway Job',
     description: 'Your wheelman runs a high-speed extraction for a client',
     requiredRole: 'driver',
-    requiredReputation: 75,
+    requiredReputation: 175,
     duration: 5,
     energy: 0,
     rewards: {
@@ -3944,7 +3944,7 @@ const gangOperations = [
     name: 'Drug Lab Operation',
     description: 'Manage underground drug manufacturing',
     requiredRole: 'fixer',
-    requiredReputation: 100,
+    requiredReputation: 200,
     duration: 8,
     energy: 0,
     rewards: {
@@ -3964,7 +3964,7 @@ const gangOperations = [
     name: 'Money Skim',
     description: 'Your accountant skims from the competition\'s books',
     requiredRole: 'accountant',
-    requiredReputation: 150,
+    requiredReputation: 225,
     duration: 6,
     energy: 0,
     rewards: {
@@ -3984,7 +3984,7 @@ const gangOperations = [
     name: 'Tech Heist',
     description: 'High-tech corporate espionage and theft',
     requiredRole: 'hacker',
-    requiredReputation: 200,
+    requiredReputation: 250,
     duration: 12,
     energy: 0,
     rewards: {
@@ -4003,7 +4003,7 @@ const gangOperations = [
     name: 'Convoy Hijack',
     description: 'Intercept and seize a rival\'s supply truck',
     requiredRole: 'driver',
-    requiredReputation: 300,
+    requiredReputation: 275,
     duration: 8,
     energy: 0,
     rewards: {
@@ -4023,7 +4023,7 @@ const gangOperations = [
     name: 'Sting Reversal',
     description: 'Your fixer turns a police sting into a score for the crew',
     requiredRole: 'fixer',
-    requiredReputation: 400,
+    requiredReputation: 300,
     duration: 10,
     energy: 0,
     rewards: {
@@ -4042,7 +4042,7 @@ const gangOperations = [
     name: 'Assassination Contract',
     description: 'A high-profile elimination that requires precision',
     requiredRole: 'enforcer',
-    requiredReputation: 500,
+    requiredReputation: 325,
     duration: 14,
     energy: 0,
     rewards: {
@@ -4061,7 +4061,7 @@ const gangOperations = [
     name: 'Bank Vault Job',
     description: 'Crack a commercial vault with your tech specialist',
     requiredRole: 'hacker',
-    requiredReputation: 650,
+    requiredReputation: 350,
     duration: 16,
     energy: 0,
     rewards: {
@@ -4080,7 +4080,7 @@ const gangOperations = [
     name: 'Empire Takeover',
     description: 'Coordinate a full-scale raid on a rival operation',
     requiredRole: 'bruiser',
-    requiredReputation: 800,
+    requiredReputation: 375,
     duration: 20,
     energy: 0,
     rewards: {
@@ -5927,7 +5927,7 @@ function generateGangOperationsHTML() {
     if (activeOp) {
       const remaining = Math.max(0, (activeOp.startTime + activeOp.duration) - Date.now());
       activeOpStatus = `<div style="margin:6px 0;padding:6px 8px;background:rgba(192,160,98,0.15);border:1px solid #c0a040;border-radius:4px;">
-        <small style="color:#c0a040;"><strong>In Progress:</strong> ${activeOp.memberName} â€” ${remaining > 0 ? formatCountdown(remaining) + ' remaining' : 'Completing...'}</small>
+        <small style="color:#c0a040;"><strong>In Progress:</strong> ${activeOp.memberName} -- ${remaining > 0 ? formatCountdown(remaining) + ' remaining' : 'Completing...'}</small>
       </div>`;
     }
     let cooldownStatus = '';
@@ -7115,7 +7115,7 @@ function calculateTurfWinChance(attackPower, defense) {
   const ratio = attackPower / defense;
   // Sigmoid-style curve: 50% at ratio=1, min 1%, max 99%
   // Using logistic function: chance = 1 / (1 + e^(-k*(ratio-1)))
-  const k = 4; // steepness â€” how fast chance changes around the 50% point
+  const k = 4; // steepness -- how fast chance changes around the 50% point
   const raw = 1 / (1 + Math.exp(-k * (ratio - 1)));
   const chance = Math.round(raw * 100);
   return Math.max(1, Math.min(99, chance));
@@ -8466,7 +8466,7 @@ function updateUI() {
   if (player.name) {
     const nameDisplay = document.getElementById('player-name-display');
     if (nameDisplay) {
-      nameDisplay.textContent = player.title ? `${player.name} â€” "${player.title}"` : player.name;
+      nameDisplay.textContent = player.title ? `${player.name} -- "${player.title}"` : player.name;
     }
   }
 
@@ -8645,7 +8645,7 @@ function updateUI() {
     if (player.chosenFamily) {
       const famLabels = { torrino: 'Torrino', kozlov: 'Kozlov', chen: 'Chen', morales: 'Morales' };
       const rankLabel = player.familyRank ? player.familyRank.charAt(0).toUpperCase() + player.familyRank.slice(1) : 'Associate';
-      familyRankDisplay.innerText = `${famLabels[player.chosenFamily] || player.chosenFamily} â€” ${rankLabel}`;
+      familyRankDisplay.innerText = `${famLabels[player.chosenFamily] || player.chosenFamily} -- ${rankLabel}`;
     } else {
       familyRankDisplay.innerText = 'Family: None';
     }
@@ -14966,8 +14966,8 @@ function showPlayerStats() {
   const familyNames = { torrino: 'Torrino Family', kozlov: 'Kozlov Bratva', chen: 'Chen Triad', morales: 'Morales Cartel' };
   const familyDisplay = player.chosenFamily ? familyNames[player.chosenFamily] || player.chosenFamily : 'None';
   const rankDisplay = player.familyRank ? player.familyRank.charAt(0).toUpperCase() + player.familyRank.slice(1) : 'Associate';
-  const totalChapters = player.chosenFamily && typeof familyStories !== 'undefined' && familyStories[player.chosenFamily] ? familyStories[player.chosenFamily].chapters.length : 'â€”';
-  const chapterDisplay = player.chosenFamily ? `${(player.missions?.currentChapter || 0) + 1} / ${totalChapters}` : 'â€”';
+  const totalChapters = player.chosenFamily && typeof familyStories !== 'undefined' && familyStories[player.chosenFamily] ? familyStories[player.chosenFamily].chapters.length : '--';
+  const chapterDisplay = player.chosenFamily ? `${(player.missions?.currentChapter || 0) + 1} / ${totalChapters}` : '--';
   const coreHTML = [
     row('Street Rank', getReputationTier(player.reputation).name, '#d4af37'),
     row('Reputation', Math.floor(player.reputation || 0), '#c0a062'),
@@ -16320,7 +16320,7 @@ function renderStoreTab(tabId) {
       const stockColor = remaining === 0 ? '#8b3a3a' : remaining <= 3 ? '#e67e22' : '#8a9a6a';
       bulletStockHTML = `<div style="margin-top: 5px; padding: 4px 10px; background: rgba(0,0,0,0.3); border-radius: 6px; display: inline-block;">
         <span style="color: ${stockColor}; font-weight: bold;">${remaining}/${MAX_BULLETS_PER_DAY} in stock today</span>
-        ${remaining === 0 ? '<span style="color: #8b3a3a; margin-left: 8px;">â€” SOLD OUT</span>' : ''}
+        ${remaining === 0 ? '<span style="color: #8b3a3a; margin-left: 8px;">-- SOLD OUT</span>' : ''}
         ${isConnected ? '<span style="color: #6a5a3a; font-size: 0.8em; margin-left: 6px;">(server-wide)</span>' : ''}
       </div>`;
     }
@@ -16508,7 +16508,7 @@ async function buyItem(index) {
         player.money -= finalPrice;
         player.ammo++;
         showBriefNotification(`Bought 1 Bullet for $${finalPrice.toLocaleString()}. ${remaining} left in today's supply.`, 'success');
-        logAction(`You slide the cash across the counter. The dealer hands over a single round â€” ${remaining} bullets left today.`);
+        logAction(`You slide the cash across the counter. The dealer hands over a single round -- ${remaining} bullets left today.`);
         updateUI();
         refreshStoreAfterPurchase();
         return;
@@ -18543,7 +18543,7 @@ const VERSION_UPDATES = {
       'Fixed stray ? in Plan a Heist back button and removed emoji from PvP Gambling tab',
       'Stats screen renamed to Overview; Events/weather moved into Overview as a tab',
       'All game screens now listed in Quick Action and Mobile Nav Bar customization',
-      'Vehicles removed from Black Market â€” Armored Car, Luxury Automobile, and Private Airplane are now extremely rare steals from the Steal a Car job',
+      'Vehicles removed from Black Market -- Armored Car, Luxury Automobile, and Private Airplane are now extremely rare steals from the Steal a Car job',
       'Player Market is now the only way to buy equipment vehicles from other players',
       'Relocate moved from SafeHouse menu into the Territories screen',
     ]
@@ -18677,11 +18677,11 @@ const VERSION_UPDATES = {
     title: 'Chance-Based Turf Attacks & Bug Fixes',
     date: 'March 2026',
     changes: [
-      'Turf attacks are now chance-based â€” every zone is always attackable',
+      'Turf attacks are now chance-based -- every zone is always attackable',
       'Win chance scales with your Attack Power vs zone Defense (50% at equal, min 1%, max 99%)',
       'Color-coded win chance displayed on each zone card',
       'Fixed 7 remaining encoding issues in story missions (SÃ£o Paulo, JuÃ¡rez, MedellÃ­n, etc.)',
-      "99 mission job objectives clarified â€” now say 'Complete N jobs (any type)'",
+      "99 mission job objectives clarified -- now say 'Complete N jobs (any type)'",
       'Fixed broken icons in multiplayer territory requirements',
     ]
   },
@@ -18689,7 +18689,7 @@ const VERSION_UPDATES = {
     title: 'Gameplay & UI Improvements',
     date: 'March 2026',
     changes: [
-      'Mastermind skill (Intellect) moved to tier 1 â€” unlock XP boost from the start',
+      'Mastermind skill (Intellect) moved to tier 1 -- unlock XP boost from the start',
       'Unified attack power: solo and multiplayer now use the same formula',
       'Lowered XP curve for faster level-ups across all levels',
       'Turf map redesign: your attack power shown at the top, zones color-coded green/red by attackability',
@@ -18710,7 +18710,7 @@ const VERSION_UPDATES = {
     date: 'March 2026',
     changes: [
       'Back Room â†’ Casino tab, Crew & Friends â†’ Commission tabs, Superboss â†’ Operations tab',
-      'Dark Board removed â€” anonymous bounty option added to Bounty Board (2x cost)',
+      'Dark Board removed -- anonymous bounty option added to Bounty Board (2x cost)',
       'Friends moved from SafeHouse button to Commission â†’ Friends tab',
       'Commission now has 9 tabs: Overview, PVP, Territories, Politics, Activities, Crew, Friends, Market, Chat',
       'Fixed all broken placeholder emojis across multiplayer systems',
@@ -18718,10 +18718,10 @@ const VERSION_UPDATES = {
     ]
   },
   '1.15.0': {
-    title: 'Story Expansion â€” 100 Missions',
+    title: 'Story Expansion -- 100 Missions',
     date: 'March 2026',
     changes: [
-      'Each crime family now has 25 chapters (up from 8) â€” 100 total story missions',
+      'Each crime family now has 25 chapters (up from 8) -- 100 total story missions',
       'New 5-act structure per family with deeper narrative arcs',
       'Rank progression spread across 25 chapters: Soldier@ch7, Capo@ch13, Underboss@ch19, Don@ch25',
       '3-4 boss fights per family with unique dialogue and scaled difficulty',
@@ -18733,7 +18733,7 @@ const VERSION_UPDATES = {
     title: 'Vehicle Condition & Mini Game Balance',
     date: 'March 2026',
     changes: [
-      'Equipped vehicle condition now affects job success chance (power Ã— 0.5 Ã— durability%)',
+      'Equipped vehicle condition now affects job success chance (power x 0.5 x durability%)',
       'Vehicle cards in inventory now show Condition label and Job Success bonus',
       "Equip log message shows the vehicle's current job success bonus",
       'Removed XP rewards from all 6 mini games (TikTakToe, Number Guessing, RPS, Memory Match, Snake, Quick Draw)',
@@ -18772,14 +18772,14 @@ const VERSION_UPDATES = {
     title: 'Mobile QoL, Gang Timers & Offline Progress',
     date: 'March 2026',
     changes: [
-      'Jobs screen shows all requirements inline (rep, items, jail%, damage, wanted) â€” no hover needed',
+      'Jobs screen shows all requirements inline (rep, items, jail%, damage, wanted) -- no hover needed',
       'Missing requirements highlighted red with \u2717, met requirements green with \u2713',
       "Gang operations show live countdown timers (e.g. 'On Operation (2h 15m)')",
       'Gang training shows live countdown timers on member status',
       'Operations panel shows in-progress bar with member name and time remaining',
       'Cooldown timer displayed on recently completed operations',
       'Operations and training resume correctly after page reload / save-load',
-      'Cooldown system fixed â€” now uses persistent timestamps instead of stale array entries',
+      'Cooldown system fixed -- now uses persistent timestamps instead of stale array entries',
       'Arrest and betrayal during operations properly clean up active operation data',
       'startTraining() now recognises expanded gang roles (bruiser, fixer, etc.)',
       'Offline progress: operations and training complete while away, with welcome-back summary',
@@ -20079,7 +20079,7 @@ function equipItem(index) {
     const vDur = (typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.maxDurability > 0)
       ? item.durability / item.maxDurability : 1;
     const vBonus = Math.floor((item.power || 0) * 0.5 * vDur);
-    logAction(`Equipped ${item.name} (Durability: ${item.durability || '?'}/${item.maxDurability || '?'}) â€” Job Success +${vBonus}%.`);
+    logAction(`Equipped ${item.name} (Durability: ${item.durability || '?'}/${item.maxDurability || '?'}) -- Job Success +${vBonus}%.`);
   }
   showInventory();
 }
@@ -20621,7 +20621,7 @@ function startHospitalHealing(healType) {
   }
 
   if (healType === 'rest') {
-    // Rest is free â€” timer-gated only
+    // Rest is free -- timer-gated only
   } else {
     if (player.money < info.cost) {
       showBriefNotification("You don't have enough money for this treatment.", 'danger');
@@ -21682,8 +21682,8 @@ function gangRecruitment() {
 
   const name = specialNames[Math.floor(Math.random() * specialNames.length)];
   const skill = skills[Math.floor(Math.random() * skills.length)];
-  const cost = Math.floor(Math.random() * 3000) + 1000; // $1,000 â€“ $4,000
-  const power = Math.floor(Math.random() * 15) + 5;     // 5â€“20 power
+  const cost = Math.floor(Math.random() * 3000) + 1000; // $1,000 -- $4,000
+  const power = Math.floor(Math.random() * 15) + 5;     // 5--20 power
   const expLevel = Math.min(10, Math.floor(Math.random() * 3) + 4); // 4-6 experienced tier
 
   // Store as a pending special recruit visible on the recruitment screen
@@ -22295,7 +22295,7 @@ async function showBurnRecordsModal() {
         color: #c0a062; font-size: 1.1em; cursor: pointer; font-weight: bold;">
         Reset Profile
         <span style="display: block; font-size: 0.75em; color: #8a7a5a; font-weight: normal; margin-top: 4px;">
-          Wipe your save and start fresh â€” keep your account
+          Wipe your save and start fresh -- keep your account
         </span>
       </button>
 
@@ -22304,7 +22304,7 @@ async function showBurnRecordsModal() {
         color: #ff6b6b; font-size: 1.1em; cursor: pointer; font-weight: bold;">
         Burn Everything
         <span style="display: block; font-size: 0.75em; color: #aa5555; font-weight: normal; margin-top: 4px;">
-          Delete your save AND your login â€” gone forever
+          Delete your save AND your login -- gone forever
         </span>
       </button>
 
@@ -22356,7 +22356,7 @@ async function showBurnRecordsModal() {
   // Burn Everything
   document.getElementById('burn-everything-btn').onclick = async () => {
     if (!auth.isLoggedIn) {
-      showBriefNotification('You are not signed in â€” nothing to burn.', 'warning');
+      showBriefNotification('You are not signed in -- nothing to burn.', 'warning');
       overlay.remove();
       return;
     }
@@ -23655,7 +23655,7 @@ function applySaveData(saveData) {
       if (window.EventBus) {
         try { EventBus.emit('jailStatusChanged', { inJail: false, jailTime: 0 }); } catch (e) { console.warn('EventBus emit error:', e); }
       }
-      offlineSummary.push(`Jail sentence served (${servedTime}s) â€” you're free!`);
+      offlineSummary.push(`Jail sentence served (${servedTime}s) -- you're free!`);
       logAction('Your jail sentence was completed while you were away. Welcome back to the streets.');
     } else {
       // Partially served
@@ -25498,7 +25498,7 @@ function checkDailyLogin() {
 
   let html = `<div style="text-align:center;padding:20px;">
     <h2 style="color:#d4af37;margin-bottom:16px;">Daily Login Reward</h2>
-    <p style="color:#d4c4a0;margin-bottom:8px;">Day ${dayIndex + 1} of 7 â€” Streak: ${player.dailyLogin.streak || 0} days</p>
+    <p style="color:#d4c4a0;margin-bottom:8px;">Day ${dayIndex + 1} of 7 -- Streak: ${player.dailyLogin.streak || 0} days</p>
     <div style="background:rgba(20,18,10,0.6);border:2px solid #d4af37;border-radius:12px;padding:20px;margin:16px auto;max-width:300px;">
       <p style="color:#d4af37;font-size:1.3em;font-weight:bold;">${reward.label}</p>
     </div>
@@ -25756,14 +25756,14 @@ function checkNewAchievements() {
   const superbossFirst = player.achievements.find(a => a.id === 'superboss_first');
   if (superbossFirst && !superbossFirst.unlocked && (player.superbossesDefeated || []).length >= 1) {
     superbossFirst.unlocked = true;
-    showBriefNotification(`Achievement: "${superbossFirst.title}" â€” ${superbossFirst.name}`, 'success');
+    showBriefNotification(`Achievement: "${superbossFirst.title}" -- ${superbossFirst.name}`, 'success');
     logAction(`Achievement unlocked: ${superbossFirst.name}`, 'achievement');
   }
 
   const superbossAll = player.achievements.find(a => a.id === 'superboss_all');
   if (superbossAll && !superbossAll.unlocked && (player.superbossesDefeated || []).length >= 4) {
     superbossAll.unlocked = true;
-    showBriefNotification(`Achievement: "${superbossAll.title}" â€” ${superbossAll.name}`, 'success');
+    showBriefNotification(`Achievement: "${superbossAll.title}" -- ${superbossAll.name}`, 'success');
     logAction(`Achievement unlocked: ${superbossAll.name}`, 'achievement');
   }
 
@@ -25771,14 +25771,14 @@ function checkNewAchievements() {
   const firstFriend = player.achievements.find(a => a.id === 'first_friend');
   if (firstFriend && !firstFriend.unlocked && (player.friends || []).length >= 1) {
     firstFriend.unlocked = true;
-    showBriefNotification(`Achievement: "${firstFriend.title}" â€” ${firstFriend.name}`, 'success');
+    showBriefNotification(`Achievement: "${firstFriend.title}" -- ${firstFriend.name}`, 'success');
     logAction(`Achievement unlocked: ${firstFriend.name}`, 'achievement');
   }
 
   const crewFounder = player.achievements.find(a => a.id === 'crew_founder');
   if (crewFounder && !crewFounder.unlocked && player.crewId && player.crewRole === 'leader') {
     crewFounder.unlocked = true;
-    showBriefNotification(`Achievement: "${crewFounder.title}" â€” ${crewFounder.name}`, 'success');
+    showBriefNotification(`Achievement: "${crewFounder.title}" -- ${crewFounder.name}`, 'success');
     logAction(`Achievement unlocked: ${crewFounder.name}`, 'achievement');
   }
 
@@ -25786,14 +25786,14 @@ function checkNewAchievements() {
   const daily7 = player.achievements.find(a => a.id === 'daily_7');
   if (daily7 && !daily7.unlocked && (player.dailyLogin?.streak || 0) >= 7) {
     daily7.unlocked = true;
-    showBriefNotification(`Achievement: "${daily7.title}" â€” ${daily7.name}`, 'success');
+    showBriefNotification(`Achievement: "${daily7.title}" -- ${daily7.name}`, 'success');
     logAction(`Achievement unlocked: ${daily7.name}`, 'achievement');
   }
 
   const daily30 = player.achievements.find(a => a.id === 'daily_30');
   if (daily30 && !daily30.unlocked && (player.dailyLogin?.totalDays || 0) >= 30) {
     daily30.unlocked = true;
-    showBriefNotification(`Achievement: "${daily30.title}" â€” ${daily30.name}`, 'success');
+    showBriefNotification(`Achievement: "${daily30.title}" -- ${daily30.name}`, 'success');
     logAction(`Achievement unlocked: ${daily30.name}`, 'achievement');
   }
 
@@ -25801,7 +25801,7 @@ function checkNewAchievements() {
   const hitMan = player.achievements.find(a => a.id === 'hit_man');
   if (hitMan && !hitMan.unlocked && (player._hitContractsCompleted || 0) >= 5) {
     hitMan.unlocked = true;
-    showBriefNotification(`Achievement: "${hitMan.title}" â€” ${hitMan.name}`, 'success');
+    showBriefNotification(`Achievement: "${hitMan.title}" -- ${hitMan.name}`, 'success');
     logAction(`Achievement unlocked: ${hitMan.name}`, 'achievement');
   }
 
@@ -25809,7 +25809,7 @@ function checkNewAchievements() {
   const pokerShark = player.achievements.find(a => a.id === 'poker_shark');
   if (pokerShark && !pokerShark.unlocked && (player._pokerWins || 0) >= 10) {
     pokerShark.unlocked = true;
-    showBriefNotification(`Achievement: "${pokerShark.title}" â€” ${pokerShark.name}`, 'success');
+    showBriefNotification(`Achievement: "${pokerShark.title}" -- ${pokerShark.name}`, 'success');
     logAction(`Achievement unlocked: ${pokerShark.name}`, 'achievement');
   }
 }

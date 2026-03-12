@@ -45,8 +45,8 @@ export const familyStories = {
     { type: 'narration', text: 'A simple errand -- but nothing about the Torrino Family is simple. Every task is a test, every favor a chain link binding you tighter to la cosa nostra.' }
   ],
   objectives: [
-    { type: 'jobs', target: 5, text: 'Complete 5 jobs (any type)' },
-    { type: 'money', target: 1000, text: 'Earn $1,000 running errands for the Family' }
+    { type: 'jobs', target: 5, text: 'Complete 5 jobs (Any Job)' },
+    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' }
   ],
   rewards: { money: 500, experience: 50, reputation: 2 },
   choice: {
@@ -78,8 +78,8 @@ export const familyStories = {
     { type: 'dialogue', text: "Tell the Don I'll have it by Friday. Business has been slow, you understand...", speaker: 'Old Man Russo' }
   ],
   objectives: [
-    { type: 'jobs', target: 8, text: 'Complete 8 jobs (any type)' },
-    { type: 'money', target: 1500, text: 'Accumulate $1,500 in collections' },
+    { type: 'jobs', target: 8, text: 'Complete 8 jobs (Any Job)' },
+    { type: 'money', target: 1500, text: 'Have $1,500 cash on hand' },
     { type: 'reputation', target: 10, text: 'Reach 10 Respect' }
   ],
   rewards: { money: 875, experience: 68, reputation: 2 },
@@ -104,8 +104,8 @@ export const familyStories = {
     { type: 'narration', text: "His smile doesn't reach his eyes. There is a coldness there you haven't noticed before -- the look of a man with something to hide." }
   ],
   objectives: [
-    { type: 'jobs', target: 12, text: 'Complete 12 jobs (any type)' },
-    { type: 'money', target: 2500, text: "Earn $2,500 to prove you're focused on business" },
+    { type: 'jobs', target: 12, text: 'Complete 12 jobs (Any Job)' },
+    { type: 'money', target: 2500, text: 'Have $2,500 cash on hand' },
     { type: 'reputation', target: 20, text: 'Reach 20 Respect' }
   ],
   rewards: { money: 1250, experience: 85, reputation: 3 },
@@ -139,8 +139,8 @@ export const familyStories = {
     { type: 'narration', text: "Vinnie 'The Hammer' Torrino stares at you from across the antipasto. The Don's nephew carries himself like a man who believes the crown is already his. His hostility is barely concealed beneath a thin veneer of civility." }
   ],
   objectives: [
-    { type: 'jobs', target: 15, text: 'Complete 15 jobs (any type)' },
-    { type: 'money', target: 3500, text: 'Earn $3,500 for the Family coffers' },
+    { type: 'jobs', target: 15, text: 'Complete 15 jobs (Any Job)' },
+    { type: 'money', target: 3500, text: 'Have $3,500 cash on hand' },
     { type: 'reputation', target: 35, text: 'Reach 35 Respect' }
   ],
   rewards: { money: 1625, experience: 103, reputation: 3 },
@@ -166,8 +166,8 @@ export const familyStories = {
     { type: 'dialogue', text: "My nephew thinks business is beneath him. That's why he'll never understand what keeps this family alive.", speaker: 'Don Salvatore' }
   ],
   objectives: [
-    { type: 'jobs', target: 18, text: 'Complete 18 jobs (any type)' },
-    { type: 'money', target: 5000, text: 'Generate $5,000 through legitimate and illegitimate channels' },
+    { type: 'jobs', target: 18, text: 'Complete 18 jobs (Any Job)' },
+    { type: 'money', target: 5000, text: 'Have $5,000 cash on hand' },
     { type: 'reputation', target: 50, text: 'Reach 50 Respect' }
   ],
   rewards: { money: 2000, experience: 120, reputation: 4 },
@@ -200,8 +200,8 @@ export const familyStories = {
     { type: 'dialogue', text: "The Don sends who the Don sends. You got a problem with that, take it up with him. I'm here to listen.", speaker: 'Sal Marino' }
   ],
   objectives: [
-    { type: 'jobs', target: 22, text: 'Complete 22 jobs (any type)' },
-    { type: 'money', target: 7000, text: 'Accumulate $7,000 to demonstrate business acumen' },
+    { type: 'jobs', target: 22, text: 'Complete 22 jobs (Any Job)' },
+    { type: 'money', target: 7000, text: 'Have $7,000 cash on hand' },
     { type: 'reputation', target: 75, text: 'Reach 75 Respect' }
   ],
   rewards: { money: 2800, experience: 140, reputation: 5 },
@@ -235,8 +235,8 @@ export const familyStories = {
     { type: 'scene', text: "The saint's card burns in your cupped hands as your blood drips onto the ashes. The fire doesn't hurt. Nothing will hurt the same way again." }
   ],
   objectives: [
-    { type: 'jobs', target: 25, text: 'Complete 25 jobs (any type)' },
-    { type: 'money', target: 9000, text: "Earn $9,000 to establish your soldier's fund" },
+    { type: 'jobs', target: 25, text: 'Complete 25 jobs (Any Job)' },
+    { type: 'money', target: 9000, text: 'Have $9,000 cash on hand' },
     { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
   ],
   rewards: { money: 3600, experience: 160, reputation: 5 },
@@ -269,10 +269,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'I ride with you on this one. The Don wants to know his new soldier can lead under pressure.', speaker: 'Fat Tony Bianco' }
   ],
   objectives: [
-    { type: 'jobs', target: 28, text: 'Complete 28 jobs (any type)' },
-    { type: 'money', target: 12000, text: 'Earn $12,000 from the hijack and follow-up sales' },
+    { type: 'jobs', target: 28, text: 'Complete 28 jobs (Any Job)' },
+    { type: 'money', target: 12000, text: 'Have $12,000 cash on hand' },
     { type: 'reputation', target: 130, text: 'Reach 130 Respect' },
-    { type: 'gang', target: 2, text: 'Recruit 2 crew members for your operations' }
+    { type: 'gang', target: 2, text: 'Have 2 gang members' }
   ],
   rewards: { money: 4400, experience: 180, reputation: 6 },
   choice: {
@@ -304,10 +304,10 @@ export const familyStories = {
     { type: 'dialogue', text: "I hear you're building a crew. Just remember who owns the streets you walk on, new guy.", speaker: 'Vinnie Torrino' }
   ],
   objectives: [
-    { type: 'jobs', target: 32, text: 'Complete 32 jobs (any type)' },
-    { type: 'money', target: 15000, text: 'Accumulate $15,000 to fund your crew' },
+    { type: 'jobs', target: 32, text: 'Complete 32 jobs (Any Job)' },
+    { type: 'money', target: 15000, text: 'Have $15,000 cash on hand' },
     { type: 'reputation', target: 175, text: 'Reach 175 Respect' },
-    { type: 'gang', target: 3, text: 'Recruit 3 crew members' }
+    { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 5200, experience: 200, reputation: 7 },
   choice: {
@@ -340,10 +340,10 @@ export const familyStories = {
     { type: 'scene', text: "You gather your crew in the basement of the laundromat. Maps of Enzo's safe house are pinned to the wall. He'll have armed men -- loyalists who chose the rat over the Family. This will be your first real war." }
   ],
   objectives: [
-    { type: 'jobs', target: 35, text: 'Complete 35 jobs (any type)' },
-    { type: 'money', target: 18000, text: 'Accumulate $18,000 for weapons and operational costs' },
+    { type: 'jobs', target: 35, text: 'Complete 35 jobs (Any Job)' },
+    { type: 'money', target: 18000, text: 'Have $18,000 cash on hand' },
     { type: 'reputation', target: 200, text: 'Reach 200 Respect' },
-    { type: 'gang', target: 3, text: 'Maintain a crew of 3 for the assault' }
+    { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 6000, experience: 220, reputation: 8 },
   choice: null,
@@ -380,10 +380,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'This is what happens when the old man lets outsiders in. Blood should lead, not strays off the street.', speaker: 'Vinnie Torrino' }
   ],
   objectives: [
-    { type: 'jobs', target: 38, text: 'Complete 38 jobs (any type)' },
-    { type: 'money', target: 22000, text: 'Generate $22,000 to replace lost revenue streams' },
+    { type: 'jobs', target: 38, text: 'Complete 38 jobs (Any Job)' },
+    { type: 'money', target: 22000, text: 'Have $22,000 cash on hand' },
     { type: 'reputation', target: 250, text: 'Reach 250 Respect' },
-    { type: 'gang', target: 4, text: 'Expand your crew to 4 members' }
+    { type: 'gang', target: 4, text: 'Have 4 gang members' }
   ],
   rewards: { money: 7200, experience: 256, reputation: 9 },
   choice: {
@@ -415,10 +415,10 @@ export const familyStories = {
     { type: 'dialogue', text: "The strongest Don is not the one with the most guns. It's the one whose businesses can survive a federal audit.", speaker: 'Marco DeLuca' }
   ],
   objectives: [
-    { type: 'jobs', target: 40, text: 'Complete 40 jobs (any type)' },
-    { type: 'money', target: 26000, text: 'Earn $26,000 through diversified operations' },
+    { type: 'jobs', target: 40, text: 'Complete 40 jobs (Any Job)' },
+    { type: 'money', target: 26000, text: 'Have $26,000 cash on hand' },
     { type: 'reputation', target: 300, text: 'Reach 300 Respect' },
-    { type: 'gang', target: 5, text: 'Grow your crew to 5 members' }
+    { type: 'gang', target: 5, text: 'Have 5 gang members' }
   ],
   rewards: { money: 8400, experience: 292, reputation: 10 },
   choice: null,
@@ -444,11 +444,11 @@ export const familyStories = {
     { type: 'dialogue', text: "Congratulations. Try not to let the crown go to your head -- it's heavier than it looks.", speaker: 'Marco DeLuca' }
   ],
   objectives: [
-    { type: 'jobs', target: 43, text: 'Complete 43 jobs (any type)' },
-    { type: 'money', target: 30000, text: 'Generate $30,000 in your new territory' },
+    { type: 'jobs', target: 43, text: 'Complete 43 jobs (Any Job)' },
+    { type: 'money', target: 30000, text: 'Have $30,000 cash on hand' },
     { type: 'reputation', target: 350, text: 'Reach 350 Respect' },
-    { type: 'gang', target: 5, text: 'Command a crew of 5' },
-    { type: 'properties', target: 1, text: 'Acquire 1 property as your base of operations' }
+    { type: 'gang', target: 5, text: 'Have 5 gang members' },
+    { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
   rewards: { money: 9600, experience: 328, reputation: 10 },
   choice: {
@@ -480,11 +480,11 @@ export const familyStories = {
     { type: 'dialogue', text: "You're growing fast, Capo. Almost too fast. Don't forget -- every empire has borders for a reason.", speaker: 'Old Man Russo' }
   ],
   objectives: [
-    { type: 'jobs', target: 46, text: 'Complete 46 jobs (any type)' },
-    { type: 'money', target: 35000, text: 'Earn $35,000 from expanded operations' },
+    { type: 'jobs', target: 46, text: 'Complete 46 jobs (Any Job)' },
+    { type: 'money', target: 35000, text: 'Have $35,000 cash on hand' },
     { type: 'reputation', target: 400, text: 'Reach 400 Respect' },
-    { type: 'gang', target: 6, text: 'Grow your crew to 6 members' },
-    { type: 'properties', target: 1, text: 'Maintain at least 1 property' }
+    { type: 'gang', target: 6, text: 'Have 6 gang members' },
+    { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
   rewards: { money: 10800, experience: 364, reputation: 11 },
   choice: null,
@@ -509,11 +509,11 @@ export const familyStories = {
     { type: 'dialogue', text: 'The Bratva lieutenant -- a man named Aleksei Volkov -- runs their dockside operations. Cut the head off the snake and the body dies.', speaker: 'Marco DeLuca' }
   ],
   objectives: [
-    { type: 'jobs', target: 50, text: 'Complete 50 jobs (any type)' },
-    { type: 'money', target: 40000, text: 'Accumulate $40,000 for a war chest' },
+    { type: 'jobs', target: 50, text: 'Complete 50 jobs (Any Job)' },
+    { type: 'money', target: 40000, text: 'Have $40,000 cash on hand' },
     { type: 'reputation', target: 450, text: 'Reach 450 Respect' },
-    { type: 'gang', target: 7, text: 'Expand your crew to 7 for the coming battle' },
-    { type: 'properties', target: 2, text: 'Secure 2 properties as staging areas' }
+    { type: 'gang', target: 7, text: 'Have 7 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' }
   ],
   rewards: { money: 12000, experience: 400, reputation: 12 },
   choice: {
@@ -545,11 +545,11 @@ export const familyStories = {
     { type: 'dialogue', text: 'End this tonight. The longer this war drags on, the more attention we draw. Take Volkov down and the rest of the Bratva will scatter.', speaker: 'Marco DeLuca' }
   ],
   objectives: [
-    { type: 'jobs', target: 53, text: 'Complete 53 jobs (any type)' },
-    { type: 'money', target: 50000, text: 'Spend and earn $50,000 through wartime operations' },
+    { type: 'jobs', target: 53, text: 'Complete 53 jobs (Any Job)' },
+    { type: 'money', target: 50000, text: 'Have $50,000 cash on hand' },
     { type: 'reputation', target: 475, text: 'Reach 475 Respect' },
-    { type: 'gang', target: 7, text: 'Command 7 crew members in battle' },
-    { type: 'properties', target: 2, text: 'Hold 2 properties' },
+    { type: 'gang', target: 7, text: 'Have 7 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 500, text: 'Reach 500 Respect' }
   ],
   rewards: { money: 15600, experience: 460, reputation: 13 },
@@ -587,11 +587,11 @@ export const familyStories = {
     { type: 'dialogue', text: "I want to be clear -- I can't be seen with anyone connected to... organized... look, just tell me what you need and what it'll cost.", speaker: 'Councilman Hargrove' }
   ],
   objectives: [
-    { type: 'jobs', target: 56, text: 'Complete 56 jobs (any type)' },
-    { type: 'money', target: 60000, text: 'Accumulate $60,000 for bribes and political influence' },
+    { type: 'jobs', target: 56, text: 'Complete 56 jobs (Any Job)' },
+    { type: 'money', target: 60000, text: 'Have $60,000 cash on hand' },
     { type: 'reputation', target: 525, text: 'Reach 525 Respect' },
-    { type: 'gang', target: 8, text: 'Maintain a crew of 8' },
-    { type: 'properties', target: 2, text: 'Hold 2 properties' },
+    { type: 'gang', target: 8, text: 'Have 8 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 550, text: 'Reach 550 Respect' }
   ],
   rewards: { money: 19200, experience: 520, reputation: 14 },
@@ -625,11 +625,11 @@ export const familyStories = {
     { type: 'narration', text: "The revelation shakes the Family to its foundations. Marco DeLuca -- the brilliant Consigliere, the man who taught you everything -- has been walking a razor's edge between loyalty and treason." }
   ],
   objectives: [
-    { type: 'jobs', target: 60, text: 'Complete 60 jobs (any type)' },
-    { type: 'money', target: 70000, text: 'Maintain $70,000 as operations are disrupted' },
+    { type: 'jobs', target: 60, text: 'Complete 60 jobs (Any Job)' },
+    { type: 'money', target: 70000, text: 'Have $70,000 cash on hand' },
     { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
-    { type: 'gang', target: 9, text: 'Keep your crew at 9 despite the turmoil' },
-    { type: 'properties', target: 2, text: 'Protect your 2 properties' },
+    { type: 'gang', target: 9, text: 'Have 9 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
@@ -655,10 +655,10 @@ export const familyStories = {
     { type: 'dialogue', text: "Vinnie won't take this well. He's always believed the seat was his by blood. Watch your back -- my nephew is many things, but he is not a man who accepts defeat quietly.", speaker: 'Don Salvatore' }
   ],
   objectives: [
-    { type: 'jobs', target: 63, text: 'Complete 63 jobs (any type)' },
-    { type: 'money', target: 80000, text: 'Manage $80,000 in Family operations' },
-    { type: 'gang', target: 10, text: 'Command 10 crew members' },
-    { type: 'properties', target: 3, text: 'Oversee 3 Family properties' },
+    { type: 'jobs', target: 63, text: 'Complete 63 jobs (Any Job)' },
+    { type: 'money', target: 80000, text: 'Have $80,000 cash on hand' },
+    { type: 'gang', target: 10, text: 'Have 10 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
@@ -691,10 +691,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'My nephew is a hammer, and he thinks every problem is a nail. But a hammer can still bring down a house if you let it swing long enough.', speaker: 'Don Salvatore' }
   ],
   objectives: [
-    { type: 'jobs', target: 66, text: 'Complete 66 jobs (any type)' },
-    { type: 'money', target: 100000, text: 'Control $100,000 in Family funds' },
-    { type: 'gang', target: 10, text: 'Maintain 10 loyal crew members' },
-    { type: 'properties', target: 3, text: 'Secure 3 properties' },
+    { type: 'jobs', target: 66, text: 'Complete 66 jobs (Any Job)' },
+    { type: 'money', target: 100000, text: 'Have $100,000 cash on hand' },
+    { type: 'gang', target: 10, text: 'Have 10 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 675, text: 'Reach 675 Respect' }
   ],
   rewards: { money: 30000, experience: 700, reputation: 18 },
@@ -721,10 +721,10 @@ export const familyStories = {
     { type: 'narration', text: 'The trail leads through a labyrinth of burner phones, offshore payments, and dead drops. Someone hired a contract killer -- a ghost from the old country -- and that someone has deep pockets and insider knowledge.' }
   ],
   objectives: [
-    { type: 'jobs', target: 70, text: 'Complete 70 jobs (any type)' },
-    { type: 'money', target: 120000, text: 'Spend and earn $120,000 in the investigation' },
-    { type: 'gang', target: 11, text: 'Mobilize 11 crew members' },
-    { type: 'properties', target: 3, text: 'Lock down 3 properties as safe houses' },
+    { type: 'jobs', target: 70, text: 'Complete 70 jobs (Any Job)' },
+    { type: 'money', target: 120000, text: 'Have $120,000 cash on hand' },
+    { type: 'gang', target: 11, text: 'Have 11 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 725, text: 'Reach 725 Respect' }
   ],
   rewards: { money: 44000, experience: 960, reputation: 24 },
@@ -769,10 +769,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Nobody knows yet. Not Vinnie, not the capos, not even Marco. You and I -- we need to plan. Because when I go, Vinnie will tear this family apart trying to take what he thinks is his.', speaker: 'Don Salvatore' }
   ],
   objectives: [
-    { type: 'jobs', target: 75, text: 'Complete 75 jobs (any type)' },
-    { type: 'money', target: 140000, text: 'Build a war chest of $140,000' },
-    { type: 'gang', target: 12, text: 'Secure loyalty of 12 crew members' },
-    { type: 'properties', target: 4, text: 'Control 4 strategic properties' },
+    { type: 'jobs', target: 75, text: 'Complete 75 jobs (Any Job)' },
+    { type: 'money', target: 140000, text: 'Have $140,000 cash on hand' },
+    { type: 'gang', target: 12, text: 'Have 12 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
@@ -805,10 +805,10 @@ export const familyStories = {
     { type: 'dialogue', text: "I've known Vinnie since he was a boy. He's got the Torrino blood, no doubt about it. But blood isn't everything. Capability is. Show me you can keep this family earning and I'll back you when the time comes.", speaker: 'Fat Tony Bianco' }
   ],
   objectives: [
-    { type: 'jobs', target: 80, text: 'Complete 80 jobs (any type)' },
-    { type: 'money', target: 170000, text: 'Demonstrate $170,000 in earning power' },
-    { type: 'gang', target: 13, text: 'Unite 13 men under your banner' },
-    { type: 'properties', target: 4, text: 'Control 4 properties' },
+    { type: 'jobs', target: 80, text: 'Complete 80 jobs (Any Job)' },
+    { type: 'money', target: 170000, text: 'Have $170,000 cash on hand' },
+    { type: 'gang', target: 13, text: 'Have 13 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 875, text: 'Reach 875 Respect' }
   ],
   rewards: { money: 72000, experience: 1480, reputation: 37 },
@@ -835,10 +835,10 @@ export const familyStories = {
     { type: 'narration', text: 'After the funeral mass and the burial at Calvary Cemetery, the capos gather in the basement of the Social Club. The vote for the new Don will happen tonight. Tradition demands it. And tradition is all that stands between the Torrino Family and civil war.' }
   ],
   objectives: [
-    { type: 'jobs', target: 85, text: 'Complete 85 jobs (any type)' },
-    { type: 'money', target: 200000, text: 'Control $200,000 in Family assets' },
-    { type: 'gang', target: 14, text: 'Rally 14 loyal men for the vote and its aftermath' },
-    { type: 'properties', target: 4, text: 'Hold 4 key properties' },
+    { type: 'jobs', target: 85, text: 'Complete 85 jobs (Any Job)' },
+    { type: 'money', target: 200000, text: 'Have $200,000 cash on hand' },
+    { type: 'gang', target: 14, text: 'Have 14 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 950, text: 'Reach 950 Respect' }
   ],
   rewards: { money: 86000, experience: 1740, reputation: 44 },
@@ -872,10 +872,10 @@ export const familyStories = {
     { type: 'narration', text: "The final battle for the soul of the Torrino Family erupts across the neighborhood that raised you. Everything you've built, everyone you've sworn to protect -- it all comes down to this night." }
   ],
   objectives: [
-    { type: 'jobs', target: 90, text: 'Complete 90 jobs (any type)' },
-    { type: 'money', target: 250000, text: 'Command $250,000 in total assets' },
-    { type: 'gang', target: 15, text: 'Lead 15 loyal soldiers into the final battle' },
-    { type: 'properties', target: 5, text: 'Control 5 properties across the city' },
+    { type: 'jobs', target: 90, text: 'Complete 90 jobs (Any Job)' },
+    { type: 'money', target: 250000, text: 'Have $250,000 cash on hand' },
+    { type: 'gang', target: 15, text: 'Have 15 gang members' },
+    { type: 'properties', target: 5, text: 'Own 5 properties' },
     { type: 'reputation', target: 1050, text: 'Reach 1050 Respect' }
   ],
   rewards: { money: 100000, experience: 2000, reputation: 50 },
@@ -924,8 +924,8 @@ export const familyStories = {
     { type: 'scene', text: 'Your opponent is a scarred dockworker twice your size, knuckles wrapped in electrical tape. The crowd begins to chant in Russian. There are no rules here -- only survival.' }
   ],
   objectives: [
-    { type: 'jobs', target: 5, text: 'Survive 5 rounds in the fighting pit' },
-    { type: 'money', target: 1000, text: 'Earn $1,000 from underground fights' }
+    { type: 'jobs', target: 5, text: 'Complete 5 jobs (Any Job)' },
+    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' }
   ],
   rewards: { money: 500, experience: 50, reputation: 2 },
   choice: null,
@@ -950,8 +950,8 @@ export const familyStories = {
     { type: 'narration', text: 'Snow begins to fall as you pull onto the highway. In the rearview mirror, the city lights fade to nothing. Ahead, only darkness and the road.' }
   ],
   objectives: [
-    { type: 'jobs', target: 8, text: 'Complete 8 jobs (any type)' },
-    { type: 'money', target: 1500, text: 'Earn $1,500 from weapons trade' },
+    { type: 'jobs', target: 8, text: 'Complete 8 jobs (Any Job)' },
+    { type: 'money', target: 1500, text: 'Have $1,500 cash on hand' },
     { type: 'reputation', target: 10, text: 'Reach 10 Respect' }
   ],
   rewards: { money: 875, experience: 68, reputation: 3 },
@@ -983,8 +983,8 @@ export const familyStories = {
     { type: 'dialogue', text: 'Tell me -- what is the difference between a soldier and a dog? A dog obeys from fear. A soldier obeys from understanding. Which are you?', speaker: 'Dimitri Kozlov' }
   ],
   objectives: [
-    { type: 'jobs', target: 12, text: 'Complete 12 jobs (any type)' },
-    { type: 'money', target: 2500, text: 'Accumulate $2,500 in earnings' },
+    { type: 'jobs', target: 12, text: 'Complete 12 jobs (Any Job)' },
+    { type: 'money', target: 2500, text: 'Have $2,500 cash on hand' },
     { type: 'reputation', target: 20, text: 'Reach 20 Respect' }
   ],
   rewards: { money: 1250, experience: 85, reputation: 3 },
@@ -1010,8 +1010,8 @@ export const familyStories = {
     { type: 'dialogue', text: "I-I just need more money! Do you know what they're paying me to look the other way? It's not enough for the risk!", speaker: 'Janssen' }
   ],
   objectives: [
-    { type: 'jobs', target: 15, text: 'Complete 15 jobs (any type)' },
-    { type: 'money', target: 3500, text: 'Earn $3,500 from dock smuggling' },
+    { type: 'jobs', target: 15, text: 'Complete 15 jobs (Any Job)' },
+    { type: 'money', target: 3500, text: 'Have $3,500 cash on hand' },
     { type: 'reputation', target: 35, text: 'Reach 35 Respect' }
   ],
   rewards: { money: 1625, experience: 100, reputation: 3 },
@@ -1043,8 +1043,8 @@ export const familyStories = {
     { type: 'scene', text: 'Three days on frozen back roads, sleeping in truck stops, bribing gas station owners and checking sight lines. You learn the rhythm of rural police patrols and find a decommissioned cold storage facility perfect for a relay point.' }
   ],
   objectives: [
-    { type: 'jobs', target: 18, text: 'Complete 18 jobs (any type)' },
-    { type: 'money', target: 5000, text: 'Accumulate $5,000 in pipeline profits' },
+    { type: 'jobs', target: 18, text: 'Complete 18 jobs (Any Job)' },
+    { type: 'money', target: 5000, text: 'Have $5,000 cash on hand' },
     { type: 'reputation', target: 50, text: 'Reach 50 Respect' }
   ],
   rewards: { money: 2000, experience: 120, reputation: 4 },
@@ -1071,8 +1071,8 @@ export const familyStories = {
     { type: 'scene', text: 'She slides a manila envelope across the leather seat. Inside: photographs of Bratva soldiers meeting with unknown men in expensive suits. The implications are clear -- someone is talking to outsiders.' }
   ],
   objectives: [
-    { type: 'jobs', target: 22, text: 'Complete 22 jobs (any type)' },
-    { type: 'money', target: 7000, text: 'Accumulate $7,000 in Bratva earnings' },
+    { type: 'jobs', target: 22, text: 'Complete 22 jobs (Any Job)' },
+    { type: 'money', target: 7000, text: 'Have $7,000 cash on hand' },
     { type: 'reputation', target: 75, text: 'Reach 75 Respect' }
   ],
   rewards: { money: 2800, experience: 140, reputation: 5 },
@@ -1104,8 +1104,8 @@ export const familyStories = {
     { type: 'scene', text: 'Viktor draws the blade across your palm. Blood drips onto a faded photograph of a saint taped to the table. Dimitri presses his own scarred palm against yours, and the men in the room begin to chant in Russian -- a low, rumbling prayer that sounds more like a war hymn.' }
   ],
   objectives: [
-    { type: 'jobs', target: 25, text: 'Complete 25 jobs (any type)' },
-    { type: 'money', target: 9000, text: 'Contribute $9,000 to the Bratva treasury' },
+    { type: 'jobs', target: 25, text: 'Complete 25 jobs (Any Job)' },
+    { type: 'money', target: 9000, text: 'Have $9,000 cash on hand' },
     { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
   ],
   rewards: { money: 3600, experience: 160, reputation: 6 },
@@ -1138,10 +1138,10 @@ export const familyStories = {
     { type: 'narration', text: 'This is your first command operation. Luka, a young lieutenant with ambition burning behind his eyes, watches you for the call. The weight of leadership settles on your shoulders like a loaded vest.' }
   ],
   objectives: [
-    { type: 'jobs', target: 28, text: 'Complete 28 jobs (any type)' },
-    { type: 'money', target: 12000, text: 'Recover $12,000 worth of stolen arms' },
+    { type: 'jobs', target: 28, text: 'Complete 28 jobs (Any Job)' },
+    { type: 'money', target: 12000, text: 'Have $12,000 cash on hand' },
     { type: 'reputation', target: 130, text: 'Reach 130 Respect' },
-    { type: 'gang', target: 2, text: 'Recruit 2 crew members' }
+    { type: 'gang', target: 2, text: 'Have 2 gang members' }
   ],
   rewards: { money: 4400, experience: 180, reputation: 6 },
   choice: null,
@@ -1166,10 +1166,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Again. Faster. In the field, hesitation is a bullet hole. You think the Colombians or the feds will wait for you to be ready?', speaker: 'Viktor' }
   ],
   objectives: [
-    { type: 'jobs', target: 32, text: 'Complete 32 jobs (any type)' },
-    { type: 'money', target: 15000, text: 'Invest $15,000 in crew equipment and training' },
+    { type: 'jobs', target: 32, text: 'Complete 32 jobs (Any Job)' },
+    { type: 'money', target: 15000, text: 'Have $15,000 cash on hand' },
     { type: 'reputation', target: 175, text: 'Reach 175 Respect' },
-    { type: 'gang', target: 3, text: 'Expand crew to 3 members' }
+    { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 5200, experience: 200, reputation: 7 },
   choice: {
@@ -1200,10 +1200,10 @@ export const familyStories = {
     { type: 'scene', text: "He's right. As the first crate is lowered from the ship, headlights blaze from the tree line. Three vehicles, armed men pouring out. Leading them: a man called 'El Interceptor' -- the Colombian cartel's most feared enforcer, sent specifically to destroy the Bratva's pipeline." }
   ],
   objectives: [
-    { type: 'jobs', target: 35, text: 'Complete 35 jobs (any type)' },
-    { type: 'money', target: 18000, text: 'Protect $18,000 worth of arms inventory' },
+    { type: 'jobs', target: 35, text: 'Complete 35 jobs (Any Job)' },
+    { type: 'money', target: 18000, text: 'Have $18,000 cash on hand' },
     { type: 'reputation', target: 200, text: 'Reach 200 Respect' },
-    { type: 'gang', target: 3, text: 'Maintain a crew of 3 for the ambush' }
+    { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 6000, experience: 220, reputation: 8 },
   choice: null,
@@ -1240,10 +1240,10 @@ export const familyStories = {
     { type: 'narration', text: "The trail leads to Gregor, a mid-level soldier who manages three Bratva stash houses. He's been skimming payments and meeting with men in unmarked sedans. When you toss his apartment, you find a burner phone with encrypted messages and a DEA handler's number." }
   ],
   objectives: [
-    { type: 'jobs', target: 38, text: 'Complete 38 jobs (any type)' },
-    { type: 'money', target: 22000, text: 'Recover $22,000 lost to compromised operations' },
+    { type: 'jobs', target: 38, text: 'Complete 38 jobs (Any Job)' },
+    { type: 'money', target: 22000, text: 'Have $22,000 cash on hand' },
     { type: 'reputation', target: 250, text: 'Reach 250 Respect' },
-    { type: 'gang', target: 4, text: 'Expand crew to 4 trusted operatives' }
+    { type: 'gang', target: 4, text: 'Have 4 gang members' }
   ],
   rewards: { money: 7200, experience: 256, reputation: 9 },
   choice: {
@@ -1274,10 +1274,10 @@ export const familyStories = {
     { type: 'dialogue', text: "We clean the money through real businesses or we drown in dirty cash that'll bring the IRS down on us worse than any rival could.", speaker: 'Nadia Kozlova' }
   ],
   objectives: [
-    { type: 'jobs', target: 40, text: 'Complete 40 jobs (any type)' },
-    { type: 'money', target: 26000, text: 'Recover and consolidate $26,000 in Bratva assets' },
+    { type: 'jobs', target: 40, text: 'Complete 40 jobs (Any Job)' },
+    { type: 'money', target: 26000, text: 'Have $26,000 cash on hand' },
     { type: 'reputation', target: 300, text: 'Reach 300 Respect' },
-    { type: 'gang', target: 5, text: 'Recruit a crew of 5 for enforcement and collection' }
+    { type: 'gang', target: 5, text: 'Have 5 gang members' }
   ],
   rewards: { money: 8400, experience: 292, reputation: 10 },
   choice: null,
@@ -1302,11 +1302,11 @@ export const familyStories = {
     { type: 'dialogue', text: "Brother, you've earned this. But territory means enemies. The Northside borders Colombian and Irish territory. You'll need to be ready.", speaker: 'Viktor' }
   ],
   objectives: [
-    { type: 'jobs', target: 43, text: 'Complete 43 jobs (any type)' },
-    { type: 'money', target: 30000, text: 'Generate $30,000 in Northside revenue' },
+    { type: 'jobs', target: 43, text: 'Complete 43 jobs (Any Job)' },
+    { type: 'money', target: 30000, text: 'Have $30,000 cash on hand' },
     { type: 'reputation', target: 350, text: 'Reach 350 Respect' },
-    { type: 'gang', target: 5, text: 'Command a crew of 5 soldiers' },
-    { type: 'properties', target: 1, text: 'Establish 1 Bratva property on the Northside' }
+    { type: 'gang', target: 5, text: 'Have 5 gang members' },
+    { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
   rewards: { money: 9600, experience: 328, reputation: 10 },
   choice: {
@@ -1337,11 +1337,11 @@ export const familyStories = {
     { type: 'dialogue', text: 'I can move hardware through the Baltic -- small arms, optics, communications equipment. But I need three things: volume guarantees, upfront payment, and absolute discretion. One leak and I disappear -- and so does your pipeline.', speaker: 'The Colonel' }
   ],
   objectives: [
-    { type: 'jobs', target: 46, text: 'Complete 46 jobs (any type)' },
-    { type: 'money', target: 35000, text: 'Invest $35,000 to reestablish Moscow connections' },
+    { type: 'jobs', target: 46, text: 'Complete 46 jobs (Any Job)' },
+    { type: 'money', target: 35000, text: 'Have $35,000 cash on hand' },
     { type: 'reputation', target: 400, text: 'Reach 400 Respect' },
-    { type: 'gang', target: 6, text: 'Expand operations crew to 6 members' },
-    { type: 'properties', target: 1, text: 'Maintain at least 1 secure warehouse property' }
+    { type: 'gang', target: 6, text: 'Have 6 gang members' },
+    { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
   rewards: { money: 10800, experience: 364, reputation: 11 },
   choice: null,
@@ -1366,11 +1366,11 @@ export const familyStories = {
     { type: 'scene', text: "You survey the Armenian territory in the predawn cold, breath crystallizing, mapping their operations. A dry cleaner's that's a front, a social club where the crew meets, two apartment buildings they use as stash houses. Taking them won't be clean." }
   ],
   objectives: [
-    { type: 'jobs', target: 50, text: 'Complete 50 jobs (any type)' },
-    { type: 'money', target: 40000, text: 'Seize $40,000 in rival territory assets' },
+    { type: 'jobs', target: 50, text: 'Complete 50 jobs (Any Job)' },
+    { type: 'money', target: 40000, text: 'Have $40,000 cash on hand' },
     { type: 'reputation', target: 450, text: 'Reach 450 Respect' },
-    { type: 'gang', target: 7, text: 'Command a crew of 7 for the takeover' },
-    { type: 'properties', target: 2, text: 'Control 2 Bratva properties' }
+    { type: 'gang', target: 7, text: 'Have 7 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' }
   ],
   rewards: { money: 12000, experience: 400, reputation: 12 },
   choice: {
@@ -1402,11 +1402,11 @@ export const familyStories = {
     { type: 'scene', text: 'But before the legal strategy can unfold, Cole makes his move -- a coordinated raid on three Bratva locations. Your crew barely escapes the Northside warehouse as federal agents breach the front door. Cole himself leads the charge, a man possessed.' }
   ],
   objectives: [
-    { type: 'jobs', target: 53, text: 'Complete 53 jobs (any type)' },
-    { type: 'money', target: 50000, text: 'Protect $50,000 in Bratva assets from federal seizure' },
+    { type: 'jobs', target: 53, text: 'Complete 53 jobs (Any Job)' },
+    { type: 'money', target: 50000, text: 'Have $50,000 cash on hand' },
     { type: 'reputation', target: 475, text: 'Reach 475 Respect' },
-    { type: 'gang', target: 7, text: 'Maintain a crew of 7 through the federal pressure' },
-    { type: 'properties', target: 2, text: 'Secure 2 properties against seizure' },
+    { type: 'gang', target: 7, text: 'Have 7 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 500, text: 'Reach 500 Respect' }
   ],
   rewards: { money: 15600, experience: 460, reputation: 13 },
@@ -1444,11 +1444,11 @@ export const familyStories = {
     { type: 'scene', text: 'At a council meeting, Dimitri rambles for twenty minutes about a war in Chechnya that ended decades ago, then passes out at the table. The captains exchange looks. The power vacuum you were warned about is forming in real time.' }
   ],
   objectives: [
-    { type: 'jobs', target: 56, text: 'Complete 56 jobs (any type)' },
-    { type: 'money', target: 60000, text: 'Maintain $60,000 in revenue despite leadership chaos' },
+    { type: 'jobs', target: 56, text: 'Complete 56 jobs (Any Job)' },
+    { type: 'money', target: 60000, text: 'Have $60,000 cash on hand' },
     { type: 'reputation', target: 525, text: 'Reach 525 Respect' },
-    { type: 'gang', target: 8, text: 'Expand crew to 8 to fill the leadership gap' },
-    { type: 'properties', target: 2, text: 'Hold 2 properties amid internal instability' },
+    { type: 'gang', target: 8, text: 'Have 8 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 550, text: 'Reach 550 Respect' }
   ],
   rewards: { money: 19200, experience: 520, reputation: 14 },
@@ -1480,11 +1480,11 @@ export const familyStories = {
     { type: 'dialogue', text: "I can't do this alone. The old guard won't follow a woman, not yet. But they'll follow you -- the cage fighter who became a captain. Together, we can save the Bratva by changing it. What do you say?", speaker: 'Nadia Kozlova' }
   ],
   objectives: [
-    { type: 'jobs', target: 60, text: 'Complete 60 jobs (any type)' },
-    { type: 'money', target: 70000, text: 'Build a $70,000 war chest for the transition' },
+    { type: 'jobs', target: 60, text: 'Complete 60 jobs (Any Job)' },
+    { type: 'money', target: 70000, text: 'Have $70,000 cash on hand' },
     { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
-    { type: 'gang', target: 9, text: 'Secure loyalty of 9 crew members' },
-    { type: 'properties', target: 2, text: 'Maintain 2 legitimate front properties' },
+    { type: 'gang', target: 9, text: 'Have 9 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
@@ -1516,10 +1516,10 @@ export const familyStories = {
     { type: 'dialogue', text: "Don't mistake this for surrender, pup. I'm still the Bear. I'm still Bratva. You hold my chair -- you don't sit in it.", speaker: 'Dimitri Kozlov' }
   ],
   objectives: [
-    { type: 'jobs', target: 63, text: 'Complete 63 jobs (any type)' },
-    { type: 'money', target: 80000, text: 'Manage $80,000 in Bratva revenue streams' },
-    { type: 'gang', target: 10, text: 'Command 10 loyalists across all territories' },
-    { type: 'properties', target: 3, text: 'Oversee 3 Bratva properties' },
+    { type: 'jobs', target: 63, text: 'Complete 63 jobs (Any Job)' },
+    { type: 'money', target: 80000, text: 'Have $80,000 cash on hand' },
+    { type: 'gang', target: 10, text: 'Have 10 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
@@ -1545,10 +1545,10 @@ export const familyStories = {
     { type: 'dialogue', text: "Sergei is not a man who talks without acting. He's been with the Bratva since Dimitri was still a young captain. If he moves against you, half the brotherhood might follow him. Handle this carefully.", speaker: 'Viktor' }
   ],
   objectives: [
-    { type: 'jobs', target: 66, text: 'Complete 66 jobs (any type)' },
-    { type: 'money', target: 100000, text: 'Control $100,000 in Bratva finances' },
-    { type: 'gang', target: 10, text: 'Maintain 10 loyal crew members' },
-    { type: 'properties', target: 3, text: 'Secure 3 properties against internal threats' },
+    { type: 'jobs', target: 66, text: 'Complete 66 jobs (Any Job)' },
+    { type: 'money', target: 100000, text: 'Have $100,000 cash on hand' },
+    { type: 'gang', target: 10, text: 'Have 10 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 675, text: 'Reach 675 Respect' }
   ],
   rewards: { money: 30000, experience: 700, reputation: 18 },
@@ -1581,10 +1581,10 @@ export const familyStories = {
     { type: 'scene', text: "The assault on Sergei's stronghold begins at 3 AM. Snow falls on a silent street as your crew approaches the bathhouse from three directions. Inside, candlelight flickers behind frosted windows. The Viper is waiting." }
   ],
   objectives: [
-    { type: 'jobs', target: 70, text: 'Complete 70 jobs (any type)' },
-    { type: 'money', target: 120000, text: 'Protect $120,000 in Bratva assets from the uprising' },
-    { type: 'gang', target: 11, text: 'Rally 11 fighters for the final confrontation' },
-    { type: 'properties', target: 3, text: "Reclaim 3 Bratva properties from Sergei's faction" },
+    { type: 'jobs', target: 70, text: 'Complete 70 jobs (Any Job)' },
+    { type: 'money', target: 120000, text: 'Have $120,000 cash on hand' },
+    { type: 'gang', target: 11, text: 'Have 11 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 725, text: 'Reach 725 Respect' }
   ],
   rewards: { money: 44000, experience: 960, reputation: 24 },
@@ -1623,10 +1623,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'We need Viktor. Without him, half the brotherhood will fight to the death for Dimitri out of loyalty alone. Viktor is the key.', speaker: 'Nadia Kozlova' }
   ],
   objectives: [
-    { type: 'jobs', target: 75, text: 'Complete 75 jobs (any type)' },
-    { type: 'money', target: 140000, text: 'Secure $140,000 in transition funds' },
-    { type: 'gang', target: 12, text: 'Assemble 12 absolutely loyal operatives' },
-    { type: 'properties', target: 4, text: 'Control 4 strategic properties' },
+    { type: 'jobs', target: 75, text: 'Complete 75 jobs (Any Job)' },
+    { type: 'money', target: 140000, text: 'Have $140,000 cash on hand' },
+    { type: 'gang', target: 12, text: 'Have 12 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
@@ -1652,10 +1652,10 @@ export const familyStories = {
     { type: 'dialogue', text: "Guards neutralized. No shots, no injuries, all four secured. The armory is ours -- crates, ammunition, everything. Dimitri won't know until it's too late.", speaker: 'Luka' }
   ],
   objectives: [
-    { type: 'jobs', target: 80, text: 'Complete 80 jobs (any type)' },
-    { type: 'money', target: 170000, text: 'Secure $170,000 in arms and resources' },
-    { type: 'gang', target: 13, text: 'Command 13 operatives across all sectors' },
-    { type: 'properties', target: 4, text: 'Control 4 critical Bratva properties' },
+    { type: 'jobs', target: 80, text: 'Complete 80 jobs (Any Job)' },
+    { type: 'money', target: 170000, text: 'Have $170,000 cash on hand' },
+    { type: 'gang', target: 13, text: 'Have 13 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 875, text: 'Reach 875 Respect' }
   ],
   rewards: { money: 72000, experience: 1480, reputation: 37 },
@@ -1682,10 +1682,10 @@ export const familyStories = {
     { type: 'scene', text: 'Viktor stares into his glass for a long time. The bar creaks in the wind. Finally, he looks up with eyes that are wet but steady -- the eyes of a man who has made the hardest decision of his life.' }
   ],
   objectives: [
-    { type: 'jobs', target: 85, text: 'Complete 85 jobs (any type)' },
-    { type: 'money', target: 200000, text: 'Secure $200,000 for the post-coup transition' },
-    { type: 'gang', target: 14, text: 'Command 14 operatives loyal to the new order' },
-    { type: 'properties', target: 4, text: 'Control 4 Bratva properties' },
+    { type: 'jobs', target: 85, text: 'Complete 85 jobs (Any Job)' },
+    { type: 'money', target: 200000, text: 'Have $200,000 cash on hand' },
+    { type: 'gang', target: 14, text: 'Have 14 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 950, text: 'Reach 950 Respect' }
   ],
   rewards: { money: 86000, experience: 1740, reputation: 44 },
@@ -1718,10 +1718,10 @@ export const familyStories = {
     { type: 'dialogue', text: "So. The pup has come to take the den. I knew this day would come -- I've known since the cage, when you wouldn't stay down. Sit. Let's finish this like Bratva.", speaker: 'Dimitri Kozlov' }
   ],
   objectives: [
-    { type: 'jobs', target: 90, text: 'Complete 90 jobs (any type)' },
-    { type: 'money', target: 250000, text: 'Command $250,000 in total Bratva assets' },
-    { type: 'gang', target: 15, text: 'Lead 15 soldiers as the new Pakhan' },
-    { type: 'properties', target: 5, text: 'Control 5 properties across all territories' },
+    { type: 'jobs', target: 90, text: 'Complete 90 jobs (Any Job)' },
+    { type: 'money', target: 250000, text: 'Have $250,000 cash on hand' },
+    { type: 'gang', target: 15, text: 'Have 15 gang members' },
+    { type: 'properties', target: 5, text: 'Own 5 properties' },
     { type: 'reputation', target: 1050, text: 'Reach 1050 Respect' }
   ],
   rewards: { money: 100000, experience: 2000, reputation: 50 },
@@ -1777,8 +1777,8 @@ export const familyStories = {
     { type: 'dialogue', text: 'Every stone placed reveals how a mind works. Aggression, patience, fear, ambition -- the board sees all. Show me who you are.', speaker: 'Chen Wei' }
   ],
   objectives: [
-    { type: 'jobs', target: 5, text: 'Complete 5 jobs (any type)' },
-    { type: 'money', target: 1000, text: 'Earn $1,000 through discreet operations' }
+    { type: 'jobs', target: 5, text: 'Complete 5 jobs (Any Job)' },
+    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' }
   ],
   rewards: { money: 500, experience: 50, reputation: 2 },
   choice: {
@@ -1809,8 +1809,8 @@ export const familyStories = {
     { type: 'narration', text: 'Liang slides a laptop across the table. The screen shows a network diagram more complex than a subway map. Your first cyber operation for the Triad begins not with a weapon, but with a keystroke.' }
   ],
   objectives: [
-    { type: 'jobs', target: 8, text: 'Complete 8 jobs (any type)' },
-    { type: 'money', target: 1500, text: 'Earn $1,500 from digital contracts' },
+    { type: 'jobs', target: 8, text: 'Complete 8 jobs (Any Job)' },
+    { type: 'money', target: 1500, text: 'Have $1,500 cash on hand' },
     { type: 'reputation', target: 10, text: 'Reach 10 Respect' }
   ],
   rewards: { money: 875, experience: 68, reputation: 3 },
@@ -1837,8 +1837,8 @@ export const familyStories = {
     { type: 'scene', text: 'He places a cup before you. The tea is pale gold, almost translucent. Drinking it means accepting the weight of six centuries of shadow.' }
   ],
   objectives: [
-    { type: 'jobs', target: 12, text: 'Complete 12 jobs (any type)' },
-    { type: 'money', target: 2500, text: 'Accumulate $2,500 in Triad earnings' },
+    { type: 'jobs', target: 12, text: 'Complete 12 jobs (Any Job)' },
+    { type: 'money', target: 2500, text: 'Have $2,500 cash on hand' },
     { type: 'reputation', target: 20, text: 'Reach 20 Respect' }
   ],
   rewards: { money: 1250, experience: 85, reputation: 3 },
@@ -1870,8 +1870,8 @@ export const familyStories = {
     { type: 'dialogue', text: "Careful with that banking node. It's triple-encrypted with a honeypot trap. Touch it wrong and we'll have Interpol knocking before sunrise.", speaker: "Liang 'Ghost' Zhao" }
   ],
   objectives: [
-    { type: 'jobs', target: 15, text: 'Complete 15 jobs (any type)' },
-    { type: 'money', target: 3500, text: 'Earn $3,500 from cyber-security contracts' },
+    { type: 'jobs', target: 15, text: 'Complete 15 jobs (Any Job)' },
+    { type: 'money', target: 3500, text: 'Have $3,500 cash on hand' },
     { type: 'reputation', target: 35, text: 'Reach 35 Respect' }
   ],
   rewards: { money: 1625, experience: 103, reputation: 4 },
@@ -1897,8 +1897,8 @@ export const familyStories = {
     { type: 'dialogue', text: "Beautiful. It's like a digital Song Dynasty marketplace. The aesthetic isn't vanity -- it's branding. Our clients expect sophistication. Give them a crude forum and they'll trust us with crude work. Give them art and they'll trust us with empires.", speaker: "Liang 'Ghost' Zhao" }
   ],
   objectives: [
-    { type: 'jobs', target: 18, text: 'Complete 18 jobs (any type)' },
-    { type: 'money', target: 5000, text: 'Generate $5,000 in marketplace revenue' },
+    { type: 'jobs', target: 18, text: 'Complete 18 jobs (Any Job)' },
+    { type: 'money', target: 5000, text: 'Have $5,000 cash on hand' },
     { type: 'reputation', target: 50, text: 'Reach 50 Respect' }
   ],
   rewards: { money: 2000, experience: 120, reputation: 4 },
@@ -1931,8 +1931,8 @@ export const familyStories = {
     { type: 'scene', text: 'He pulls a jade pendant from a silk-lined box -- a small dragon coiled around a Go stone. It is the symbol of the Inner Circle. He does not give it to you yet. He simply lets you see it.' }
   ],
   objectives: [
-    { type: 'jobs', target: 22, text: 'Complete 22 jobs (any type)' },
-    { type: 'money', target: 7000, text: 'Accumulate $7,000 in operational funds' },
+    { type: 'jobs', target: 22, text: 'Complete 22 jobs (Any Job)' },
+    { type: 'money', target: 7000, text: 'Have $7,000 cash on hand' },
     { type: 'reputation', target: 75, text: 'Reach 75 Respect' }
   ],
   rewards: { money: 2800, experience: 140, reputation: 5 },
@@ -1960,8 +1960,8 @@ export const familyStories = {
     { type: 'scene', text: 'Chen Wei places the jade pendant around your neck -- the dragon coiled around the Go stone. It is warm from his hands, as if it carries the heat of every oath that has been sworn before yours. You are now a soldier of the Chen Triad.' }
   ],
   objectives: [
-    { type: 'jobs', target: 25, text: 'Complete 25 jobs (any type)' },
-    { type: 'money', target: 9000, text: 'Demonstrate $9,000 in earned revenue' },
+    { type: 'jobs', target: 25, text: 'Complete 25 jobs (Any Job)' },
+    { type: 'money', target: 9000, text: 'Have $9,000 cash on hand' },
     { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
   ],
   rewards: { money: 3600, experience: 160, reputation: 6 },
@@ -1993,10 +1993,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Quality over quantity. Always. One exceptional mind is worth a hundred keyboards.', speaker: 'Chen Wei' }
   ],
   objectives: [
-    { type: 'jobs', target: 28, text: 'Complete 28 jobs (any type)' },
-    { type: 'money', target: 12000, text: 'Invest $12,000 in network infrastructure' },
+    { type: 'jobs', target: 28, text: 'Complete 28 jobs (Any Job)' },
+    { type: 'money', target: 12000, text: 'Have $12,000 cash on hand' },
     { type: 'reputation', target: 130, text: 'Reach 130 Respect' },
-    { type: 'gang', target: 2, text: 'Recruit 2 specialists to your division' }
+    { type: 'gang', target: 2, text: 'Have 2 gang members' }
   ],
   rewards: { money: 4400, experience: 180, reputation: 6 },
   choice: null,
@@ -2021,10 +2021,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'The SEC investigator looking into the merger has a gambling problem. Nothing illegal yet, but one well-timed notification to his supervisor would redirect his attention. Shall I?', speaker: "Liang 'Ghost' Zhao" }
   ],
   objectives: [
-    { type: 'jobs', target: 32, text: 'Complete 32 jobs (any type)' },
-    { type: 'money', target: 15000, text: 'Generate $15,000 in corporate espionage fees' },
+    { type: 'jobs', target: 32, text: 'Complete 32 jobs (Any Job)' },
+    { type: 'money', target: 15000, text: 'Have $15,000 cash on hand' },
     { type: 'reputation', target: 175, text: 'Reach 175 Respect' },
-    { type: 'gang', target: 3, text: 'Expand your team to 3 operatives' }
+    { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 5200, experience: 200, reputation: 7 },
   choice: {
@@ -2056,10 +2056,10 @@ export const familyStories = {
     { type: 'scene', text: "The counter-assault begins. You and Liang work side by side, tracing Phantom's intrusion vectors while simultaneously hardening the systems they haven't reached yet. It is a chess match played at the speed of light, each move countered in milliseconds." }
   ],
   objectives: [
-    { type: 'jobs', target: 35, text: 'Complete 35 jobs (any type)' },
-    { type: 'money', target: 18000, text: 'Protect $18,000 in Triad digital assets' },
+    { type: 'jobs', target: 35, text: 'Complete 35 jobs (Any Job)' },
+    { type: 'money', target: 18000, text: 'Have $18,000 cash on hand' },
     { type: 'reputation', target: 200, text: 'Reach 200 Respect' },
-    { type: 'gang', target: 3, text: 'Deploy 3 specialists in the counter-assault' }
+    { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 6000, experience: 220, reputation: 8 },
   choice: null,
@@ -2085,10 +2085,10 @@ export const familyStories = {
     { type: 'scene', text: 'The council discusses operations spanning four continents -- a shipping route through the South China Sea, a real estate portfolio in Vancouver, a political campaign in Southeast Asia. Mei Lin reports on a physical operation in Hong Kong with clinical precision. Liang presents the digital infrastructure review. Every word is measured, every decision unanimous.' }
   ],
   objectives: [
-    { type: 'jobs', target: 38, text: 'Complete 38 jobs (any type)' },
-    { type: 'money', target: 22000, text: 'Manage $22,000 in council-directed funds' },
+    { type: 'jobs', target: 38, text: 'Complete 38 jobs (Any Job)' },
+    { type: 'money', target: 22000, text: 'Have $22,000 cash on hand' },
     { type: 'reputation', target: 250, text: 'Reach 250 Respect' },
-    { type: 'gang', target: 4, text: 'Command a team of 4 specialists' }
+    { type: 'gang', target: 4, text: 'Have 4 gang members' }
   ],
   rewards: { money: 7200, experience: 256, reputation: 9 },
   choice: {
@@ -2119,10 +2119,10 @@ export const familyStories = {
     { type: 'dialogue', text: "We don't blackmail. Blackmail is crude and creates enemies. We offer solutions. We help him consolidate his finances through our channels, and in return, he becomes our eyes inside Meridian. He will not feel controlled -- he will feel grateful.", speaker: 'Chen Wei' }
   ],
   objectives: [
-    { type: 'jobs', target: 40, text: 'Complete 40 jobs (any type)' },
-    { type: 'money', target: 26000, text: 'Channel $26,000 through corporate fronts' },
+    { type: 'jobs', target: 40, text: 'Complete 40 jobs (Any Job)' },
+    { type: 'money', target: 26000, text: 'Have $26,000 cash on hand' },
     { type: 'reputation', target: 300, text: 'Reach 300 Respect' },
-    { type: 'gang', target: 5, text: 'Maintain a team of 5 operatives' }
+    { type: 'gang', target: 5, text: 'Have 5 gang members' }
   ],
   rewards: { money: 8400, experience: 292, reputation: 10 },
   choice: null,
@@ -2147,11 +2147,11 @@ export const familyStories = {
     { type: 'dialogue', text: "Congratulations. Don't let it soften you. The higher you climb, the more people want to see you fall.", speaker: 'Mei Lin' }
   ],
   objectives: [
-    { type: 'jobs', target: 43, text: 'Complete 43 jobs (any type)' },
-    { type: 'money', target: 30000, text: 'Manage $30,000 in Triad resources' },
+    { type: 'jobs', target: 43, text: 'Complete 43 jobs (Any Job)' },
+    { type: 'money', target: 30000, text: 'Have $30,000 cash on hand' },
     { type: 'reputation', target: 350, text: 'Reach 350 Respect' },
-    { type: 'gang', target: 5, text: 'Command 5 operatives under your authority' },
-    { type: 'properties', target: 1, text: 'Establish 1 operational front property' }
+    { type: 'gang', target: 5, text: 'Have 5 gang members' },
+    { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
   rewards: { money: 9600, experience: 328, reputation: 10 },
   choice: {
@@ -2182,11 +2182,11 @@ export const familyStories = {
     { type: 'dialogue', text: 'The architecture is elegant. But elegance attracts admirers and enemies in equal measure. Security protocols must scale with the network. Every new node is a door, and every door can be kicked in.', speaker: "Liang 'Ghost' Zhao" }
   ],
   objectives: [
-    { type: 'jobs', target: 46, text: 'Complete 46 jobs (any type)' },
-    { type: 'money', target: 35000, text: 'Invest $35,000 in global infrastructure' },
+    { type: 'jobs', target: 46, text: 'Complete 46 jobs (Any Job)' },
+    { type: 'money', target: 35000, text: 'Have $35,000 cash on hand' },
     { type: 'reputation', target: 400, text: 'Reach 400 Respect' },
-    { type: 'gang', target: 6, text: 'Deploy 6 operatives across international nodes' },
-    { type: 'properties', target: 1, text: 'Maintain 1 international front operation' }
+    { type: 'gang', target: 6, text: 'Have 6 gang members' },
+    { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
   rewards: { money: 10800, experience: 364, reputation: 11 },
   choice: null,
@@ -2212,11 +2212,11 @@ export const familyStories = {
     { type: 'scene', text: 'The planning sessions run deep into the night, the teahouse table covered in blueprints, network diagrams, and timeline charts. Every contingency must be mapped. Every second of the operation choreographed like a dance.' }
   ],
   objectives: [
-    { type: 'jobs', target: 50, text: 'Complete 50 jobs (any type)' },
-    { type: 'money', target: 40000, text: 'Invest $40,000 in heist preparation' },
+    { type: 'jobs', target: 50, text: 'Complete 50 jobs (Any Job)' },
+    { type: 'money', target: 40000, text: 'Have $40,000 cash on hand' },
     { type: 'reputation', target: 450, text: 'Reach 450 Respect' },
-    { type: 'gang', target: 7, text: 'Assemble a 7-person heist team' },
-    { type: 'properties', target: 2, text: 'Secure 2 staging properties near the museum' }
+    { type: 'gang', target: 7, text: 'Have 7 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' }
   ],
   rewards: { money: 12000, experience: 400, reputation: 12 },
   choice: {
@@ -2248,11 +2248,11 @@ export const familyStories = {
     { type: 'dialogue', text: "Harris is moving toward the east wing. He's checking cameras manually -- paranoid bastard. You have six minutes, not eleven. Adapt.", speaker: "Liang 'Ghost' Zhao" }
   ],
   objectives: [
-    { type: 'jobs', target: 53, text: 'Complete 53 jobs (any type)' },
-    { type: 'money', target: 50000, text: 'Secure $50,000 worth of operational assets' },
+    { type: 'jobs', target: 53, text: 'Complete 53 jobs (Any Job)' },
+    { type: 'money', target: 50000, text: 'Have $50,000 cash on hand' },
     { type: 'reputation', target: 475, text: 'Reach 475 Respect' },
-    { type: 'gang', target: 7, text: 'Coordinate your 7-person team flawlessly' },
-    { type: 'properties', target: 2, text: 'Maintain 2 safe houses for extraction' },
+    { type: 'gang', target: 7, text: 'Have 7 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 500, text: 'Reach 500 Respect' }
   ],
   rewards: { money: 15600, experience: 460, reputation: 13 },
@@ -2279,11 +2279,11 @@ export const familyStories = {
     { type: 'dialogue', text: 'This is my legacy. The Triad reborn as a legitimate empire. No more hiding, no more running. The world will see a powerful corporation. Only we will know the dragon that sleeps inside.', speaker: 'Chen Wei' }
   ],
   objectives: [
-    { type: 'jobs', target: 56, text: 'Complete 56 jobs (any type)' },
-    { type: 'money', target: 60000, text: 'Manage $60,000 in Jade Mountain transactions' },
+    { type: 'jobs', target: 56, text: 'Complete 56 jobs (Any Job)' },
+    { type: 'money', target: 60000, text: 'Have $60,000 cash on hand' },
     { type: 'reputation', target: 525, text: 'Reach 525 Respect' },
-    { type: 'gang', target: 8, text: 'Deploy 8 operatives in corporate positions' },
-    { type: 'properties', target: 2, text: 'Control 2 Jade Mountain subsidiary properties' },
+    { type: 'gang', target: 8, text: 'Have 8 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 550, text: 'Reach 550 Respect' }
   ],
   rewards: { money: 19200, experience: 520, reputation: 14 },
@@ -2315,11 +2315,11 @@ export const familyStories = {
     { type: 'dialogue', text: 'The student who does not question the master is not a student -- he is a servant. I taught you to think. Think.', speaker: 'Chen Wei' }
   ],
   objectives: [
-    { type: 'jobs', target: 60, text: 'Complete 60 jobs (any type)' },
-    { type: 'money', target: 70000, text: 'Secure $70,000 in independent reserves' },
+    { type: 'jobs', target: 60, text: 'Complete 60 jobs (Any Job)' },
+    { type: 'money', target: 70000, text: 'Have $70,000 cash on hand' },
     { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
-    { type: 'gang', target: 9, text: 'Maintain 9 loyal operatives' },
-    { type: 'properties', target: 2, text: 'Establish 2 independent safe houses' },
+    { type: 'gang', target: 9, text: 'Have 9 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
@@ -2346,10 +2346,10 @@ export const familyStories = {
     { type: 'dialogue', text: "The Dragon's Voice. A compromise that is not a compromise -- it is a new architecture entirely. You would hold this position yourself, I presume?", speaker: 'Chen Wei' }
   ],
   objectives: [
-    { type: 'jobs', target: 63, text: 'Complete 63 jobs (any type)' },
-    { type: 'money', target: 80000, text: 'Control $80,000 in organizational assets' },
-    { type: 'gang', target: 10, text: 'Command 10 operatives across divisions' },
-    { type: 'properties', target: 3, text: 'Manage 3 Triad properties' },
+    { type: 'jobs', target: 63, text: 'Complete 63 jobs (Any Job)' },
+    { type: 'money', target: 80000, text: 'Have $80,000 cash on hand' },
+    { type: 'gang', target: 10, text: 'Have 10 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
@@ -2383,10 +2383,10 @@ export const familyStories = {
     { type: 'scene', text: 'Chen Wei receives the news in silence, his face carved from stone. He does not rage. He does not grieve. He places a single black Go stone on the board before him and stares at it for a long time.' }
   ],
   objectives: [
-    { type: 'jobs', target: 66, text: 'Complete 66 jobs (any type)' },
-    { type: 'money', target: 100000, text: 'Protect $100,000 in endangered Triad assets' },
-    { type: 'gang', target: 10, text: 'Mobilize all 10 operatives for crisis response' },
-    { type: 'properties', target: 3, text: 'Secure 3 properties against compromise' },
+    { type: 'jobs', target: 66, text: 'Complete 66 jobs (Any Job)' },
+    { type: 'money', target: 100000, text: 'Have $100,000 cash on hand' },
+    { type: 'gang', target: 10, text: 'Have 10 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 675, text: 'Reach 675 Respect' }
   ],
   rewards: { money: 30000, experience: 700, reputation: 18 },
@@ -2414,10 +2414,10 @@ export const familyStories = {
     { type: 'scene', text: "You design a three-pronged approach: Liang attacks the dead man's switch from cyberspace, your operatives create a visible distraction at two of her known locations, and you personally confront Mei Lin at the third. She will expect digital warfare. She will not expect you to face her alone." }
   ],
   objectives: [
-    { type: 'jobs', target: 70, text: 'Complete 70 jobs (any type)' },
-    { type: 'money', target: 120000, text: 'Deploy $120,000 in war resources' },
-    { type: 'gang', target: 11, text: 'Command 11 operatives in coordinated assault' },
-    { type: 'properties', target: 3, text: 'Use 3 staging properties for the operation' },
+    { type: 'jobs', target: 70, text: 'Complete 70 jobs (Any Job)' },
+    { type: 'money', target: 120000, text: 'Have $120,000 cash on hand' },
+    { type: 'gang', target: 11, text: 'Have 11 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 725, text: 'Reach 725 Respect' }
   ],
   rewards: { money: 44000, experience: 960, reputation: 24 },
@@ -2444,10 +2444,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Elegant. You have turned our weakness into a strength and our philosophy into an algorithm. This is what I hoped you would become.', speaker: 'Chen Wei' }
   ],
   objectives: [
-    { type: 'jobs', target: 75, text: 'Complete 75 jobs (any type)' },
-    { type: 'money', target: 140000, text: 'Invest $140,000 in distributed infrastructure' },
-    { type: 'gang', target: 12, text: 'Deploy 12 operatives across the mirror network' },
-    { type: 'properties', target: 4, text: 'Establish 4 mirror node locations' },
+    { type: 'jobs', target: 75, text: 'Complete 75 jobs (Any Job)' },
+    { type: 'money', target: 140000, text: 'Have $140,000 cash on hand' },
+    { type: 'gang', target: 12, text: 'Have 12 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
@@ -2480,10 +2480,10 @@ export const familyStories = {
     { type: 'scene', text: "The operation takes three weeks. You and Liang work in absolute secrecy, slowly encapsulating Chen Wei's override within a new encryption layer that subjects it to the council's consensus protocol. Each modification must be invisible, each alteration tested without triggering the monitoring systems Chen Wei certainly has in place." }
   ],
   objectives: [
-    { type: 'jobs', target: 80, text: 'Complete 80 jobs (any type)' },
-    { type: 'money', target: 170000, text: 'Manage $170,000 in operational security funds' },
-    { type: 'gang', target: 13, text: 'Coordinate 13 trusted operatives' },
-    { type: 'properties', target: 4, text: 'Maintain 4 secure operational bases' },
+    { type: 'jobs', target: 80, text: 'Complete 80 jobs (Any Job)' },
+    { type: 'money', target: 170000, text: 'Have $170,000 cash on hand' },
+    { type: 'gang', target: 13, text: 'Have 13 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 875, text: 'Reach 875 Respect' }
   ],
   rewards: { money: 72000, experience: 1480, reputation: 37 },
@@ -2510,10 +2510,10 @@ export const familyStories = {
     { type: 'scene', text: 'The game begins at sunset. Chen Wei plays black -- the color of the offense, the attacker. You play white -- the color of the defense, the respondent. He places his first stone in the star point, a classical opening that signals confidence. You respond with a move he has never seen you play before.' }
   ],
   objectives: [
-    { type: 'jobs', target: 85, text: 'Complete 85 jobs (any type)' },
-    { type: 'money', target: 200000, text: 'Secure $200,000 in Triad reserves' },
-    { type: 'gang', target: 14, text: 'Ensure loyalty of 14 division operatives' },
-    { type: 'properties', target: 4, text: 'Control 4 key Triad properties' },
+    { type: 'jobs', target: 85, text: 'Complete 85 jobs (Any Job)' },
+    { type: 'money', target: 200000, text: 'Have $200,000 cash on hand' },
+    { type: 'gang', target: 14, text: 'Have 14 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 950, text: 'Reach 950 Respect' }
   ],
   rewards: { money: 86000, experience: 1740, reputation: 44 },
@@ -2546,10 +2546,10 @@ export const familyStories = {
     { type: 'scene', text: "He reaches into his robe and produces a final pendant -- not jade this time, but obsidian, carved into the shape of a Go stone wrapped in a dragon's coil. It is the symbol of the Dragon Master, the head of the Chen Triad. No one alive has seen it except Chen Wei. Until now." }
   ],
   objectives: [
-    { type: 'jobs', target: 90, text: 'Complete 90 jobs (any type)' },
-    { type: 'money', target: 250000, text: 'Control $250,000 in Triad assets' },
-    { type: 'gang', target: 15, text: 'Command all 15 Triad division operatives' },
-    { type: 'properties', target: 5, text: 'Oversee 5 properties across the empire' },
+    { type: 'jobs', target: 90, text: 'Complete 90 jobs (Any Job)' },
+    { type: 'money', target: 250000, text: 'Have $250,000 cash on hand' },
+    { type: 'gang', target: 15, text: 'Have 15 gang members' },
+    { type: 'properties', target: 5, text: 'Own 5 properties' },
     { type: 'reputation', target: 1050, text: 'Reach 1050 Respect' }
   ],
   rewards: { money: 100000, experience: 2000, reputation: 50 },
@@ -2593,8 +2593,8 @@ export const familyStories = {
     { type: 'narration', text: 'He slides a burner phone and a map across the table. The route is marked in red ink -- through the drainage tunnels beneath the Rio Grande. One way in, one way out.' }
   ],
   objectives: [
-    { type: 'jobs', target: 5, text: 'Complete 5 jobs (any type)' },
-    { type: 'money', target: 1000, text: 'Earn $1,000 from border runs' }
+    { type: 'jobs', target: 5, text: 'Complete 5 jobs (Any Job)' },
+    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' }
   ],
   rewards: { money: 500, experience: 50, reputation: 2 },
   choice: {
@@ -2625,8 +2625,8 @@ export const familyStories = {
     { type: 'dialogue', text: "You watch them. You make sure the supports hold. And if anyone talks to anyone who isn't us -- you tell Diego. Understood?", speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 8, text: 'Complete 8 jobs (any type)' },
-    { type: 'money', target: 1500, text: 'Earn $1,500 managing the tunnel operation' },
+    { type: 'jobs', target: 8, text: 'Complete 8 jobs (Any Job)' },
+    { type: 'money', target: 1500, text: 'Have $1,500 cash on hand' },
     { type: 'reputation', target: 10, text: 'Reach 10 Respect' }
   ],
   rewards: { money: 875, experience: 68, reputation: 2 },
@@ -2652,8 +2652,8 @@ export const familyStories = {
     { type: 'narration', text: 'Your job is clear: establish Morales dominance on every contested corner. Push out the independents, set up reliable dealers, and make sure the product flows without interruption.' }
   ],
   objectives: [
-    { type: 'jobs', target: 12, text: 'Complete 12 jobs (any type)' },
-    { type: 'money', target: 2500, text: 'Generate $2,500 in street revenue' },
+    { type: 'jobs', target: 12, text: 'Complete 12 jobs (Any Job)' },
+    { type: 'money', target: 2500, text: 'Have $2,500 cash on hand' },
     { type: 'reputation', target: 20, text: 'Reach 20 Respect' }
   ],
   rewards: { money: 1250, experience: 85, reputation: 3 },
@@ -2685,8 +2685,8 @@ export const familyStories = {
     { type: 'dialogue', text: 'My husband sees soldiers. I see people. If you are going to be part of this familia, I need to know what kind of person you are. The streets will test your strength -- but I will test your soul.', speaker: 'Sofia Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 15, text: 'Complete 15 jobs (any type)' },
-    { type: 'money', target: 3500, text: "Generate $3,500 through Sofia's restaurant fronts" },
+    { type: 'jobs', target: 15, text: 'Complete 15 jobs (Any Job)' },
+    { type: 'money', target: 3500, text: 'Have $3,500 cash on hand' },
     { type: 'reputation', target: 35, text: 'Reach 35 Respect' }
   ],
   rewards: { money: 1625, experience: 103, reputation: 4 },
@@ -2712,8 +2712,8 @@ export const familyStories = {
     { type: 'dialogue', text: "I'll be watching from the hilltop with binoculars. My heart will be with every truck. Every driver is someone's son. Bring them all home.", speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 18, text: 'Complete 18 jobs (any type)' },
-    { type: 'money', target: 5000, text: 'Earn $5,000 from the cross-border operation' },
+    { type: 'jobs', target: 18, text: 'Complete 18 jobs (Any Job)' },
+    { type: 'money', target: 5000, text: 'Have $5,000 cash on hand' },
     { type: 'reputation', target: 50, text: 'Reach 50 Respect' }
   ],
   rewards: { money: 2000, experience: 120, reputation: 4 },
@@ -2745,8 +2745,8 @@ export const familyStories = {
     { type: 'dialogue', text: "Everyone talks about loyalty until loyalty has a price. Tonight, you show me what yours costs. Or maybe... it has no price at all. That's what I'm hoping.", speaker: 'Diego Vargas' }
   ],
   objectives: [
-    { type: 'jobs', target: 22, text: 'Complete 22 jobs (any type)' },
-    { type: 'money', target: 7000, text: 'Accumulate $7,000' },
+    { type: 'jobs', target: 22, text: 'Complete 22 jobs (Any Job)' },
+    { type: 'money', target: 7000, text: 'Have $7,000 cash on hand' },
     { type: 'reputation', target: 75, text: 'Reach 75 Respect' }
   ],
   rewards: { money: 2800, experience: 140, reputation: 5 },
@@ -2778,8 +2778,8 @@ export const familyStories = {
     { type: 'dialogue', text: 'Give me your hand. Your blood will mix with mine, and we will be bound forever. La familia Morales protects its own -- unto death and beyond.', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 25, text: 'Complete 25 jobs (any type)' },
-    { type: 'money', target: 9000, text: 'Accumulate $9,000 for the cartel treasury' },
+    { type: 'jobs', target: 25, text: 'Complete 25 jobs (Any Job)' },
+    { type: 'money', target: 9000, text: 'Have $9,000 cash on hand' },
     { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
   ],
   rewards: { money: 3600, experience: 160, reputation: 6 },
@@ -2806,10 +2806,10 @@ export const familyStories = {
     { type: 'dialogue', text: "And remember -- tonight is sacred. No blood on the festival. No guns where children can see. Sofia would never forgive us, and honestly? She's scarier than the DEA.", speaker: 'Diego Vargas' }
   ],
   objectives: [
-    { type: 'jobs', target: 28, text: 'Complete 28 jobs (any type)' },
-    { type: 'money', target: 12000, text: 'Generate $12,000 from festival shipments' },
+    { type: 'jobs', target: 28, text: 'Complete 28 jobs (Any Job)' },
+    { type: 'money', target: 12000, text: 'Have $12,000 cash on hand' },
     { type: 'reputation', target: 130, text: 'Reach 130 Respect' },
-    { type: 'gang', target: 2, text: 'Recruit 2 reliable crew members' }
+    { type: 'gang', target: 2, text: 'Have 2 gang members' }
   ],
   rewards: { money: 4400, experience: 180, reputation: 6 },
   choice: {
@@ -2840,10 +2840,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Isabella studied business for two years before she switched to medicine. She drew up these route plans. Smart girl, my daughter. Too smart for this life, but the blood... the blood knows what it knows.', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 32, text: 'Complete 32 jobs (any type)' },
-    { type: 'money', target: 15000, text: 'Generate $15,000 through the distribution network' },
+    { type: 'jobs', target: 32, text: 'Complete 32 jobs (Any Job)' },
+    { type: 'money', target: 15000, text: 'Have $15,000 cash on hand' },
     { type: 'reputation', target: 175, text: 'Reach 175 Respect' },
-    { type: 'gang', target: 3, text: 'Recruit 3 crew members for logistics' }
+    { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 5200, experience: 200, reputation: 7 },
   choice: null,
@@ -2868,10 +2868,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Protect the workers first! The product can be replaced -- people cannot! This is what la familia means!', speaker: 'Sofia Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 35, text: 'Complete 35 jobs (any type)' },
-    { type: 'money', target: 18000, text: 'Accumulate $18,000 in war funds' },
+    { type: 'jobs', target: 35, text: 'Complete 35 jobs (Any Job)' },
+    { type: 'money', target: 18000, text: 'Have $18,000 cash on hand' },
     { type: 'reputation', target: 200, text: 'Reach 200 Respect' },
-    { type: 'gang', target: 3, text: 'Maintain a crew of 3 for the defense' }
+    { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 6000, experience: 220, reputation: 8 },
   choice: {
@@ -2914,10 +2914,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'As Teniente, you answer only to me and Diego. Everyone else answers to you. Use that power wisely -- or I will have Diego explain what happens to lieutenants who fail.', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 38, text: 'Complete 38 jobs (any type)' },
-    { type: 'money', target: 22000, text: "Generate $22,000 managing your squad's territory" },
+    { type: 'jobs', target: 38, text: 'Complete 38 jobs (Any Job)' },
+    { type: 'money', target: 22000, text: 'Have $22,000 cash on hand' },
     { type: 'reputation', target: 250, text: 'Reach 250 Respect' },
-    { type: 'gang', target: 4, text: 'Build your squad to 4 members' }
+    { type: 'gang', target: 4, text: 'Have 4 gang members' }
   ],
   rewards: { money: 7200, experience: 256, reputation: 9 },
   choice: null,
@@ -2942,10 +2942,10 @@ export const familyStories = {
     { type: 'dialogue', text: "Don't lose it. And don't dishonor it. My father's memory lives in that gold. My children's future lives in that gold. Treat it accordingly.", speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 40, text: 'Complete 40 jobs (any type)' },
-    { type: 'money', target: 26000, text: 'Generate $26,000 to fund war preparations' },
+    { type: 'jobs', target: 40, text: 'Complete 40 jobs (Any Job)' },
+    { type: 'money', target: 26000, text: 'Have $26,000 cash on hand' },
     { type: 'reputation', target: 300, text: 'Reach 300 Respect' },
-    { type: 'gang', target: 5, text: 'Expand your crew to 5 members' }
+    { type: 'gang', target: 5, text: 'Have 5 gang members' }
   ],
   rewards: { money: 8400, experience: 292, reputation: 10 },
   choice: {
@@ -2976,11 +2976,11 @@ export const familyStories = {
     { type: 'dialogue', text: 'You are now Capo. You command your own territory, your own crew, your own operations. You answer to me and God -- in that order. Make us proud.', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 43, text: 'Complete 43 jobs (any type)' },
-    { type: 'money', target: 30000, text: 'Generate $30,000 from your territory' },
+    { type: 'jobs', target: 43, text: 'Complete 43 jobs (Any Job)' },
+    { type: 'money', target: 30000, text: 'Have $30,000 cash on hand' },
     { type: 'reputation', target: 350, text: 'Reach 350 Respect' },
-    { type: 'gang', target: 5, text: 'Command a crew of 5' },
-    { type: 'properties', target: 1, text: 'Acquire your first property as a base of operations' }
+    { type: 'gang', target: 5, text: 'Have 5 gang members' },
+    { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
   rewards: { money: 9600, experience: 328, reputation: 10 },
   choice: null,
@@ -3006,11 +3006,11 @@ export const familyStories = {
     { type: 'dialogue', text: "In the south, respect is earned face to face. Bring gifts. Share meals. Learn their names. Then, if they still refuse us -- well, that's why God invented Diego.", speaker: 'Sofia Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 46, text: 'Complete 46 jobs (any type)' },
-    { type: 'money', target: 35000, text: 'Generate $35,000 from new southern operations' },
+    { type: 'jobs', target: 46, text: 'Complete 46 jobs (Any Job)' },
+    { type: 'money', target: 35000, text: 'Have $35,000 cash on hand' },
     { type: 'reputation', target: 400, text: 'Reach 400 Respect' },
-    { type: 'gang', target: 6, text: 'Recruit 6 crew members including local allies' },
-    { type: 'properties', target: 1, text: 'Establish a southern base of operations' }
+    { type: 'gang', target: 6, text: 'Have 6 gang members' },
+    { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
   rewards: { money: 10800, experience: 364, reputation: 11 },
   choice: {
@@ -3041,11 +3041,11 @@ export const familyStories = {
     { type: 'dialogue', text: "I've seen wars before, Capo. This one will be different. El Diablo doesn't fight for territory -- he fights to destroy. We need to fortify everything. Every safe house, every route, every corner.", speaker: 'Diego Vargas' }
   ],
   objectives: [
-    { type: 'jobs', target: 50, text: 'Complete 50 jobs (any type)' },
-    { type: 'money', target: 40000, text: 'Maintain $40,000 in war funds' },
+    { type: 'jobs', target: 50, text: 'Complete 50 jobs (Any Job)' },
+    { type: 'money', target: 40000, text: 'Have $40,000 cash on hand' },
     { type: 'reputation', target: 450, text: 'Reach 450 Respect' },
-    { type: 'gang', target: 7, text: 'Recruit 7 soldiers for the war effort' },
-    { type: 'properties', target: 2, text: 'Secure 2 fortified properties' }
+    { type: 'gang', target: 7, text: 'Have 7 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' }
   ],
   rewards: { money: 12000, experience: 400, reputation: 12 },
   choice: null,
@@ -3070,11 +3070,11 @@ export const familyStories = {
     { type: 'dialogue', text: 'Find him. Before he reaches the border. Before he uploads what he has. If that evidence reaches Washington, we are all dead or in cages for the rest of our lives. GO!', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 53, text: 'Complete 53 jobs (any type)' },
-    { type: 'money', target: 50000, text: 'Secure $50,000 in emergency funds' },
+    { type: 'jobs', target: 53, text: 'Complete 53 jobs (Any Job)' },
+    { type: 'money', target: 50000, text: 'Have $50,000 cash on hand' },
     { type: 'reputation', target: 475, text: 'Reach 475 Respect' },
-    { type: 'gang', target: 7, text: 'Maintain 7 loyal crew members' },
-    { type: 'properties', target: 2, text: 'Maintain 2 secure safe houses' },
+    { type: 'gang', target: 7, text: 'Have 7 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 500, text: 'Reach 500 Respect' }
   ],
   rewards: { money: 15600, experience: 460, reputation: 13 },
@@ -3117,11 +3117,11 @@ export const familyStories = {
     { type: 'dialogue', text: "El Diablo respects strength, not words. But he is a businessman above all. Show him that peace is more profitable than war, and perhaps we can find an arrangement that doesn't end with everyone dead.", speaker: 'La Serpiente' }
   ],
   objectives: [
-    { type: 'jobs', target: 56, text: 'Complete 56 jobs (any type)' },
-    { type: 'money', target: 60000, text: 'Secure $60,000 for rebuilding and negotiations' },
+    { type: 'jobs', target: 56, text: 'Complete 56 jobs (Any Job)' },
+    { type: 'money', target: 60000, text: 'Have $60,000 cash on hand' },
     { type: 'reputation', target: 525, text: 'Reach 525 Respect' },
-    { type: 'gang', target: 8, text: 'Maintain 8 crew members during the ceasefire' },
-    { type: 'properties', target: 2, text: 'Hold 2 properties as negotiation leverage' },
+    { type: 'gang', target: 8, text: 'Have 8 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 550, text: 'Reach 550 Respect' }
   ],
   rewards: { money: 19200, experience: 520, reputation: 14 },
@@ -3147,11 +3147,11 @@ export const familyStories = {
     { type: 'dialogue', text: "My daughter. They're watching my daughter. If they touch one hair on her head -- ONE HAIR -- I will burn Colombia to the ground. I don't care what it costs. I don't care who dies. She is everything.", speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 60, text: 'Complete 60 jobs (any type)' },
-    { type: 'money', target: 70000, text: 'Fund $70,000 in security measures for Isabella' },
+    { type: 'jobs', target: 60, text: 'Complete 60 jobs (Any Job)' },
+    { type: 'money', target: 70000, text: 'Have $70,000 cash on hand' },
     { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
-    { type: 'gang', target: 9, text: 'Assign 9 crew members to protective details' },
-    { type: 'properties', target: 2, text: 'Secure 2 safe houses for extraction routes' },
+    { type: 'gang', target: 9, text: 'Have 9 gang members' },
+    { type: 'properties', target: 2, text: 'Own 2 properties' },
     { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
@@ -3183,10 +3183,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'You are my right hand now. My Underboss. If I fall, you lead. If I call, you answer. If my family is threatened, you are the shield. Can you carry this weight?', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 63, text: 'Complete 63 jobs (any type)' },
-    { type: 'money', target: 80000, text: 'Manage $80,000 in cartel operations' },
-    { type: 'gang', target: 10, text: 'Command 10 crew members' },
-    { type: 'properties', target: 3, text: 'Oversee 3 key properties' },
+    { type: 'jobs', target: 63, text: 'Complete 63 jobs (Any Job)' },
+    { type: 'money', target: 80000, text: 'Have $80,000 cash on hand' },
+    { type: 'gang', target: 10, text: 'Have 10 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
@@ -3212,10 +3212,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'That Colombian dog thinks he can take my blood and make demands? I WILL BURN HIS WORLD DOWN! Every soldier we have -- EVERY ONE -- mobilize now. We are going to war. Real war. Total war.', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 66, text: 'Complete 66 jobs (any type)' },
-    { type: 'money', target: 100000, text: 'Amass $100,000 in war chest funds' },
-    { type: 'gang', target: 10, text: 'Mobilize all 10 crew members for the rescue' },
-    { type: 'properties', target: 3, text: 'Fortify 3 staging properties for the assault' },
+    { type: 'jobs', target: 66, text: 'Complete 66 jobs (Any Job)' },
+    { type: 'money', target: 100000, text: 'Have $100,000 cash on hand' },
+    { type: 'gang', target: 10, text: 'Have 10 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 675, text: 'Reach 675 Respect' }
   ],
   rewards: { money: 30000, experience: 700, reputation: 18 },
@@ -3247,10 +3247,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Bring my daughter home. After that... you and I will discuss what happens to El Diablo. Slowly.', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 70, text: 'Complete 70 jobs (any type)' },
-    { type: 'money', target: 120000, text: 'Deploy $120,000 in military resources' },
-    { type: 'gang', target: 11, text: 'Command 11 soldiers in the assault' },
-    { type: 'properties', target: 3, text: 'Maintain 3 properties for staging and recovery' },
+    { type: 'jobs', target: 70, text: 'Complete 70 jobs (Any Job)' },
+    { type: 'money', target: 120000, text: 'Have $120,000 cash on hand' },
+    { type: 'gang', target: 11, text: 'Have 11 gang members' },
+    { type: 'properties', target: 3, text: 'Own 3 properties' },
     { type: 'reputation', target: 725, text: 'Reach 725 Respect' }
   ],
   rewards: { money: 44000, experience: 960, reputation: 24 },
@@ -3288,10 +3288,10 @@ export const familyStories = {
     { type: 'dialogue', text: "Papa, I don't want you to feel guilty. You came for me. That's what matters. But please -- please think about what happens next. I don't want to bury you too.", speaker: 'Isabella Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 75, text: 'Complete 75 jobs (any type)' },
-    { type: 'money', target: 140000, text: 'Generate $140,000 rebuilding the empire' },
-    { type: 'gang', target: 12, text: 'Rebuild the crew to 12 loyal members' },
-    { type: 'properties', target: 4, text: 'Restore and acquire 4 properties' },
+    { type: 'jobs', target: 75, text: 'Complete 75 jobs (Any Job)' },
+    { type: 'money', target: 140000, text: 'Have $140,000 cash on hand' },
+    { type: 'gang', target: 12, text: 'Have 12 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
@@ -3325,10 +3325,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Without me at the helm, it will survive. Because I chose my successor well. I chose someone who loves this family as much as I do.', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 80, text: 'Complete 80 jobs (any type)' },
-    { type: 'money', target: 170000, text: 'Secure $170,000 in transition funds' },
-    { type: 'gang', target: 13, text: 'Grow the organization to 13 loyal members' },
-    { type: 'properties', target: 4, text: 'Control 4 key properties across the empire' },
+    { type: 'jobs', target: 80, text: 'Complete 80 jobs (Any Job)' },
+    { type: 'money', target: 170000, text: 'Have $170,000 cash on hand' },
+    { type: 'gang', target: 13, text: 'Have 13 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 875, text: 'Reach 875 Respect' }
   ],
   rewards: { money: 72000, experience: 1480, reputation: 37 },
@@ -3354,10 +3354,10 @@ export const familyStories = {
     { type: 'dialogue', text: "I serve the Morales name, not the man. El Jefe is stepping down, but the name endures. You carry it now. Don't make it lighter than it is -- it should always feel heavy. That's how you know you're doing it right.", speaker: 'Diego Vargas' }
   ],
   objectives: [
-    { type: 'jobs', target: 85, text: 'Complete 85 jobs (any type)' },
-    { type: 'money', target: 200000, text: 'Manage $200,000 in cartel assets' },
-    { type: 'gang', target: 14, text: 'Command loyalty of 14 crew members' },
-    { type: 'properties', target: 4, text: 'Oversee all 4 key cartel properties' },
+    { type: 'jobs', target: 85, text: 'Complete 85 jobs (Any Job)' },
+    { type: 'money', target: 200000, text: 'Have $200,000 cash on hand' },
+    { type: 'gang', target: 14, text: 'Have 14 gang members' },
+    { type: 'properties', target: 4, text: 'Own 4 properties' },
     { type: 'reputation', target: 950, text: 'Reach 950 Respect' }
   ],
   rewards: { money: 86000, experience: 1740, reputation: 44 },
@@ -3391,10 +3391,10 @@ export const familyStories = {
     { type: 'dialogue', text: 'Take care of my family. Take care of my people. And when the world tests you -- and it will -- remember that you are not just a criminal, not just a boss. You are the keeper of a legacy. You are Morales. You are family.', speaker: 'El Jefe Morales' }
   ],
   objectives: [
-    { type: 'jobs', target: 90, text: 'Complete 90 jobs (any type)' },
-    { type: 'money', target: 250000, text: 'Command $250,000 in cartel wealth' },
-    { type: 'gang', target: 15, text: 'Lead an organization of 15 loyal members' },
-    { type: 'properties', target: 5, text: 'Control all 5 Morales empire properties' },
+    { type: 'jobs', target: 90, text: 'Complete 90 jobs (Any Job)' },
+    { type: 'money', target: 250000, text: 'Have $250,000 cash on hand' },
+    { type: 'gang', target: 15, text: 'Have 15 gang members' },
+    { type: 'properties', target: 5, text: 'Own 5 properties' },
     { type: 'reputation', target: 1050, text: 'Reach 1050 Respect' }
   ],
   rewards: { money: 100000, experience: 2000, reputation: 50 },
