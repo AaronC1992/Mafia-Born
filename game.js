@@ -15373,22 +15373,6 @@ function buildCharacterShowcaseHTML() {
         Character Showcase
       </h2>
 
-      <!-- Export/Import Controls -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
-        <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #8a9a6a;">
-          <h3 style="color: #8a9a6a; margin: 0 0 10px 0;">Export</h3>
-          <button onclick="exportCharacterShowcase()" style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
-            Export My Story
-          </button>
-        </div>
-        <div style="background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #c0a062;">
-          <h3 style="color: #c0a062; margin: 0 0 10px 0;">Import</h3>
-          <button onclick="importCharacterShowcase()" style="background: #c0a062; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
-            View Others' Stories
-          </button>
-        </div>
-      </div>
-
       <!-- Character Showcase Display -->
       <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, rgba(20, 18, 10, 0.8) 0%, rgba(20, 18, 10, 0.8) 100%); border-radius: 15px; border: 3px solid ${gradeColor};">
         <h1 style="color: ${gradeColor}; font-size: 3em; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
@@ -24488,169 +24472,6 @@ function createCharacterShowcase() {
   return showcase;
 }
 
-function exportCharacterShowcase() {
-  try {
-    const showcase = createCharacterShowcase();
-
-    const showcaseData = {
-      type: 'character_showcase',
-      version: '1.0',
-      showcase: showcase,
-      exportedAt: new Date().toISOString()
-    };
-
-    const dataStr = JSON.stringify(showcaseData, null, 2);
-    const dataBlob = new Blob([dataStr], {type: 'application/json'});
-    const url = URL.createObjectURL(dataBlob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${showcase.characterName.replace(/[^a-zA-Z0-9]/g, '_')}_showcase_${getCurrentDateString()}.json`;
-    link.click();
-
-    URL.revokeObjectURL(url);
-    showBriefNotification('Character showcase exported successfully!', 3000);
-    logAction('Character showcase exported for sharing!');
-
-  } catch (error) {
-    console.error('Export showcase error:', error);
-    showBriefNotification('Failed to export character showcase', 3000);
-  }
-}
-
-function importCharacterShowcase() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-
-  input.onchange = function(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const importData = JSON.parse(e.target.result);
-
-        if (importData.type !== 'character_showcase' || !importData.showcase) {
-          throw new Error('Invalid showcase file format');
-        }
-
-        displayImportedShowcase(importData.showcase);
-
-      } catch (error) {
-        console.error('Import showcase error:', error);
-        showBriefNotification('Failed to import character showcase. Please check the file format.', 'danger');
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  input.click();
-}
-
-function displayImportedShowcase(showcase) {
-  hideAllScreens();
-  document.getElementById('statistics-screen').style.display = 'block';
-
-  const gradeColor = getEmpireRatingGrade(showcase.empireRating).color;
-
-  const content = `
-    <div style="max-width: 1000px; margin: 0 auto;">
-      <h2 style="text-align: center; color: #c0a062; font-size: 2.5em; margin-bottom: 20px;">
-        Character Showcase
-      </h2>
-
-      <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, rgba(20, 18, 10, 0.8) 0%, rgba(20, 18, 10, 0.8) 100%); border-radius: 15px; border: 3px solid ${gradeColor};">
-        <h1 style="color: ${gradeColor}; font-size: 3em; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-          ${showcase.characterName}
-        </h1>
-        <h3 style="color: #f5e6c8; margin: 10px 0;">${showcase.streetRank} ${showcase.empireDescription}</h3>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 15px;">
-          <span style="color: ${gradeColor}; font-size: 2em; font-weight: bold;">Grade ${showcase.empireGrade}</span>
-          <span style="color: #d4c4a0;">Empire Rating: ${showcase.empireRating.toLocaleString()}</span>
-        </div>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div style="background: rgba(138, 154, 106, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8a9a6a;">
-          <h3 style="color: #8a9a6a; margin: 0 0 15px 0;">Financial Empire</h3>
-          <div style="display: grid; gap: 8px;">
-            <div style="display: flex; justify-content: space-between;">
-              <span>Current Wealth:</span>
-              <span style="color: #8a9a6a; font-weight: bold;">$${showcase.money.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Total Earned:</span>
-              <span style="color: #8a9a6a;">$${showcase.totalEarnings.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Businesses:</span>
-              <span style="color: #8a9a6a;">${showcase.businessCount}</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8b3a3a;">
-          <h3 style="color: #8b3a3a; margin: 0 0 15px 0;">Criminal Organization</h3>
-          <div style="display: grid; gap: 8px;">
-            <div style="display: flex; justify-content: space-between;">
-              <span>Gang Members:</span>
-              <span style="color: #8b3a3a; font-weight: bold;">${showcase.gangSize}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Turf Control:</span>
-              <span style="color: #8b3a3a;">${showcase.territory}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Reputation:</span>
-              <span style="color: #8b3a3a;">${showcase.reputation}</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #c0a062;">
-          <h3 style="color: #c0a062; margin: 0 0 15px 0;">Criminal Record</h3>
-          <div style="display: grid; gap: 8px;">
-            <div style="display: flex; justify-content: space-between;">
-              <span>Jobs Completed:</span>
-              <span style="color: #c0a062; font-weight: bold;">${showcase.totalJobs}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Escape Rate:</span>
-              <span style="color: #c0a062;">${showcase.escapeRate}%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Power Level:</span>
-              <span style="color: #c0a062;">${showcase.power}</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 15px; border: 2px solid #8b6a4a;">
-          <h3 style="color: #8b6a4a; margin: 0 0 15px 0;">Career Timeline</h3>
-          <div style="display: grid; gap: 8px;">
-            <div style="display: flex; justify-content: space-between;">
-              <span>Play Time:</span>
-              <span style="color: #8b6a4a; font-weight: bold;">${formatPlaytime(showcase.playTime)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Challenges:</span>
-              <span style="color: #8b6a4a;">${showcase.challengesCompleted}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="text-align: center; margin-top: 30px;">
-        <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('statistics-content').innerHTML = content;
-}
-
 // Competition UI Functions
 function showRivalsScreen() {
   hideAllScreens();
@@ -26150,8 +25971,6 @@ window.renderBountyBoard = renderBountyBoard;
 // Player Stats (combined screen)
 window.exportStatistics = exportStatistics;
 window.resetStatistics = resetStatistics;
-window.exportCharacterShowcase = exportCharacterShowcase;
-window.importCharacterShowcase = importCharacterShowcase;
 window.showStatistics = showStatistics;
 window.showCharacterShowcase = showCharacterShowcase;
 
