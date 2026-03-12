@@ -1,8 +1,8 @@
 # Mafia Born
 
-**v1.16.1** | A deep criminal empire-building browser game where you rise from street thug to legendary kingpin. Build your crew, claim territory, run businesses, and outmanoeuvre rival crime families — all from your browser.
+A deep criminal empire-building browser game where you rise from street thug to legendary kingpin. Build your crew, claim territory, run businesses, and outmanoeuvre rival crime families — all from your browser.
 
-## **[PLAY NOW](https://mafiaborn.com/)**
+[mafiaborn.com](https://mafiaborn.com/) &nbsp;&nbsp; [![Play Now](https://img.shields.io/badge/Play%20Now-mafiaborn.com-d4af37?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Q0YWYzNyI+PHBhdGggZD0iTTggNXYxNGwxMS03eiIvPjwvc3ZnPg==&logoColor=d4af37)](https://mafiaborn.com/)
 
 No installation required. Click above and start playing instantly in your browser.
 
@@ -34,7 +34,7 @@ The game features persistent progression via local storage and cloud saves, a fu
 - Recruit and manage gang members with unique specializations and roles
 - **4 crime families** with reputation systems and faction missions
 - **8 NPC rival bosses** controlling districts at game start — fight to conquer their territory
-- Dangerous operations where gang members can be killed, arrested, or betray you
+- Dangerous gang tasks where members can be killed, arrested, or betray you
 - Gang wars with high stakes — members die frequently in the criminal underworld
 
 ### Progression
@@ -72,8 +72,7 @@ The game features persistent progression via local storage and cloud saves, a fu
 - **Auto cloud-save** on key actions to prevent progress loss
 
 ### Multiplayer
-- **Local multiplayer** — 2-4 players on the same device with competitive, cooperative, and territory war modes
-- **Online multiplayer** — real-time rooms via Node.js/WebSocket server with chat, trading, alliances, and leaderboards
+- **Online multiplayer** — real-time play with chat, trading, alliances, and leaderboards
 - **The Commission** — unified multiplayer hub with tabs for PVP, Territories, Politics, Activities, Crew, Friends, Market, and Chat
 - **Unified Player Market** — buy and sell vehicles, weapons, armor, ammo, gas, utility items, and trade goods with other players
 - **Bounty Board** — place bounties on rival players, with optional anonymous posting for 2x the cost
@@ -83,48 +82,9 @@ The game features persistent progression via local storage and cloud saves, a fu
 
 ## Getting Started
 
-Just open [the live site](https://mafiaborn.com/) in any modern browser — no install needed. Create an account to unlock cloud saves and online features.
-
-To run the server locally for development:
-
-```bash
-npm install
-npm start
-```
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Client | HTML5 + CSS3 + JavaScript (zero dependencies) |
-| Server | Node.js + WebSocket |
-| Storage | Browser localStorage + cloud saves via REST API |
-| Mobile | Responsive design with dedicated mobile layout |
+Open [mafiaborn.com](https://mafiaborn.com/) in any modern browser — no install needed. Create an account to unlock cloud saves and online features.
 
 Compatible with Chrome, Firefox, Safari, Edge, and their mobile counterparts.
-
----
-
-## Save System
-
-- **Cloud saves** — sign in to save and load your progress from any device
-- 10 manual local save slots plus auto-save and emergency save on browser close
-- Export and import saves as JSON files
-- Full persistence of all progress, achievements, and legacy data
-- Save migration for older saves — new features auto-initialize on load
-
----
-
-## Recent Changes (v1.16.1)
-
-- **UI Consolidation** — Back Room → Casino tab, Crew & Friends → Commission tabs, Superboss → Operations tab
-- **Dark Board removed** — anonymous bounty option added to Bounty Board (2x cost, hidden poster)
-- **Friends moved to Commission** — no more standalone SafeHouse button; Friends is now a tab in The Commission
-- **Broken emoji cleanup** — fixed all placeholder emojis across multiplayer systems
-- **Massive Story Expansion** — each crime family now has 25 chapters (up from 8), totalling 100 unique story missions
-- **5 acts per family** — deeper narrative arcs with more boss fights, choices, and character development
 
 ---
 
