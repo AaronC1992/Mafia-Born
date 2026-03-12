@@ -1,4 +1,4 @@
-﻿/**
+/**
  * missions.js - Story-Driven Family Storylines
  *
  * Each crime family has a 25-chapter story arc. The player picks one family,
@@ -46,7 +46,8 @@ export const familyStories = {
   ],
   objectives: [
     { type: 'jobs', target: 5, text: 'Complete 5 jobs (Any Job)' },
-    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' }
+    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' },
+    { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
   ],
   rewards: { money: 500, experience: 50, reputation: 2 },
   choice: {
@@ -80,7 +81,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 8, text: 'Complete 8 jobs (Any Job)' },
     { type: 'money', target: 1500, text: 'Have $1,500 cash on hand' },
-    { type: 'reputation', target: 10, text: 'Reach 10 Respect' }
+    { type: 'reputation', target: 305, text: 'Reach 305 Respect' }
   ],
   rewards: { money: 875, experience: 68, reputation: 2 },
   choice: null,
@@ -106,7 +107,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 12, text: 'Complete 12 jobs (Any Job)' },
     { type: 'money', target: 2500, text: 'Have $2,500 cash on hand' },
-    { type: 'reputation', target: 20, text: 'Reach 20 Respect' }
+    { type: 'reputation', target: 510, text: 'Reach 510 Respect' }
   ],
   rewards: { money: 1250, experience: 85, reputation: 3 },
   choice: {
@@ -141,7 +142,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 15, text: 'Complete 15 jobs (Any Job)' },
     { type: 'money', target: 3500, text: 'Have $3,500 cash on hand' },
-    { type: 'reputation', target: 35, text: 'Reach 35 Respect' }
+    { type: 'reputation', target: 715, text: 'Reach 715 Respect' }
   ],
   rewards: { money: 1625, experience: 103, reputation: 3 },
   choice: null,
@@ -168,7 +169,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 18, text: 'Complete 18 jobs (Any Job)' },
     { type: 'money', target: 5000, text: 'Have $5,000 cash on hand' },
-    { type: 'reputation', target: 50, text: 'Reach 50 Respect' }
+    { type: 'reputation', target: 920, text: 'Reach 920 Respect' }
   ],
   rewards: { money: 2000, experience: 120, reputation: 4 },
   choice: {
@@ -202,7 +203,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 22, text: 'Complete 22 jobs (Any Job)' },
     { type: 'money', target: 7000, text: 'Have $7,000 cash on hand' },
-    { type: 'reputation', target: 75, text: 'Reach 75 Respect' }
+    { type: 'reputation', target: 1125, text: 'Reach 1125 Respect' }
   ],
   rewards: { money: 2800, experience: 140, reputation: 5 },
   choice: {
@@ -237,7 +238,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 25, text: 'Complete 25 jobs (Any Job)' },
     { type: 'money', target: 9000, text: 'Have $9,000 cash on hand' },
-    { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
+    { type: 'reputation', target: 1330, text: 'Reach 1330 Respect' }
   ],
   rewards: { money: 3600, experience: 160, reputation: 5 },
   choice: {
@@ -271,7 +272,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 28, text: 'Complete 28 jobs (Any Job)' },
     { type: 'money', target: 12000, text: 'Have $12,000 cash on hand' },
-    { type: 'reputation', target: 130, text: 'Reach 130 Respect' },
+    { type: 'reputation', target: 1535, text: 'Reach 1535 Respect' },
     { type: 'gang', target: 2, text: 'Have 2 gang members' }
   ],
   rewards: { money: 4400, experience: 180, reputation: 6 },
@@ -306,7 +307,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 32, text: 'Complete 32 jobs (Any Job)' },
     { type: 'money', target: 15000, text: 'Have $15,000 cash on hand' },
-    { type: 'reputation', target: 175, text: 'Reach 175 Respect' },
+    { type: 'reputation', target: 1740, text: 'Reach 1740 Respect' },
     { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 5200, experience: 200, reputation: 7 },
@@ -342,7 +343,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 35, text: 'Complete 35 jobs (Any Job)' },
     { type: 'money', target: 18000, text: 'Have $18,000 cash on hand' },
-    { type: 'reputation', target: 200, text: 'Reach 200 Respect' },
+    { type: 'reputation', target: 1945, text: 'Reach 1945 Respect' },
     { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 6000, experience: 220, reputation: 8 },
@@ -382,7 +383,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 38, text: 'Complete 38 jobs (Any Job)' },
     { type: 'money', target: 22000, text: 'Have $22,000 cash on hand' },
-    { type: 'reputation', target: 250, text: 'Reach 250 Respect' },
+    { type: 'reputation', target: 2150, text: 'Reach 2150 Respect' },
     { type: 'gang', target: 4, text: 'Have 4 gang members' }
   ],
   rewards: { money: 7200, experience: 256, reputation: 9 },
@@ -417,7 +418,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 40, text: 'Complete 40 jobs (Any Job)' },
     { type: 'money', target: 26000, text: 'Have $26,000 cash on hand' },
-    { type: 'reputation', target: 300, text: 'Reach 300 Respect' },
+    { type: 'reputation', target: 2355, text: 'Reach 2355 Respect' },
     { type: 'gang', target: 5, text: 'Have 5 gang members' }
   ],
   rewards: { money: 8400, experience: 292, reputation: 10 },
@@ -446,7 +447,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 43, text: 'Complete 43 jobs (Any Job)' },
     { type: 'money', target: 30000, text: 'Have $30,000 cash on hand' },
-    { type: 'reputation', target: 350, text: 'Reach 350 Respect' },
+    { type: 'reputation', target: 2560, text: 'Reach 2560 Respect' },
     { type: 'gang', target: 5, text: 'Have 5 gang members' },
     { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
@@ -482,7 +483,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 46, text: 'Complete 46 jobs (Any Job)' },
     { type: 'money', target: 35000, text: 'Have $35,000 cash on hand' },
-    { type: 'reputation', target: 400, text: 'Reach 400 Respect' },
+    { type: 'reputation', target: 2765, text: 'Reach 2765 Respect' },
     { type: 'gang', target: 6, text: 'Have 6 gang members' },
     { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
@@ -511,7 +512,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 50, text: 'Complete 50 jobs (Any Job)' },
     { type: 'money', target: 40000, text: 'Have $40,000 cash on hand' },
-    { type: 'reputation', target: 450, text: 'Reach 450 Respect' },
+    { type: 'reputation', target: 2970, text: 'Reach 2970 Respect' },
     { type: 'gang', target: 7, text: 'Have 7 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' }
   ],
@@ -547,10 +548,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 53, text: 'Complete 53 jobs (Any Job)' },
     { type: 'money', target: 50000, text: 'Have $50,000 cash on hand' },
-    { type: 'reputation', target: 475, text: 'Reach 475 Respect' },
     { type: 'gang', target: 7, text: 'Have 7 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 500, text: 'Reach 500 Respect' }
+    { type: 'reputation', target: 3175, text: 'Reach 3175 Respect' }
   ],
   rewards: { money: 15600, experience: 460, reputation: 13 },
   choice: null,
@@ -589,10 +589,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 56, text: 'Complete 56 jobs (Any Job)' },
     { type: 'money', target: 60000, text: 'Have $60,000 cash on hand' },
-    { type: 'reputation', target: 525, text: 'Reach 525 Respect' },
     { type: 'gang', target: 8, text: 'Have 8 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 550, text: 'Reach 550 Respect' }
+    { type: 'reputation', target: 3380, text: 'Reach 3380 Respect' }
   ],
   rewards: { money: 19200, experience: 520, reputation: 14 },
   choice: {
@@ -627,10 +626,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 60, text: 'Complete 60 jobs (Any Job)' },
     { type: 'money', target: 70000, text: 'Have $70,000 cash on hand' },
-    { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
     { type: 'gang', target: 9, text: 'Have 9 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
+    { type: 'reputation', target: 3585, text: 'Reach 3585 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
   choice: null,
@@ -659,7 +657,7 @@ export const familyStories = {
     { type: 'money', target: 80000, text: 'Have $80,000 cash on hand' },
     { type: 'gang', target: 10, text: 'Have 10 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
+    { type: 'reputation', target: 3790, text: 'Reach 3790 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
   choice: {
@@ -695,7 +693,7 @@ export const familyStories = {
     { type: 'money', target: 100000, text: 'Have $100,000 cash on hand' },
     { type: 'gang', target: 10, text: 'Have 10 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 675, text: 'Reach 675 Respect' }
+    { type: 'reputation', target: 3995, text: 'Reach 3995 Respect' }
   ],
   rewards: { money: 30000, experience: 700, reputation: 18 },
   choice: null,
@@ -725,7 +723,7 @@ export const familyStories = {
     { type: 'money', target: 120000, text: 'Have $120,000 cash on hand' },
     { type: 'gang', target: 11, text: 'Have 11 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 725, text: 'Reach 725 Respect' }
+    { type: 'reputation', target: 4200, text: 'Reach 4200 Respect' }
   ],
   rewards: { money: 44000, experience: 960, reputation: 24 },
   choice: {
@@ -773,7 +771,7 @@ export const familyStories = {
     { type: 'money', target: 140000, text: 'Have $140,000 cash on hand' },
     { type: 'gang', target: 12, text: 'Have 12 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
+    { type: 'reputation', target: 4405, text: 'Reach 4405 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
   choice: {
@@ -809,7 +807,7 @@ export const familyStories = {
     { type: 'money', target: 170000, text: 'Have $170,000 cash on hand' },
     { type: 'gang', target: 13, text: 'Have 13 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 875, text: 'Reach 875 Respect' }
+    { type: 'reputation', target: 4610, text: 'Reach 4610 Respect' }
   ],
   rewards: { money: 72000, experience: 1480, reputation: 37 },
   choice: null,
@@ -839,7 +837,7 @@ export const familyStories = {
     { type: 'money', target: 200000, text: 'Have $200,000 cash on hand' },
     { type: 'gang', target: 14, text: 'Have 14 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 950, text: 'Reach 950 Respect' }
+    { type: 'reputation', target: 4815, text: 'Reach 4815 Respect' }
   ],
   rewards: { money: 86000, experience: 1740, reputation: 44 },
   choice: {
@@ -876,7 +874,7 @@ export const familyStories = {
     { type: 'money', target: 250000, text: 'Have $250,000 cash on hand' },
     { type: 'gang', target: 15, text: 'Have 15 gang members' },
     { type: 'properties', target: 5, text: 'Own 5 properties' },
-    { type: 'reputation', target: 1050, text: 'Reach 1050 Respect' }
+    { type: 'reputation', target: 5020, text: 'Reach 5020 Respect' }
   ],
   rewards: { money: 100000, experience: 2000, reputation: 50 },
   choice: null,
@@ -925,7 +923,8 @@ export const familyStories = {
   ],
   objectives: [
     { type: 'jobs', target: 5, text: 'Complete 5 jobs (Any Job)' },
-    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' }
+    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' },
+    { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
   ],
   rewards: { money: 500, experience: 50, reputation: 2 },
   choice: null,
@@ -952,7 +951,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 8, text: 'Complete 8 jobs (Any Job)' },
     { type: 'money', target: 1500, text: 'Have $1,500 cash on hand' },
-    { type: 'reputation', target: 10, text: 'Reach 10 Respect' }
+    { type: 'reputation', target: 305, text: 'Reach 305 Respect' }
   ],
   rewards: { money: 875, experience: 68, reputation: 3 },
   choice: {
@@ -985,7 +984,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 12, text: 'Complete 12 jobs (Any Job)' },
     { type: 'money', target: 2500, text: 'Have $2,500 cash on hand' },
-    { type: 'reputation', target: 20, text: 'Reach 20 Respect' }
+    { type: 'reputation', target: 510, text: 'Reach 510 Respect' }
   ],
   rewards: { money: 1250, experience: 85, reputation: 3 },
   choice: null,
@@ -1012,7 +1011,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 15, text: 'Complete 15 jobs (Any Job)' },
     { type: 'money', target: 3500, text: 'Have $3,500 cash on hand' },
-    { type: 'reputation', target: 35, text: 'Reach 35 Respect' }
+    { type: 'reputation', target: 715, text: 'Reach 715 Respect' }
   ],
   rewards: { money: 1625, experience: 100, reputation: 3 },
   choice: {
@@ -1045,7 +1044,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 18, text: 'Complete 18 jobs (Any Job)' },
     { type: 'money', target: 5000, text: 'Have $5,000 cash on hand' },
-    { type: 'reputation', target: 50, text: 'Reach 50 Respect' }
+    { type: 'reputation', target: 920, text: 'Reach 920 Respect' }
   ],
   rewards: { money: 2000, experience: 120, reputation: 4 },
   choice: null,
@@ -1073,7 +1072,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 22, text: 'Complete 22 jobs (Any Job)' },
     { type: 'money', target: 7000, text: 'Have $7,000 cash on hand' },
-    { type: 'reputation', target: 75, text: 'Reach 75 Respect' }
+    { type: 'reputation', target: 1125, text: 'Reach 1125 Respect' }
   ],
   rewards: { money: 2800, experience: 140, reputation: 5 },
   choice: {
@@ -1106,7 +1105,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 25, text: 'Complete 25 jobs (Any Job)' },
     { type: 'money', target: 9000, text: 'Have $9,000 cash on hand' },
-    { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
+    { type: 'reputation', target: 1330, text: 'Reach 1330 Respect' }
   ],
   rewards: { money: 3600, experience: 160, reputation: 6 },
   choice: {
@@ -1140,7 +1139,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 28, text: 'Complete 28 jobs (Any Job)' },
     { type: 'money', target: 12000, text: 'Have $12,000 cash on hand' },
-    { type: 'reputation', target: 130, text: 'Reach 130 Respect' },
+    { type: 'reputation', target: 1535, text: 'Reach 1535 Respect' },
     { type: 'gang', target: 2, text: 'Have 2 gang members' }
   ],
   rewards: { money: 4400, experience: 180, reputation: 6 },
@@ -1168,7 +1167,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 32, text: 'Complete 32 jobs (Any Job)' },
     { type: 'money', target: 15000, text: 'Have $15,000 cash on hand' },
-    { type: 'reputation', target: 175, text: 'Reach 175 Respect' },
+    { type: 'reputation', target: 1740, text: 'Reach 1740 Respect' },
     { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 5200, experience: 200, reputation: 7 },
@@ -1202,7 +1201,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 35, text: 'Complete 35 jobs (Any Job)' },
     { type: 'money', target: 18000, text: 'Have $18,000 cash on hand' },
-    { type: 'reputation', target: 200, text: 'Reach 200 Respect' },
+    { type: 'reputation', target: 1945, text: 'Reach 1945 Respect' },
     { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 6000, experience: 220, reputation: 8 },
@@ -1242,7 +1241,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 38, text: 'Complete 38 jobs (Any Job)' },
     { type: 'money', target: 22000, text: 'Have $22,000 cash on hand' },
-    { type: 'reputation', target: 250, text: 'Reach 250 Respect' },
+    { type: 'reputation', target: 2150, text: 'Reach 2150 Respect' },
     { type: 'gang', target: 4, text: 'Have 4 gang members' }
   ],
   rewards: { money: 7200, experience: 256, reputation: 9 },
@@ -1276,7 +1275,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 40, text: 'Complete 40 jobs (Any Job)' },
     { type: 'money', target: 26000, text: 'Have $26,000 cash on hand' },
-    { type: 'reputation', target: 300, text: 'Reach 300 Respect' },
+    { type: 'reputation', target: 2355, text: 'Reach 2355 Respect' },
     { type: 'gang', target: 5, text: 'Have 5 gang members' }
   ],
   rewards: { money: 8400, experience: 292, reputation: 10 },
@@ -1304,7 +1303,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 43, text: 'Complete 43 jobs (Any Job)' },
     { type: 'money', target: 30000, text: 'Have $30,000 cash on hand' },
-    { type: 'reputation', target: 350, text: 'Reach 350 Respect' },
+    { type: 'reputation', target: 2560, text: 'Reach 2560 Respect' },
     { type: 'gang', target: 5, text: 'Have 5 gang members' },
     { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
@@ -1339,7 +1338,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 46, text: 'Complete 46 jobs (Any Job)' },
     { type: 'money', target: 35000, text: 'Have $35,000 cash on hand' },
-    { type: 'reputation', target: 400, text: 'Reach 400 Respect' },
+    { type: 'reputation', target: 2765, text: 'Reach 2765 Respect' },
     { type: 'gang', target: 6, text: 'Have 6 gang members' },
     { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
@@ -1368,7 +1367,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 50, text: 'Complete 50 jobs (Any Job)' },
     { type: 'money', target: 40000, text: 'Have $40,000 cash on hand' },
-    { type: 'reputation', target: 450, text: 'Reach 450 Respect' },
+    { type: 'reputation', target: 2970, text: 'Reach 2970 Respect' },
     { type: 'gang', target: 7, text: 'Have 7 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' }
   ],
@@ -1404,10 +1403,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 53, text: 'Complete 53 jobs (Any Job)' },
     { type: 'money', target: 50000, text: 'Have $50,000 cash on hand' },
-    { type: 'reputation', target: 475, text: 'Reach 475 Respect' },
     { type: 'gang', target: 7, text: 'Have 7 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 500, text: 'Reach 500 Respect' }
+    { type: 'reputation', target: 3175, text: 'Reach 3175 Respect' }
   ],
   rewards: { money: 15600, experience: 460, reputation: 13 },
   choice: null,
@@ -1446,10 +1444,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 56, text: 'Complete 56 jobs (Any Job)' },
     { type: 'money', target: 60000, text: 'Have $60,000 cash on hand' },
-    { type: 'reputation', target: 525, text: 'Reach 525 Respect' },
     { type: 'gang', target: 8, text: 'Have 8 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 550, text: 'Reach 550 Respect' }
+    { type: 'reputation', target: 3380, text: 'Reach 3380 Respect' }
   ],
   rewards: { money: 19200, experience: 520, reputation: 14 },
   choice: {
@@ -1482,10 +1479,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 60, text: 'Complete 60 jobs (Any Job)' },
     { type: 'money', target: 70000, text: 'Have $70,000 cash on hand' },
-    { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
     { type: 'gang', target: 9, text: 'Have 9 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
+    { type: 'reputation', target: 3585, text: 'Reach 3585 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
   choice: {
@@ -1520,7 +1516,7 @@ export const familyStories = {
     { type: 'money', target: 80000, text: 'Have $80,000 cash on hand' },
     { type: 'gang', target: 10, text: 'Have 10 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
+    { type: 'reputation', target: 3790, text: 'Reach 3790 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
   choice: null,
@@ -1549,7 +1545,7 @@ export const familyStories = {
     { type: 'money', target: 100000, text: 'Have $100,000 cash on hand' },
     { type: 'gang', target: 10, text: 'Have 10 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 675, text: 'Reach 675 Respect' }
+    { type: 'reputation', target: 3995, text: 'Reach 3995 Respect' }
   ],
   rewards: { money: 30000, experience: 700, reputation: 18 },
   choice: {
@@ -1585,7 +1581,7 @@ export const familyStories = {
     { type: 'money', target: 120000, text: 'Have $120,000 cash on hand' },
     { type: 'gang', target: 11, text: 'Have 11 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 725, text: 'Reach 725 Respect' }
+    { type: 'reputation', target: 4200, text: 'Reach 4200 Respect' }
   ],
   rewards: { money: 44000, experience: 960, reputation: 24 },
   choice: null,
@@ -1627,7 +1623,7 @@ export const familyStories = {
     { type: 'money', target: 140000, text: 'Have $140,000 cash on hand' },
     { type: 'gang', target: 12, text: 'Have 12 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
+    { type: 'reputation', target: 4405, text: 'Reach 4405 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
   choice: null,
@@ -1656,7 +1652,7 @@ export const familyStories = {
     { type: 'money', target: 170000, text: 'Have $170,000 cash on hand' },
     { type: 'gang', target: 13, text: 'Have 13 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 875, text: 'Reach 875 Respect' }
+    { type: 'reputation', target: 4610, text: 'Reach 4610 Respect' }
   ],
   rewards: { money: 72000, experience: 1480, reputation: 37 },
   choice: null,
@@ -1686,7 +1682,7 @@ export const familyStories = {
     { type: 'money', target: 200000, text: 'Have $200,000 cash on hand' },
     { type: 'gang', target: 14, text: 'Have 14 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 950, text: 'Reach 950 Respect' }
+    { type: 'reputation', target: 4815, text: 'Reach 4815 Respect' }
   ],
   rewards: { money: 86000, experience: 1740, reputation: 44 },
   choice: {
@@ -1722,7 +1718,7 @@ export const familyStories = {
     { type: 'money', target: 250000, text: 'Have $250,000 cash on hand' },
     { type: 'gang', target: 15, text: 'Have 15 gang members' },
     { type: 'properties', target: 5, text: 'Own 5 properties' },
-    { type: 'reputation', target: 1050, text: 'Reach 1050 Respect' }
+    { type: 'reputation', target: 5020, text: 'Reach 5020 Respect' }
   ],
   rewards: { money: 100000, experience: 2000, reputation: 50 },
   choice: {
@@ -1778,7 +1774,8 @@ export const familyStories = {
   ],
   objectives: [
     { type: 'jobs', target: 5, text: 'Complete 5 jobs (Any Job)' },
-    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' }
+    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' },
+    { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
   ],
   rewards: { money: 500, experience: 50, reputation: 2 },
   choice: {
@@ -1811,7 +1808,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 8, text: 'Complete 8 jobs (Any Job)' },
     { type: 'money', target: 1500, text: 'Have $1,500 cash on hand' },
-    { type: 'reputation', target: 10, text: 'Reach 10 Respect' }
+    { type: 'reputation', target: 305, text: 'Reach 305 Respect' }
   ],
   rewards: { money: 875, experience: 68, reputation: 3 },
   choice: null,
@@ -1839,7 +1836,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 12, text: 'Complete 12 jobs (Any Job)' },
     { type: 'money', target: 2500, text: 'Have $2,500 cash on hand' },
-    { type: 'reputation', target: 20, text: 'Reach 20 Respect' }
+    { type: 'reputation', target: 510, text: 'Reach 510 Respect' }
   ],
   rewards: { money: 1250, experience: 85, reputation: 3 },
   choice: {
@@ -1872,7 +1869,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 15, text: 'Complete 15 jobs (Any Job)' },
     { type: 'money', target: 3500, text: 'Have $3,500 cash on hand' },
-    { type: 'reputation', target: 35, text: 'Reach 35 Respect' }
+    { type: 'reputation', target: 715, text: 'Reach 715 Respect' }
   ],
   rewards: { money: 1625, experience: 103, reputation: 4 },
   choice: null,
@@ -1899,7 +1896,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 18, text: 'Complete 18 jobs (Any Job)' },
     { type: 'money', target: 5000, text: 'Have $5,000 cash on hand' },
-    { type: 'reputation', target: 50, text: 'Reach 50 Respect' }
+    { type: 'reputation', target: 920, text: 'Reach 920 Respect' }
   ],
   rewards: { money: 2000, experience: 120, reputation: 4 },
   choice: {
@@ -1933,7 +1930,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 22, text: 'Complete 22 jobs (Any Job)' },
     { type: 'money', target: 7000, text: 'Have $7,000 cash on hand' },
-    { type: 'reputation', target: 75, text: 'Reach 75 Respect' }
+    { type: 'reputation', target: 1125, text: 'Reach 1125 Respect' }
   ],
   rewards: { money: 2800, experience: 140, reputation: 5 },
   choice: null,
@@ -1962,7 +1959,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 25, text: 'Complete 25 jobs (Any Job)' },
     { type: 'money', target: 9000, text: 'Have $9,000 cash on hand' },
-    { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
+    { type: 'reputation', target: 1330, text: 'Reach 1330 Respect' }
   ],
   rewards: { money: 3600, experience: 160, reputation: 6 },
   choice: {
@@ -1995,7 +1992,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 28, text: 'Complete 28 jobs (Any Job)' },
     { type: 'money', target: 12000, text: 'Have $12,000 cash on hand' },
-    { type: 'reputation', target: 130, text: 'Reach 130 Respect' },
+    { type: 'reputation', target: 1535, text: 'Reach 1535 Respect' },
     { type: 'gang', target: 2, text: 'Have 2 gang members' }
   ],
   rewards: { money: 4400, experience: 180, reputation: 6 },
@@ -2023,7 +2020,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 32, text: 'Complete 32 jobs (Any Job)' },
     { type: 'money', target: 15000, text: 'Have $15,000 cash on hand' },
-    { type: 'reputation', target: 175, text: 'Reach 175 Respect' },
+    { type: 'reputation', target: 1740, text: 'Reach 1740 Respect' },
     { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 5200, experience: 200, reputation: 7 },
@@ -2058,7 +2055,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 35, text: 'Complete 35 jobs (Any Job)' },
     { type: 'money', target: 18000, text: 'Have $18,000 cash on hand' },
-    { type: 'reputation', target: 200, text: 'Reach 200 Respect' },
+    { type: 'reputation', target: 1945, text: 'Reach 1945 Respect' },
     { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 6000, experience: 220, reputation: 8 },
@@ -2087,7 +2084,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 38, text: 'Complete 38 jobs (Any Job)' },
     { type: 'money', target: 22000, text: 'Have $22,000 cash on hand' },
-    { type: 'reputation', target: 250, text: 'Reach 250 Respect' },
+    { type: 'reputation', target: 2150, text: 'Reach 2150 Respect' },
     { type: 'gang', target: 4, text: 'Have 4 gang members' }
   ],
   rewards: { money: 7200, experience: 256, reputation: 9 },
@@ -2121,7 +2118,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 40, text: 'Complete 40 jobs (Any Job)' },
     { type: 'money', target: 26000, text: 'Have $26,000 cash on hand' },
-    { type: 'reputation', target: 300, text: 'Reach 300 Respect' },
+    { type: 'reputation', target: 2355, text: 'Reach 2355 Respect' },
     { type: 'gang', target: 5, text: 'Have 5 gang members' }
   ],
   rewards: { money: 8400, experience: 292, reputation: 10 },
@@ -2149,7 +2146,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 43, text: 'Complete 43 jobs (Any Job)' },
     { type: 'money', target: 30000, text: 'Have $30,000 cash on hand' },
-    { type: 'reputation', target: 350, text: 'Reach 350 Respect' },
+    { type: 'reputation', target: 2560, text: 'Reach 2560 Respect' },
     { type: 'gang', target: 5, text: 'Have 5 gang members' },
     { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
@@ -2184,7 +2181,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 46, text: 'Complete 46 jobs (Any Job)' },
     { type: 'money', target: 35000, text: 'Have $35,000 cash on hand' },
-    { type: 'reputation', target: 400, text: 'Reach 400 Respect' },
+    { type: 'reputation', target: 2765, text: 'Reach 2765 Respect' },
     { type: 'gang', target: 6, text: 'Have 6 gang members' },
     { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
@@ -2214,7 +2211,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 50, text: 'Complete 50 jobs (Any Job)' },
     { type: 'money', target: 40000, text: 'Have $40,000 cash on hand' },
-    { type: 'reputation', target: 450, text: 'Reach 450 Respect' },
+    { type: 'reputation', target: 2970, text: 'Reach 2970 Respect' },
     { type: 'gang', target: 7, text: 'Have 7 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' }
   ],
@@ -2250,10 +2247,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 53, text: 'Complete 53 jobs (Any Job)' },
     { type: 'money', target: 50000, text: 'Have $50,000 cash on hand' },
-    { type: 'reputation', target: 475, text: 'Reach 475 Respect' },
     { type: 'gang', target: 7, text: 'Have 7 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 500, text: 'Reach 500 Respect' }
+    { type: 'reputation', target: 3175, text: 'Reach 3175 Respect' }
   ],
   rewards: { money: 15600, experience: 460, reputation: 13 },
   choice: null,
@@ -2281,10 +2277,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 56, text: 'Complete 56 jobs (Any Job)' },
     { type: 'money', target: 60000, text: 'Have $60,000 cash on hand' },
-    { type: 'reputation', target: 525, text: 'Reach 525 Respect' },
     { type: 'gang', target: 8, text: 'Have 8 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 550, text: 'Reach 550 Respect' }
+    { type: 'reputation', target: 3380, text: 'Reach 3380 Respect' }
   ],
   rewards: { money: 19200, experience: 520, reputation: 14 },
   choice: {
@@ -2317,10 +2312,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 60, text: 'Complete 60 jobs (Any Job)' },
     { type: 'money', target: 70000, text: 'Have $70,000 cash on hand' },
-    { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
     { type: 'gang', target: 9, text: 'Have 9 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
+    { type: 'reputation', target: 3585, text: 'Reach 3585 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
   choice: null,
@@ -2350,7 +2344,7 @@ export const familyStories = {
     { type: 'money', target: 80000, text: 'Have $80,000 cash on hand' },
     { type: 'gang', target: 10, text: 'Have 10 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
+    { type: 'reputation', target: 3790, text: 'Reach 3790 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
   choice: {
@@ -2387,7 +2381,7 @@ export const familyStories = {
     { type: 'money', target: 100000, text: 'Have $100,000 cash on hand' },
     { type: 'gang', target: 10, text: 'Have 10 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 675, text: 'Reach 675 Respect' }
+    { type: 'reputation', target: 3995, text: 'Reach 3995 Respect' }
   ],
   rewards: { money: 30000, experience: 700, reputation: 18 },
   choice: null,
@@ -2418,7 +2412,7 @@ export const familyStories = {
     { type: 'money', target: 120000, text: 'Have $120,000 cash on hand' },
     { type: 'gang', target: 11, text: 'Have 11 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 725, text: 'Reach 725 Respect' }
+    { type: 'reputation', target: 4200, text: 'Reach 4200 Respect' }
   ],
   rewards: { money: 44000, experience: 960, reputation: 24 },
   choice: null,
@@ -2448,7 +2442,7 @@ export const familyStories = {
     { type: 'money', target: 140000, text: 'Have $140,000 cash on hand' },
     { type: 'gang', target: 12, text: 'Have 12 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
+    { type: 'reputation', target: 4405, text: 'Reach 4405 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
   choice: {
@@ -2484,7 +2478,7 @@ export const familyStories = {
     { type: 'money', target: 170000, text: 'Have $170,000 cash on hand' },
     { type: 'gang', target: 13, text: 'Have 13 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 875, text: 'Reach 875 Respect' }
+    { type: 'reputation', target: 4610, text: 'Reach 4610 Respect' }
   ],
   rewards: { money: 72000, experience: 1480, reputation: 37 },
   choice: null,
@@ -2514,7 +2508,7 @@ export const familyStories = {
     { type: 'money', target: 200000, text: 'Have $200,000 cash on hand' },
     { type: 'gang', target: 14, text: 'Have 14 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 950, text: 'Reach 950 Respect' }
+    { type: 'reputation', target: 4815, text: 'Reach 4815 Respect' }
   ],
   rewards: { money: 86000, experience: 1740, reputation: 44 },
   choice: {
@@ -2550,7 +2544,7 @@ export const familyStories = {
     { type: 'money', target: 250000, text: 'Have $250,000 cash on hand' },
     { type: 'gang', target: 15, text: 'Have 15 gang members' },
     { type: 'properties', target: 5, text: 'Own 5 properties' },
-    { type: 'reputation', target: 1050, text: 'Reach 1050 Respect' }
+    { type: 'reputation', target: 5020, text: 'Reach 5020 Respect' }
   ],
   rewards: { money: 100000, experience: 2000, reputation: 50 },
   choice: {
@@ -2594,7 +2588,8 @@ export const familyStories = {
   ],
   objectives: [
     { type: 'jobs', target: 5, text: 'Complete 5 jobs (Any Job)' },
-    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' }
+    { type: 'money', target: 1000, text: 'Have $1,000 cash on hand' },
+    { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
   ],
   rewards: { money: 500, experience: 50, reputation: 2 },
   choice: {
@@ -2627,7 +2622,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 8, text: 'Complete 8 jobs (Any Job)' },
     { type: 'money', target: 1500, text: 'Have $1,500 cash on hand' },
-    { type: 'reputation', target: 10, text: 'Reach 10 Respect' }
+    { type: 'reputation', target: 305, text: 'Reach 305 Respect' }
   ],
   rewards: { money: 875, experience: 68, reputation: 2 },
   choice: null,
@@ -2654,7 +2649,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 12, text: 'Complete 12 jobs (Any Job)' },
     { type: 'money', target: 2500, text: 'Have $2,500 cash on hand' },
-    { type: 'reputation', target: 20, text: 'Reach 20 Respect' }
+    { type: 'reputation', target: 510, text: 'Reach 510 Respect' }
   ],
   rewards: { money: 1250, experience: 85, reputation: 3 },
   choice: {
@@ -2687,7 +2682,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 15, text: 'Complete 15 jobs (Any Job)' },
     { type: 'money', target: 3500, text: 'Have $3,500 cash on hand' },
-    { type: 'reputation', target: 35, text: 'Reach 35 Respect' }
+    { type: 'reputation', target: 715, text: 'Reach 715 Respect' }
   ],
   rewards: { money: 1625, experience: 103, reputation: 4 },
   choice: null,
@@ -2714,7 +2709,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 18, text: 'Complete 18 jobs (Any Job)' },
     { type: 'money', target: 5000, text: 'Have $5,000 cash on hand' },
-    { type: 'reputation', target: 50, text: 'Reach 50 Respect' }
+    { type: 'reputation', target: 920, text: 'Reach 920 Respect' }
   ],
   rewards: { money: 2000, experience: 120, reputation: 4 },
   choice: {
@@ -2747,7 +2742,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 22, text: 'Complete 22 jobs (Any Job)' },
     { type: 'money', target: 7000, text: 'Have $7,000 cash on hand' },
-    { type: 'reputation', target: 75, text: 'Reach 75 Respect' }
+    { type: 'reputation', target: 1125, text: 'Reach 1125 Respect' }
   ],
   rewards: { money: 2800, experience: 140, reputation: 5 },
   choice: {
@@ -2780,7 +2775,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 25, text: 'Complete 25 jobs (Any Job)' },
     { type: 'money', target: 9000, text: 'Have $9,000 cash on hand' },
-    { type: 'reputation', target: 100, text: 'Reach 100 Respect' }
+    { type: 'reputation', target: 1330, text: 'Reach 1330 Respect' }
   ],
   rewards: { money: 3600, experience: 160, reputation: 6 },
   choice: null,
@@ -2808,7 +2803,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 28, text: 'Complete 28 jobs (Any Job)' },
     { type: 'money', target: 12000, text: 'Have $12,000 cash on hand' },
-    { type: 'reputation', target: 130, text: 'Reach 130 Respect' },
+    { type: 'reputation', target: 1535, text: 'Reach 1535 Respect' },
     { type: 'gang', target: 2, text: 'Have 2 gang members' }
   ],
   rewards: { money: 4400, experience: 180, reputation: 6 },
@@ -2842,7 +2837,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 32, text: 'Complete 32 jobs (Any Job)' },
     { type: 'money', target: 15000, text: 'Have $15,000 cash on hand' },
-    { type: 'reputation', target: 175, text: 'Reach 175 Respect' },
+    { type: 'reputation', target: 1740, text: 'Reach 1740 Respect' },
     { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 5200, experience: 200, reputation: 7 },
@@ -2870,7 +2865,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 35, text: 'Complete 35 jobs (Any Job)' },
     { type: 'money', target: 18000, text: 'Have $18,000 cash on hand' },
-    { type: 'reputation', target: 200, text: 'Reach 200 Respect' },
+    { type: 'reputation', target: 1945, text: 'Reach 1945 Respect' },
     { type: 'gang', target: 3, text: 'Have 3 gang members' }
   ],
   rewards: { money: 6000, experience: 220, reputation: 8 },
@@ -2916,7 +2911,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 38, text: 'Complete 38 jobs (Any Job)' },
     { type: 'money', target: 22000, text: 'Have $22,000 cash on hand' },
-    { type: 'reputation', target: 250, text: 'Reach 250 Respect' },
+    { type: 'reputation', target: 2150, text: 'Reach 2150 Respect' },
     { type: 'gang', target: 4, text: 'Have 4 gang members' }
   ],
   rewards: { money: 7200, experience: 256, reputation: 9 },
@@ -2944,7 +2939,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 40, text: 'Complete 40 jobs (Any Job)' },
     { type: 'money', target: 26000, text: 'Have $26,000 cash on hand' },
-    { type: 'reputation', target: 300, text: 'Reach 300 Respect' },
+    { type: 'reputation', target: 2355, text: 'Reach 2355 Respect' },
     { type: 'gang', target: 5, text: 'Have 5 gang members' }
   ],
   rewards: { money: 8400, experience: 292, reputation: 10 },
@@ -2978,7 +2973,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 43, text: 'Complete 43 jobs (Any Job)' },
     { type: 'money', target: 30000, text: 'Have $30,000 cash on hand' },
-    { type: 'reputation', target: 350, text: 'Reach 350 Respect' },
+    { type: 'reputation', target: 2560, text: 'Reach 2560 Respect' },
     { type: 'gang', target: 5, text: 'Have 5 gang members' },
     { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
@@ -3008,7 +3003,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 46, text: 'Complete 46 jobs (Any Job)' },
     { type: 'money', target: 35000, text: 'Have $35,000 cash on hand' },
-    { type: 'reputation', target: 400, text: 'Reach 400 Respect' },
+    { type: 'reputation', target: 2765, text: 'Reach 2765 Respect' },
     { type: 'gang', target: 6, text: 'Have 6 gang members' },
     { type: 'properties', target: 1, text: 'Own 1 property' }
   ],
@@ -3043,7 +3038,7 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 50, text: 'Complete 50 jobs (Any Job)' },
     { type: 'money', target: 40000, text: 'Have $40,000 cash on hand' },
-    { type: 'reputation', target: 450, text: 'Reach 450 Respect' },
+    { type: 'reputation', target: 2970, text: 'Reach 2970 Respect' },
     { type: 'gang', target: 7, text: 'Have 7 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' }
   ],
@@ -3072,10 +3067,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 53, text: 'Complete 53 jobs (Any Job)' },
     { type: 'money', target: 50000, text: 'Have $50,000 cash on hand' },
-    { type: 'reputation', target: 475, text: 'Reach 475 Respect' },
     { type: 'gang', target: 7, text: 'Have 7 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 500, text: 'Reach 500 Respect' }
+    { type: 'reputation', target: 3175, text: 'Reach 3175 Respect' }
   ],
   rewards: { money: 15600, experience: 460, reputation: 13 },
   choice: {
@@ -3119,10 +3113,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 56, text: 'Complete 56 jobs (Any Job)' },
     { type: 'money', target: 60000, text: 'Have $60,000 cash on hand' },
-    { type: 'reputation', target: 525, text: 'Reach 525 Respect' },
     { type: 'gang', target: 8, text: 'Have 8 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 550, text: 'Reach 550 Respect' }
+    { type: 'reputation', target: 3380, text: 'Reach 3380 Respect' }
   ],
   rewards: { money: 19200, experience: 520, reputation: 14 },
   choice: null,
@@ -3149,10 +3142,9 @@ export const familyStories = {
   objectives: [
     { type: 'jobs', target: 60, text: 'Complete 60 jobs (Any Job)' },
     { type: 'money', target: 70000, text: 'Have $70,000 cash on hand' },
-    { type: 'reputation', target: 575, text: 'Reach 575 Respect' },
     { type: 'gang', target: 9, text: 'Have 9 gang members' },
     { type: 'properties', target: 2, text: 'Own 2 properties' },
-    { type: 'reputation', target: 600, text: 'Reach 600 Respect' }
+    { type: 'reputation', target: 3585, text: 'Reach 3585 Respect' }
   ],
   rewards: { money: 22800, experience: 580, reputation: 16 },
   choice: {
@@ -3187,7 +3179,7 @@ export const familyStories = {
     { type: 'money', target: 80000, text: 'Have $80,000 cash on hand' },
     { type: 'gang', target: 10, text: 'Have 10 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 625, text: 'Reach 625 Respect' }
+    { type: 'reputation', target: 3790, text: 'Reach 3790 Respect' }
   ],
   rewards: { money: 26400, experience: 640, reputation: 17 },
   choice: null,
@@ -3216,7 +3208,7 @@ export const familyStories = {
     { type: 'money', target: 100000, text: 'Have $100,000 cash on hand' },
     { type: 'gang', target: 10, text: 'Have 10 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 675, text: 'Reach 675 Respect' }
+    { type: 'reputation', target: 3995, text: 'Reach 3995 Respect' }
   ],
   rewards: { money: 30000, experience: 700, reputation: 18 },
   choice: {
@@ -3251,7 +3243,7 @@ export const familyStories = {
     { type: 'money', target: 120000, text: 'Have $120,000 cash on hand' },
     { type: 'gang', target: 11, text: 'Have 11 gang members' },
     { type: 'properties', target: 3, text: 'Own 3 properties' },
-    { type: 'reputation', target: 725, text: 'Reach 725 Respect' }
+    { type: 'reputation', target: 4200, text: 'Reach 4200 Respect' }
   ],
   rewards: { money: 44000, experience: 960, reputation: 24 },
   choice: null,
@@ -3292,7 +3284,7 @@ export const familyStories = {
     { type: 'money', target: 140000, text: 'Have $140,000 cash on hand' },
     { type: 'gang', target: 12, text: 'Have 12 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 800, text: 'Reach 800 Respect' }
+    { type: 'reputation', target: 4405, text: 'Reach 4405 Respect' }
   ],
   rewards: { money: 58000, experience: 1220, reputation: 31 },
   choice: {
@@ -3329,7 +3321,7 @@ export const familyStories = {
     { type: 'money', target: 170000, text: 'Have $170,000 cash on hand' },
     { type: 'gang', target: 13, text: 'Have 13 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 875, text: 'Reach 875 Respect' }
+    { type: 'reputation', target: 4610, text: 'Reach 4610 Respect' }
   ],
   rewards: { money: 72000, experience: 1480, reputation: 37 },
   choice: null,
@@ -3358,7 +3350,7 @@ export const familyStories = {
     { type: 'money', target: 200000, text: 'Have $200,000 cash on hand' },
     { type: 'gang', target: 14, text: 'Have 14 gang members' },
     { type: 'properties', target: 4, text: 'Own 4 properties' },
-    { type: 'reputation', target: 950, text: 'Reach 950 Respect' }
+    { type: 'reputation', target: 4815, text: 'Reach 4815 Respect' }
   ],
   rewards: { money: 86000, experience: 1740, reputation: 44 },
   choice: {
@@ -3395,7 +3387,7 @@ export const familyStories = {
     { type: 'money', target: 250000, text: 'Have $250,000 cash on hand' },
     { type: 'gang', target: 15, text: 'Have 15 gang members' },
     { type: 'properties', target: 5, text: 'Own 5 properties' },
-    { type: 'reputation', target: 1050, text: 'Reach 1050 Respect' }
+    { type: 'reputation', target: 5020, text: 'Reach 5020 Respect' }
   ],
   rewards: { money: 100000, experience: 2000, reputation: 50 },
   choice: null,
