@@ -16653,12 +16653,12 @@ function closeVehiclePurchaseResult() {
 function showLevelUpEffects() {
   // Milestone rewards at key levels
   const milestones = {
-    25: { title: 'Hustler', bonus: 5000, msg: 'You\'re making a name for yourself.' },
-    75: { title: 'Enforcer', bonus: 15000, msg: 'The families are starting to notice you.' },
-    150: { title: 'Made Man', bonus: 50000, msg: 'Your word carries weight now.' },
-    350: { title: 'Underboss', bonus: 100000, msg: 'Half the city answers to you.' },
-    500: { title: 'Crime Lord', bonus: 250000, msg: 'Your empire spans the underworld.' },
-    1000: { title: 'Legendary Kingpin', bonus: 1000000, msg: 'You ARE the legend. History remembers.' }
+    25: { title: 'Hustler', bonus: 5000, msg: 'Word travels fast in the gutter. You\'ve gone from nobody to somebody -- the corner boys know your name, the shopkeepers lock up when you walk past, and the local crews are starting to wonder if you\'re competition.' },
+    75: { title: 'Enforcer', bonus: 15000, msg: 'The families have taken notice. When debts need collecting and messages need sending, your name comes up. You\'ve traded petty crime for real muscle work -- and the pay reflects it.' },
+    150: { title: 'Made Man', bonus: 50000, msg: 'You took the oath. Blood in, no way out. The family has formally recognised you as one of their own -- your word is bond, your enemies are their enemies, and crossing you now means crossing the whole organisation.' },
+    350: { title: 'Underboss', bonus: 100000, msg: 'You sit at the right hand of power. Captains report to you, rackets funnel through your ledger, and even the Don asks your counsel before making moves. Half the city answers to you whether they know it or not.' },
+    500: { title: 'Crime Lord', bonus: 250000, msg: 'Judges, politicians, police chiefs -- they all owe you favours. Your empire stretches across every district, and rival families think twice before stepping on your turf. This city runs on your money and your muscle.' },
+    1000: { title: 'Legendary Kingpin', bonus: 1000000, msg: 'They\'ll write books about you. From a street rat clawing for scraps to the most powerful figure the underworld has ever known -- your name is spoken in whispers and feared in every back room from here to the coast. You are the law now.' }
   };
 
   const currentTier = getReputationTier(player.reputation);

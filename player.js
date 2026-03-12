@@ -344,13 +344,22 @@ export function gainExperience(amount) {
   if (typeof window !== 'undefined' && typeof window.logAction === 'function') {
     window.logAction(`Your reputation grows. (+${amount} rep)`);
   }
-  // Rank-up notification
+  // Rank-up notification with rank-specific ledger flavour
   if (newTier.name !== oldTier.name) {
     if (typeof window !== 'undefined' && typeof window.showLevelUpEffects === 'function') {
       window.showLevelUpEffects();
     }
+    const rankFlavour = {
+      'Hustler': 'The corner boys whisper your name. You\'re not invisible anymore.',
+      'Enforcer': 'The families know who you are now. When fists need to fly, they call you.',
+      'Made Man': 'You took the oath and sealed it in blood. There\'s no going back.',
+      'Underboss': 'Captains answer to you. The Don leans on your judgement.',
+      'Crime Lord': 'Your empire casts a long shadow. Rivals don\'t sleep easy anymore.',
+      'Legendary Kingpin': 'They\'ll carve your name into the history of this city. You are untouchable.'
+    };
+    const flavour = rankFlavour[newTier.name] || `You've earned the title of ${newTier.name}.`;
     if (typeof window !== 'undefined' && typeof window.logAction === 'function') {
-      window.logAction(` The streets recognize your growing power! You've earned the title of ${newTier.name}. Every scar tells a story.`);
+      window.logAction(` ${flavour}`);
     }
     if (typeof window !== 'undefined' && typeof window.showBriefNotification === 'function') {
       window.showBriefNotification(`Rank Up: ${newTier.name}`, 'success');
