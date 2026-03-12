@@ -6159,10 +6159,14 @@ function generateTrainingProgramsHTML() {
   let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">';
 
   trainingPrograms.forEach(program => {
-    const availableMembers = getAvailableMembersForTraining(program.availableFor);
+    const availableMembers = getAvailableMembersForTraining(program.availableFor, program.prerequisite);
+    const noMembers = availableMembers.length === 0;
+    const cantAfford = player.money < program.cost;
+    const disabled = noMembers || cantAfford;
+    const cardOpacity = noMembers ? 'opacity: 0.45;' : '';
 
     html += `
-      <div style="background: rgba(20, 18, 10, 0.6); padding: 15px; border-radius: 8px;">
+      <div style="background: rgba(20, 18, 10, 0.6); padding: 15px; border-radius: 8px; ${cardOpacity}">
         <h5>${program.name}</h5>
         <p style="font-size: 0.9em; margin: 5px 0;">${program.description}</p>
         <div style="font-size: 0.8em; margin: 10px 0;">
@@ -6172,9 +6176,10 @@ function generateTrainingProgramsHTML() {
             `+${value} ${skill}`).join(', ')}<br>
           <strong>Available for:</strong> ${program.availableFor.join(', ')}${program.prerequisite ? `<br><strong>Requires:</strong> ${Object.entries(program.prerequisite).map(([skill, level]) => `${skill} ${level}+`).join(', ')}` : ''}
         </div>
+        ${noMembers ? '<div style="font-size:0.8em;color:#8b3a3a;margin:6px 0;font-style:italic;">No eligible crew members</div>' : ''}
 
-        <select id="training-member-${program.id}" style="width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 5px; background: #1a1610; color: #f5e6c8; border: 1px solid #1abc9c; -webkit-appearance: menulist;">
-          <option value="">Select a crew member</option>
+        <select id="training-member-${program.id}" style="width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 5px; background: #1a1610; color: #f5e6c8; border: 1px solid ${noMembers ? '#555' : '#1abc9c'}; -webkit-appearance: menulist;" ${noMembers ? 'disabled' : ''}>
+          <option value="">${noMembers ? 'No eligible members' : 'Select a crew member'}</option>
           ${availableMembers.map(member => {
             const eName = member.role && GANG_MEMBER_ROLES[member.role] ? GANG_MEMBER_ROLES[member.role].name : member.specialization;
             const safeName = member.name.replace(/"/g, '&quot;');
@@ -6183,10 +6188,10 @@ function generateTrainingProgramsHTML() {
         </select>
 
         <button onclick="enrollInTraining('${program.id}')"
-            style="background: #1abc9c; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; width: 100%;"
-            ${availableMembers.length === 0 || player.money < program.cost ? 'disabled' : ''}>
-          ${player.money < program.cost ? 'Insufficient Funds' :
-           (availableMembers.length === 0 ? 'No Available Members' : `Enroll ($${program.cost})`)}
+            style="background: ${disabled ? '#555' : '#1abc9c'}; color: ${disabled ? '#888' : 'white'}; padding: 8px 15px; border: none; border-radius: 5px; cursor: ${disabled ? 'not-allowed' : 'pointer'}; width: 100%;"
+            ${disabled ? 'disabled' : ''}>
+          ${cantAfford ? 'Insufficient Funds' :
+           (noMembers ? 'No Eligible Members' : `Enroll ($${program.cost})`)}
         </button>
       </div>
     `;
@@ -6197,14 +6202,18 @@ function generateTrainingProgramsHTML() {
 }
 
 // Get available members for training
-// Checks expanded role directly, with legacy specialization fallback
-function getAvailableMembersForTraining(availableFor) {
+// Checks expanded role directly, with legacy specialization fallback, and prerequisites
+function getAvailableMembersForTraining(availableFor, prerequisite) {
   return player.gang.gangMembers.filter(member => {
     const matchesRole = availableFor.includes(member.role);
     const matchesSpecialization = availableFor.includes(member.specialization);
-    return (matchesRole || matchesSpecialization) &&
-      !member.onOperation &&
-      !member.inTraining;
+    if (!(matchesRole || matchesSpecialization)) return false;
+    if (member.onOperation || member.inTraining) return false;
+    if (prerequisite) {
+      const meetsPrereq = Object.entries(prerequisite).every(([skill, level]) => (member[skill] || 0) >= level);
+      if (!meetsPrereq) return false;
+    }
+    return true;
   });
 }
 
@@ -25716,11 +25725,12 @@ function getNotificationBadges() {
     }
   }
 
-  // Turf tribute: badge if cooldown elapsed and player owns zones
+  // Turf tribute: badge on Territories AND Operations when cooldown elapsed
   if (player.turf && player.turf.owned && player.turf.owned.length > 0) {
     const turfHoursSince = (Date.now() - (player.turf.lastTributeCollection || 0)) / 3600000;
     if (turfHoursSince >= 1) {
       badges.territories = true;
+      badges.missions = true;
     }
   }
 
