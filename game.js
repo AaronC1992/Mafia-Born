@@ -5424,7 +5424,7 @@ function showGang(activeTab) {
   // Tab bar
   const tabs = [
     { id: 'roster', label: 'The Family' },
-    { id: 'operations', label: 'Operations' },
+    { id: 'operations', label: 'Tasks' },
     { id: 'training', label: 'Training' },
     { id: 'recruitment', label: 'Recruitment' }
   ];
@@ -5487,7 +5487,7 @@ function showGang(activeTab) {
 
       members.forEach((member, index) => {
         let statusText = member.arrested ? 'Arrested' :
-                  member.onOperation ? 'On Operation' :
+                  member.onOperation ? 'On Task' :
                   member.inTraining ? 'In Training' :
                   member.assignedTo && member.assignedTo.startsWith('business_') ? 'Managing Business' :
                   'Available';
@@ -5579,11 +5579,11 @@ function showGang(activeTab) {
     }
   }
 
-  // ===== OPERATIONS TAB =====
+  // ===== TASKS TAB =====
   if (tab === 'operations') {
     gangHTML += `
       <div style="margin-top:20px;">
-        <p style="color:#8a7a5a;">Assign crew members to criminal operations. Each operation requires a specific role.</p>
+        <p style="color:#8a7a5a;">Assign crew members to gang tasks. Each task requires a specific role.</p>
         ${generateGangOperationsHTML()}
       </div>
     `;
@@ -5776,7 +5776,7 @@ function showGangManagementScreen() {
 
     members.forEach((member, index) => {
       let statusText = member.arrested ? 'Arrested' :
-                member.onOperation ? 'On Operation' :
+                member.onOperation ? 'On Task' :
                 member.inTraining ? 'In Training' : 'Available';
       const statusColor = member.arrested ? '#8b3a3a' : member.onOperation ? '#c0a040' : member.inTraining ? '#8b6a4a' : '#8a9a6a';
 
@@ -5790,7 +5790,7 @@ function showGangManagementScreen() {
         if (opData) {
           const opDef = gangOperations.find(o => o.id === opData.operationId);
           const opName = opDef ? opDef.name : 'Unknown';
-          statusText = `On Op: ${opName}`;
+          statusText = `On Task: ${opName}`;
           const elapsed = Date.now() - opData.startTime;
           const remaining = Math.max(0, opData.duration - elapsed);
           statusText += remaining > 0 ? ` (${formatCountdown(remaining)})` : ' (Completing...)';
@@ -5968,14 +5968,14 @@ function generateGangOperationsHTML() {
         <button onclick="startGangOperation('${operation.id}')"
             style="background: #8b3a3a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%;"
             ${availableMembers.length === 0 || isOnCooldown || activeOp ? 'disabled' : ''}>
-          ${activeOp ? 'In Progress' : (isOnCooldown ? 'On Cooldown' : (availableMembers.length === 0 ? 'No Available Members' : 'Start Operation'))}
+          ${activeOp ? 'In Progress' : (isOnCooldown ? 'On Cooldown' : (availableMembers.length === 0 ? 'No Available Members' : 'Start Task'))}
         </button>
         `}
       </div>
     `;
   });
 
-  return html || '<p>No gang operations available</p>';
+  return html || '<p>No gang tasks available</p>';
 }
 
 // Get available members for a specific operation role
@@ -6046,7 +6046,7 @@ function generateGangMembersHTML() {
     const roleName = expandedRole ? `${expandedRole.icon || ''} ${expandedRole.name}`.trim() : (role ? role.name : 'Unassigned');
     const perkText = expandedRole && expandedRole.perk ? `<br><strong>Perk:</strong> <em>${expandedRole.perk.name}</em> -- ${expandedRole.perk.effect}` : '';
     let statusText = member.arrested ? 'Arrested' :
-             member.onOperation ? 'On Operation' :
+             member.onOperation ? 'On Task' :
              member.inTraining ? 'In Training' :
              member.assignedTo && member.assignedTo.startsWith('business_') ? 'Managing Business' :
              'Available';
@@ -6065,7 +6065,7 @@ function generateGangMembersHTML() {
         const elapsed = Date.now() - opData.startTime;
         const remaining = Math.max(0, opData.duration - elapsed);
         const pct = Math.min(100, Math.floor((elapsed / opData.duration) * 100));
-        statusText = `On Operation: ${opName}`;
+        statusText = `On Task: ${opName}`;
         operationProgressHTML = `<div style="margin:4px 0 2px;">
           <div style="display:flex;justify-content:space-between;font-size:0.8em;color:#c0a040;margin-bottom:2px;">
             <span>${remaining > 0 ? formatCountdown(remaining) + ' left' : 'Completing...'}</span>
@@ -6225,7 +6225,7 @@ function startGangOperation(operationId) {
   // Enforce reputation requirement server-side
   const playerRep = Math.floor(player.reputation || 0);
   if (playerRep < (operation.requiredReputation || 0)) {
-    showBriefNotification('You don\'t have enough reputation for this operation.', 'warning');
+    showBriefNotification('You don\'t have enough reputation for this task.', 'warning');
     return;
   }
 
@@ -6238,7 +6238,7 @@ function startGangOperation(operationId) {
   const selectedMemberName = memberSelect.value;
 
   if (!selectedMemberName) {
-    showBriefNotification('Please select a gang member for this operation.', 'warning');
+    showBriefNotification('Please select a gang member for this task.', 'warning');
     return;
   }
 
@@ -6266,7 +6266,7 @@ function startGangOperation(operationId) {
 
   const adjHours = Math.round(operation.duration * tier.durationMult * 10) / 10;
   showBriefNotification(`${member.name} has started the ${operation.name} (${tier.label}). It will complete in ${adjHours} hours.`, 'success');
-  logAction(`${member.name} heads out on a ${operation.name} mission (${tier.label}). The crew is earning their keep while you handle bigger things.`);
+  logAction(`${member.name} heads out on the ${operation.name} (${tier.label}). The crew is earning their keep while you handle bigger things.`);
 
   updateUI();
   showGang('operations');
@@ -6319,7 +6319,7 @@ function completeGangOperation(operationData) {
   // Check for operation failure based on member skill
   if (Math.random() * 100 >= successChance) {
     player.gang.activeOperations = player.gang.activeOperations.filter(op => op !== operationData);
-    showBriefNotification(`${member.name} failed the ${operation.name}. The operation didn't go as planned.`, 'warning');
+    showBriefNotification(`${member.name} failed the ${operation.name}. The task didn't go as planned.`, 'warning');
     logAction(`${member.name} came back empty-handed from the ${operation.name}. Not every job goes smooth.`);
     updateUI();
     return;
@@ -6397,7 +6397,7 @@ function handleOperationBetrayal(member, _operation) {
   player.gang.gangMembers = player.gang.gangMembers.filter(m => m.name !== member.name);
   player.gang.members = Math.max(0, player.gang.members - 1);
 
-  showBriefNotification(`${member.name} betrayed the operation! They disappeared with $${moneyLoss.toLocaleString()} and tipped off the authorities.`, 'danger');
+  showBriefNotification(`${member.name} betrayed the task! They disappeared with $${moneyLoss.toLocaleString()} and tipped off the authorities.`, 'danger');
   logAction(`Betrayal! ${member.name} turns their back on the family, vanishing with your money and leaving a trail for the cops to follow. Trust is a luxury you can't afford (-$${moneyLoss.toLocaleString()}, +5 heat).`);
 
   updateUI();
@@ -6415,7 +6415,7 @@ function handleOperationArrest(member, operation) {
   player.gang.activeOperations = player.gang.activeOperations.filter(op => op.memberName !== member.name);
 
   showBriefNotification(`${member.name} was arrested during the ${operation.name}! They'll be in custody for a while.`, 'danger');
-  logAction(`The operation goes sideways! ${member.name} gets pinched by the law and hauled away in handcuffs. The heat is rising.`);
+  logAction(`The task goes sideways! ${member.name} gets pinched by the law and hauled away in handcuffs. The heat is rising.`);
 
   updateUI();
 }
@@ -25725,11 +25725,10 @@ function getNotificationBadges() {
     }
   }
 
-  // Turf tribute: badge on Territories AND Operations when cooldown elapsed
+  // Turf tribute: badge on Operations only (tribute is collected from The Family screen)
   if (player.turf && player.turf.owned && player.turf.owned.length > 0) {
     const turfHoursSince = (Date.now() - (player.turf.lastTributeCollection || 0)) / 3600000;
     if (turfHoursSince >= 1) {
-      badges.territories = true;
       badges.missions = true;
     }
   }
