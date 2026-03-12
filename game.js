@@ -18380,8 +18380,19 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.35.6';
+const CURRENT_VERSION = '1.35.7';
 const VERSION_UPDATES = {
+  '1.35.7': {
+    title: 'Doctor Lockdown, Rank Flavor Text & Chat Fixes',
+    date: 'March 2026',
+    changes: [
+      'Player is now locked on the Doctor screen during active treatment -- must wait or cancel to leave',
+      'Each reputation rank now has unique story flavor text on rank-up overlay and ledger log',
+      'Fixed newspaper links in world chat unclickable on mobile (text selection blocked taps)',
+      'Fixed duplicate jail messages flooding the ledger',
+      'Fixed arrest messages missing from world chat after jail-message cleanup',
+    ]
+  },
   '1.35.6': {
     title: 'Mobile Newspaper Fix, Security Scrub & README Cleanup',
     date: 'March 2026',

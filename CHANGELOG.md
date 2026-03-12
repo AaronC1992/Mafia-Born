@@ -5,6 +5,15 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.35.7] - 2026-03-12
+
+### Changes
+- Player is now locked on the Doctor screen during active treatment -- must wait or cancel to leave
+- Each reputation rank now has unique story flavor text on rank-up overlay and ledger log
+- Fixed newspaper links in world chat unclickable on mobile (text selection blocked taps)
+- Fixed duplicate jail messages flooding the ledger
+- Fixed arrest messages missing from world chat after jail-message cleanup
+
 ## [1.35.6] - 2026-03-12
 
 ### Changes
