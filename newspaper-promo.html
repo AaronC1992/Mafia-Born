@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Daily Racketeer - Promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Playfair+Display+SC:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-heading: 'Playfair Display SC', 'Playfair Display', 'Georgia', serif;
+    --font-body: 'Libre Baskerville', 'Georgia', 'Times New Roman', serif;
+    --font-typewriter: 'Special Elite', 'Courier New', monospace;
+    --font-display: 'Playfair Display', 'Georgia', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  #newspaper {
+    position: relative;
+    width: 700px;
+    background-color: #f2e6c9;
+    background-image: url('Backgrounds/death-paper.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-blend-mode: lighten;
+    border: 3px solid #8b7355;
+    box-shadow: 0 0 40px rgba(0,0,0,0.7), 4px 4px 12px rgba(0,0,0,0.4);
+    padding: 0;
+  }
+  #newspaper::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(242, 230, 201, 0.25);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #newspaper-content {
+    padding: 40px 36px 30px;
+    color: #000000;
+    font-weight: 700;
+    font-family: var(--font-body);
+    min-height: 400px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .newspaper-masthead {
+    text-align: center;
+    border-bottom: 3px double #3a2a1a;
+    padding-bottom: 10px;
+    margin-bottom: 6px;
+  }
+  .newspaper-title {
+    font-family: var(--font-heading);
+    font-size: 2.4em;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #0e0804;
+    margin: 0;
+    line-height: 1.1;
+  }
+  .newspaper-subtitle {
+    font-family: var(--font-typewriter);
+    font-size: 0.75em;
+    letter-spacing: 3px;
+    color: #000000;
+    font-weight: 600;
+    margin: 2px 0 0;
+  }
+  .newspaper-dateline {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-typewriter);
+    font-size: 0.7em;
+    color: #000000;
+    font-weight: 600;
+    padding: 4px 0;
+    border-bottom: 1px solid #5a4a2a;
+    margin-bottom: 14px;
+  }
+  .newspaper-headline {
+    font-family: var(--font-display);
+    font-size: 1.95em;
+    text-align: center;
+    color: #1a0a00;
+    margin: 10px 0 4px;
+    line-height: 1.15;
+    font-weight: 900;
+  }
+  .newspaper-subhead {
+    font-family: var(--font-body);
+    font-size: 1em;
+    text-align: center;
+    font-style: italic;
+    color: #000000;
+    font-weight: 700;
+    text-shadow: 0 0 0 #000000;
+    -webkit-text-stroke: 0.2px #000000;
+    margin: 0 0 14px;
+  }
+  .newspaper-rule-double {
+    border: none;
+    border-top: 3px double #3a2a1a;
+    margin: 12px 0;
+  }
+  .newspaper-body {
+    font-family: var(--font-body);
+    font-size: 0.92em;
+    line-height: 1.55;
+    color: #000000 !important;
+    font-weight: 700;
+    text-shadow: 0 0 1px #000000;
+    -webkit-text-stroke: 0.3px #000000;
+    text-align: justify;
+    column-count: 2;
+    column-gap: 20px;
+    column-rule: 1px solid #5a4a2a;
+  }
+  .newspaper-body p {
+    margin: 0 0 8px;
+    text-indent: 1.5em;
+    color: #000000 !important;
+  }
+  .newspaper-body p:first-child {
+    text-indent: 0;
+  }
+  .newspaper-body p:first-child::first-letter {
+    font-family: var(--font-display);
+    font-size: 2.8em;
+    float: left;
+    line-height: 0.85;
+    margin: 2px 6px 0 0;
+    color: #1a0a00;
+    font-weight: 900;
+  }
+  .newspaper-stats-box {
+    border: 1px solid #5a4a3a;
+    padding: 10px 14px;
+    margin: 12px 0;
+    background: rgba(220, 200, 160, 0.35);
+    break-inside: avoid;
+  }
+  .newspaper-stats-box h4 {
+    font-family: var(--font-heading);
+    font-size: 0.85em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    color: #1a0a00;
+    border-bottom: 1px solid #8a7a5a;
+    padding-bottom: 4px;
+  }
+  .newspaper-stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-typewriter);
+    font-size: 0.78em;
+    padding: 2px 0;
+    color: #000000 !important;
+    font-weight: 700;
+    -webkit-text-stroke: 0.2px #000000;
+  }
+  .newspaper-footer {
+    text-align: center;
+    font-family: var(--font-typewriter);
+    font-size: 0.7em;
+    color: #000000;
+    font-weight: 700;
+    margin-top: 14px;
+    padding-top: 8px;
+    border-top: 3px double #3a2a1a;
+    font-style: italic;
+  }
+
+  /* Save button */
+  #save-btn {
+    margin-top: 24px;
+    padding: 12px 32px;
+    font-family: var(--font-heading);
+    font-size: 1.1em;
+    letter-spacing: 2px;
+    background: #3a2a1a;
+    color: #f2e6c9;
+    border: 2px solid #8b7355;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #save-btn:hover { background: #5a4a3a; }
+  #info-text {
+    margin-top: 12px;
+    color: #8b7355;
+    font-family: var(--font-typewriter);
+    font-size: 0.85em;
+    text-align: center;
+    max-width: 500px;
+  }
+</style>
+</head>
+<body>
+
+<div id="newspaper">
+  <div id="newspaper-content">
+    <div class="newspaper-masthead">
+      <h2 class="newspaper-title">The Daily Racketeer</h2>
+      <p class="newspaper-subtitle">All the News That&rsquo;s Fit to Print &mdash; And Plenty That Isn&rsquo;t</p>
+    </div>
+    <div class="newspaper-dateline">
+      <span>March 12, 2026</span>
+      <span>Evening Edition</span>
+      <span>Price: Two Cents</span>
+    </div>
+    <h3 class="newspaper-headline">BREAKING: FEDERAL RAID NETS VITO SCALETTA &mdash; BANK JOB EMPIRE CRUMBLES</h3>
+    <p class="newspaper-subhead">Joint federal operation dismantles criminal empire</p>
+    <hr class="newspaper-rule-double">
+    <div class="newspaper-body">
+      <p>In what the FBI is calling &ldquo;the biggest collar of the decade,&rdquo; <strong>Vito Scaletta</strong> was dragged from a safehouse in a pre-dawn raid connected to a sprawling Bank Job enterprise. The Underboss of the Calabrese family offered no resistance.</p>
+      <p>Federal investigators had been building this case for months. The Bank Job ring, allegedly run by Vito Scaletta, moved millions through the city's underground economy. With 247 crimes tied to the operation and 12 known associates, the fallout is expected to reach every corner of the Calabrese family's empire.</p>
+      <p>The judge threw the book at Vito Scaletta, handing down a sentence of <strong>45 seconds</strong> with no possibility of early release through good behavior. The district attorney hinted at further charges pending investigation.</p>
+      <div class="newspaper-stats-box">
+        <h4>Arrest Record</h4>
+        <div class="newspaper-stat-row"><span>Crime</span><span>Bank Job</span></div>
+        <div class="newspaper-stat-row"><span>Risk Level</span><span>Very High</span></div>
+        <div class="newspaper-stat-row"><span>Sentence</span><span>45s</span></div>
+        <div class="newspaper-stat-row"><span>Heat</span><span>72</span></div>
+        <div class="newspaper-stat-row"><span>Net Worth</span><span>$1,843,500</span></div>
+        <div class="newspaper-stat-row"><span>Known Crimes</span><span>247</span></div>
+        <div class="newspaper-stat-row"><span>Gang Size</span><span>12</span></div>
+        <div class="newspaper-stat-row"><span>Reputation</span><span>1,580 (Underboss)</span></div>
+      </div>
+    </div>
+    <div class="newspaper-footer">
+      &ldquo;The law always catches up &mdash; sooner or later.&rdquo;<br>
+      &mdash; The Daily Racketeer, est. 1923
+    </div>
+  </div>
+</div>
+
+<button id="save-btn" onclick="saveAsImage()">SAVE AS IMAGE</button>
+<p id="info-text">Click the button above to save the newspaper as a PNG image. If the button doesn't work, you can also right-click the newspaper and use your browser's screenshot tool, or press F12 &gt; select the #newspaper element &gt; right-click &gt; "Capture node screenshot".</p>
+
+<script>
+function saveAsImage() {
+  const el = document.getElementById('newspaper');
+  // Use html2canvas if available, otherwise fallback instructions
+  if (typeof html2canvas !== 'undefined') {
+    html2canvas(el, { 
+      backgroundColor: null, 
+      scale: 2,
+      useCORS: true 
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'mafia-born-newspaper.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  } else {
+    // Load html2canvas dynamically
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.onload = function() {
+      html2canvas(el, { 
+        backgroundColor: null, 
+        scale: 2,
+        useCORS: true 
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'mafia-born-newspaper.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    };
+    document.head.appendChild(script);
+  }
+}
+</script>
+</body>
+</html>

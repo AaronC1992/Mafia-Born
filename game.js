@@ -3793,7 +3793,7 @@ function assignMemberToBusiness(memberIndex, businessIndex) {
   const member = player.gang.gangMembers[memberIndex];
   const business = (player.businesses || [])[businessIndex];
   if (!member || !business) return;
-  if (member.onOperation || member.inTraining || member.arrested) {
+  if (member.onOperation || member.arrested) {
     showBriefNotification(`${member.name} is not available right now.`, 'warning');
     return;
   }
@@ -3834,7 +3834,7 @@ function getBusinessMemberBonus(business) {
 function processGangPassiveIncome() {
   if (!player.gang || !player.gang.gangMembers) return;
   const idleMembers = player.gang.gangMembers.filter(m =>
-    !m.onOperation && !m.inTraining && !m.arrested && !m.assignedTo
+    !m.onOperation && !m.arrested && !m.assignedTo
   );
   if (idleMembers.length === 0) return;
   let totalEarned = 0;
@@ -4113,68 +4113,6 @@ const OPERATION_TIERS = {
   standard: { label: 'Standard', rewardMult: 1.0, riskMult: 1.0, durationMult: 1.0, xpMult: 1.0, cooldownMult: 1.0 },
   big: { label: 'Big Score', rewardMult: 2.0, riskMult: 1.5, durationMult: 1.5, xpMult: 1.8, cooldownMult: 1.5 }
 };
-
-// Training Programs for Gang Members
-const trainingPrograms = [
-  {
-    id: 'basic_combat',
-    name: 'Basic Combat Training',
-    description: 'Improve fighting skills and intimidation',
-    cost: 300,
-    duration: 12, // hours
-    skillImprovement: {
-      violence: 1
-    },
-    availableFor: ['muscle', 'enforcer']
-  },
-  {
-    id: 'stealth_training',
-    name: 'Stealth Training',
-    description: 'Learn advanced sneaking and lockpicking',
-    cost: 250,
-    duration: 8,
-    skillImprovement: {
-      stealth: 1
-    },
-    availableFor: ['scout', 'driver']
-  },
-  {
-    id: 'business_course',
-    name: 'Business Operations',
-    description: 'Understanding legitimate business operations',
-    cost: 500,
-    duration: 16,
-    skillImprovement: {
-      intelligence: 1
-    },
-    availableFor: ['fixer', 'enforcer', 'hacker', 'accountant']
-  },
-  {
-    id: 'loyalty_building',
-    name: 'Team Building Retreat',
-    description: 'Strengthen bonds and team morale',
-    cost: 400,
-    duration: 6,
-    skillImprovement: {
-      violence: 1,
-      stealth: 1
-    },
-    availableFor: ['bruiser', 'scout', 'fixer', 'enforcer', 'driver', 'hacker', 'accountant']
-  },
-  {
-    id: 'advanced_tactics',
-    name: 'Advanced Tactical Training',
-    description: 'Military-grade tactical training',
-    cost: 1000,
-    duration: 24,
-    skillImprovement: {
-      violence: 2,
-      intelligence: 1
-    },
-    availableFor: ['bruiser', 'enforcer'],
-    prerequisite: { violence: 3 }
-  }
-];
 
 // Betrayal Events and Triggers
 const betrayalEvents = [
@@ -5429,19 +5367,17 @@ function showGang(activeTab) {
   const maxMembers = calculateMaxGangMembers();
   const power = calculateGangPower();
   const activeOps = player.gang.activeOperations.length;
-  const inTraining = player.gang.trainingQueue.length;
 
   // Tab bar
   const tabs = [
     { id: 'roster', label: 'The Family' },
     { id: 'operations', label: 'Tasks' },
-    { id: 'training', label: 'Training' },
     { id: 'recruitment', label: 'Recruitment' }
   ];
 
   let gangHTML = `
     <div class="ops-tabs" style="margin-bottom: 0;">
-      ${tabs.map(t => `<button class="ops-tab${tab === t.id ? ' active' : ''}" onclick="showGang('${t.id}')">${t.label}${t.id === 'operations' && activeOps > 0 ? `<span class="ops-tab-count" style="display:inline-block;background:#8b0000;color:#f5e6c8;font-size:0.7em;padding:1px 6px;border-radius:2px;margin-left:6px;vertical-align:middle;font-family:Arial,sans-serif;">${activeOps}</span>` : ''}${t.id === 'training' && inTraining > 0 ? `<span class="ops-tab-count" style="display:inline-block;background:#1abc9c;color:#fff;font-size:0.7em;padding:1px 6px;border-radius:2px;margin-left:6px;vertical-align:middle;font-family:Arial,sans-serif;">${inTraining}</span>` : ''}</button>`).join('')}
+      ${tabs.map(t => `<button class="ops-tab${tab === t.id ? ' active' : ''}" onclick="showGang('${t.id}')">${t.label}${t.id === 'operations' && activeOps > 0 ? `<span class="ops-tab-count" style="display:inline-block;background:#8b0000;color:#f5e6c8;font-size:0.7em;padding:1px 6px;border-radius:2px;margin-left:6px;vertical-align:middle;font-family:Arial,sans-serif;">${activeOps}</span>` : ''}</button>`).join('')}
     </div>
   `;
 
@@ -5461,10 +5397,6 @@ function showGang(activeTab) {
         <div class="game-card" style="flex:1; min-width:120px; text-align:center;">
           <div style="font-size:1.6em; color:#8b3a3a; font-weight:bold;">${activeOps}</div>
           <div style="font-size:0.8em; color:#8a7a5a; text-transform:uppercase; letter-spacing:1px;">Active Ops</div>
-        </div>
-        <div class="game-card" style="flex:1; min-width:120px; text-align:center;">
-          <div style="font-size:1.6em; color:#1abc9c; font-weight:bold;">${inTraining}</div>
-          <div style="font-size:0.8em; color:#8a7a5a; text-transform:uppercase; letter-spacing:1px;">In Training</div>
         </div>
       </div>
       <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
@@ -5498,10 +5430,9 @@ function showGang(activeTab) {
       members.forEach((member, index) => {
         let statusText = member.arrested ? 'Arrested' :
                   member.onOperation ? 'On Task' :
-                  member.inTraining ? 'In Training' :
                   member.assignedTo && member.assignedTo.startsWith('business_') ? 'Managing Business' :
                   'Available';
-        const statusColor = member.arrested ? '#8b3a3a' : member.onOperation ? '#c0a040' : member.inTraining ? '#1abc9c' : member.assignedTo && member.assignedTo.startsWith('business_') ? '#c0a062' : '#8a9a6a';
+        const statusColor = member.arrested ? '#8b3a3a' : member.onOperation ? '#c0a040' : member.assignedTo && member.assignedTo.startsWith('business_') ? '#c0a062' : '#8a9a6a';
 
         if (member.arrested && member.arrestTime) {
           const remaining = Math.max(0, member.arrestTime - Date.now());
@@ -5514,14 +5445,6 @@ function showGang(activeTab) {
             statusText += remaining > 0 ? ` (${formatCountdown(remaining)})` : ' (Completing...)';
           }
         }
-        if (member.inTraining) {
-          const trainData = player.gang.trainingQueue.find(t => t.memberName === member.name);
-          if (trainData) {
-            const remaining = Math.max(0, (trainData.startTime + trainData.duration) - Date.now());
-            statusText += remaining > 0 ? ` (${formatCountdown(remaining)})` : ' (Completing...)';
-          }
-        }
-
         const expandedRole = member.role ? GANG_MEMBER_ROLES[member.role] : null;
         const role = specialistRoles.find(r => r.id === member.specialization);
         const roleName = expandedRole ? `${expandedRole.name}` : (role ? role.name : 'Unassigned');
@@ -5537,7 +5460,7 @@ function showGang(activeTab) {
         const businesses = player.businesses || [];
         const isManagingBusiness = member.assignedTo && member.assignedTo.startsWith('business_');
         let businessHTML = '';
-        if (!member.onOperation && !member.inTraining && !member.arrested) {
+        if (!member.onOperation && !member.arrested) {
           if (isManagingBusiness) {
             const bIdx = parseInt(member.assignedTo.replace('business_', ''));
             const biz = businesses[bIdx];
@@ -5573,9 +5496,6 @@ function showGang(activeTab) {
             </div>
             ${businessHTML}
             <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:8px;">
-              ${!member.onOperation && !member.inTraining && !member.arrested ? `
-                <button onclick="startTraining(${index})" style="background:#1abc9c; color:white; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:0.8em;">Train</button>
-              ` : ''}
               ${member.arrested ? `
                 <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:0.8em;">Break Out</button>
               ` : ''}
@@ -5595,16 +5515,6 @@ function showGang(activeTab) {
       <div style="margin-top:20px;">
         <p style="color:#8a7a5a;">Assign crew members to gang tasks. Each task requires a specific role.</p>
         ${generateGangOperationsHTML()}
-      </div>
-    `;
-  }
-
-  // ===== TRAINING TAB =====
-  if (tab === 'training') {
-    gangHTML += `
-      <div style="margin-top:20px;">
-        <p style="color:#8a7a5a;">Enroll crew members in training programs to improve their skills and level.</p>
-        ${generateTrainingProgramsHTML()}
       </div>
     `;
   }
@@ -5786,9 +5696,8 @@ function showGangManagementScreen() {
 
     members.forEach((member, index) => {
       let statusText = member.arrested ? 'Arrested' :
-                member.onOperation ? 'On Task' :
-                member.inTraining ? 'In Training' : 'Available';
-      const statusColor = member.arrested ? '#8b3a3a' : member.onOperation ? '#c0a040' : member.inTraining ? '#8b6a4a' : '#8a9a6a';
+                member.onOperation ? 'On Task' : 'Available';
+      const statusColor = member.arrested ? '#8b3a3a' : member.onOperation ? '#c0a040' : '#8a9a6a';
 
       // Add countdown timer to status
       if (member.arrested && member.arrestTime) {
@@ -5804,17 +5713,6 @@ function showGangManagementScreen() {
           const elapsed = Date.now() - opData.startTime;
           const remaining = Math.max(0, opData.duration - elapsed);
           statusText += remaining > 0 ? ` (${formatCountdown(remaining)})` : ' (Completing...)';
-        }
-      }
-      if (member.inTraining) {
-        const trainData = player.gang.trainingQueue.find(t => t.memberName === member.name);
-        if (trainData) {
-          const remaining = Math.max(0, (trainData.startTime + trainData.duration) - Date.now());
-          if (remaining > 0) {
-            statusText += ` (${formatCountdown(remaining)})`;
-          } else {
-            statusText += ' (Completing...)';
-          }
         }
       }
       const role = member.specialization || 'none';
@@ -5860,11 +5758,6 @@ function showGangManagementScreen() {
           </div>
 
           <div style="display:flex; flex-wrap:wrap; gap:5px;">
-            ${!member.onOperation && !member.inTraining && !member.arrested ? `
-              <button onclick="startTraining(${index})" style="background:#1abc9c; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
-                Train
-              </button>
-            ` : ''}
             ${member.arrested ? `
               <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
                 Break Out
@@ -5998,7 +5891,6 @@ function getAvailableMembersForOperation(requiredRole) {
     const matchesLegacy = legacySpec && member.specialization === legacySpec;
     return (matchesRole || matchesSpecialization || matchesLegacy) &&
       !member.onOperation &&
-      !member.inTraining &&
       !member.arrested;
   });
 }
@@ -6057,7 +5949,6 @@ function generateGangMembersHTML() {
     const perkText = expandedRole && expandedRole.perk ? `<br><strong>Perk:</strong> <em>${expandedRole.perk.name}</em> -- ${expandedRole.perk.effect}` : '';
     let statusText = member.arrested ? 'Arrested' :
              member.onOperation ? 'On Task' :
-             member.inTraining ? 'In Training' :
              member.assignedTo && member.assignedTo.startsWith('business_') ? 'Managing Business' :
              'Available';
 
@@ -6087,17 +5978,6 @@ function generateGangMembersHTML() {
         </div>`;
       }
     }
-    if (member.inTraining) {
-      const trainData = player.gang.trainingQueue.find(t => t.memberName === member.name);
-      if (trainData) {
-        const remaining = Math.max(0, (trainData.startTime + trainData.duration) - Date.now());
-        if (remaining > 0) {
-          statusText += ` (${formatCountdown(remaining)})`;
-        } else {
-          statusText += ' (Completing...)';
-        }
-      }
-    }
 
     const loyaltyColor = '#c0a062';
 
@@ -6111,7 +5991,7 @@ function generateGangMembersHTML() {
     const businesses = player.businesses || [];
     const isManagingBusiness = member.assignedTo && member.assignedTo.startsWith('business_');
     let businessHTML = '';
-    if (!member.onOperation && !member.inTraining && !member.arrested) {
+    if (!member.onOperation && !member.arrested) {
       if (isManagingBusiness) {
         const bIdx = parseInt(member.assignedTo.replace('business_', ''));
         const biz = businesses[bIdx];
@@ -6142,11 +6022,6 @@ function generateGangMembersHTML() {
         ${businessHTML}
 
         <div style="margin-top: 10px;">
-          ${!member.onOperation && !member.inTraining && !member.arrested ? `
-            <button onclick="startTraining(${index})" style="background: #1abc9c; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
-              Train
-            </button>
-          ` : ''}
           ${member.arrested ? `
             <button onclick="breakoutGangMember(${index})" style="background: #8b3a3a; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
               Break Out
@@ -6162,69 +6037,6 @@ function generateGangMembersHTML() {
 
   html += '</div>';
   return html;
-}
-
-// Generate training programs HTML
-function generateTrainingProgramsHTML() {
-  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">';
-
-  trainingPrograms.forEach(program => {
-    const availableMembers = getAvailableMembersForTraining(program.availableFor, program.prerequisite);
-    const noMembers = availableMembers.length === 0;
-    const cantAfford = player.money < program.cost;
-    const disabled = noMembers || cantAfford;
-    const cardOpacity = noMembers ? 'opacity: 0.45;' : '';
-
-    html += `
-      <div style="background: rgba(20, 18, 10, 0.6); padding: 15px; border-radius: 8px; ${cardOpacity}">
-        <h5>${program.name}</h5>
-        <p style="font-size: 0.9em; margin: 5px 0;">${program.description}</p>
-        <div style="font-size: 0.8em; margin: 10px 0;">
-          <strong>Cost:</strong> $${program.cost}<br>
-          <strong>Duration:</strong> ${program.duration} hours<br>
-          <strong>Benefits:</strong> ${Object.entries(program.skillImprovement).map(([skill, value]) =>
-            `+${value} ${skill}`).join(', ')}<br>
-          <strong>Available for:</strong> ${program.availableFor.join(', ')}${program.prerequisite ? `<br><strong>Requires:</strong> ${Object.entries(program.prerequisite).map(([skill, level]) => `${skill} ${level}+`).join(', ')}` : ''}
-        </div>
-        ${noMembers ? '<div style="font-size:0.8em;color:#8b3a3a;margin:6px 0;font-style:italic;">No eligible crew members</div>' : ''}
-
-        <select id="training-member-${program.id}" style="width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 5px; background: #1a1610; color: #f5e6c8; border: 1px solid ${noMembers ? '#555' : '#1abc9c'}; -webkit-appearance: menulist;" ${noMembers ? 'disabled' : ''}>
-          <option value="">${noMembers ? 'No eligible members' : 'Select a crew member'}</option>
-          ${availableMembers.map(member => {
-            const eName = member.role && GANG_MEMBER_ROLES[member.role] ? GANG_MEMBER_ROLES[member.role].name : member.specialization;
-            const safeName = member.name.replace(/"/g, '&quot;');
-            return `<option value="${safeName}">${member.name} (${eName})</option>`;
-          }).join('')}
-        </select>
-
-        <button onclick="enrollInTraining('${program.id}')"
-            style="background: ${disabled ? '#555' : '#1abc9c'}; color: ${disabled ? '#888' : 'white'}; padding: 8px 15px; border: none; border-radius: 5px; cursor: ${disabled ? 'not-allowed' : 'pointer'}; width: 100%;"
-            ${disabled ? 'disabled' : ''}>
-          ${cantAfford ? 'Insufficient Funds' :
-           (noMembers ? 'No Eligible Members' : `Enroll ($${program.cost})`)}
-        </button>
-      </div>
-    `;
-  });
-
-  html += '</div>';
-  return html;
-}
-
-// Get available members for training
-// Checks expanded role directly, with legacy specialization fallback, and prerequisites
-function getAvailableMembersForTraining(availableFor, prerequisite) {
-  return player.gang.gangMembers.filter(member => {
-    const matchesRole = availableFor.includes(member.role);
-    const matchesSpecialization = availableFor.includes(member.specialization);
-    if (!(matchesRole || matchesSpecialization)) return false;
-    if (member.onOperation || member.inTraining) return false;
-    if (prerequisite) {
-      const meetsPrereq = Object.entries(prerequisite).every(([skill, level]) => (member[skill] || 0) >= level);
-      if (!meetsPrereq) return false;
-    }
-    return true;
-  });
 }
 
 // Start a gang operation
@@ -6355,8 +6167,29 @@ function completeGangOperation(operationData) {
   }
 
   if (operation.rewards.vehicle && Math.random() < 0.3) {
-    // 30% chance to get a stolen car
-    // TODO: stealRandomCar() - function not yet implemented
+    // 30% chance to get a stolen car via gang operation
+    let totalRarity = stolenCarTypes.reduce((sum, car) => sum + car.rarity, 0);
+    let randomValue = Math.random() * totalRarity;
+    let currentSum = 0;
+    let selectedCar = stolenCarTypes[0];
+    for (let car of stolenCarTypes) {
+      currentSum += car.rarity;
+      if (randomValue <= currentSum) { selectedCar = car; break; }
+    }
+    const damagePercentage = Math.floor(Math.random() * 36) + 40; // 40-75% damage
+    const currentValue = Math.floor(selectedCar.baseValue * (1 - damagePercentage / 100));
+    const stolenCar = {
+      name: selectedCar.name,
+      baseValue: selectedCar.baseValue,
+      currentValue: currentValue,
+      damagePercentage: damagePercentage,
+      usageCount: 0,
+      image: selectedCar.image || `vehicles/${selectedCar.name}.png`
+    };
+    player.stolenCars.push(stolenCar);
+    updateStatistic('carsStolen');
+    showBriefNotification(`${member.name} boosted a ${selectedCar.name} during the job! Stored in your garage.`, 'success');
+    logAction(`Your crew comes back with more than just cash -- ${member.name} rolled up in a hot ${selectedCar.name}. It's been stashed in the garage.`);
   }
 
   // Update member stats -- members gain XP and level up (scaled by tier)
@@ -6431,163 +6264,6 @@ function handleOperationArrest(member, operation) {
 }
 
 
-
-// Start training for a gang member
-async function startTraining(memberIndex) {
-  const member = player.gang.gangMembers[memberIndex];
-  if (!member || member.inTraining) return;
-
-  // Check both legacy specialization and expanded role mapping
-  const memberSpec = member.specialization || (member.role ? EXPANDED_TO_SPECIALIZATION[member.role] : null);
-  const availablePrograms = trainingPrograms.filter(program =>
-    memberSpec && program.availableFor.includes(memberSpec)
-  );
-
-  if (availablePrograms.length === 0) {
-    showBriefNotification(`No training programs for ${member.name}'s role.`, 'warning');
-    return;
-  }
-
-  let programList = availablePrograms.map((program, index) => {
-    let line = `${index + 1}. ${program.name} - $${program.cost} (${program.duration}h)`;
-    line += `<br>&nbsp;&nbsp;&nbsp;Gains: ${Object.entries(program.skillImprovement).map(([s, v]) => `+${v} ${s}`).join(', ')}`;
-    if (program.prerequisite) {
-      const prereqParts = Object.entries(program.prerequisite).map(([skill, level]) => {
-        const current = member[skill] || 0;
-        const met = current >= level;
-        return `<span style="color:${met ? '#1abc9c' : '#e74c3c'}">${skill} ${current}/${level}</span>`;
-      });
-      line += `<br>&nbsp;&nbsp;&nbsp;Requires: ${prereqParts.join(', ')}`;
-    }
-    return line;
-  }).join('<br><br>');
-
-  const choice = await ui.prompt(`Select training program for ${member.name}:<br><br>${programList}<br><br>Enter program number:`);
-  if (!choice) return;
-
-  const programIndex = parseInt(choice) - 1;
-
-  if (programIndex >= 0 && programIndex < availablePrograms.length) {
-    const program = availablePrograms[programIndex];
-
-    if (player.money < program.cost) {
-      showBriefNotification(`Need $${program.cost} for this training!`, 'danger');
-      return;
-    }
-
-    // Check prerequisites
-    if (program.prerequisite) {
-      const hasPrereq = Object.entries(program.prerequisite).every(([skill, level]) =>
-        member[skill] >= level
-      );
-
-      if (!hasPrereq) {
-        showBriefNotification(`${member.name} doesn't meet the prerequisites for this training.`, 'warning');
-        return;
-      }
-    }
-
-    player.money -= program.cost;
-    member.inTraining = true;
-
-    const trainingData = {
-      memberName: member.name,
-      programId: program.id,
-      startTime: Date.now(),
-      duration: program.duration * 60 * 60 * 1000,
-      improvements: program.skillImprovement
-    };
-
-    player.gang.trainingQueue.push(trainingData);
-
-    // Schedule completion
-    setTimeout(() => {
-      completeTraining(trainingData);
-    }, trainingData.duration);
-
-    showBriefNotification(`${member.name} started ${program.name} training (${program.duration}h)`, 'success');
-    logAction(`${member.name} hits the books and training grounds. Investment in your crew's skills pays dividends in the long run (-$${program.cost}).`);
-
-    updateUI();
-    showGang('roster');
-  }
-}
-
-// Complete training for a gang member
-function completeTraining(trainingData) {
-  const member = player.gang.gangMembers.find(m => m.name === trainingData.memberName);
-  if (!member) return;
-
-  member.inTraining = false;
-
-  // Apply improvements
-  Object.entries(trainingData.improvements).forEach(([skill, improvement]) => {
-    member[skill] = (member[skill] || 0) + improvement;
-  });
-
-  // Remove from training queue
-  player.gang.trainingQueue = player.gang.trainingQueue.filter(t => t !== trainingData);
-
-  showBriefNotification(`${member.name} has completed their training program! Their skills have improved.`, 'success');
-  logAction(`${member.name} graduates from training with new skills and renewed dedication. Your investment in education pays off in capability.`);
-
-  updateUI();
-}
-
-// Enroll a member in training
-function enrollInTraining(programId) {
-  const program = trainingPrograms.find(p => p.id === programId);
-  if (!program) return;
-
-  const memberSelect = document.getElementById(`training-member-${programId}`);
-  const selectedMemberName = memberSelect.value;
-
-  if (!selectedMemberName) {
-    showBriefNotification('Please select a gang member for this training program.', 'success');
-    return;
-  }
-
-  const member = player.gang.gangMembers.find(m => m.name === selectedMemberName);
-  if (!member) return;
-
-  if (player.money < program.cost) {
-    showBriefNotification(`Insufficient funds! Need $${program.cost} for this training program.`, 'danger');
-    return;
-  }
-
-  // Check prerequisites
-  if (program.prerequisite) {
-    const unmet = Object.entries(program.prerequisite).filter(([skill, level]) => (member[skill] || 0) < level);
-    if (unmet.length > 0) {
-      const details = unmet.map(([skill, level]) => `${skill} ${member[skill] || 0}/${level}`).join(', ');
-      showBriefNotification(`${member.name} doesn't meet the prerequisites: ${details}`, 'warning');
-      return;
-    }
-  }
-
-  player.money -= program.cost;
-  member.inTraining = true;
-
-  const trainingData = {
-    memberName: member.name,
-    programId: program.id,
-    startTime: Date.now(),
-    duration: program.duration * 60 * 60 * 1000,
-    improvements: program.skillImprovement
-  };
-
-  player.gang.trainingQueue.push(trainingData);
-
-  setTimeout(() => {
-    completeTraining(trainingData);
-  }, trainingData.duration);
-
-  showBriefNotification(`${member.name} has enrolled in ${program.name}. Training will complete in ${program.duration} hours.`, 'success');
-  logAction(`${member.name} begins intensive training in ${program.name}. Skilled soldiers make for a stronger organization (-$${program.cost}).`);
-
-  updateUI();
-  showGang('training');
-}
 
 // Check for betrayal events
 function checkForBetrayals() {
@@ -7395,7 +7071,7 @@ function buildTurfDefendersHTML(zone) {
     (z.defendingMembers || []).forEach(id => allDefendingIds.add(id));
   });
   const available = allMembers.filter(m =>
-    !m.arrested && !m.onOperation && !m.inTraining && !allDefendingIds.has(m.id)
+    !m.arrested && !m.onOperation && !allDefendingIds.has(m.id)
   );
 
   let html = `<div style="background:rgba(0,0,0,0.3);border:1px solid #444;border-radius:10px;padding:15px;margin-bottom:20px;">
@@ -9128,7 +8804,7 @@ function refreshCurrentScreen() {
   // Skills -- no per-second refresh needed (points update in HUD bar)
   // Business -- no per-second refresh needed
 
-  // Gang screen -- refresh timer countdowns for operations and training
+  // Gang screen -- refresh timer countdowns for operations
   const gangScreen = document.getElementById('gang-screen');
   if (gangScreen && gangScreen.style.display !== 'none') {
     refreshGangTimers();
@@ -9137,13 +8813,12 @@ function refreshCurrentScreen() {
 }
 
 // Lightweight per-second gang timer refresh -- re-renders the gang screen
-// only when operations or training are active to keep countdowns live.
+// only when operations are active to keep countdowns live.
 // Throttled to every 5 seconds to avoid scroll/interaction disruption.
 let _lastGangTimerRefresh = 0;
 function refreshGangTimers() {
   const hasActiveTimers =
-    (player.gang.activeOperations && player.gang.activeOperations.length > 0) ||
-    (player.gang.trainingQueue && player.gang.trainingQueue.length > 0);
+    (player.gang.activeOperations && player.gang.activeOperations.length > 0);
   if (!hasActiveTimers) return;
 
   const now = Date.now();
@@ -13362,7 +13037,7 @@ function startSkillTrainingTimer() {
 // Gang rescue attempt -- send your crew to break you out of jail
 async function attemptGangRescue() {
   if (!player.inJail) return;
-  const availableMembers = player.gang.gangMembers.filter(m => !m.arrested && !m.onOperation && !m.inTraining);
+  const availableMembers = player.gang.gangMembers.filter(m => !m.arrested && !m.onOperation);
   if (availableMembers.length === 0) {
     showBriefNotification('No available crew members to send!', 'danger');
     return;
@@ -13823,7 +13498,7 @@ function showJailScreen() {
       bribeBtn.parentNode.insertBefore(rescueEl, bribeBtn.nextSibling);
     }
   }
-  const availableMembers = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.filter(m => !m.arrested && !m.onOperation && !m.inTraining) : [];
+  const availableMembers = (player.gang && player.gang.gangMembers) ? player.gang.gangMembers.filter(m => !m.arrested && !m.onOperation) : [];
   if (availableMembers.length > 0) {
     const rescueChance = Math.min(90, 20 + availableMembers.length * 10);
     rescueEl.innerHTML = `<div style="margin:12px 0;padding:12px;background:rgba(20,18,10,0.6);border-radius:8px;border:1px solid #c0a062;">
@@ -15913,7 +15588,6 @@ function recruitMember(index) {
       newMember.tributeMultiplier = recruit.tributeMultiplier;
       newMember.specialization = EXPANDED_TO_SPECIALIZATION[newMember.role] || recruit.specialization;
       newMember.onOperation = false;
-      newMember.inTraining = false;
       newMember.arrested = false;
     } else {
       // Legacy gang member format
@@ -15928,7 +15602,6 @@ function recruitMember(index) {
           intelligence: Math.floor(Math.random() * 3) + 1
         },
         onOperation: false,
-        inTraining: false,
         arrested: false
       };
     }
@@ -17105,7 +16778,6 @@ function resetPlayerForNewGame() {
       lastTributeTime: 0,
       gangMembers: [],
       activeOperations: [],
-      trainingQueue: [],
       operationCooldowns: {},
       betrayalHistory: [],
       lastBetrayalCheck: 0
@@ -21852,7 +21524,6 @@ function hireSpecialRecruit() {
     newMember.tributeMultiplier = recruit.tributeMultiplier;
     newMember.specialization = recruit.specialization;
     newMember.onOperation = false;
-    newMember.inTraining = false;
     newMember.arrested = false;
   } else {
     newMember = {
@@ -21863,7 +21534,6 @@ function hireSpecialRecruit() {
       skill: recruit.skill,
       power: recruit.power,
       onOperation: false,
-      inTraining: false,
       arrested: false,
       joinedDate: Date.now()
     };
@@ -23821,23 +23491,6 @@ function applySaveData(saveData) {
     completedOps.forEach(opData => {
       completeGangOperation(opData);
       offlineSummary.push(`${opData.memberName} completed operation`);
-    });
-  }
-  if (player.gang && player.gang.trainingQueue) {
-    const completedTraining = [];
-    player.gang.trainingQueue.forEach(trainData => {
-      const endTime = trainData.startTime + trainData.duration;
-      if (Date.now() >= endTime) {
-        completedTraining.push(trainData);
-      } else {
-        // Still in progress -- reschedule timeout for remaining time
-        const remaining = endTime - Date.now();
-        setTimeout(() => { completeTraining(trainData); }, remaining);
-      }
-    });
-    completedTraining.forEach(trainData => {
-      completeTraining(trainData);
-      offlineSummary.push(`${trainData.memberName} completed training`);
     });
   }
   // Initialize operationCooldowns if missing (older saves)
@@ -25834,15 +25487,11 @@ window.generateGangOperationsHTML = generateGangOperationsHTML;
 window.getAvailableMembersForOperation = getAvailableMembersForOperation;
 window.isOperationOnCooldown = isOperationOnCooldown;
 window.generateGangMembersHTML = generateGangMembersHTML;
-window.generateTrainingProgramsHTML = generateTrainingProgramsHTML;
-window.getAvailableMembersForTraining = getAvailableMembersForTraining;
 window.startGangOperation = startGangOperation;
 window.updateOperationTierInfo = updateOperationTierInfo;
 window.completeGangOperation = completeGangOperation;
 window.handleOperationBetrayal = handleOperationBetrayal;
 window.handleOperationArrest = handleOperationArrest;
-window.completeTraining = completeTraining;
-window.enrollInTraining = enrollInTraining;
 window.checkForBetrayals = checkForBetrayals;
 window.shouldTriggerBetrayal = shouldTriggerBetrayal;
 window.triggerBetrayalEvent = triggerBetrayalEvent;
@@ -25872,7 +25521,6 @@ window.fortifyTerritory = fortifyTerritory;
 window.acquireTerritory = function(zoneId) { attackTurfZone(zoneId); };
 window.fireGangMember = fireGangMember;
 window.breakoutGangMember = breakoutGangMember;
-window.startTraining = startTraining;
 window.hireSpecialRecruit = hireSpecialRecruit;
 window.showGangManagementScreen = showGangManagementScreen;
 
