@@ -6176,7 +6176,28 @@ function completeGangOperation(operationData) {
       currentSum += car.rarity;
       if (randomValue <= currentSum) { selectedCar = car; break; }
     }
-    const damagePercentage = Math.floor(Math.random() * 36) + 40; // 40-75% damage
+    // Weighted damage -- gang crews are pros but perfect condition is still rare
+    let conditionRoll = Math.random() * 100;
+    let damagePercentage;
+    if (conditionRoll < 30) {
+      // 30%: heavy damage 60-85%
+      damagePercentage = Math.floor(Math.random() * 26) + 60;
+    } else if (conditionRoll < 60) {
+      // 30%: moderate damage 35-59%
+      damagePercentage = Math.floor(Math.random() * 25) + 35;
+    } else if (conditionRoll < 82) {
+      // 22%: light damage 15-34%
+      damagePercentage = Math.floor(Math.random() * 20) + 15;
+    } else if (conditionRoll < 95) {
+      // 13%: good condition 5-14%
+      damagePercentage = Math.floor(Math.random() * 10) + 5;
+    } else if (conditionRoll < 99.5) {
+      // 4.5%: near-mint 1-4%
+      damagePercentage = Math.floor(Math.random() * 4) + 1;
+    } else {
+      // 0.5%: perfect condition
+      damagePercentage = 0;
+    }
     const currentValue = Math.floor(selectedCar.baseValue * (1 - damagePercentage / 100));
     const stolenCar = {
       name: selectedCar.name,
@@ -11916,9 +11937,12 @@ function handleCarTheft(job) {
     } else if (conditionRoll < 99) {
       // 7% chance: light damage 15-29%
       damagePercentage = Math.floor(Math.random() * 15) + 15;
+    } else if (conditionRoll < 99.8) {
+      // 0.8% chance: great condition 1-4%
+      damagePercentage = Math.floor(Math.random() * 4) + 1;
     } else {
-      // 1% chance: decent condition 5-14%
-      damagePercentage = Math.floor(Math.random() * 10) + 5;
+      // 0.2% chance: perfect mint condition
+      damagePercentage = 0;
     }
   }
 
