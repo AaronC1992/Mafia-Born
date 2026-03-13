@@ -380,7 +380,7 @@ export const SKILL_TREE_DEFS = {
     desc: 'Move unseen, strike unheard. The art of the invisible hand.',
     nodes: {
       shadow_step:    { tier: 1, name: 'Shadow Step',    icon: '🌑', maxRank: 10, desc: 'Move unseen through the criminal underworld', effect: '-2% arrest chance per rank', prereqs: [] },
-      light_feet:     { tier: 1, name: 'Light Feet',     icon: '👣', maxRank: 10, desc: 'Move silently through enemy territory', effect: '-3% detection chance per rank', prereqs: [] },
+      light_feet:     { tier: 1, name: 'Light Feet',     icon: '👣', maxRank: 10, desc: 'Move silently through enemy territory', effect: '-2% heat gain per rank', prereqs: [] },
       infiltration:   { tier: 2, name: 'Infiltration',   icon: '🔓', maxRank: 10, desc: 'Break into secured locations with ease', effect: '+5% stealth job success per rank', prereqs: [{ node: 'shadow_step', rank: 3 }] },
       escape_artist:  { tier: 2, name: 'Escape Artist',  icon: '💨', maxRank: 10, desc: 'Slip out of the tightest situations', effect: '-2s jail time, +3% breakout per rank', prereqs: [{ node: 'light_feet', rank: 3 }] },
       ghost_protocol: { tier: 3, name: 'Ghost Protocol', icon: '👻', maxRank: 5,  desc: 'Become a phantom — practically invisible', effect: '-4% heat gain per rank', prereqs: [{ node: 'infiltration', rank: 5 }] },
@@ -397,7 +397,7 @@ export const SKILL_TREE_DEFS = {
       toughness:     { tier: 1, name: 'Toughness',     icon: '🛡️', maxRank: 10, desc: 'Shrug off hits that would drop lesser men', effect: '-2% hurt chance per rank', prereqs: [] },
       firearms:      { tier: 2, name: 'Firearms',      icon: '🔫', maxRank: 10, desc: 'Master the art of the gun', effect: '+6% armed job success per rank', prereqs: [{ node: 'brawler', rank: 3 }] },
       melee_mastery: { tier: 2, name: 'Melee Mastery', icon: '🗡️', maxRank: 10, desc: 'Deadly in close quarters combat', effect: '+4% unarmed job success per rank', prereqs: [{ node: 'brawler', rank: 3 }] },
-      intimidation:  { tier: 3, name: 'Intimidation',  icon: '😈', maxRank: 5,  desc: 'Your reputation alone strikes terror', effect: '-10% wanted gain per rank', prereqs: [{ node: 'firearms', rank: 5 }] },
+      intimidation:  { tier: 3, name: 'Intimidation',  icon: '😈', maxRank: 5,  desc: 'Your reputation alone strikes terror', effect: '+6% violent job earnings per rank', prereqs: [{ node: 'firearms', rank: 5 }] },
       enforcer:      { tier: 3, name: 'Enforcer',      icon: '💀', maxRank: 5,  desc: 'The ultimate weapon of the underworld', effect: '+15% boss fight power per rank', prereqs: [{ node: 'melee_mastery', rank: 5 }] }
     }
   },
@@ -450,11 +450,11 @@ export const SKILL_TREE_DEFS = {
     desc: "Outlast them all. When everyone else drops, you're still standing.",
     nodes: {
       vitality:     { tier: 1, name: 'Vitality',      icon: '❤️', maxRank: 10, desc: 'Raw physical toughness and stamina', effect: '-2% damage taken per rank', prereqs: [] },
-      conditioning: { tier: 1, name: 'Conditioning',  icon: '🏃', maxRank: 10, desc: 'Push your body past its limits', effect: '+2 max health recovery per rank', prereqs: [] },
+      conditioning: { tier: 1, name: 'Conditioning',  icon: '🏃', maxRank: 10, desc: 'Push your body past its limits', effect: '+1 HP per rank passive regen every 5 min', prereqs: [] },
       recovery:     { tier: 2, name: 'Recovery',       icon: '❤️‍🩹', maxRank: 10, desc: 'Bounce back from anything', effect: '-5% hospital treatment time per rank', prereqs: [{ node: 'vitality', rank: 3 }] },
       resilience:   { tier: 2, name: 'Resilience',     icon: '🦾', maxRank: 10, desc: 'Reduce the impact of injuries', effect: '-3% injury severity per rank', prereqs: [{ node: 'conditioning', rank: 3 }] },
       resistance:   { tier: 3, name: 'Resistance',     icon: '🛡️', maxRank: 5,  desc: 'Nearly immune to punishment', effect: '-5% all damage taken per rank', prereqs: [{ node: 'resilience', rank: 5 }] },
-      unstoppable:  { tier: 3, name: 'Unstoppable',    icon: '⚡', maxRank: 5,  desc: 'An unstoppable force of nature', effect: '-8% all cooldowns per rank', prereqs: [{ node: 'recovery', rank: 5 }] }
+      unstoppable:  { tier: 3, name: 'Unstoppable',    icon: '⚡', maxRank: 5,  desc: 'Second Wind -- recover health after tough jobs', effect: '3% chance per rank to recover 5 HP after a job', prereqs: [{ node: 'recovery', rank: 5 }] }
     }
   }
 };

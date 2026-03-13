@@ -155,13 +155,11 @@ const RISK_COOLDOWNS = {
   legendary: 1200  // 20 minutes
 };
 
-// Get the cooldown duration (in seconds) for a job, reduced by Planning skill, Unstoppable skill & Quick Hands perk
+// Get the cooldown duration (in seconds) for a job, reduced by Planning skill & Quick Hands perk
 function getJobCooldown(job) {
   const baseCooldown = RISK_COOLDOWNS[job.risk] || 15;
   const planningLevel = (player.skillTree && player.skillTree.intelligence) ? (player.skillTree.intelligence.planning || 0) : 0;
-  const unstoppableLevel = (player.skillTree && player.skillTree.endurance) ? (player.skillTree.endurance.unstoppable || 0) : 0;
   let cooldown = baseCooldown * (1 - planningLevel * 0.05); // -5% per Planning rank
-  cooldown = cooldown * (1 - unstoppableLevel * 0.08); // -8% per Unstoppable rank
   if (typeof hasPlayerPerk === 'function' && hasPlayerPerk('quick_hands')) {
     cooldown = cooldown * 0.85; // Quick Hands: -15% cooldown
   }
@@ -1251,6 +1249,16 @@ function tickHospitalPassiveHeal() {
   if (player.health >= player.maxHealth) return;
   const healAmount = hospital.level || 1;
   player.health = Math.min(player.maxHealth, player.health + healAmount);
+}
+
+// Conditioning skill: passive HP regen (1 HP per rank every 5 min)
+function tickConditioningRegen() {
+  if (player.inJail) return;
+  if (player.health >= 100) return;
+  const condLevel = player.skillTree?.endurance?.conditioning || 0;
+  if (condLevel <= 0) return;
+  player.health = Math.min(100, player.health + condLevel);
+  updateUI();
 }
 
 // ==================== 1. GANG MEMBER ROLES & STATS ====================
@@ -11717,12 +11725,31 @@ async function startJob(index) {
     if (auraBonus > 0) logAction(`Your kingpin aura commands respect -- your cut is $${auraBonus.toLocaleString()} larger.`);
   }
 
+  // Intimidation skill: +6% bonus earnings on violent jobs per rank
+  const intimidationEarnings = player.skillTree.combat?.intimidation || 0;
+  if (intimidationEarnings > 0) {
+    const violentTags = ['fight', 'rob', 'assault', 'heist', 'hit', 'enforce', 'shakedown', 'extort', 'murder'];
+    if (violentTags.some(tag => jn.includes(tag))) {
+      const intimBonus = Math.floor(earnings * intimidationEarnings * 0.06);
+      earnings += intimBonus;
+      if (intimBonus > 0) logAction(`Your reputation terrifies the target -- they hand over $${intimBonus.toLocaleString()} extra without a fight.`);
+    }
+  }
+
   // Scavenger skill: +3% bonus loot per rank
   const scavengerLevel = player.skillTree.luck?.scavenger || 0;
   if (scavengerLevel > 0) {
     const scavengerBonus = Math.floor(earnings * scavengerLevel * 0.03);
     earnings += scavengerBonus;
     if (scavengerBonus > 0) logAction(`Your scavenger instincts find extra valuables worth $${scavengerBonus.toLocaleString()}.`);
+  }
+
+  // Mastermind synergy (Charisma+Intelligence): +15% job payouts
+  const mastermindSynergyBonus = getSynergyBonus('charismaIntel');
+  if (mastermindSynergyBonus > 0) {
+    const mastermindBonus = Math.floor(earnings * mastermindSynergyBonus);
+    earnings += mastermindBonus;
+    if (mastermindBonus > 0) logAction(`Your mastermind network maximises the take -- +$${mastermindBonus.toLocaleString()}.`);
   }
 
   // -- District Benefits applied to job earnings --
@@ -11769,6 +11796,12 @@ async function startJob(index) {
   stealthBonus += player.skillTree.stealth.infiltration * 2; // Advanced infiltration skills
 
   let adjustedJailChance = Math.max(1, job.jailChance - stealthBonus);
+
+  // Ghost Protocol synergy (Stealth+Intelligence): -20% arrest chance
+  const ghostSynergyBonus = getSynergyBonus('stealthIntel');
+  if (ghostSynergyBonus > 0) {
+    adjustedJailChance = Math.max(1, Math.floor(adjustedJailChance * (1 - ghostSynergyBonus)));
+  }
 
   // Corruption: cases dismissed by a judge
   const corruptDismissal = getCorruptionBenefit('casesDismissed');
@@ -11847,13 +11880,16 @@ async function startJob(index) {
     heatGain = Math.ceil(heatGain * 1.3);
   }
 
-  let intimidationReduction = player.skillTree.combat.intimidation * 0.1; // 10% reduction per level
-  heatGain = Math.max(1, Math.floor(heatGain * (1 - intimidationReduction)));
-
   // Ghost Protocol: -4% heat gain per rank
   const ghostLevel = player.skillTree.stealth.ghost_protocol || 0;
   if (ghostLevel > 0) {
     heatGain = Math.max(1, Math.floor(heatGain * (1 - ghostLevel * 0.04)));
+  }
+
+  // Light Feet: -2% heat gain per rank
+  const lightFeetLevel = player.skillTree.stealth?.light_feet || 0;
+  if (lightFeetLevel > 0) {
+    heatGain = Math.max(1, Math.floor(heatGain * (1 - lightFeetLevel * 0.02)));
   }
 
   // Utility item: Police Scanner reduces heat gain by 20%
@@ -11914,9 +11950,9 @@ async function startJob(index) {
     logAction('Staying clean pays off -- heat drops slightly (-2).');
   }
 
-  // Log intimidation effect if it reduced heat
-  if (intimidationReduction > 0 && heatGain < job.heatGain) {
-    logAction(' Your intimidating presence makes witnesses think twice about reporting the crime!');
+  // Log Ghost Protocol / Light Feet heat reduction
+  if ((ghostLevel > 0 || lightFeetLevel > 0) && heatGain < job.heatGain) {
+    logAction(' Your shadow training helps you move unnoticed -- less heat from this job.');
   }
 
   // Apply forensics skill for evidence cleanup
@@ -12027,10 +12063,29 @@ async function startJob(index) {
     if (resistanceLevel > 0) {
       healthLoss = Math.max(1, Math.floor(healthLoss * (1 - resistanceLevel * 0.05)));
     }
+    // Vitality skill: -2% damage taken per rank
+    const vitalityLevel = player.skillTree.endurance?.vitality || 0;
+    if (vitalityLevel > 0) {
+      healthLoss = Math.max(1, Math.floor(healthLoss * (1 - vitalityLevel * 0.02)));
+    }
+    // Iron Warrior synergy (Combat+Endurance): -15% damage
+    const ironWarriorBonus = getSynergyBonus('combatEndurance');
+    if (ironWarriorBonus > 0) {
+      healthLoss = Math.max(1, Math.floor(healthLoss * (1 - ironWarriorBonus)));
+    }
     player.health -= healthLoss;
     flashHurtScreen();
     showBriefNotification(`${getRandomNarration('healthLoss')} You have ${player.health} health left.`, true, 'success');
     logAction(`${getRandomNarration('healthLoss')} (-${healthLoss} health).`);
+  }
+
+  // Unstoppable skill (Second Wind): 3% chance per rank to recover 5 HP after a job
+  const unstoppableLevel = player.skillTree.endurance?.unstoppable || 0;
+  if (unstoppableLevel > 0 && player.health < 100 && Math.random() * 100 < unstoppableLevel * 3) {
+    const windHeal = 5;
+    player.health = Math.min(100, player.health + windHeal);
+    logAction(`Second wind! Your endurance kicks in and you recover ${windHeal} HP.`);
+    showBriefNotification(`Second Wind! +${windHeal} HP`, 'success');
   }
 
   // Lucky Devil perk: 10% chance for bonus cash loot on any job
@@ -12260,6 +12315,12 @@ function handleLaunderMoneyJob(job, approachLabel) {
   stealthBonus += player.skillTree.stealth.escape_artist * 3;
   stealthBonus += player.skillTree.stealth.infiltration * 2;
   let adjustedJailChance = Math.max(1, job.jailChance - stealthBonus);
+
+  // Ghost Protocol synergy (Stealth+Intelligence): -20% arrest chance
+  const ghostLaunderBonus = getSynergyBonus('stealthIntel');
+  if (ghostLaunderBonus > 0) {
+    adjustedJailChance = Math.max(1, Math.floor(adjustedJailChance * (1 - ghostLaunderBonus)));
+  }
 
   // Heat-based risk: high heat makes laundering much more dangerous
   const currentHeat = player.heat || 0;
@@ -12881,11 +12942,11 @@ function attemptBreakout() {
 
 // Synergy definitions: when 2 trees both have deep investment, grant cross-tree bonuses
 const SKILL_SYNERGIES = [
-  { trees: ['combat', 'stealth'], name: 'Silent Killer', desc: '+12% critical hit damage from stealth attacks', minPts: 10, bonus: { type: 'combatStealth', value: 0.12 } },
-  { trees: ['combat', 'endurance'], name: 'Iron Warrior', desc: '+15% damage resistance in fights', minPts: 10, bonus: { type: 'combatEndurance', value: 0.15 } },
-  { trees: ['stealth', 'intelligence'], name: 'Ghost Protocol', desc: '+20% police evasion chance', minPts: 10, bonus: { type: 'stealthIntel', value: 0.20 } },
-  { trees: ['charisma', 'intelligence'], name: 'Mastermind', desc: '+15% business income and negotiation power', minPts: 10, bonus: { type: 'charismaIntel', value: 0.15 } },
-  { trees: ['luck', 'charisma'], name: 'Silver Tongue', desc: '+10% casino winnings and bribe discounts', minPts: 10, bonus: { type: 'luckCharisma', value: 0.10 } },
+  { trees: ['combat', 'stealth'], name: 'Silent Killer', desc: '+12% bounty board success chance', minPts: 10, bonus: { type: 'combatStealth', value: 0.12 } },
+  { trees: ['combat', 'endurance'], name: 'Iron Warrior', desc: '+15% damage resistance from jobs and bounties', minPts: 10, bonus: { type: 'combatEndurance', value: 0.15 } },
+  { trees: ['stealth', 'intelligence'], name: 'Ghost Protocol', desc: '-20% arrest chance on all jobs', minPts: 10, bonus: { type: 'stealthIntel', value: 0.20 } },
+  { trees: ['charisma', 'intelligence'], name: 'Mastermind', desc: '+15% job payout bonus', minPts: 10, bonus: { type: 'charismaIntel', value: 0.15 } },
+  { trees: ['luck', 'charisma'], name: 'Silver Tongue', desc: '+10% casino winnings and store discounts', minPts: 10, bonus: { type: 'luckCharisma', value: 0.10 } },
   { trees: ['endurance', 'luck'], name: 'Survivor', desc: '+18% jail breakout chance', minPts: 10, bonus: { type: 'enduranceLuck', value: 0.18 } },
 ];
 
@@ -16257,6 +16318,9 @@ function renderStoreTab(tabId) {
   const storeListHTML = filteredItems.map(item => {
     const index = storeItems.indexOf(item);
     let finalPrice = Math.floor(item.price * (1 - player.skillTree.charisma.smooth_talker * 0.02));
+    // Silver Tongue synergy (Luck+Charisma): store discount
+    const silverTongueStore = getSynergyBonus('luckCharisma');
+    if (silverTongueStore > 0) finalPrice = Math.floor(finalPrice * (1 - silverTongueStore));
     let discountText = player.skillTree.charisma.smooth_talker > 0 ? ` (${((1 - finalPrice/item.price) * 100).toFixed(0)}% off!)` : '';
 
     let itemDescription = '';
@@ -16384,9 +16448,12 @@ function refreshStoreDynamicElements() {
     if (!priceEl || !btnEl) return;
     const base = parseInt(priceEl.getAttribute('data-base-price'), 10) || item.price;
     const finalPrice = Math.floor(base * (1 - player.skillTree.charisma.smooth_talker * 0.02));
-    const discountText = player.skillTree.charisma.smooth_talker > 0 ? ` (${((1 - finalPrice/base) * 100).toFixed(0)}% off!)` : '';
-    priceEl.textContent = `$${finalPrice.toLocaleString()}${discountText}`;
-    if (player.money >= finalPrice) {
+    // Silver Tongue synergy also applies to refresh display
+    const stSyn = getSynergyBonus('luckCharisma');
+    const adjustedPrice = stSyn > 0 ? Math.floor(finalPrice * (1 - stSyn)) : finalPrice;
+    const discountText = player.skillTree.charisma.smooth_talker > 0 ? ` (${((1 - adjustedPrice/base) * 100).toFixed(0)}% off!)` : '';
+    priceEl.textContent = `$${adjustedPrice.toLocaleString()}${discountText}`;
+    if (player.money >= adjustedPrice) {
       btnEl.disabled = false;
       btnEl.style.background = '#7a8a5a';
       btnEl.style.cursor = 'pointer';
@@ -16415,6 +16482,9 @@ async function buyItem(index) {
 
   // Apply charisma discount
   let finalPrice = Math.floor(item.price * (1 - player.skillTree.charisma.smooth_talker * 0.02));
+  // Silver Tongue synergy (Luck+Charisma): store discount
+  const silverTongueBuy = getSynergyBonus('luckCharisma');
+  if (silverTongueBuy > 0) finalPrice = Math.floor(finalPrice * (1 - silverTongueBuy));
 
   // Kozlov Bratva passive: weapons cost 10% less
   if (item.type === 'weapon' || item.type === 'armor' || item.type === 'ammo') {
@@ -20346,21 +20416,21 @@ function fenceSellAllCars() {
 
 const BOUNTY_TARGETS = [
   // Tier 1: Street (easy)
-  { name: 'Danny "Two-Shoes" Malone', tier: 1, power: 50, reward: 1500, xp: 40, desc: 'Small-time pickpocket with a bad habit of running his mouth.' },
-  { name: '"Slippery" Pete Vasquez', tier: 1, power: 65, reward: 2000, xp: 50, desc: 'Con artist who fleeced the wrong bookie.' },
-  { name: 'Louie "The Rat" Bianchi', tier: 1, power: 55, reward: 1800, xp: 45, desc: 'Snitch who sold out a crew to the feds.' },
+  { name: 'Danny "Two-Shoes" Malone', tier: 1, power: 115, reward: 2000, xp: 50, desc: 'Small-time pickpocket with a bad habit of running his mouth.' },
+  { name: '"Slippery" Pete Vasquez', tier: 1, power: 115, reward: 3000, xp: 60, desc: 'Con artist who fleeced the wrong bookie.' },
+  { name: 'Louie "The Rat" Bianchi', tier: 1, power: 115, reward: 2500, xp: 55, desc: 'Snitch who sold out a crew to the feds.' },
   // Tier 2: Enforcer (medium)
-  { name: 'Viktor "Iron Jaw" Kozlov', tier: 2, power: 130, reward: 6000, xp: 100, desc: 'Ex-boxer who runs protection rackets downtown.' },
-  { name: 'Marcus "The Bull" Jefferson', tier: 2, power: 150, reward: 7500, xp: 120, desc: 'Enforcer for a rival family. Built like a tank.' },
-  { name: 'Chen "Razor" Wei', tier: 2, power: 140, reward: 7000, xp: 110, desc: 'Triad lieutenant who controls the docks.' },
+  { name: 'Viktor "Iron Jaw" Kozlov', tier: 2, power: 570, reward: 8000, xp: 120, desc: 'Ex-boxer who runs protection rackets downtown.' },
+  { name: 'Marcus "The Bull" Jefferson', tier: 2, power: 570, reward: 10000, xp: 140, desc: 'Enforcer for a rival family. Built like a tank.' },
+  { name: 'Chen "Razor" Wei', tier: 2, power: 570, reward: 9000, xp: 130, desc: 'Triad lieutenant who controls the docks.' },
   // Tier 3: Underboss (hard)
-  { name: 'Salvatore "The Ghost" Moretti', tier: 3, power: 250, reward: 20000, xp: 200, desc: 'Elusive underboss with a network of safe houses.' },
-  { name: 'Nikolai "Black Ice" Petrov', tier: 3, power: 280, reward: 25000, xp: 230, desc: 'Bratva arms dealer. Heavily guarded at all times.' },
-  { name: 'Isabella "La Sombra" Cruz', tier: 3, power: 260, reward: 22000, xp: 210, desc: 'Cartel queen who controls half the supply chain.' },
+  { name: 'Salvatore "The Ghost" Moretti', tier: 3, power: 1580, reward: 25000, xp: 250, desc: 'Elusive underboss with a network of safe houses.' },
+  { name: 'Nikolai "Black Ice" Petrov', tier: 3, power: 1580, reward: 30000, xp: 280, desc: 'Bratva arms dealer. Heavily guarded at all times.' },
+  { name: 'Isabella "La Sombra" Cruz', tier: 3, power: 1580, reward: 28000, xp: 260, desc: 'Cartel queen who controls half the supply chain.' },
   // Tier 4: Kingpin (extreme)
-  { name: 'Antonio "The Don" Calabrese', tier: 4, power: 400, reward: 50000, xp: 400, desc: 'Old-school boss. Every cop in town is on his payroll.' },
-  { name: 'Yuri "The Hammer" Volkov', tier: 4, power: 450, reward: 60000, xp: 450, desc: 'Bratva kingpin. Disappeared three assassins last month.' },
-  { name: 'Hector "El Rey" Fuentes', tier: 4, power: 500, reward: 75000, xp: 500, desc: 'Cartel kingpin. Owns an army and a private airstrip.' },
+  { name: 'Antonio "The Don" Calabrese', tier: 4, power: 3000, reward: 60000, xp: 500, desc: 'Old-school boss. Every cop in town is on his payroll.' },
+  { name: 'Yuri "The Hammer" Volkov', tier: 4, power: 3000, reward: 75000, xp: 550, desc: 'Bratva kingpin. Disappeared three assassins last month.' },
+  { name: 'Hector "El Rey" Fuentes', tier: 4, power: 3000, reward: 90000, xp: 600, desc: 'Cartel kingpin. Owns an army and a private airstrip.' },
 ];
 
 const BOUNTY_TIER_LABELS = { 1: 'Street', 2: 'Enforcer', 3: 'Underboss', 4: 'Kingpin' };
@@ -20396,7 +20466,13 @@ function getBountySuccessChance(bounty) {
   if (defense <= 0) return 99;
   const ratio = attackPower / defense;
   const raw = 1 / (1 + Math.exp(-4 * (ratio - 1)));
-  return Math.max(5, Math.min(95, Math.round(raw * 100)));
+  let chance = Math.max(5, Math.min(95, Math.round(raw * 100)));
+  // Silent Killer synergy (Combat+Stealth): +12% bounty success
+  const silentKillerBonus = getSynergyBonus('combatStealth');
+  if (silentKillerBonus > 0) {
+    chance = Math.min(95, Math.round(chance * (1 + silentKillerBonus)));
+  }
+  return chance;
 }
 
 function showBountyBoard() {
@@ -20486,7 +20562,12 @@ function attemptBounty(index) {
   } else {
     // Failure
     bounty.failed = true;
-    const damage = Math.floor(Math.random() * (bounty.tier * 12)) + bounty.tier * 8;
+    let damage = Math.floor(Math.random() * (bounty.tier * 12)) + bounty.tier * 8;
+    // Iron Warrior synergy (Combat+Endurance): -15% damage
+    const ironWarriorBounty = getSynergyBonus('combatEndurance');
+    if (ironWarriorBounty > 0) {
+      damage = Math.max(1, Math.floor(damage * (1 - ironWarriorBounty)));
+    }
     const heatGain = Math.floor(bounty.tier * 7);
     player.health = Math.max(0, player.health - damage);
     player.heat = Math.min(100, (player.heat || 0) + heatGain);
@@ -22678,6 +22759,7 @@ function activateGameplaySystems() {
   // Hospital healing + bounty board tick timers (1s intervals)
   gameplayIntervals.push(setInterval(() => { if (gameplayActive) tickHospitalHealing(); }, 1000));
   gameplayIntervals.push(setInterval(() => { if (gameplayActive) tickHospitalPassiveHeal(); }, 60000));
+  gameplayIntervals.push(setInterval(() => { if (gameplayActive) tickConditioningRegen(); }, 300000));
   gameplayIntervals.push(setInterval(() => { if (gameplayActive) refreshBountyBoardIfNeeded(); }, 60000));
   initializeEventsSystem();
   initializeCompetitionSystem();

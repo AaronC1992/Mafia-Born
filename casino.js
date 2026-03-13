@@ -44,6 +44,9 @@ function getCasinoBetRange() {
 
 function getGamblingLuckBonus() {
   let bonus = (player.skillTree?.luck?.gambling || 0) * 0.01;
+  // Silver Tongue synergy (Luck+Charisma): +10% casino winnings
+  const silverTongue = typeof window.getSynergyBonus === 'function' ? window.getSynergyBonus('luckCharisma') : 0;
+  if (silverTongue > 0) bonus += silverTongue;
   return bonus;
 }
 
