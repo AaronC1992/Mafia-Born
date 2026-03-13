@@ -1000,18 +1000,25 @@ button:disabled::after {
 #newspaper-close-btn {
     position: absolute;
     top: 8px; right: 12px;
-    background: none;
-    border: none;
-    color: #3a2a1a;
-    font-size: 2em;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #cc0000;
+    border-radius: 50%;
+    color: #ff3333;
+    font-size: 1.6em;
+    font-weight: bold;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     z-index: 10;
     line-height: 1;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+    opacity: 0.9;
+    transition: opacity 0.2s, background 0.2s;
 }
-#newspaper-close-btn:hover { opacity: 1; }
-#newspaper-close-btn:focus { opacity: 1; outline: 2px solid #3a2a1a; outline-offset: 2px; }
+#newspaper-close-btn:hover { opacity: 1; background: rgba(200, 0, 0, 0.6); }
+#newspaper-close-btn:focus { opacity: 1; outline: 2px solid #cc0000; outline-offset: 2px; }
 
 #newspaper-content {
     padding: 40px 36px 30px;
@@ -1259,18 +1266,25 @@ button:disabled::after {
 #jail-newspaper .newspaper-close-btn {
     position: absolute;
     top: 8px; right: 12px;
-    background: none;
-    border: none;
-    color: #3a2a1a;
-    font-size: 2em;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #cc0000;
+    border-radius: 50%;
+    color: #ff3333;
+    font-size: 1.6em;
+    font-weight: bold;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     z-index: 10;
     line-height: 1;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+    opacity: 0.9;
+    transition: opacity 0.2s, background 0.2s;
 }
-#jail-newspaper .newspaper-close-btn:hover { opacity: 1; }
-#jail-newspaper .newspaper-close-btn:focus { opacity: 1; outline: 2px solid #3a2a1a; outline-offset: 2px; }
+#jail-newspaper .newspaper-close-btn:hover { opacity: 1; background: rgba(200, 0, 0, 0.6); }
+#jail-newspaper .newspaper-close-btn:focus { opacity: 1; outline: 2px solid #cc0000; outline-offset: 2px; }
 
 /* Policy Newspaper Overlay (reuses .newspaper-* classes for content) */
 #policy-newspaper-overlay {
@@ -1322,18 +1336,25 @@ button:disabled::after {
 #policy-newspaper .newspaper-close-btn {
     position: absolute;
     top: 8px; right: 12px;
-    background: none;
-    border: none;
-    color: #3a2a1a;
-    font-size: 2em;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #cc0000;
+    border-radius: 50%;
+    color: #ff3333;
+    font-size: 1.6em;
+    font-weight: bold;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     z-index: 10;
     line-height: 1;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+    opacity: 0.9;
+    transition: opacity 0.2s, background 0.2s;
 }
-#policy-newspaper .newspaper-close-btn:hover { opacity: 1; }
-#policy-newspaper .newspaper-close-btn:focus { opacity: 1; outline: 2px solid #3a2a1a; outline-offset: 2px; }
+#policy-newspaper .newspaper-close-btn:hover { opacity: 1; background: rgba(200, 0, 0, 0.6); }
+#policy-newspaper .newspaper-close-btn:focus { opacity: 1; outline: 2px solid #cc0000; outline-offset: 2px; }
 
 /* Responsive: single column on small screens */
 @media (max-width: 600px) {
@@ -1372,13 +1393,15 @@ button:disabled::after {
     #newspaper-close-btn,
     #jail-newspaper .newspaper-close-btn,
     #policy-newspaper .newspaper-close-btn {
-        font-size: 2.4em;
+        font-size: 1.8em;
+        width: 44px;
+        height: 44px;
         min-width: 44px;
         min-height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
-        opacity: 0.8;
+        opacity: 0.95;
     }
     /* Touch-friendly newspaper links in chat/ledger */
     .newspaper-chat-link {

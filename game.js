@@ -20346,21 +20346,21 @@ function fenceSellAllCars() {
 
 const BOUNTY_TARGETS = [
   // Tier 1: Street (easy)
-  { name: 'Danny "Two-Shoes" Malone', tier: 1, power: 30, reward: 2000, xp: 50, desc: 'Small-time pickpocket with a bad habit of running his mouth.' },
-  { name: '"Slippery" Pete Vasquez', tier: 1, power: 40, reward: 3000, xp: 60, desc: 'Con artist who fleeced the wrong bookie.' },
-  { name: 'Louie "The Rat" Bianchi', tier: 1, power: 35, reward: 2500, xp: 55, desc: 'Snitch who sold out a crew to the feds.' },
+  { name: 'Danny "Two-Shoes" Malone', tier: 1, power: 50, reward: 1500, xp: 40, desc: 'Small-time pickpocket with a bad habit of running his mouth.' },
+  { name: '"Slippery" Pete Vasquez', tier: 1, power: 65, reward: 2000, xp: 50, desc: 'Con artist who fleeced the wrong bookie.' },
+  { name: 'Louie "The Rat" Bianchi', tier: 1, power: 55, reward: 1800, xp: 45, desc: 'Snitch who sold out a crew to the feds.' },
   // Tier 2: Enforcer (medium)
-  { name: 'Viktor "Iron Jaw" Kozlov', tier: 2, power: 80, reward: 8000, xp: 120, desc: 'Ex-boxer who runs protection rackets downtown.' },
-  { name: 'Marcus "The Bull" Jefferson', tier: 2, power: 90, reward: 10000, xp: 140, desc: 'Enforcer for a rival family. Built like a tank.' },
-  { name: 'Chen "Razor" Wei', tier: 2, power: 85, reward: 9000, xp: 130, desc: 'Triad lieutenant who controls the docks.' },
+  { name: 'Viktor "Iron Jaw" Kozlov', tier: 2, power: 130, reward: 6000, xp: 100, desc: 'Ex-boxer who runs protection rackets downtown.' },
+  { name: 'Marcus "The Bull" Jefferson', tier: 2, power: 150, reward: 7500, xp: 120, desc: 'Enforcer for a rival family. Built like a tank.' },
+  { name: 'Chen "Razor" Wei', tier: 2, power: 140, reward: 7000, xp: 110, desc: 'Triad lieutenant who controls the docks.' },
   // Tier 3: Underboss (hard)
-  { name: 'Salvatore "The Ghost" Moretti', tier: 3, power: 150, reward: 25000, xp: 250, desc: 'Elusive underboss with a network of safe houses.' },
-  { name: 'Nikolai "Black Ice" Petrov', tier: 3, power: 170, reward: 30000, xp: 280, desc: 'Bratva arms dealer. Heavily guarded at all times.' },
-  { name: 'Isabella "La Sombra" Cruz', tier: 3, power: 160, reward: 28000, xp: 260, desc: 'Cartel queen who controls half the supply chain.' },
+  { name: 'Salvatore "The Ghost" Moretti', tier: 3, power: 250, reward: 20000, xp: 200, desc: 'Elusive underboss with a network of safe houses.' },
+  { name: 'Nikolai "Black Ice" Petrov', tier: 3, power: 280, reward: 25000, xp: 230, desc: 'Bratva arms dealer. Heavily guarded at all times.' },
+  { name: 'Isabella "La Sombra" Cruz', tier: 3, power: 260, reward: 22000, xp: 210, desc: 'Cartel queen who controls half the supply chain.' },
   // Tier 4: Kingpin (extreme)
-  { name: 'Antonio "The Don" Calabrese', tier: 4, power: 250, reward: 60000, xp: 500, desc: 'Old-school boss. Every cop in town is on his payroll.' },
-  { name: 'Yuri "The Hammer" Volkov', tier: 4, power: 280, reward: 75000, xp: 550, desc: 'Bratva kingpin. Disappeared three assassins last month.' },
-  { name: 'Hector "El Rey" Fuentes', tier: 4, power: 300, reward: 90000, xp: 600, desc: 'Cartel kingpin. Owns an army and a private airstrip.' },
+  { name: 'Antonio "The Don" Calabrese', tier: 4, power: 400, reward: 50000, xp: 400, desc: 'Old-school boss. Every cop in town is on his payroll.' },
+  { name: 'Yuri "The Hammer" Volkov', tier: 4, power: 450, reward: 60000, xp: 450, desc: 'Bratva kingpin. Disappeared three assassins last month.' },
+  { name: 'Hector "El Rey" Fuentes', tier: 4, power: 500, reward: 75000, xp: 500, desc: 'Cartel kingpin. Owns an army and a private airstrip.' },
 ];
 
 const BOUNTY_TIER_LABELS = { 1: 'Street', 2: 'Enforcer', 3: 'Underboss', 4: 'Kingpin' };
@@ -20486,8 +20486,8 @@ function attemptBounty(index) {
   } else {
     // Failure
     bounty.failed = true;
-    const damage = Math.floor(Math.random() * (bounty.tier * 8)) + bounty.tier * 5;
-    const heatGain = Math.floor(bounty.tier * 5);
+    const damage = Math.floor(Math.random() * (bounty.tier * 12)) + bounty.tier * 8;
+    const heatGain = Math.floor(bounty.tier * 7);
     player.health = Math.max(0, player.health - damage);
     player.heat = Math.min(100, (player.heat || 0) + heatGain);
 
