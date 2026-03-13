@@ -336,6 +336,11 @@ export function gainExperience(amount) {
   if (mastermindLevel > 0) {
     amount = amount * (1 + mastermindLevel * 0.10);
   }
+  // Street Cred: +2% rep per rank (all sources)
+  const streetCredLevel = (player.skillTree && player.skillTree.charisma && player.skillTree.charisma.street_cred) || 0;
+  if (streetCredLevel > 0) {
+    amount = amount * (1 + streetCredLevel * 0.02);
+  }
   // Round to 1 decimal place for clean display
   amount = Math.round(amount * 10) / 10;
   const oldTier = getReputationTier(player.reputation);
@@ -384,7 +389,7 @@ export const SKILL_TREE_DEFS = {
       infiltration:   { tier: 2, name: 'Infiltration',   icon: '🔓', maxRank: 10, desc: 'Break into secured locations with ease', effect: '+5% stealth job success per rank', prereqs: [{ node: 'shadow_step', rank: 3 }] },
       escape_artist:  { tier: 2, name: 'Escape Artist',  icon: '💨', maxRank: 10, desc: 'Slip out of the tightest situations', effect: '-2s jail time, +3% breakout per rank', prereqs: [{ node: 'light_feet', rank: 3 }] },
       ghost_protocol: { tier: 3, name: 'Ghost Protocol', icon: '👻', maxRank: 5,  desc: 'Become a phantom — practically invisible', effect: '-4% heat gain per rank', prereqs: [{ node: 'infiltration', rank: 5 }] },
-      surveillance:   { tier: 3, name: 'Surveillance',   icon: '👁️', maxRank: 5,  desc: 'Gather intel and stay ahead of enemies', effect: '+4% job intel per rank', prereqs: [{ node: 'escape_artist', rank: 5 }] }
+      surveillance:   { tier: 3, name: 'Surveillance',   icon: '👁️', maxRank: 5,  desc: 'Gather intel and stay ahead of enemies', effect: '+4% stealth job success per rank', prereqs: [{ node: 'escape_artist', rank: 5 }] }
     }
   },
   combat: {
@@ -407,11 +412,11 @@ export const SKILL_TREE_DEFS = {
     color: '#c0a040',
     desc: 'Words sharper than knives. Bend the world to your will without lifting a finger.',
     nodes: {
-      smooth_talker: { tier: 1, name: 'Smooth Talker',  icon: '💬', maxRank: 10, desc: 'Words are your greatest weapon', effect: '+3% negotiation per rank', prereqs: [] },
-      street_cred:   { tier: 1, name: 'Street Cred',    icon: '🏆', maxRank: 10, desc: 'Build your name on the streets', effect: '+2% reputation gain per rank', prereqs: [] },
-      negotiation:   { tier: 2, name: 'Negotiation',    icon: '🤝', maxRank: 10, desc: 'Secure better deals and prices', effect: '+3% sell prices per rank', prereqs: [{ node: 'smooth_talker', rank: 3 }] },
-      leadership:    { tier: 2, name: 'Leadership',     icon: '👑', maxRank: 10, desc: 'Command respect and loyalty from your crew', effect: '+5% gang loyalty per rank', prereqs: [{ node: 'street_cred', rank: 3 }] },
-      manipulation:  { tier: 3, name: 'Manipulation',   icon: '🎭', maxRank: 5,  desc: 'Pull the strings from the shadows', effect: '+4% faction mission success per rank', prereqs: [{ node: 'negotiation', rank: 5 }] },
+      smooth_talker: { tier: 1, name: 'Smooth Talker',  icon: '💬', maxRank: 10, desc: 'Words are your greatest weapon', effect: '-2% store prices per rank', prereqs: [] },
+      street_cred:   { tier: 1, name: 'Street Cred',    icon: '🏆', maxRank: 10, desc: 'Build your name on the streets', effect: '+2% all reputation gain per rank', prereqs: [] },
+      negotiation:   { tier: 2, name: 'Negotiation',    icon: '🤝', maxRank: 10, desc: 'Secure better deals and prices', effect: '+3% negotiation job success per rank', prereqs: [{ node: 'smooth_talker', rank: 3 }] },
+      leadership:    { tier: 2, name: 'Leadership',     icon: '👑', maxRank: 10, desc: 'Command respect and loyalty from your crew', effect: '+5% gang operation success per rank', prereqs: [{ node: 'street_cred', rank: 3 }] },
+      manipulation:  { tier: 3, name: 'Manipulation',   icon: '🎭', maxRank: 5,  desc: 'Pull the strings from the shadows', effect: '+4% faction and negotiation success per rank', prereqs: [{ node: 'negotiation', rank: 5 }] },
       kingpin_aura:  { tier: 3, name: 'Kingpin Aura',   icon: '💎', maxRank: 5,  desc: 'Your presence commands every room', effect: '+5% all income per rank', prereqs: [{ node: 'leadership', rank: 5 }] }
     }
   },
@@ -423,7 +428,7 @@ export const SKILL_TREE_DEFS = {
     nodes: {
       mastermind:  { tier: 1, name: 'Mastermind',     icon: '🎯', maxRank: 5,  desc: 'The brain behind every operation', effect: '+10% reputation gain per rank', prereqs: [] },
       quick_study: { tier: 1, name: 'Quick Study',   icon: '📚', maxRank: 10, desc: 'A sharp mind that learns from every job', effect: '+4% job success per rank', prereqs: [] },
-      hacking:     { tier: 2, name: 'Hacking',       icon: '💻', maxRank: 10, desc: 'Master of digital infiltration', effect: '+7% cyber job success per rank', prereqs: [{ node: 'quick_study', rank: 3 }] },
+      hacking:     { tier: 2, name: 'Hacking',       icon: '💻', maxRank: 10, desc: 'Master of digital infiltration', effect: '+7% heist and intelligence job success per rank', prereqs: [{ node: 'quick_study', rank: 3 }] },
       planning:    { tier: 2, name: 'Planning',       icon: '📋', maxRank: 10, desc: 'Every detail accounted for', effect: '-5% crime cooldown per rank', prereqs: [{ node: 'quick_study', rank: 3 }] },
       awareness:   { tier: 3, name: 'Awareness',     icon: '🔍', maxRank: 5,  desc: 'Nothing escapes your notice', effect: '+2% luck-based outcomes per rank', prereqs: [{ node: 'hacking', rank: 5 }] },
       forensics:   { tier: 3, name: 'Forensics',     icon: '🔬', maxRank: 5,  desc: 'Clean up evidence like a professional', effect: '8% chance per rank to reduce heat', prereqs: [{ node: 'planning', rank: 5 }] }

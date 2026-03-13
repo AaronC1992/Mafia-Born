@@ -1065,6 +1065,9 @@ async function startFactionMission(familyKey, missionId) {
 
   // Calculate success chance
   let successChance = 60 + (player.power * 0.5) + (player.skillTree.intelligence.quick_study * 2);
+  // Manipulation skill: +4% faction mission success per rank
+  const manipLevel = player.skillTree.charisma?.manipulation || 0;
+  if (manipLevel > 0) successChance += manipLevel * 4;
   // Chen Triad reputation: intelligence network boosts mission success
   const chenMissionMod = getStreetRepBonus('chen', 0, 0.05, 0.10, 0.15);
   if (chenMissionMod !== 0) successChance += chenMissionMod * 100;
@@ -11336,7 +11339,6 @@ function applySkillTreeBonuses(job, _successChance) {
     jobName.includes('protection') || jobName.includes('extortion') || jobName.includes('heist')) {
     bonuses += player.skillTree.combat.firearms * 6; // 6% per level
     bonuses += player.skillTree.combat.melee_mastery * 4; // 4% per level
-    bonuses += player.skillTree.combat.intimidation * 5; // 5% per level - NEW!
   }
 
   if (jobName.includes('negotiate') || jobName.includes('bribe')) {
@@ -11534,7 +11536,7 @@ async function startJob(index) {
 
   // Calculate job success chance based on player's power level and skills
   let successChance;
-  let skillBonus = (player.skillTree.intelligence.quick_study + player.skillTree.luck.fortune) * 2;
+  let skillBonus = (player.skillTree.intelligence.quick_study * 4 + player.skillTree.luck.fortune) * 2;
   // Awareness: +2% luck-based outcomes per rank
   skillBonus += (player.skillTree.intelligence.awareness || 0) * 2;
   let carBonus = 0;
@@ -12014,15 +12016,6 @@ async function startJob(index) {
     hurtChance = Math.max(0, 25 - player.power * 0.18 - player.skillTree.combat.brawler * 0.5);
     maxHealthLoss = 90;
     gainExperience(12.0);
-  }
-
-  // Street Cred skill: +2% reputation gain per rank
-  const streetCredLevel = player.skillTree.charisma?.street_cred || 0;
-  if (streetCredLevel > 0) {
-    const riskRepMap = { low: 1.0, medium: 1.8, high: 3.5, 'very high': 5.0, extreme: 8.0, legendary: 12.0 };
-    const baseRep = riskRepMap[job.risk] || 0.5;
-    const bonusRep = baseRep * streetCredLevel * 0.02;
-    player.reputation += bonusRep;
   }
 
   // Track reputation changes for campaign objectives
@@ -12884,7 +12877,7 @@ function attemptBreakout() {
   player.heat++; // Increase heat with each breakout attempt
 
   // Stealth skill improves breakout chance
-  let adjustedBreakoutChance = player.breakoutChance + (player.skillTree.stealth.shadow_step * 3);
+  let adjustedBreakoutChance = player.breakoutChance + (player.skillTree.stealth.escape_artist * 3);
   // Iron Will perk: +10% breakout success
   if (hasPlayerPerk('iron_will')) adjustedBreakoutChance += 10;
   // Synergy: Survivor (endurance + luck) bonus
@@ -13517,7 +13510,7 @@ function expandTerritory() {
 
   // Success chance scales: 70% base, +3% per gang member beyond 5, +2% per leadership level, cap at 95%
   const leadershipLevel = (player.skillTree.charisma && player.skillTree.charisma.leadership) || 0;
-  const successChance = Math.min(0.95, 0.70 + (actualGangSize - 5) * 0.03 + leadershipLevel * 0.02);
+  const successChance = Math.min(0.95, 0.70 + (actualGangSize - 5) * 0.03 + leadershipLevel * 0.05);
 
   if (Math.random() < successChance) {
     player.territory++;
