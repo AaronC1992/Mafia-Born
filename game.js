@@ -12644,9 +12644,9 @@ window.getSynergyBonus = getSynergyBonus;
 // â”€â”€ Gym-Style Skill Training Config â”€â”€
 // Training costs scale with tier and current rank.
 const SKILL_TRAINING_CONFIG = {
-  1: { baseMoney: 200, moneyPerRank: 150, baseTime: 45, timePerRank: 12 },
-  2: { baseMoney: 1000, moneyPerRank: 500, baseTime: 45, timePerRank: 20 },
-  3: { baseMoney: 3000, moneyPerRank: 1500, baseTime: 90, timePerRank: 30 }
+  1: { baseMoney: 1500, moneyPerRank: 1000, baseTime: 60, timePerRank: 15 },
+  2: { baseMoney: 8000, moneyPerRank: 4000, baseTime: 90, timePerRank: 30 },
+  3: { baseMoney: 25000, moneyPerRank: 12000, baseTime: 150, timePerRank: 45 }
 };
 
 function getTrainingCost(treeName, nodeId) {
@@ -18127,7 +18127,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.36.0';
+const CURRENT_VERSION = '1.36.1';
 const VERSION_UPDATES = {
   '1.35.9': {
     title: 'Dead Code Sweep',

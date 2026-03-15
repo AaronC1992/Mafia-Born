@@ -5,6 +5,14 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.36.1] - 2026-03-15
+
+### Changes
+- Training Gym costs significantly increased across all tiers
+  - Tier 1: $200 base -> $1,500 base, $150/rank -> $1,000/rank, 45s -> 60s base time
+  - Tier 2: $1,000 base -> $8,000 base, $500/rank -> $4,000/rank, 45s -> 90s base time
+  - Tier 3: $3,000 base -> $25,000 base, $1,500/rank -> $12,000/rank, 90s -> 150s base time
+
 ## [1.36.0] - 2026-03-14
 
 ### Changes
