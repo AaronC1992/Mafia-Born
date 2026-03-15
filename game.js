@@ -259,9 +259,13 @@ window.recalculatePower = recalculatePower;
 // When durability reaches 0 the item breaks and is removed.
 function degradeEquipment(_context) {
   const broken = [];
+  const preservationLevel = player.skillTree?.endurance?.preservation || 0;
   // Weapon: lose 1 durability per use
   if (player.equippedWeapon && typeof player.equippedWeapon === 'object') {
-    player.equippedWeapon.durability = Math.max(0, (player.equippedWeapon.durability || 0) - 1);
+    // Preservation skill: chance to prevent durability loss
+    if (preservationLevel <= 0 || Math.random() * 100 >= preservationLevel * 2) {
+      player.equippedWeapon.durability = Math.max(0, (player.equippedWeapon.durability || 0) - 1);
+    }
     if (player.equippedWeapon.durability <= 0) {
       broken.push(player.equippedWeapon.name);
       // Remove from inventory
@@ -272,7 +276,9 @@ function degradeEquipment(_context) {
   }
   // Armor: lose 1 durability per use
   if (player.equippedArmor && typeof player.equippedArmor === 'object') {
-    player.equippedArmor.durability = Math.max(0, (player.equippedArmor.durability || 0) - 1);
+    if (preservationLevel <= 0 || Math.random() * 100 >= preservationLevel * 2) {
+      player.equippedArmor.durability = Math.max(0, (player.equippedArmor.durability || 0) - 1);
+    }
     if (player.equippedArmor.durability <= 0) {
       broken.push(player.equippedArmor.name);
       const idx = player.inventory.findIndex(i => i === player.equippedArmor);
@@ -280,9 +286,12 @@ function degradeEquipment(_context) {
       player.equippedArmor = null;
     }
   }
-  // Vehicle: lose 1 durability per use
+  // Vehicle: lose 1 durability per use (Wheelman skill reduces chance)
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
-    player.equippedVehicle.durability = Math.max(0, (player.equippedVehicle.durability || 0) - 1);
+    const wheelmanLevel = player.skillTree?.stealth?.wheelman || 0;
+    if (wheelmanLevel <= 0 || Math.random() * 100 >= wheelmanLevel * 3) {
+      player.equippedVehicle.durability = Math.max(0, (player.equippedVehicle.durability || 0) - 1);
+    }
     if (player.equippedVehicle.durability <= 0) {
       broken.push(player.equippedVehicle.name);
       const idx = player.inventory.findIndex(i => i === player.equippedVehicle);
@@ -5123,8 +5132,11 @@ function startLaundering(methodId) {
     const bizType = businessTypes.find(bt => bt.id === biz.type);
     return sum + (bizType ? (bizType.launderingCapacity || 0) : 0);
   }, 0);
-  if (totalCapacity > 0 && amount > totalCapacity) {
-    showToast(`Businesses can only launder up to $${totalCapacity.toLocaleString()} at a time!`, 'error');
+  // Money Laundering skill: +5% capacity per rank
+  const mlLevel = player.skillTree?.intelligence?.money_laundering || 0;
+  const boostedCapacity = mlLevel > 0 ? Math.floor(totalCapacity * (1 + mlLevel * 0.05)) : totalCapacity;
+  if (boostedCapacity > 0 && amount > boostedCapacity) {
+    showToast(`Businesses can only launder up to $${boostedCapacity.toLocaleString()} at a time!`, 'error');
     return;
   }
 
@@ -11520,8 +11532,15 @@ async function startJob(index) {
       logAction('Your captain on the payroll tipped you off \u2014 you slipped away before the bust!');
       showBriefNotification('Raid warning! Your corrupt contact saved you from arrest.', 'warning');
     } else {
-      sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
-      return;
+      // Silk Voice skill: chance to talk your way out of arrest
+      const silkVoiceLevel = player.skillTree?.charisma?.silk_voice || 0;
+      if (silkVoiceLevel > 0 && Math.random() * 100 < silkVoiceLevel) {
+        logAction('Smooth talking gets you off the hook -- the cops let you walk.');
+        showBriefNotification('Silk Voice! You talked your way out of arrest.', 'warning');
+      } else {
+        sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
+        return;
+      }
     }
   }
 
@@ -11860,8 +11879,15 @@ function handleCarTheft(job) {
   let jailChance = Math.random() * 100;
 
   if (jailChance <= adjustedJailChance) {
-    sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
-    return;
+    // Silk Voice skill: chance to talk your way out of arrest
+    const silkVoiceCarTheft = player.skillTree?.charisma?.silk_voice || 0;
+    if (silkVoiceCarTheft > 0 && Math.random() * 100 < silkVoiceCarTheft) {
+      logAction('Smooth talking gets you off the hook -- the cops let you walk.');
+      showBriefNotification('Silk Voice! You talked your way out of arrest.', 'warning');
+    } else {
+      sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
+      return;
+    }
   }
 
   // Check if player actually finds a car to steal (25% base chance)
@@ -12010,12 +12036,19 @@ function handleLaunderMoneyJob(job, approachLabel) {
   }
 
   if (Math.random() * 100 <= adjustedJailChance) {
-    // Caught! Lose the dirty money being laundered and go to jail
-    const seized = Math.floor(amountToLaunder * (0.3 + Math.random() * 0.4)); // Feds seize 30-70%
-    player.dirtyMoney = Math.max(0, player.dirtyMoney - seized);
-    player.heat = Math.min(100, player.heat + 8);
-    sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
-    return;
+    // Silk Voice skill: chance to talk your way out of arrest
+    const silkVoiceLaunder = player.skillTree?.charisma?.silk_voice || 0;
+    if (silkVoiceLaunder > 0 && Math.random() * 100 < silkVoiceLaunder) {
+      logAction('Smooth talking gets you off the hook -- the cops let you walk.');
+      showBriefNotification('Silk Voice! You talked your way out of arrest.', 'warning');
+    } else {
+      // Caught! Lose the dirty money being laundered and go to jail
+      const seized = Math.floor(amountToLaunder * (0.3 + Math.random() * 0.4)); // Feds seize 30-70%
+      player.dirtyMoney = Math.max(0, player.dirtyMoney - seized);
+      player.heat = Math.min(100, player.heat + 8);
+      sendToJail(job.heatGain, { crimeName: job.name, riskLevel: job.risk });
+      return;
+    }
   }
 
   // Success! Convert dirty money to clean money with a conversion rate
@@ -16760,12 +16793,12 @@ function resetPlayerForNewGame() {
     experience: 0,
     skillPoints: 0,
     skillTree: {
-      stealth: { shadow_step: 0, light_feet: 0, infiltration: 0, escape_artist: 0, ghost_protocol: 0, surveillance: 0 },
-      combat: { brawler: 0, toughness: 0, firearms: 0, melee_mastery: 0, intimidation: 0, enforcer: 0 },
-      charisma: { smooth_talker: 0, street_cred: 0, negotiation: 0, leadership: 0, manipulation: 0, kingpin_aura: 0 },
-      intelligence: { quick_study: 0, awareness: 0, hacking: 0, planning: 0, forensics: 0, mastermind: 0 },
+      stealth: { shadow_step: 0, light_feet: 0, infiltration: 0, escape_artist: 0, wheelman: 0, ghost_protocol: 0, surveillance: 0 },
+      combat: { brawler: 0, toughness: 0, firearms: 0, melee_mastery: 0, interrogation: 0, intimidation: 0, enforcer: 0 },
+      charisma: { smooth_talker: 0, street_cred: 0, negotiation: 0, leadership: 0, connections: 0, silk_voice: 0, manipulation: 0, kingpin_aura: 0 },
+      intelligence: { quick_study: 0, awareness: 0, hacking: 0, planning: 0, money_laundering: 0, forensics: 0, mastermind: 0 },
       luck: { fortune: 0, serendipity: 0, gambling: 0, scavenger: 0, jackpot: 0, lucky_break: 0 },
-      endurance: { vitality: 0, conditioning: 0, recovery: 0, resilience: 0, resistance: 0, unstoppable: 0 }
+      endurance: { vitality: 0, conditioning: 0, recovery: 0, resilience: 0, preservation: 0, resistance: 0, unstoppable: 0 }
     },
     mentors: [],
     streetReputation: {
@@ -18127,7 +18160,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.36.1';
+const CURRENT_VERSION = '1.37.0';
 const VERSION_UPDATES = {
   '1.35.9': {
     title: 'Dead Code Sweep',
@@ -20011,6 +20044,10 @@ function getFenceMultiplier() {
   // Negotiation skill equivalent -- charisma-like bonus from reputation
   bonus += Math.min(0.15, player.reputation / 10000 * 0.15); // Up to +15% at 10K rep
 
+  // Connections skill: +2% fence price per rank
+  const connectionsLevel = player.skillTree?.charisma?.connections || 0;
+  if (connectionsLevel > 0) bonus += connectionsLevel * 0.02;
+
   // Chop Shop synergy -- better rates for cars
   const chopShop = (player.businesses || []).find(b => b.type === 'chopshop');
   const chopBonus = chopShop ? 0.05 + (chopShop.level * 0.03) : 0; // 8-20%
@@ -20264,13 +20301,16 @@ function attemptBounty(index) {
   if (roll < chance) {
     // Success
     bounty.completed = true;
-    player.money += bounty.reward;
+    // Interrogation skill: +5% bounty reward per rank
+    const interrogationLevel = player.skillTree?.combat?.interrogation || 0;
+    const bountyReward = interrogationLevel > 0 ? Math.floor(bounty.reward * (1 + interrogationLevel * 0.05)) : bounty.reward;
+    player.money += bountyReward;
     if (typeof gainExperience === 'function') gainExperience(Math.max(0.5, Math.round(bounty.xp * 0.1 * 10) / 10));
     const heatGain = Math.floor(bounty.tier * 3);
     player.heat = Math.min(100, (player.heat || 0) + heatGain);
 
-    showBriefNotification(`Bounty collected! $${bounty.reward.toLocaleString()} + respect`, 'success');
-    logAction(`You tracked down ${bounty.name} and collected the bounty. $${bounty.reward.toLocaleString()} earned. +${heatGain} heat.`);
+    showBriefNotification(`Bounty collected! $${bountyReward.toLocaleString()} + respect`, 'success');
+    logAction(`You tracked down ${bounty.name} and collected the bounty. $${bountyReward.toLocaleString()} earned. +${heatGain} heat.`);
   } else {
     // Failure
     bounty.failed = true;
@@ -23435,6 +23475,18 @@ function applySaveData(saveData) {
   if (player.stats && typeof player.stats.highestWantedLevel === 'number') {
     player.stats.highestHeat = player.stats.highestWantedLevel;
     delete player.stats.highestWantedLevel;
+  }
+
+  // ── Save migration: backfill new skill tree nodes from definitions ──
+  if (player.skillTree && SKILL_TREE_DEFS) {
+    for (const treeName of Object.keys(SKILL_TREE_DEFS)) {
+      if (!player.skillTree[treeName]) player.skillTree[treeName] = {};
+      for (const nodeId of Object.keys(SKILL_TREE_DEFS[treeName].nodes)) {
+        if (player.skillTree[treeName][nodeId] === undefined) {
+          player.skillTree[treeName][nodeId] = 0;
+        }
+      }
+    }
   }
 
   // Apply achievements

@@ -5,6 +5,19 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.37.0] - 2026-03-15
+
+### New Skills
+- **Preservation** (Endurance T2, requires Vitality 3): +2% chance per rank to prevent weapon/armor durability loss
+- **Wheelman** (Stealth T2, requires Light Feet 3): -3% vehicle durability loss per rank
+- **Interrogation** (Combat T2, requires Toughness 3): +5% bounty reward per rank
+- **Connections** (Charisma T2, requires Street Cred 3): +2% fence sell price per rank
+- **Silk Voice** (Charisma T2, requires Smooth Talker 3): +1% chance per rank to avoid jail entirely
+- **Money Laundering** (Intelligence T2, requires Mastermind 3): +5% laundering capacity per rank
+
+### Changes
+- Save migration automatically backfills new skill tree nodes for existing players
+
 ## [1.36.1] - 2026-03-15
 
 ### Changes

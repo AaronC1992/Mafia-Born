@@ -155,12 +155,12 @@ export const player = {
   // ── Unified RPG Skill Tree ──
   // 6 trees × 6 nodes each (2 per tier). Tier 1: max 10, Tier 2: max 10, Tier 3: max 5.
   skillTree: {
-    stealth:      { shadow_step: 0, light_feet: 0, infiltration: 0, escape_artist: 0, ghost_protocol: 0, surveillance: 0 },
-    combat:       { brawler: 0, toughness: 0, firearms: 0, melee_mastery: 0, intimidation: 0, enforcer: 0 },
-    charisma:     { smooth_talker: 0, street_cred: 0, negotiation: 0, leadership: 0, manipulation: 0, kingpin_aura: 0 },
-    intelligence: { quick_study: 0, awareness: 0, hacking: 0, planning: 0, forensics: 0, mastermind: 0 },
+    stealth:      { shadow_step: 0, light_feet: 0, infiltration: 0, escape_artist: 0, wheelman: 0, ghost_protocol: 0, surveillance: 0 },
+    combat:       { brawler: 0, toughness: 0, firearms: 0, melee_mastery: 0, interrogation: 0, intimidation: 0, enforcer: 0 },
+    charisma:     { smooth_talker: 0, street_cred: 0, negotiation: 0, leadership: 0, connections: 0, silk_voice: 0, manipulation: 0, kingpin_aura: 0 },
+    intelligence: { quick_study: 0, awareness: 0, hacking: 0, planning: 0, money_laundering: 0, forensics: 0, mastermind: 0 },
     luck:         { fortune: 0, serendipity: 0, gambling: 0, scavenger: 0, jackpot: 0, lucky_break: 0 },
-    endurance:    { vitality: 0, conditioning: 0, recovery: 0, resilience: 0, resistance: 0, unstoppable: 0 }
+    endurance:    { vitality: 0, conditioning: 0, recovery: 0, resilience: 0, preservation: 0, resistance: 0, unstoppable: 0 }
   },
   streetReputation: {
     torrino: 0, // Torrino Family reputation
@@ -388,6 +388,7 @@ export const SKILL_TREE_DEFS = {
       light_feet:     { tier: 1, name: 'Light Feet',     icon: '👣', maxRank: 10, desc: 'Move silently through enemy territory', effect: '-2% heat gain per rank', prereqs: [] },
       infiltration:   { tier: 2, name: 'Infiltration',   icon: '🔓', maxRank: 10, desc: 'Break into secured locations with ease', effect: '+5% stealth job success per rank', prereqs: [{ node: 'shadow_step', rank: 3 }] },
       escape_artist:  { tier: 2, name: 'Escape Artist',  icon: '💨', maxRank: 10, desc: 'Slip out of the tightest situations', effect: '-2s jail time, +3% breakout per rank', prereqs: [{ node: 'light_feet', rank: 3 }] },
+      wheelman:       { tier: 2, name: 'Wheelman',       icon: '', maxRank: 10, desc: 'Expert driver -- fewer miles on the odometer', effect: '-3% vehicle durability loss per rank', prereqs: [{ node: 'light_feet', rank: 3 }] },
       ghost_protocol: { tier: 3, name: 'Ghost Protocol', icon: '👻', maxRank: 5,  desc: 'Become a phantom — practically invisible', effect: '-4% heat gain per rank', prereqs: [{ node: 'infiltration', rank: 5 }] },
       surveillance:   { tier: 3, name: 'Surveillance',   icon: '👁️', maxRank: 5,  desc: 'Gather intel and stay ahead of enemies', effect: '+4% stealth job success per rank', prereqs: [{ node: 'escape_artist', rank: 5 }] }
     }
@@ -402,6 +403,7 @@ export const SKILL_TREE_DEFS = {
       toughness:     { tier: 1, name: 'Toughness',     icon: '🛡️', maxRank: 10, desc: 'Shrug off hits that would drop lesser men', effect: '-2% hurt chance per rank', prereqs: [] },
       firearms:      { tier: 2, name: 'Firearms',      icon: '🔫', maxRank: 10, desc: 'Master the art of the gun', effect: '+6% armed job success per rank', prereqs: [{ node: 'brawler', rank: 3 }] },
       melee_mastery: { tier: 2, name: 'Melee Mastery', icon: '🗡️', maxRank: 10, desc: 'Deadly in close quarters combat', effect: '+4% unarmed job success per rank', prereqs: [{ node: 'brawler', rank: 3 }] },
+      interrogation: { tier: 2, name: 'Interrogation', icon: '', maxRank: 10, desc: 'Extract information and collect on contracts', effect: '+5% bounty reward per rank', prereqs: [{ node: 'toughness', rank: 3 }] },
       intimidation:  { tier: 3, name: 'Intimidation',  icon: '😈', maxRank: 5,  desc: 'Your reputation alone strikes terror', effect: '+6% violent job earnings per rank', prereqs: [{ node: 'firearms', rank: 5 }] },
       enforcer:      { tier: 3, name: 'Enforcer',      icon: '💀', maxRank: 5,  desc: 'The ultimate weapon of the underworld', effect: '+15% boss fight power per rank', prereqs: [{ node: 'melee_mastery', rank: 5 }] }
     }
@@ -416,6 +418,8 @@ export const SKILL_TREE_DEFS = {
       street_cred:   { tier: 1, name: 'Street Cred',    icon: '🏆', maxRank: 10, desc: 'Build your name on the streets', effect: '+2% all reputation gain per rank', prereqs: [] },
       negotiation:   { tier: 2, name: 'Negotiation',    icon: '🤝', maxRank: 10, desc: 'Secure better deals and prices', effect: '+3% negotiation job success per rank', prereqs: [{ node: 'smooth_talker', rank: 3 }] },
       leadership:    { tier: 2, name: 'Leadership',     icon: '👑', maxRank: 10, desc: 'Command respect and loyalty from your crew', effect: '+5% gang operation success per rank', prereqs: [{ node: 'street_cred', rank: 3 }] },
+      connections:   { tier: 2, name: 'Connections',    icon: '', maxRank: 10, desc: 'Know the right people in the right places', effect: '+2% fence sell price per rank', prereqs: [{ node: 'street_cred', rank: 3 }] },
+      silk_voice:    { tier: 2, name: 'Silk Voice',      icon: '', maxRank: 10, desc: 'Talk your way out of anything -- even handcuffs', effect: '+1% chance per rank to avoid jail entirely', prereqs: [{ node: 'smooth_talker', rank: 3 }] },
       manipulation:  { tier: 3, name: 'Manipulation',   icon: '🎭', maxRank: 5,  desc: 'Pull the strings from the shadows', effect: '+4% faction and negotiation success per rank', prereqs: [{ node: 'negotiation', rank: 5 }] },
       kingpin_aura:  { tier: 3, name: 'Kingpin Aura',   icon: '💎', maxRank: 5,  desc: 'Your presence commands every room', effect: '+5% all income per rank', prereqs: [{ node: 'leadership', rank: 5 }] }
     }
@@ -430,6 +434,7 @@ export const SKILL_TREE_DEFS = {
       quick_study: { tier: 1, name: 'Quick Study',   icon: '📚', maxRank: 10, desc: 'A sharp mind that learns from every job', effect: '+4% job success per rank', prereqs: [] },
       hacking:     { tier: 2, name: 'Hacking',       icon: '💻', maxRank: 10, desc: 'Master of digital infiltration', effect: '+7% heist and intelligence job success per rank', prereqs: [{ node: 'quick_study', rank: 3 }] },
       planning:    { tier: 2, name: 'Planning',       icon: '📋', maxRank: 10, desc: 'Every detail accounted for', effect: '-5% crime cooldown per rank', prereqs: [{ node: 'quick_study', rank: 3 }] },
+      money_laundering: { tier: 2, name: 'Money Laundering', icon: '', maxRank: 10, desc: 'Move dirty cash through clean channels', effect: '+5% laundering capacity per rank', prereqs: [{ node: 'mastermind', rank: 3 }] },
       awareness:   { tier: 3, name: 'Awareness',     icon: '🔍', maxRank: 5,  desc: 'Nothing escapes your notice', effect: '+2% luck-based outcomes per rank', prereqs: [{ node: 'hacking', rank: 5 }] },
       forensics:   { tier: 3, name: 'Forensics',     icon: '🔬', maxRank: 5,  desc: 'Clean up evidence like a professional', effect: '8% chance per rank to reduce heat', prereqs: [{ node: 'planning', rank: 5 }] }
     }
@@ -458,6 +463,7 @@ export const SKILL_TREE_DEFS = {
       conditioning: { tier: 1, name: 'Conditioning',  icon: '🏃', maxRank: 10, desc: 'Push your body past its limits', effect: '+1 HP per rank passive regen every 5 min', prereqs: [] },
       recovery:     { tier: 2, name: 'Recovery',       icon: '❤️‍🩹', maxRank: 10, desc: 'Bounce back from anything', effect: '-5% hospital treatment time per rank', prereqs: [{ node: 'vitality', rank: 3 }] },
       resilience:   { tier: 2, name: 'Resilience',     icon: '🦾', maxRank: 10, desc: 'Reduce the impact of injuries', effect: '-3% injury severity per rank', prereqs: [{ node: 'conditioning', rank: 3 }] },
+      preservation: { tier: 2, name: 'Preservation',   icon: '', maxRank: 10, desc: 'Take care of your gear and it takes care of you', effect: '+2% chance per rank to prevent durability loss', prereqs: [{ node: 'vitality', rank: 3 }] },
       resistance:   { tier: 3, name: 'Resistance',     icon: '🛡️', maxRank: 5,  desc: 'Nearly immune to punishment', effect: '-5% all damage taken per rank', prereqs: [{ node: 'resilience', rank: 5 }] },
       unstoppable:  { tier: 3, name: 'Unstoppable',    icon: '⚡', maxRank: 5,  desc: 'Second Wind -- recover health after tough jobs', effect: '3% chance per rank to recover 5 HP after a job', prereqs: [{ node: 'recovery', rank: 5 }] }
     }
