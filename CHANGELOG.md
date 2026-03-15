@@ -5,6 +5,18 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.38.0] - 2026-03-15
+
+### Revamped
+- **Help & Game Guide** -- Complete overhaul of the Help Index screen
+  - Organised all topics into 8 clear categories: Basics, Earning Money & Jobs, Combat & Equipment, Skills & Training, Properties & Empire, Gangs/Factions/Story, Game Systems, Casino & Mini-Games, Multiplayer, and Achievements & More
+  - Added 30+ detailed topics covering every game system (was 16 flat topics)
+  - New topics: Character Creation, Car Theft, Bounty Board, Dirty Money & Laundering, Weapons, Armour, Vehicles, Supplies & Utilities, all 6 Skill Trees with per-node breakdowns, Business Fronts, Empire Rating, Crime Families, Corruption, Jail & Arrest, Hospital & Healing, Durability System, PvP, Player Market, Achievements, Daily Login, and more
+  - Every topic now includes: what the system is, how it works mechanically, key numbers/costs, and which skills/perks/items affect it
+  - Category-based navigation with gold section headers and grid layout
+  - Training Gym costs documented (Tier 1-3 base + per-rank scaling)
+  - All 42 skill nodes listed with exact per-rank effects and max ranks
+
 ## [1.37.0] - 2026-03-15
 
 ### New Skills

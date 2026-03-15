@@ -10123,417 +10123,1055 @@ const SCREEN_TUTORIAL_MAP = {
 
 // ==================== HELP / INDEX SYSTEM ====================
 // Full help reference accessed from Settings > Help button.
+// Organised into categories with comprehensive topic definitions.
 
-const HELP_TOPICS = [
-  { id: 'getting-started', icon: '', title: 'Getting Started', content: `
-    <p>Welcome to <strong>Mafia-Born</strong> -- a browser-based crime RPG where you rise from street thug to Don of your own criminal empire.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Core Concepts</h4>
-    <ul>
-      <li><strong>Cash</strong> -- Your main currency. Earned from jobs, businesses, missions, and the casino. Spend it on gear, properties, heals, and more.</li>
-      <li><strong>Dirty Money</strong> -- Earned from heists and illegal activities. Cannot be spent directly -- you must launder it through Business Fronts (Properties screen) to convert it into clean Cash.</li>
-      <li><strong>Health</strong> -- Drops from combat, failed jobs, and random events. If it hits 0, your character dies permanently (permadeath). Heal at the Hospital or use Medkits.</li>
-      <li><strong>Heat</strong> -- Rises when you commit crimes. Higher heat means more police encounters, bigger fines, and possible arrest. Heat does NOT decay on its own -- you must reduce it via perks, skills, and bribes.</li>
-      <li><strong>Respect & Rank</strong> -- Earn respect from jobs, missions, side ops, and combat. Rank up to unlock new screens, gear, story chapters, and features.</li>
-      <li><strong>Influence</strong> -- A measure of your power in the underworld. Used to claim territory and affects your Empire Rating.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Your First Steps</h4>
-    <ol style="color:#d4c4a0; line-height:1.7;">
-      <li>Do <strong>Jobs</strong> to earn cash and Respect.</li>
-      <li>Visit the <strong>Black Market</strong> to buy a weapon and armour.</li>
-      <li>Check <strong>Missions</strong> to start your crime family story.</li>
-      <li>Visit the <strong>Hospital</strong> when your health is low.</li>
-      <li>Open <strong>Settings > Help</strong> any time for detailed guides.</li>
-    </ol>
-  `},
-  { id: 'ui-guide', icon: '', title: 'UI Guide (HUD)', content: `
-    <p>Understanding the on-screen interface.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Status Bar (Top of Screen)</h4>
-    <p>The bar at the very top displays your vital stats in real time:</p>
-    <ul>
-      <li><strong>Cash</strong> -- Your clean, spendable money.</li>
-      <li><strong>Health</strong> -- Your current HP. If it reaches 0, your character dies permanently (permadeath).</li>
-      <li><strong>Heat</strong> -- Your heat level (0-100). Higher = more police attention.</li>
-      <li><strong>Rank</strong> -- Your reputation rank. Earn Respect to unlock content.</li>
-      <li><strong>Dirty Money</strong> -- Cash from illegal activities that needs laundering.</li>
-      <li><strong>Influence</strong> -- Your underworld power / reputation score.</li>
-      <li><strong>Turf / Tribute</strong> -- Number of territories held and income earned from them.</li>
-      <li><strong>Respect</strong> -- Current respect and how much you need for the next rank.</li>
-      <li><strong>Skill Points</strong> -- Unspent points available for the Skills screen.</li>
-      <li><strong>Season / Weather</strong> -- The current in-game season and weather, which can affect events.</li>
-      <li><strong>Bullets / Gas / Respect</strong> -- Resource counters shown when you have relevant items or features unlocked.</li>
-    </ul>
-    <p style="color:#8a7a5a; font-style:italic;">Tip: You can customise which stats appear on the Status Bar in Settings > UI Toggles.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">The Ledger (Activity Log)</h4>
-    <p>Located below the status bar, The Ledger is a scrolling log that records everything you do -- jobs completed, items bought, fights won or lost, story events, and atmospheric narration. It's your running history of actions and events.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Quick Actions Bar (Right Panel / Mobile Menu)</h4>
-    <p>On desktop, the right-side panel provides one-tap shortcuts to your favourite screens. It includes:</p>
-    <ul>
-      <li><strong>SafeHouse</strong> -- Return to your home base.</li>
-      <li><strong>Screen Shortcuts</strong> -- Quick links to Jobs, Market, Missions, etc. (customisable in Settings).</li>
-      <li><strong>Save Records</strong> -- Quick-save your game.</li>
-      <li><strong>Skip Tutorials</strong> -- Disable all tutorial pop-ups (if tutorials are active).</li>
-      <li><strong>Help</strong> -- Open this guide.</li>
-    </ul>
-    <p style="color:#8a7a5a; font-style:italic;">Tip: On mobile, access quick actions from the hamburger menu or swipe panel.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Navigation Buttons</h4>
-    <p>The main SafeHouse screen has buttons for every area of the game. Buttons unlock as your reputation grows.</p>
-  `},
-  { id: 'safehouse-help', icon: '', title: 'SafeHouse', content: `
-    <p>Your home base and central hub. All navigation starts here.</p>
-    <ul>
-      <li><strong>Navigation</strong> -- Tap any unlocked button to visit that area. Buttons unlock as you rank up through Jobs and Missions.</li>
-      <li><strong>Quick Actions</strong> -- The right panel (desktop) or mobile menu provides fast shortcuts to your favourite screens, a save button, and help.</li>
-      <li><strong>Status Bar</strong> -- The top bar shows your cash, health, heat, rank, and more at all times. Customise it in Settings > UI Toggles.</li>
-      <li><strong>The Ledger</strong> -- The scrolling activity log below the status bar records all your actions, purchases, fights, and story events.</li>
-      <li><strong>Portrait</strong> -- Your character portrait is shown in the top-left. You can change it from Settings.</li>
-    </ul>
-  `},
-  { id: 'jobs-help', icon: '', title: 'Jobs', content: `
-    <p>Your main source of income and Respect, especially early on.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">How Jobs Work</h4>
-    <ul>
-      <li>Each job pays <strong>cash + Respect</strong> on success and triggers a <strong>cooldown timer</strong> before you can do it again.</li>
-      <li>Higher-tier jobs unlock at higher reputation and pay significantly more, but have longer cooldowns.</li>
-      <li>Some jobs have a <strong>chance to fail</strong>, especially risky ones. Failure may cost health or attract heat.</li>
-      <li>Some jobs increase <strong>Heat</strong>, which makes cops more aggressive.</li>
-      <li>Jobs may reward <strong>stolen goods</strong> that you can sell at the Fence (Black Market) for extra profit.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Tips</h4>
-    <ul>
-      <li>Grind low-risk jobs early to build a cash reserve before buying gear.</li>
-      <li>Watch your heat -- if it gets too high, lay low for a while.</li>
-      <li>Invest in the Planning skill to reduce cooldown times between jobs.</li>
-    </ul>
-  `},
-  { id: 'store-help', icon: '', title: 'Black Market', content: `
-    <p>Three tabs for all your shopping needs: <strong>Buy</strong>, <strong>The Fence</strong>, and <strong>Player Market</strong>.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Buy Tab</h4>
-    <ul>
-      <li>Purchase <strong>weapons</strong> (increase Attack), <strong>armour</strong> (increase Defence), and <strong>consumables</strong> (restore health).</li>
-      <li>Better gear costs more but gives you a massive edge in combat and job success rates.</li>
-      <li>Consumables include Medkits (restore health). Stock up before dangerous missions.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">The Fence</h4>
-    <ul>
-      <li>Sell stolen goods obtained from jobs and heists at premium prices.</li>
-      <li>Fence prices can fluctuate based on your heat level and market conditions.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Player Market</h4>
-    <ul>
-      <li>Buy and sell vehicles, weapons, armor, ammo, gas, utility items, and trade goods with other real players.</li>
-      <li>List items for a price, or browse listings by category to find a deal.</li>
-    </ul>
-  `},
-  { id: 'missions-help', icon: '', title: 'Missions & Story', content: `
-    <p>The narrative heart of the game -- follow your crime family's story from street-level nobody to untouchable Don.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Family Story</h4>
-    <ul>
-      <li>Choose a crime family (Torrino, Kozlov, Chen, or Morales) and play through their <strong>cinematic storyline</strong>.</li>
-      <li>Story chapters unlock as your reputation grows. Each chapter has unique missions with dialogue, choices, and consequences.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Side Operations</h4>
-    <ul>
-      <li>Optional quest chains that run in parallel with the main story.</li>
-      <li>Each step has a <strong>countdown timer</strong> (3-20 minutes). You must wait for the timer AND complete the objective to advance.</li>
-      <li>Great source of extra Respect, cash, influence, and sometimes unique rewards.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Street Stories</h4>
-    <ul>
-      <li>Narrative events triggered during side operation steps.</li>
-      <li>They add choices, consequences, and atmospheric flavour to your quests.</li>
-    </ul>
-  `},
-  { id: 'gang-help', icon: '', title: 'The Family (Gang)', content: `
-    <p>Crime families are the social and multiplayer system of Mafia Born.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Creating or Joining</h4>
-    <ul>
-      <li><strong>Create</strong> a family (costs cash) and become the Boss, or <strong>join</strong> an existing family.</li>
-      <li>Families share territory control, resources, and receive group bonuses.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Roles & Hierarchy</h4>
-    <ul>
-      <li><strong>Boss</strong> -- Full control over the family. Can promote, demote, and kick members.</li>
-      <li><strong>Underboss</strong> -- Second in command. Can manage members and initiate wars.</li>
-      <li><strong>Capo</strong> -- Squad leader. Can recruit and manage soldiers.</li>
-      <li><strong>Soldier</strong> -- The backbone. Contributes to wars and earns from family operations.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Family Wars</h4>
-    <ul>
-      <li>Coordinate with family members to attack rival families.</li>
-      <li>Win wars to gain territory, respect, and dominance on the leaderboard.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">AI Crew</h4>
-    <ul>
-      <li>Hire AI crew members who boost your stats and join heists.</li>
-      <li>Better crew = better odds in combat and territory control.</li>
-    </ul>
-  `},
-  { id: 'properties-help', icon: '', title: 'Properties & Fronts', content: `
-    <p>Two tabs: <strong>Properties</strong> and <strong>Fronts</strong> -- your path to passive income and money laundering.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Properties</h4>
-    <ul>
-      <li>Buy apartments, shops, and warehouses across the city.</li>
-      <li>Each property generates <strong>passive income</strong> every game cycle automatically -- no action needed.</li>
-      <li>More expensive properties yield higher income returns.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Business Fronts</h4>
-    <ul>
-      <li>Fronts (laundromats, restaurants, etc.) automatically launder your <strong>Dirty Money</strong> into clean <strong>Cash</strong>.</li>
-      <li>Higher-tier fronts process larger amounts per cycle.</li>
-      <li>You <em>must</em> have fronts to convert dirty money -- it's useless otherwise.</li>
-    </ul>
-  `},
-  { id: 'casino-help', icon: '', title: 'Casino & Mini Games', content: `
-    <p>High risk, high reward entertainment with your hard-earned cash.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Casino Games</h4>
-    <ul>
-      <li><strong>Blackjack</strong> -- Hit 21 or get closer than the dealer without going bust.</li>
-      <li><strong>Slots</strong> -- Spin the reels and hope for matching symbols. Quick and luck-based.</li>
-      <li><strong>Roulette</strong> -- Bet on numbers, colours, or ranges. Wide variety of bet types.</li>
-      <li><strong>Dice</strong> -- Roll the dice and bet on the outcome.</li>
-      <li><strong>Horse Racing</strong> -- Pick a horse and watch the race unfold.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Mini Games</h4>
-    <ul>
-      <li><strong>TikTakToe</strong> -- Classic noughts and crosses against the AI.</li>
-      <li><strong>Number Guessing</strong> -- Guess the hidden number for a payout.</li>
-      <li><strong>Rock Paper Scissors</strong> -- Best of rounds against the AI.</li>
-      <li><strong>Snake</strong> -- Classic snake game with cash rewards for high scores.</li>
-    </ul>
-    <p style="color:#8b3a3a; font-style:italic;">Warning: The Casino uses your real in-game Cash. There is no guaranteed win -- gamble responsibly!</p>
-  `},
-  { id: 'stash-help', icon: '', title: 'Stash & Motor Pool', content: `
-    <p>Your inventory and vehicle garage.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Stash (Inventory)</h4>
-    <ul>
-      <li>View all your weapons, armour, consumables, and stolen goods.</li>
-      <li><strong>Equip</strong> a weapon and armour piece to boost your Attack and Defence stats.</li>
-      <li><strong>Use</strong> consumables (Coffee, Medkits, etc.) directly from your stash.</li>
-      <li><strong>Sell</strong> stolen goods at the Fence in the Black Market for extra cash.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Motor Pool</h4>
-    <ul>
-      <li>Browse your vehicle collection. Vehicles provide speed bonuses and are used in heists and getaways.</li>
-      <li>Sell unwanted vehicles on the Player Market, or buy items from other players there.</li>
-    </ul>
-  `},
-  { id: 'hospital-help', icon: '', title: 'Hospital', content: `
-    <p>The underground doctor keeps you patched up -- for a price.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Healing Options</h4>
-    <ul>
-      <li><strong>Full Treatment</strong> -- Restores health to 100%. Expensive, but the most thorough option.</li>
-      <li><strong>Patch Job</strong> -- Cheaper partial heal (restores up to ~25 HP). Good for a quick fix between jobs.</li>
-      <li><strong>Rest</strong> -- Heals a small amount over time using a timer-based recovery system.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Why Healing Matters</h4>
-    <ul>
-      <li>If your health drops to 0 during a fight or failed job, your character <strong>dies permanently</strong> -- this is permadeath!</li>
-      <li>Keep your health above 50% before doing risky jobs or entering combat.</li>
-      <li>Medkits (from the Black Market) can restore health outside the Hospital.</li>
-    </ul>
-  `},
-  { id: 'skills-help', icon: '', title: 'Talents & Skills', content: `
-    <p>Invest skill points into 6 permanent talent trees to customise your playstyle.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Skill Trees</h4>
-    <ul>
-      <li><strong>Combat</strong> -- Increase attack power, critical hit chance, and armour penetration. Best for fighters.</li>
-      <li><strong>Stealth</strong> -- Boost dodge chance, theft success rate, and reduce heat gained from crimes. Best for sneaky players.</li>
-      <li><strong>Business</strong> -- Increase income from jobs and properties, reduce purchase prices, and improve front efficiency. Best for empire builders.</li>
-      <li><strong>Endurance</strong> -- Reduce cooldown times, gain damage reduction, and boost max health recovery. Best for grinders.</li>
-      <li><strong>Street Smarts</strong> -- Boost Respect gains, reduce jail time, and improve loot quality. Best for fast levellers.</li>
-      <li><strong>Leadership</strong> -- Strengthen crew bonuses, family buffs, and territory defence. Best for gang leaders.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Earning Skill Points</h4>
-    <ul>
-      <li>You receive skill points each time you rank up.</li>
-      <li>Spend them from the <strong>Skills</strong> screen. Each node is permanent once purchased.</li>
-    </ul>
-  `},
-  { id: 'territory-help', icon: '', title: 'Territory Control', content: `
-    <p>Dominate the city district by district. The turf system is your path to real power -- but expanding your empire paints a bigger target on your back.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Claiming Territory</h4>
-    <ul>
-      <li>The city has <strong>8 turf zones</strong> -- each controlled by a rival family or independent crew. Attack from the Turf Map to seize control.</li>
-      <li>Each zone you control generates <strong>weekly Tribute</strong> (dirty money) based on its base income, your fortification level, and active perks.</li>
-      <li>Some zones have a <strong>boss</strong> you must defeat before claiming the zone.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Defending & Fortifying</h4>
-    <ul>
-      <li><strong>Fortify</strong> a zone to increase its defense (25 defense per level). Costs cash, but makes it much harder for rivals to take.</li>
-      <li>Assign <strong>crew members</strong> as defenders -- each member adds 20 defense.</li>
-      <li>Your total <strong>Turf Power</strong> gives a passive 10% bonus to every zone's defense.</li>
-      <li>Click <strong>Manage</strong> on any zone to see a full Defense Breakdown and your Vulnerability Status.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Rival Escalation</h4>
-    <ul>
-      <li>The more zones you own, the <strong>harder and more frequent</strong> rival attacks become.</li>
-      <li>At 1 zone, rivals attack at ~7.5% chance with ~55 power. At 8 zones it rises to 25% chance with 160+ power.</li>
-      <li>Fortify and defend your zones or risk losing them to retaliation!</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Turf Milestones</h4>
-    <ul>
-      <li><strong>2 zones -- Street Presence:</strong> +10% Respect from all sources.</li>
-      <li><strong>4 zones -- Neighbourhood Boss:</strong> Heat decays -6 per cycle (only way heat decays passively).</li>
-      <li><strong>6 zones -- District Kingpin:</strong> +15% turf income.</li>
-      <li><strong>8 zones -- City Overlord:</strong> +25% turf income + the exclusive Overlord's Scepter weapon (60 power).</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Family Dominance</h4>
-    <ul>
-      <li>Seize <strong>all zones</strong> belonging to a rival family to earn a one-time dominance bonus: $100K + 50 respect + 50 power + 30 turf reputation.</li>
-      <li>Track your progress toward dominating each family on the Territory Control screen.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Tips</h4>
-    <ul>
-      <li>Don't over-expand without fortifying -- more zones means stronger rival attacks.</li>
-      <li>Use the <strong>Manage</strong> panel to check if your zone is <span style="color:#2ecc71;">Well Defended</span>, <span style="color:#f39c12;">At Risk</span>, or <span style="color:#e74c3c;">Vulnerable</span>.</li>
-      <li>Reduce turf heat to maximize your weekly income -- high heat cuts income by up to 70%.</li>
-    </ul>
-  `},
-  { id: 'stats-help', icon: '', title: 'Stats & Empire', content: `
-    <p>Track every detail of your criminal career.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Player Stats</h4>
-    <ul>
-      <li>Full breakdown of your character: <strong>Level, Cash, Dirty Money, Health, Attack, Defence, Influence, Respect</strong>, and more.</li>
-      <li>See your equipped weapon and armour, total jobs completed, missions finished, and crimes committed.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Empire Rating</h4>
-    <ul>
-      <li>A <strong>composite score</strong> measuring your overall power in the game.</li>
-      <li>Factors in: territory held, passive income, crew size, properties owned, story progress, and more.</li>
-      <li>Compare your Empire Rating against other players on the leaderboard.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Empire Overview</h4>
-    <ul>
-      <li>A visual dashboard showing all your assets, income sources, crew, and territory at a glance.</li>
-      <li>Great for seeing the big picture of your criminal empire's growth.</li>
-    </ul>
-  `},
-  { id: 'heat-help', icon: '', title: 'Heat', content: `
-    <p><strong>Heat</strong> is a number from 0 to 100 representing how much the police are watching you.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Heat Levels</h4>
-    <ul>
-      <li><strong>0-15 (Cool)</strong> -- You're under the radar. Almost no police encounters.</li>
-      <li><strong>16-30 (Warm)</strong> -- Occasional police attention. Minor fines possible.</li>
-      <li><strong>31-50 (Hot)</strong> -- Regular police encounters. Risk of being stopped, fined, or arrested.</li>
-      <li><strong>51-75 (Scorching)</strong> -- Frequent raids and patrols. Higher bail if arrested. Jobs and heists become riskier.</li>
-      <li><strong>76-100 (Inferno)</strong> -- Maximum police pressure. Very high arrest chance. Severe penalties. Lay low immediately!</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">What Causes Heat?</h4>
-    <ul>
-      <li>Risky jobs (theft, assault, heists).</li>
-      <li>Failed jobs and botched crimes.</li>
-      <li>Attacking other players (PvP).</li>
-      <li>Certain story mission actions.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">How to Reduce Heat</h4>
-    <ul>
-      <li><strong>Perks</strong> -- The Neighbourhood Boss milestone perk grants passive heat decay.</li>
-      <li><strong>Lay Low</strong> -- Avoid committing crimes to let it drop faster.</li>
-      <li><strong>Bribe Officials</strong> -- Spend cash to reduce heat quickly.</li>
-      <li><strong>Stealth Skills</strong> -- The Stealth skill tree has nodes that reduce heat gain and increase decay speed.</li>
-    </ul>
-  `},
-  { id: 'cooldown-help', icon: '', title: 'Crime Cooldowns', content: `
-    <p><strong>Crime Cooldowns</strong> control how often you can perform jobs in Mafia Born.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">How Cooldowns Work</h4>
-    <ul>
-      <li>Every job triggers a cooldown timer after completion. You must wait for the timer to expire before doing that job again.</li>
-      <li>Higher-risk jobs have longer cooldowns: Low risk (15s), Medium (45s), High (2min), Very High (5min), Extreme (10min), Legendary (20min).</li>
-      <li>Cooldowns are per-job, so you can switch between different jobs while one is cooling down.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Reducing Cooldowns</h4>
-    <ul>
-      <li><strong>Planning Skill</strong> -- Each rank reduces cooldowns by 5% (up to 50% at max rank).</li>
-      <li><strong>Unstoppable Skill</strong> -- Each rank reduces all cooldowns by 8%.</li>
-      <li><strong>Quick Hands Perk</strong> -- Provides a flat 15% cooldown reduction.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Cooldown Tips</h4>
-    <ul>
-      <li>Rotate between multiple jobs to maximise your earnings while cooldowns expire.</li>
-      <li>Invest in the <strong>Planning</strong> and <strong>Unstoppable</strong> skills to dramatically reduce wait times.</li>
-      <li>Low-risk jobs have short cooldowns -- great for steady income grinding.</li>
-    </ul>
-  `},
-  { id: 'combat-help', icon: '', title: 'Combat & Equipment', content: `
-    <p>Understanding how fights work and how to gear up for them.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Attack & Defence</h4>
-    <ul>
-      <li><strong>Attack</strong> -- Determines how much damage you deal. Increased by equipping weapons and investing in the Combat skill tree.</li>
-      <li><strong>Defence</strong> -- Determines how much damage you resist. Increased by equipping armour and investing in skills.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Equipment</h4>
-    <ul>
-      <li>Buy weapons and armour from the <strong>Black Market</strong>.</li>
-      <li>Equip them from your <strong>Stash</strong> -- tap an item and select Equip.</li>
-      <li>You can have one weapon and one armour equipped at a time.</li>
-      <li>Higher-tier, more expensive gear provides significantly better stats.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">PvP (Player vs Player)</h4>
-    <ul>
-      <li>Attack other real players to steal their cash and gain respect.</li>
-      <li>Your combat outcome is determined by both players' Attack, Defence, HP, and some randomness.</li>
-      <li>PvP increases Heat: the more you fight, the more wanted you become.</li>
-    </ul>
-  `},
-  { id: 'dirty-money-help', icon: '', title: 'Dirty Money & Laundering', content: `
-    <p>Not all money is created equal -- dirty money needs to be cleaned before you can spend it.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">What is Dirty Money?</h4>
-    <ul>
-      <li>Earned from high-risk activities: heists, certain jobs, and illegal operations.</li>
-      <li>Shown as a separate counter on your Status Bar ("Dirty: $X").</li>
-      <li><strong>Cannot be spent directly</strong> on gear, heals, or properties.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">How to Launder It</h4>
-    <ul>
-      <li>Buy <strong>Business Fronts</strong> from the Properties screen.</li>
-      <li>Fronts automatically convert dirty money into clean cash every game cycle.</li>
-      <li>Better fronts launder more per cycle -- invest in upgrades when you can.</li>
-    </ul>
-  `},
-  { id: 'seasons-help', icon: '', title: 'Seasons & Weather', content: `
-    <p>The game world has dynamic seasons and weather that affect gameplay.</p>
-    <ul>
-      <li><strong>Seasons</strong> -- Cycle through Spring, Summer, Autumn, and Winter. Each season can influence events, job availability, and NPC behaviour.</li>
-      <li><strong>Weather</strong> -- Changes between Clear, Rain, Fog, Storm, and more. Some weather conditions affect job success rates or trigger unique events.</li>
-      <li>Both are shown on the Status Bar and update automatically during gameplay.</li>
-    </ul>
-  `},
-  { id: 'multiplayer-help', icon: '', title: 'Multiplayer & Cloud', content: `
-    <p>Play with others and sync your progress across devices.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Online Features</h4>
-    <ul>
-      <li><strong>Cloud Save</strong> -- Sign in from Settings to sync your save across browsers and devices.</li>
-      <li><strong>World Chat</strong> -- Chat with other players in real time. Coordinate, trade tips, or talk trash.</li>
-      <li><strong>Player Market</strong> -- Buy and sell vehicles, weapons, armor, ammo, and more with other real players via the Black Market.</li>
-      <li><strong>PvP Combat</strong> -- Attack other players, steal their cash, and climb the leaderboard.</li>
-      <li><strong>Families</strong> -- Create or join a crime family (gang) for group play, territory wars, and shared bonuses.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Offline Play</h4>
-    <ul>
-      <li>Mafia Born works fully offline. Multiplayer features enhance the experience but are not required.</li>
-      <li>Your local saves are always available even without internet.</li>
-    </ul>
-  `},
-  { id: 'saving-help', icon: '', title: 'Saving & Loading', content: `
-    <p>Never lose your progress -- multiple save options keep you covered.</p>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Save Options</h4>
-    <ul>
-      <li><strong>Auto-Save</strong> -- The game automatically saves to your current slot every 60 seconds.</li>
-      <li><strong>Manual Save</strong> -- Save to any slot from Settings > Save Game, or use the "Save Records" button in Quick Actions.</li>
-      <li><strong>Cloud Save</strong> -- Sign in for cloud saves that persist across browsers and devices.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Loading</h4>
-    <ul>
-      <li>Go to Settings > Resume to pick any save slot and load it.</li>
-      <li>Cloud saves will sync automatically when you sign in on a new device.</li>
-    </ul>
-    <h4 style="color:#c0a062; margin:14px 0 6px;">Tips</h4>
-    <ul>
-      <li>Save before risky activities like high-heat jobs, PvP, or the Casino.</li>
-      <li>Use multiple slots to keep backups at key progression points.</li>
-    </ul>
-  `},
+const HELP_CATEGORIES = [
+  {
+    id: 'basics',
+    title: 'Basics & Getting Started',
+    topics: [
+      { id: 'getting-started', icon: '', title: 'Getting Started', content: `
+        <p>Welcome to <strong>Mafia-Born</strong> -- a browser-based crime RPG where you rise from street thug to Don of your own criminal empire. Every decision matters: permadeath means one wrong move and your character is gone forever.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Core Resources</h4>
+        <ul>
+          <li><strong>Cash</strong> -- Your main spendable currency. Earned from jobs, businesses, missions, bounties, and gambling. Used to buy gear, properties, heals, bribes, and more.</li>
+          <li><strong>Dirty Money</strong> -- Earned from heists and illegal operations. Cannot be spent directly -- you must launder it through Business Fronts (Properties screen) to convert it into clean Cash.</li>
+          <li><strong>Health (HP)</strong> -- Your life total. Drops from failed jobs, combat, and random events. If it hits 0, your character dies permanently. Base HP is 100 (115 with Thick Skin perk).</li>
+          <li><strong>Heat (0-100)</strong> -- Represents police attention. Higher heat means more encounters, bigger fines, and arrest risk. Does not decay on its own unless you have the Neighbourhood Boss turf milestone (4 zones).</li>
+          <li><strong>Respect</strong> -- Experience points that determine your Rank. Earned from jobs, missions, side ops, bounties, and combat. Each rank unlocks new screens, gear, story chapters, and features.</li>
+          <li><strong>Influence</strong> -- A measure of your underworld power. Gained from territory control, missions, and faction standing. Affects your Empire Rating.</li>
+          <li><strong>Bullets</strong> -- Ammunition required for firearm-based jobs (Hit on a Rival, Bank Job, etc.). Purchased from the Black Market. Scarce -- only 10 available per day.</li>
+          <li><strong>Gasoline</strong> -- Fuel required for vehicle-based jobs (Cross-Border Smuggling, etc.). Purchased from the Black Market and consumed on use.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Reputation Ranks</h4>
+        <p>Your rank determines what content is unlocked. Earn Respect to progress through these tiers:</p>
+        <ul>
+          <li><strong>Street Rat</strong> -- Starting rank (0 Respect)</li>
+          <li><strong>Hustler</strong> -- 25 Respect</li>
+          <li><strong>Enforcer</strong> -- 75 Respect</li>
+          <li><strong>Made Man</strong> -- 150 Respect</li>
+          <li><strong>Underboss</strong> -- 350 Respect</li>
+          <li><strong>Crime Lord</strong> -- 500 Respect</li>
+          <li><strong>Legendary Kingpin</strong> -- 1,000 Respect</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Your First Steps</h4>
+        <ol style="color:#d4c4a0; line-height:1.7;">
+          <li>Do <strong>Jobs</strong> to earn cash and Respect.</li>
+          <li>Visit the <strong>Black Market</strong> to buy a weapon and armour.</li>
+          <li>Check <strong>Missions</strong> to start your crime family story.</li>
+          <li>Visit the <strong>Hospital</strong> when your health is low.</li>
+          <li>Open <strong>Settings > Help</strong> any time for detailed guides.</li>
+        </ol>
+      `},
+      { id: 'character-creation', icon: '', title: 'Character Creation', content: `
+        <p>When starting a new game, you choose a <strong>Background</strong> and a <strong>Perk</strong>. These give permanent one-time bonuses that shape your early playstyle.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Backgrounds</h4>
+        <ul>
+          <li><strong>Street Rat</strong> -- +2 Stealth, +5 Power. Good all-rounder for stealth-focused players.</li>
+          <li><strong>Disgraced Cop</strong> -- +2 Intelligence, +5 Respect. Head start on unlocking content faster.</li>
+          <li><strong>Trust Fund Kid</strong> -- +$5,000 Cash, +1 Charisma. Early cash advantage for buying gear.</li>
+          <li><strong>Ex-Con</strong> -- +2 Violence, +5 Power. Strong start for combat-oriented play.</li>
+          <li><strong>Immigrant Outsider</strong> -- +2 Endurance, +1 Luck. Survivability and lucky breaks.</li>
+          <li><strong>Born Hustler</strong> -- +1 Charisma, +1 Luck, +$2,000 Cash. Balanced mix of social and fortune.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Perks</h4>
+        <p>Each perk provides a permanent passive bonus for your entire playthrough:</p>
+        <ul>
+          <li><strong>Iron Will</strong> -- Jail sentences reduced by 25%, breakout chance increased by 10%. Great for high-risk players who get caught often.</li>
+          <li><strong>Silver Tongue</strong> -- Shop prices reduced by 15%, bribe and negotiation success increased by 10%. Saves money on every purchase.</li>
+          <li><strong>Quick Hands</strong> -- Crime cooldowns reduced by 15%, car theft success increased by 10%. More jobs per hour.</li>
+          <li><strong>Street Smarts</strong> -- Job success increased by 15%, Respect gain from all sources increased by 10%. Fastest path to ranking up.</li>
+          <li><strong>Lucky Devil</strong> -- Casino winnings increased by 20%, bonus loot chance increased by 10%. Best for gamblers and loot hunters.</li>
+          <li><strong>Thick Skin</strong> -- Health loss from all sources reduced by 25%, max health increased by 15 (to 115 HP). Best survivability perk.</li>
+        </ul>
+      `},
+      { id: 'ui-guide', icon: '', title: 'Interface Guide', content: `
+        <p>Understanding the on-screen interface helps you play efficiently.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Status Bar (Top of Screen)</h4>
+        <p>The bar at the very top displays your vital stats in real time:</p>
+        <ul>
+          <li><strong>Cash</strong> -- Your clean, spendable money.</li>
+          <li><strong>Health</strong> -- Your current HP. If it reaches 0, your character dies permanently.</li>
+          <li><strong>Heat</strong> -- Your heat level (0-100). Higher = more police attention.</li>
+          <li><strong>Rank</strong> -- Your reputation rank and progress to the next one.</li>
+          <li><strong>Dirty Money</strong> -- Unlaundered cash from illegal activities.</li>
+          <li><strong>Influence</strong> -- Your underworld power score.</li>
+          <li><strong>Turf / Tribute</strong> -- Number of territories held and income from them.</li>
+          <li><strong>Skill Points</strong> -- Unspent points available for the Skills screen.</li>
+          <li><strong>Season / Weather</strong> -- Current in-game season and weather conditions.</li>
+          <li><strong>Bullets / Gasoline</strong> -- Consumable resource counters.</li>
+        </ul>
+        <p style="color:#8a7a5a; font-style:italic;">Tip: Customise which stats appear on the Status Bar in Settings > UI Toggles.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">The Ledger</h4>
+        <p>The scrolling activity log below the status bar. Records everything: jobs completed, items bought, fights won or lost, story events, and atmospheric narration. It is your running history.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Quick Actions Panel</h4>
+        <p>On desktop, the right-side panel provides shortcuts. On mobile, access it from the hamburger menu.</p>
+        <ul>
+          <li><strong>SafeHouse</strong> -- Return to your home base.</li>
+          <li><strong>Screen Shortcuts</strong> -- Quick links to Jobs, Market, Missions, etc.</li>
+          <li><strong>Save Records</strong> -- Quick-save your game.</li>
+          <li><strong>Help</strong> -- Open this guide.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Navigation</h4>
+        <p>The main SafeHouse screen has buttons for every area of the game. Buttons unlock as your reputation grows through ranks.</p>
+      `},
+      { id: 'saving-help', icon: '', title: 'Saving & Loading', content: `
+        <p>Multiple save options keep your progress safe.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Save Options</h4>
+        <ul>
+          <li><strong>Auto-Save</strong> -- Automatically saves to your current slot every 60 seconds.</li>
+          <li><strong>Manual Save</strong> -- Save to any slot from Settings > Save Game, or use the "Save Records" button in Quick Actions.</li>
+          <li><strong>Cloud Save</strong> -- Sign in from Settings to sync your save across browsers and devices.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Loading</h4>
+        <ul>
+          <li>Go to Settings > Resume to pick any save slot and load it.</li>
+          <li>Cloud saves sync automatically when you sign in on a new device.</li>
+        </ul>
+        <p style="color:#8a7a5a; font-style:italic;">Tip: Save before risky activities like high-heat jobs, PvP, or the Casino. Use multiple slots to keep backups at key progression points.</p>
+      `},
+    ]
+  },
+  {
+    id: 'earning',
+    title: 'Earning Money & Jobs',
+    topics: [
+      { id: 'jobs-help', icon: '', title: 'Jobs', content: `
+        <p>Your main source of income and Respect, especially early on. Each job has a risk tier, payout range, cooldown, jail chance, and heat gain.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">How Jobs Work</h4>
+        <ul>
+          <li>Each job pays <strong>cash + Respect</strong> on success and triggers a <strong>cooldown timer</strong> before you can do it again.</li>
+          <li>Higher-tier jobs require higher reputation, pay significantly more, but have longer cooldowns and greater risks.</li>
+          <li>Some jobs can <strong>fail</strong>. Failure may cost health, attract heat, or land you in jail.</li>
+          <li>Some jobs increase <strong>Heat</strong>, making police more aggressive.</li>
+          <li>Certain jobs require specific <strong>items</strong> (weapons, vehicles, gasoline, bullets) to attempt.</li>
+          <li>Jobs may award <strong>stolen goods</strong> you can sell at the Fence for extra profit.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Example Jobs</h4>
+        <ul>
+          <li><strong>Street Soldier</strong> -- $40-180, low risk. Great for early grinding.</li>
+          <li><strong>Store Heist</strong> -- $800-2,200, high risk. Requires courage and gear.</li>
+          <li><strong>Bank Job</strong> -- $7,000-18,000, extreme risk. Requires Tommy Gun + Bullets. Pays dirty money.</li>
+          <li><strong>International Arms Trade</strong> -- $18,000-40,000, legendary risk. Endgame content.</li>
+          <li><strong>Take Over the City</strong> -- $50,000-125,000, legendary. Requires 4 specific items.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Required Items</h4>
+        <p>Some jobs need specific gear before you can attempt them:</p>
+        <ul>
+          <li><strong>Protection Collection</strong> -- Requires Brass Knuckles.</li>
+          <li><strong>Bootleg Run</strong> -- Requires Crate Moonshine.</li>
+          <li><strong>Hit on a Rival</strong> -- Requires Pistol + Bullets.</li>
+          <li><strong>Bank Job</strong> -- Requires Tommy Gun + Bullets.</li>
+          <li><strong>Cross-Border Smuggling</strong> -- Requires Private Airplane + Gasoline.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Skills That Affect Jobs</h4>
+        <ul>
+          <li><strong>Quick Study</strong> (Intelligence) -- +4% job success per rank.</li>
+          <li><strong>Infiltration</strong> (Stealth) -- +5% stealth job success per rank.</li>
+          <li><strong>Firearms</strong> (Combat) -- +6% armed job success per rank.</li>
+          <li><strong>Melee Mastery</strong> (Combat) -- +4% unarmed job success per rank.</li>
+          <li><strong>Hacking</strong> (Intelligence) -- +7% heist/intelligence job success per rank.</li>
+          <li><strong>Kingpin Aura</strong> (Charisma) -- +5% all income per rank.</li>
+          <li><strong>Fortune</strong> (Luck) -- +2% earnings per rank.</li>
+        </ul>
+      `},
+      { id: 'cooldown-help', icon: '', title: 'Crime Cooldowns', content: `
+        <p>Every job triggers a cooldown timer after completion. You must wait for it to expire before repeating that job.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Cooldown by Risk Tier</h4>
+        <ul>
+          <li><strong>Low Risk</strong> -- ~2-3 minutes</li>
+          <li><strong>Medium Risk</strong> -- ~4-6 minutes</li>
+          <li><strong>High Risk</strong> -- ~8-10 minutes</li>
+          <li><strong>Very High Risk</strong> -- ~12-15 minutes</li>
+          <li><strong>Extreme Risk</strong> -- ~20-25 minutes</li>
+          <li><strong>Legendary Risk</strong> -- ~30+ minutes</li>
+        </ul>
+        <p>Cooldowns are per-job, so you can rotate between different jobs while one cools down.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Reducing Cooldowns</h4>
+        <ul>
+          <li><strong>Planning</strong> (Intelligence skill) -- -5% cooldown per rank (up to -50% at rank 10).</li>
+          <li><strong>Unstoppable</strong> (Endurance skill) -- 3% chance per rank to recover 5 HP after a job.</li>
+          <li><strong>Quick Hands perk</strong> -- Flat -15% cooldown reduction on all crimes.</li>
+        </ul>
+      `},
+      { id: 'car-theft-help', icon: '', title: 'Car Theft', content: `
+        <p>The "Boost a Ride" job is a special job that awards stolen vehicles instead of a fixed cash payout.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">How It Works</h4>
+        <ul>
+          <li>Attempt to steal a random vehicle. Success depends on a stealth roll.</li>
+          <li>On success, you receive a vehicle that goes into your Motor Pool.</li>
+          <li>Vehicles range from worthless broken wrecks ($800) to ultra-rare Private Airplanes ($1,800,000).</li>
+          <li>Each vehicle has a <strong>damage chance</strong> -- the more valuable the car, the lower the damage chance during the steal.</li>
+          <li>There is a 40% base jail chance on this job, and it generates 3 heat.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Vehicle Tiers</h4>
+        <ul>
+          <li><strong>Broken</strong> (common) -- $800-5,000 value. High damage chance (70-80%).</li>
+          <li><strong>Rusty</strong> (uncommon) -- $5,000-25,000. Moderate damage chance (45-60%).</li>
+          <li><strong>Normal</strong> (rare) -- $15,000-60,000. Lower damage chance (25-45%).</li>
+          <li><strong>Rare</strong> (very rare) -- $140,000-180,000. Low damage chance (16-22%).</li>
+          <li><strong>Equipment-Grade</strong> (ultra-rare) -- Luxury Automobile ($500,000) and Private Airplane ($1,800,000). These can be equipped and used as job requirements.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">What Affects Car Theft</h4>
+        <ul>
+          <li><strong>Quick Hands perk</strong> -- +10% car theft success.</li>
+          <li><strong>Shadow Step</strong> (Stealth) -- Reduces arrest chance during the attempt.</li>
+          <li><strong>Silk Voice</strong> (Charisma) -- +1% per rank chance to avoid jail if caught.</li>
+          <li>Stolen vehicles can be sold at the Fence or on the Player Market.</li>
+        </ul>
+      `},
+      { id: 'bounty-help', icon: '', title: 'Bounty Board', content: `
+        <p>The Bounty Board presents a rotating set of targets to hunt for cash and Respect.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">How It Works</h4>
+        <ul>
+          <li>Bounties refresh every <strong>24 hours</strong> with a new set of targets across 3 tiers.</li>
+          <li>Select a target and engage in combat to claim the reward.</li>
+          <li>Higher-tier bounties pay more but are tougher fights.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">What Affects Bounties</h4>
+        <ul>
+          <li><strong>Interrogation</strong> (Combat skill) -- +5% bounty reward per rank. Directly increases your payout.</li>
+          <li>Your combat power (weapon + skills) determines whether you can take down tougher targets.</li>
+          <li><strong>Brawler</strong> (Combat) -- +5% combat power per rank helps in bounty fights.</li>
+          <li><strong>Enforcer</strong> (Combat) -- +15% boss fight power per rank for the toughest targets.</li>
+        </ul>
+      `},
+      { id: 'dirty-money-help', icon: '', title: 'Dirty Money & Laundering', content: `
+        <p>Not all money is created equal. Dirty money is earned from high-risk crimes and must be cleaned before you can spend it.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">What is Dirty Money?</h4>
+        <ul>
+          <li>Earned from heists, illegal business fronts, certain jobs, and territory tribute.</li>
+          <li>Shown as a separate counter on your Status Bar.</li>
+          <li><strong>Cannot be spent directly</strong> on anything.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Laundering Methods</h4>
+        <p>You must own at least one Business Front (Properties screen) to access laundering. Each method has a clean rate, processing time, and suspicion risk:</p>
+        <ul>
+          <li><strong>Casino Chips</strong> -- 85% clean rate, 2 min, 15% suspicion. Requires a Casino business. $100K-$5M range.</li>
+          <li><strong>Restaurant Sales</strong> -- 90% clean rate, 4 min, 10% suspicion. Requires a Restaurant. $50K-$2M range.</li>
+          <li><strong>Cash Business</strong> -- 80% clean rate, 6 min, 25% suspicion. Any business qualifies. $200K-$10M range.</li>
+          <li><strong>Art Auction</strong> -- 75% clean rate, 10 min, 30% suspicion. Requires 40+ reputation. $1M-$50M range.</li>
+          <li><strong>Offshore Account</strong> -- 95% clean rate, 15 min, 5% suspicion. Requires 60+ reputation and $2.5M setup. $5M-$100M range.</li>
+        </ul>
+        <p>The <strong>clean rate</strong> is the percentage of dirty money that converts to clean cash. The rest is lost as fees.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">What Affects Laundering</h4>
+        <ul>
+          <li><strong>Money Laundering</strong> (Intelligence skill) -- +5% laundering capacity per rank. Increases the maximum amount you can process.</li>
+          <li><strong>Burner Phone</strong> (utility item) -- -15% suspicion risk on all laundering.</li>
+          <li><strong>Counterfeiting</strong> business at max level -- +5% conversion rate on all methods.</li>
+        </ul>
+      `},
+    ]
+  },
+  {
+    id: 'combat-gear',
+    title: 'Combat & Equipment',
+    topics: [
+      { id: 'combat-help', icon: '', title: 'Combat System', content: `
+        <p>Combat occurs during jobs, bounty hunts, territory wars, PvP, and story missions. Your success depends on your gear, skills, and crew.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Attack & Defence</h4>
+        <ul>
+          <li><strong>Attack</strong> -- Determines your damage output. Increased by equipping weapons and investing in Combat skills.</li>
+          <li><strong>Defence</strong> -- Determines how much damage you resist. Increased by equipping armour and investing in Endurance skills.</li>
+          <li>Combat outcomes factor in both players' Attack, Defence, HP, gang members, and a random element.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Health & Permadeath</h4>
+        <ul>
+          <li>Base HP is 100 (115 with Thick Skin perk).</li>
+          <li>If HP hits 0 from any source -- combat, failed jobs, random events -- your character <strong>dies permanently</strong>.</li>
+          <li>Keep HP above 50% before doing risky activities.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Combat Skills</h4>
+        <ul>
+          <li><strong>Brawler</strong> -- +5% combat power per rank.</li>
+          <li><strong>Toughness</strong> -- -2% hurt chance per rank.</li>
+          <li><strong>Firearms</strong> -- +6% armed job success per rank.</li>
+          <li><strong>Melee Mastery</strong> -- +4% unarmed job success per rank.</li>
+          <li><strong>Intimidation</strong> -- +6% violent job earnings per rank.</li>
+          <li><strong>Enforcer</strong> -- +15% boss fight power per rank.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Damage Reduction</h4>
+        <ul>
+          <li><strong>Vitality</strong> (Endurance) -- -2% damage taken per rank.</li>
+          <li><strong>Resistance</strong> (Endurance) -- -5% all damage taken per rank.</li>
+          <li><strong>Resilience</strong> (Endurance) -- -3% injury severity per rank.</li>
+          <li><strong>Thick Skin perk</strong> -- -25% health loss from all sources.</li>
+        </ul>
+      `},
+      { id: 'weapons-help', icon: '', title: 'Weapons', content: `
+        <p>Weapons increase your Attack power. Buy them from the Black Market and equip from your Stash. You can equip one weapon at a time.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Melee Weapons</h4>
+        <ul>
+          <li><strong>Brass Knuckles</strong> -- $10,000, +10 power, 40 durability. Required for Protection Collection job.</li>
+          <li><strong>Switchblade</strong> -- $16,000, +20 power, 35 durability.</li>
+          <li><strong>Baseball Bat</strong> -- $24,000, +30 power, 50 durability. Highest melee durability.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Firearms</h4>
+        <ul>
+          <li><strong>Pistol</strong> -- $40,000, +50 power, 30 durability. Required for Hit on a Rival.</li>
+          <li><strong>Revolver</strong> -- $60,000, +70 power, 35 durability.</li>
+          <li><strong>Sawed-Off Shotgun</strong> -- $165,000, +90 power, 25 durability.</li>
+          <li><strong>Tommy Gun</strong> -- $200,000, +100 power, 20 durability. Required for Bank Job.</li>
+          <li><strong>Sniper Rifle</strong> -- $325,000, +120 power, 15 durability. Highest damage, lowest durability.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Special Weapons</h4>
+        <ul>
+          <li><strong>Overlord's Scepter</strong> -- 60 power. Awarded for controlling all 8 territory zones (City Overlord milestone). Cannot be purchased.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Durability</h4>
+        <p>Weapons lose 1 durability each time they are used in combat or jobs. When durability hits 0, the weapon <strong>breaks and is permanently removed</strong> from your inventory. Damaged weapons cannot be sold.</p>
+        <ul>
+          <li><strong>Preservation</strong> (Endurance skill) -- +2% chance per rank to prevent durability loss on weapons and armour.</li>
+        </ul>
+      `},
+      { id: 'armour-help', icon: '', title: 'Armour', content: `
+        <p>Armour increases your Defence. Buy from the Black Market and equip from your Stash. You can equip one armour piece at a time.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Armour Tiers</h4>
+        <ul>
+          <li><strong>Leather Jacket</strong> -- $20,000, +15 defence, 50 durability. Best durability of any armour.</li>
+          <li><strong>Stab Vest</strong> -- $65,000, +25 defence, 40 durability.</li>
+          <li><strong>Bulletproof Vest</strong> -- $130,000, +40 defence, 30 durability.</li>
+          <li><strong>Reinforced Body Armor</strong> -- $260,000, +60 defence, 25 durability. Highest defence rating.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Durability</h4>
+        <p>Armour loses 1 durability per hit taken. When it reaches 0, the armour <strong>breaks and is permanently removed</strong>. Damaged armour cannot be sold.</p>
+        <ul>
+          <li><strong>Preservation</strong> (Endurance skill) -- +2% chance per rank to prevent durability loss.</li>
+          <li>Expensive armour (Bulletproof Vest, Reinforced Body Armor) has lower durability, so replace or repair it more frequently.</li>
+        </ul>
+      `},
+      { id: 'vehicles-help', icon: '', title: 'Vehicles', content: `
+        <p>Vehicles are stored in your Motor Pool. Some are required for specific jobs, while others are purely for selling.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Obtaining Vehicles</h4>
+        <ul>
+          <li><strong>Car Theft</strong> -- The "Boost a Ride" job awards random stolen vehicles.</li>
+          <li><strong>Black Market</strong> -- Purchase high-end vehicles directly.</li>
+          <li><strong>Player Market</strong> -- Buy vehicles listed by other players.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Equipment-Grade Vehicles</h4>
+        <p>These can be equipped and are required for certain high-tier jobs:</p>
+        <ul>
+          <li><strong>Luxury Automobile</strong> -- $500,000, required for Luxury Car Ring job.</li>
+          <li><strong>Private Airplane</strong> -- $1,800,000, required for Cross-Border Smuggling.</li>
+          <li><strong>Freight Truck</strong> -- Required for drug trade jobs (Bootleg Run, etc.).</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Vehicle Durability</h4>
+        <p>Vehicles lose 1 durability per use. When durability hits 0, the vehicle breaks and is permanently removed.</p>
+        <ul>
+          <li><strong>Wheelman</strong> (Stealth skill) -- -3% vehicle durability loss per rank. Reduces the chance of losing durability each use.</li>
+          <li><strong>Chop Shop</strong> business at max level -- +55% bonus on stolen car sales at the Fence.</li>
+        </ul>
+      `},
+      { id: 'supplies-help', icon: '', title: 'Supplies & Utilities', content: `
+        <p>Consumables and passive utility items that enhance your capabilities.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Consumable Supplies</h4>
+        <ul>
+          <li><strong>Bullets</strong> -- $100,000. Required for firearm-based jobs. Extremely scarce: only 10 available per day. Consumed on use.</li>
+          <li><strong>Gasoline</strong> -- $50,000. Required for vehicle-based jobs. Consumed on use.</li>
+          <li><strong>Medkits</strong> -- Restore health outside the Hospital. Buy from the Black Market.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Utility Items (Passive Bonuses)</h4>
+        <p>These items sit in your Stash and provide passive bonuses simply by owning them:</p>
+        <ul>
+          <li><strong>Lockpick Set</strong> -- $15,000. Passively reduces jail time by 5 seconds.</li>
+          <li><strong>Police Scanner</strong> -- $50,000. Passively reduces heat gain by 20% on all jobs.</li>
+          <li><strong>Burner Phone</strong> -- $12,000. Passively reduces laundering suspicion by 15%.</li>
+          <li><strong>Fake ID Kit</strong> -- $35,000. Passively increases job success by 10%. Also required for the Counterfeiting business.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Trade Goods (Drugs)</h4>
+        <p>High-value contraband that can be sold at the Fence for a profit. Requires a Freight Truck vehicle:</p>
+        <ul>
+          <li><strong>Crate Moonshine</strong> -- Buy $75,000, sell up to $100,000. Also required for Bootleg Run job.</li>
+          <li><strong>Bag of Mary Jane</strong> -- Buy $150,000, sell up to $200,000.</li>
+          <li><strong>Pure Cocaine</strong> -- Buy $250,000, sell up to $350,000.</li>
+        </ul>
+        <ul>
+          <li><strong>Drug Lab</strong> business at max level -- Drug goods cost 35% less in the store.</li>
+        </ul>
+      `},
+    ]
+  },
+  {
+    id: 'skills-training',
+    title: 'Skills & Training',
+    topics: [
+      { id: 'skills-overview', icon: '', title: 'Skill System Overview', content: `
+        <p>Invest skill points into 6 permanent talent trees to customise your playstyle. Each tree has 7 nodes spread across 3 tiers.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Earning Skill Points</h4>
+        <ul>
+          <li>You receive skill points each time you <strong>rank up</strong> (earn enough Respect).</li>
+          <li>Spend them from the <strong>Skills</strong> screen. Once purchased, each rank is permanent.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier Requirements</h4>
+        <ul>
+          <li><strong>Tier 1</strong> (Foundation) -- No prerequisites. Available immediately.</li>
+          <li><strong>Tier 2</strong> (Specialisation) -- Requires at least one Tier 1 node at rank 3, plus 5 total points invested in the tree.</li>
+          <li><strong>Tier 3</strong> (Mastery) -- Requires at least one Tier 2 node at rank 5, plus 20 total points invested in the tree.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Max Ranks</h4>
+        <ul>
+          <li>Tier 1 and Tier 2 nodes have a max rank of <strong>10</strong>.</li>
+          <li>Tier 3 nodes have a max rank of <strong>5</strong>.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Training Gym</h4>
+        <p>An alternative way to level skills using cash and time instead of skill points. Available from the Skills screen.</p>
+        <ul>
+          <li><strong>Tier 1</strong> -- $1,500 base + $1,000 per existing rank. 60s base + 15s per rank.</li>
+          <li><strong>Tier 2</strong> -- $8,000 base + $4,000 per existing rank. 90s base + 30s per rank.</li>
+          <li><strong>Tier 3</strong> -- $25,000 base + $12,000 per existing rank. 150s base + 45s per rank.</li>
+        </ul>
+      `},
+      { id: 'stealth-tree', icon: '', title: 'Stealth Tree (Shadow Arts)', content: `
+        <p>The Stealth tree focuses on avoiding detection, reducing heat, and improving theft-based activities.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 1</h4>
+        <ul>
+          <li><strong>Shadow Step</strong> (max 10) -- -2% arrest chance per rank. Reduces your chance of being arrested during jobs.</li>
+          <li><strong>Light Feet</strong> (max 10) -- -2% heat gain per rank. Every job generates less police attention.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 2</h4>
+        <ul>
+          <li><strong>Infiltration</strong> (max 10) -- +5% stealth job success per rank. Boosts success on theft and infiltration jobs.</li>
+          <li><strong>Escape Artist</strong> (max 10) -- -2s jail time per rank, +3% breakout chance per rank. Makes jail sentences shorter and escapes more likely.</li>
+          <li><strong>Wheelman</strong> (max 10) -- -3% vehicle durability loss per rank. Each rank gives a chance to prevent your vehicle from losing durability when used.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 3</h4>
+        <ul>
+          <li><strong>Ghost Protocol</strong> (max 5) -- -4% heat gain per rank. Stacks with Light Feet for massive heat reduction.</li>
+          <li><strong>Surveillance</strong> (max 5) -- +4% stealth job success per rank. Stacks with Infiltration.</li>
+        </ul>
+      `},
+      { id: 'combat-tree', icon: '', title: 'Combat Tree', content: `
+        <p>The Combat tree increases your fighting power, reduces damage taken, and boosts earnings from violent activities.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 1</h4>
+        <ul>
+          <li><strong>Brawler</strong> (max 10) -- +5% combat power per rank. Flat boost to all combat damage dealt.</li>
+          <li><strong>Toughness</strong> (max 10) -- -2% hurt chance per rank. Reduces the chance of taking damage during jobs.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 2</h4>
+        <ul>
+          <li><strong>Firearms</strong> (max 10) -- +6% armed job success per rank. Boosts success on all gun-based jobs.</li>
+          <li><strong>Melee Mastery</strong> (max 10) -- +4% unarmed job success per rank. Boosts success when using melee weapons or fists.</li>
+          <li><strong>Interrogation</strong> (max 10) -- +5% bounty reward per rank. Directly increases your cash payout from bounty board targets.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 3</h4>
+        <ul>
+          <li><strong>Intimidation</strong> (max 5) -- +6% violent job earnings per rank. Boosts cash from all violence-tagged jobs.</li>
+          <li><strong>Enforcer</strong> (max 5) -- +15% boss fight power per rank. Massive advantage against story bosses and tough bounty targets.</li>
+        </ul>
+      `},
+      { id: 'charisma-tree', icon: '', title: 'Charisma Tree (Influence)', content: `
+        <p>The Charisma tree reduces costs, increases income, boosts Respect gain, and helps you avoid jail.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 1</h4>
+        <ul>
+          <li><strong>Smooth Talker</strong> (max 10) -- -2% store prices per rank. Every purchase from the Black Market costs less.</li>
+          <li><strong>Street Cred</strong> (max 10) -- +2% all reputation gain per rank. Speeds up ranking.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 2</h4>
+        <ul>
+          <li><strong>Negotiation</strong> (max 10) -- +3% negotiation job success per rank.</li>
+          <li><strong>Leadership</strong> (max 10) -- +5% gang operation success per rank. Makes your crew's operations more reliable.</li>
+          <li><strong>Connections</strong> (max 10) -- +2% fence sell price per rank. Increases the price you get when selling items at the Fence.</li>
+          <li><strong>Silk Voice</strong> (max 10) -- +1% chance per rank to avoid jail entirely. When you would be arrested, this skill gives a chance to talk your way out. Works on all arrest events: jobs, car theft, and laundering.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 3</h4>
+        <ul>
+          <li><strong>Manipulation</strong> (max 5) -- +4% faction/negotiation success per rank.</li>
+          <li><strong>Kingpin Aura</strong> (max 5) -- +5% all income per rank. Affects jobs, businesses, and passive income.</li>
+        </ul>
+      `},
+      { id: 'intelligence-tree', icon: '', title: 'Intelligence Tree (Intellect)', content: `
+        <p>The Intelligence tree boosts job success, reputation gains, reduces cooldowns, and improves money laundering.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 1</h4>
+        <ul>
+          <li><strong>Quick Study</strong> (max 10) -- +4% job success per rank. Universal success boost for all jobs.</li>
+          <li><strong>Mastermind</strong> (max 5) -- +10% reputation gain per rank. Fast-tracks your ranking.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 2</h4>
+        <ul>
+          <li><strong>Hacking</strong> (max 10) -- +7% heist/intelligence job success per rank. Big boost for tech-based crimes.</li>
+          <li><strong>Planning</strong> (max 10) -- -5% crime cooldown per rank. At max rank, all jobs cool down 50% faster.</li>
+          <li><strong>Money Laundering</strong> (max 10) -- +5% laundering capacity per rank. Increases the maximum dirty money you can process per laundering run.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 3</h4>
+        <ul>
+          <li><strong>Awareness</strong> (max 5) -- +2% luck-based outcomes per rank. Subtle boost to all random rolls.</li>
+          <li><strong>Forensics</strong> (max 5) -- 8% chance per rank to reduce heat. Passive chance for heat to drop during gameplay.</li>
+        </ul>
+      `},
+      { id: 'luck-tree', icon: '', title: 'Luck Tree (Fortune)', content: `
+        <p>The Luck tree improves earnings, loot quality, casino performance, and lucky breaks on negative events.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 1</h4>
+        <ul>
+          <li><strong>Fortune</strong> (max 10) -- +2% earnings per rank. Flat bonus to all cash payouts.</li>
+          <li><strong>Serendipity</strong> (max 10) -- +1% rare event chance per rank. More random encounters and special opportunities.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 2</h4>
+        <ul>
+          <li><strong>Gambling</strong> (max 10) -- +1% casino win rate per rank. Stacks with Lucky Devil perk.</li>
+          <li><strong>Scavenger</strong> (max 10) -- +3% bonus loot per rank. Better odds of finding stolen goods on jobs.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 3</h4>
+        <ul>
+          <li><strong>Jackpot</strong> (max 5) -- +4% critical success chance per rank. Boosts the chance of exceptional job outcomes.</li>
+          <li><strong>Lucky Break</strong> (max 5) -- +5% avoid negative events per rank. Reduces the chance of bad random events.</li>
+        </ul>
+      `},
+      { id: 'endurance-tree', icon: '', title: 'Endurance Tree', content: `
+        <p>The Endurance tree reduces damage, speeds healing, provides health regeneration, and protects your equipment from breaking.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 1</h4>
+        <ul>
+          <li><strong>Vitality</strong> (max 10) -- -2% damage taken per rank. Flat damage reduction on all incoming damage.</li>
+          <li><strong>Conditioning</strong> (max 10) -- +1 HP passive regen every 5 minutes per rank. At rank 10, you regenerate 10 HP every 5 minutes automatically.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 2</h4>
+        <ul>
+          <li><strong>Recovery</strong> (max 10) -- -5% hospital treatment time per rank. Speeds up healing at the Hospital.</li>
+          <li><strong>Resilience</strong> (max 10) -- -3% injury severity per rank. Reduces the severity of damage when you do get hit.</li>
+          <li><strong>Preservation</strong> (max 10) -- +2% chance per rank to prevent durability loss on weapons and armour. At rank 10, a 20% chance to skip durability loss each use.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 3</h4>
+        <ul>
+          <li><strong>Resistance</strong> (max 5) -- -5% all damage taken per rank. Stacks with Vitality for massive damage reduction.</li>
+          <li><strong>Unstoppable</strong> (max 5) -- 3% chance per rank to recover 5 HP after completing a job.</li>
+        </ul>
+      `},
+    ]
+  },
+  {
+    id: 'empire',
+    title: 'Properties & Empire',
+    topics: [
+      { id: 'properties-help', icon: '', title: 'Properties', content: `
+        <p>Properties provide passive income, gang capacity, and healing bonuses. Buy them from the Properties screen.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Hideouts</h4>
+        <ul>
+          <li><strong>Abandoned Warehouse</strong> -- $50,000. +3 gang capacity. No income.</li>
+          <li><strong>Basement Hideout</strong> -- $120,000. +5 gang capacity. +$250/day income.</li>
+          <li><strong>Criminal Safehouse</strong> -- $300,000. +8 gang capacity. +$750/day income.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Compounds</h4>
+        <ul>
+          <li><strong>Underground Bunker</strong> -- $750,000. +15 gang capacity. +$2,500/day income.</li>
+          <li><strong>Criminal Fortress</strong> -- $1,500,000. +25 gang capacity. +$2,500/day income.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Residences</h4>
+        <ul>
+          <li><strong>Luxury Penthouse</strong> -- $3,000,000. +20 gang capacity. +$4,000/day income.</li>
+          <li><strong>Private Island</strong> -- $8,000,000. +50 gang capacity. +$8,000/day income.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Medical</h4>
+        <ul>
+          <li><strong>Back-Alley Clinic</strong> -- $500,000. Upgradeable to Level 5. Heals gang members 20% faster per level. At Level 5 grants passive healing of 5 HP/min while not in jail.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Gang Capacity</h4>
+        <p>You start with a base capacity of 5 gang members. Each property adds to your maximum crew size as listed above. To hire more crew, buy more properties.</p>
+      `},
+      { id: 'business-help', icon: '', title: 'Business Fronts', content: `
+        <p>Business Fronts generate income, launder dirty money, and provide special perks at max level. Buy them from the Properties screen under the Fronts tab.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Legitimate Fronts</h4>
+        <ul>
+          <li><strong>24/7 Laundromat</strong> -- $1,500,000. $15,000/day income. 95% legitimacy. $800K laundering cap. Max level 3.</li>
+          <li><strong>Family Restaurant</strong> -- $2,500,000. $25,000/day income. 85% legitimacy. $200K laundering cap. Max level 5.</li>
+          <li><strong>Discount Pawn Shop</strong> -- $2,000,000. $20,000/day income. 70% legitimacy. $300K laundering cap. Max level 4.</li>
+          <li><strong>Premium Car Wash</strong> -- $3,000,000. $30,000/day income. 90% legitimacy. $400K laundering cap. Max level 4.</li>
+          <li><strong>Underground Nightclub</strong> -- $5,000,000. $60,000/day income. 60% legitimacy. $500K laundering cap. Max level 5.</li>
+          <li><strong>Private Casino</strong> -- $10,000,000. $125,000/day income. 40% legitimacy. $1M laundering cap. Max level 5.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Illegal Fronts</h4>
+        <p>These cost dirty money to purchase and have very low legitimacy but high income:</p>
+        <ul>
+          <li><strong>Chop Shop</strong> -- $3,500,000. $45,000/day. 15% legitimacy. Max level 5. Max-level perk: +55% stolen car sale bonus.</li>
+          <li><strong>Counterfeiting</strong> -- $4,000,000. $60,000/day. 10% legitimacy. Max level 5. Max-level perk: +5% laundering conversion rate on all methods. Requires Fake ID Kit.</li>
+          <li><strong>Drug Lab</strong> -- $6,000,000. $75,000/day. 5% legitimacy. Max level 5. Max-level perk: Drug goods cost 35% less in the store.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Income Scaling</h4>
+        <ul>
+          <li>Each upgrade level multiplies income (1.2x-1.8x per level).</li>
+          <li>Assigning a gang member as manager adds +15-40% income based on their level.</li>
+          <li>Corrupt officials can add +30-50% income bonus.</li>
+          <li>Territory control provides district multipliers (up to +100% in premium districts).</li>
+          <li>Buildings in rival-controlled districts pay a -10% territory tax to the controller.</li>
+        </ul>
+      `},
+      { id: 'territory-help', icon: '', title: 'Territory Control', content: `
+        <p>Dominate the city district by district. Territory is your path to real power -- but expansion paints a bigger target on your back.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">The 8 Turf Zones</h4>
+        <ul>
+          <li><strong>The Slums</strong> -- $1,500/week base income. 120 defense. Contested (no boss).</li>
+          <li><strong>The Sprawl</strong> -- $2,500/week. 120 defense. Morales territory.</li>
+          <li><strong>The Old Quarter</strong> -- $3,000/week. 140 defense. Torrino territory.</li>
+          <li><strong>Little Italy</strong> -- $4,000/week. 180 defense. Torrino. Boss: Vinnie-The-Rat.</li>
+          <li><strong>Chinatown</strong> -- $4,500/week. 190 defense. Chen territory.</li>
+          <li><strong>Harbor Row</strong> -- $5,000/week. 210 defense. Kozlov territory.</li>
+          <li><strong>Redlight District</strong> -- $5,500/week. 200 defense. Morales territory.</li>
+          <li><strong>Midtown Heights</strong> -- $6,000/week. 250 defense. Independent. Boss: Kane.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Claiming & Defending</h4>
+        <ul>
+          <li>Attack a zone to seize control. Some zones have a boss you must defeat first.</li>
+          <li><strong>Fortify</strong> zones to increase defense (+25 per level). Costs cash.</li>
+          <li>Assign <strong>crew members</strong> as defenders (each adds 20 defense).</li>
+          <li>Your total <strong>Turf Power</strong> gives a passive 10% bonus to every zone's defense.</li>
+          <li>Use <strong>Manage</strong> on any zone to see your Defense Breakdown and Vulnerability Status.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Rival Escalation</h4>
+        <ul>
+          <li>The more zones you own, the harder and more frequent rival attacks become.</li>
+          <li>At 1 zone: ~7.5% attack chance, ~55 power. At 8 zones: ~25% chance, 160+ power.</li>
+          <li>Each rival family has a personality: Kozlov is aggressive (targets high-income zones), Chen is strategic (targets weakest defense), Torrino is methodical (reclaims original turf), Morales is expansionist.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Turf Milestones</h4>
+        <ul>
+          <li><strong>2 zones (Street Presence)</strong> -- +10% Respect from all sources.</li>
+          <li><strong>4 zones (Neighbourhood Boss)</strong> -- Heat decays -6 per cycle. This is the only way heat decays passively.</li>
+          <li><strong>6 zones (District Kingpin)</strong> -- +15% turf income.</li>
+          <li><strong>8 zones (City Overlord)</strong> -- +25% turf income + exclusive Overlord's Scepter weapon (60 power).</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Family Dominance</h4>
+        <p>Seize all zones belonging to a rival family to earn a one-time dominance bonus: $100K + 50 respect + 50 power + 30 turf reputation.</p>
+      `},
+      { id: 'empire-rating', icon: '', title: 'Empire Rating', content: `
+        <p>Your Empire Rating is a composite score measuring your overall power and progression across all game systems.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Rating Categories</h4>
+        <ul>
+          <li><strong>Money Power</strong> (max 2,000 pts) -- Based on total cash held.</li>
+          <li><strong>Reputation Power</strong> (max 2,000 pts) -- Based on total reputation earned.</li>
+          <li><strong>Gang Power</strong> (max 1,500 pts) -- Based on number and quality of crew members.</li>
+          <li><strong>Territory Power</strong> (max 1,500 pts) -- Based on turf zones controlled.</li>
+          <li><strong>Business Power</strong> (max 1,500 pts) -- Based on businesses owned.</li>
+          <li><strong>Skill Power</strong> (max 1,500 pts) -- Based on total skill ranks invested.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Empire Grades</h4>
+        <ul>
+          <li><strong>D (Street Criminal)</strong> -- 0-749 points</li>
+          <li><strong>C (Thug)</strong> -- 750-1,499</li>
+          <li><strong>B (Street Captain)</strong> -- 1,500-2,999</li>
+          <li><strong>A (Gang Leader)</strong> -- 3,000-4,499</li>
+          <li><strong>A+ (Mob Lieutenant)</strong> -- 4,500-5,999</li>
+          <li><strong>S (Crime Boss)</strong> -- 6,000-7,499</li>
+          <li><strong>S+ (Underworld Kingpin)</strong> -- 7,500-8,999</li>
+          <li><strong>LEGENDARY (Criminal Mastermind)</strong> -- 9,000+</li>
+        </ul>
+        <p>View your full breakdown from the Stats & Empire screen.</p>
+      `},
+    ]
+  },
+  {
+    id: 'crime-family',
+    title: 'Gangs, Factions & Story',
+    topics: [
+      { id: 'gang-help', icon: '', title: 'Your Gang (AI Crew)', content: `
+        <p>Recruit AI crew members to boost your stats, run operations, defend territory, and manage businesses.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Crew Roles</h4>
+        <p>Each gang member has a specialisation that provides unique bonuses:</p>
+        <ul>
+          <li><strong>Bruiser</strong> -- +5% combat. High violence stats. Frontline fighter.</li>
+          <li><strong>Enforcer</strong> -- +15% damage. The heavy hitter of your crew.</li>
+          <li><strong>Fixer</strong> -- -15% heat gain. Well-connected smoothtalker.</li>
+          <li><strong>Hacker</strong> -- +20% intel job success. Tech specialist.</li>
+          <li><strong>Driver</strong> -- +25% escape chance. Fast getaway specialist.</li>
+          <li><strong>Scout</strong> -- -18% arrest chance. Eyes and ears of the crew.</li>
+          <li><strong>Accountant</strong> -- +10% business income. Money manager.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Gang Member Stats</h4>
+        <ul>
+          <li>Each member has <strong>Violence, Stealth, Intelligence</strong> base stats plus random variation.</li>
+          <li>Members gain <strong>XP</strong> from operations and level up, increasing all stats.</li>
+          <li>Members can have <strong>Traits</strong> (Hothead, Cool, Loyal, Greedy, etc.) that affect behaviour.</li>
+          <li>Members can be <strong>Active, Injured, Jailed, or Dead</strong>.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Gang Operations (12 Types)</h4>
+        <p>Send crew on timed operations that earn cash and XP:</p>
+        <ul>
+          <li><strong>Protection Racket</strong> -- 4h, $500-1,200, 15% jail risk.</li>
+          <li><strong>Car Theft Ring</strong> -- 6h, $800-1,500, 25% jail risk.</li>
+          <li><strong>Drug Lab</strong> -- 8h, $1,200-2,500, 35% jail risk.</li>
+          <li><strong>Tech Heist</strong> -- 12h, $2,000-4,000, 20% jail risk.</li>
+          <li><strong>Assassination Contract</strong> -- 14h, $4,000-8,000, 35% jail risk.</li>
+          <li><strong>Bank Vault Job</strong> -- 16h, $6,000-12,000, 45% jail risk.</li>
+          <li><strong>Empire Takeover</strong> -- 20h, $8,000-15,000, 50% jail risk.</li>
+          <li>...and 5 more intermediate operations.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Passive Hustles</h4>
+        <p>Idle (unassigned) gang members automatically run small hustles that earn $50 + (level x 30) per cycle, with a 2% arrest risk. They also gain 5 XP per cycle.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Gang Capacity</h4>
+        <p>Base: 5 members. Buy properties (hideouts, compounds, residences) to increase your cap. The Private Island alone adds 50 capacity.</p>
+      `},
+      { id: 'factions-help', icon: '', title: 'Crime Families (Factions)', content: `
+        <p>Four rival crime families dominate the city. You choose one during the story and can build reputation with any of them.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Torrino Family ("Blood & Honor")</h4>
+        <ul>
+          <li><strong>Boss:</strong> Don Salvatore Torrino</li>
+          <li><strong>Specialty:</strong> Protection rackets, loan sharking.</li>
+          <li><strong>Passive (10+ rep):</strong> "The Books" -- 5% interest on unspent cash (capped $50K/day).</li>
+          <li><strong>Buffs:</strong> +15% turf income, -20% job heat, +10% respect.</li>
+          <li><strong>Turf:</strong> Little Italy, The Old Quarter.</li>
+          <li><strong>Signature Job (20+ rep):</strong> Union Shake-down ($800-850 + rep).</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Kozlov Bratva (Russian Syndicate)</h4>
+        <ul>
+          <li><strong>Boss:</strong> Dimitri "The Bear" Kozlov</li>
+          <li><strong>Specialty:</strong> Arms dealing, smuggling.</li>
+          <li><strong>Passive (10+ rep):</strong> "Arms Deal" -- weapons cost 10% less, small ammo regen.</li>
+          <li><strong>Buffs:</strong> +25% gang effectiveness, weapons -15% cost.</li>
+          <li><strong>Turf:</strong> Harbor Row.</li>
+          <li><strong>Signature Job (20+ rep):</strong> Military Convoy Heist. Chance of random weapon drops.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Chen Triad (Asian Crime Organisation)</h4>
+        <ul>
+          <li><strong>Boss:</strong> Master Chen Wei</li>
+          <li><strong>Specialty:</strong> Technology, drug manufacturing.</li>
+          <li><strong>Passive (10+ rep):</strong> "Smuggling Routes" -- +30% drug income, +20% intel.</li>
+          <li><strong>Buffs:</strong> +30% drug/smuggling income, +20% rival intel.</li>
+          <li><strong>Turf:</strong> Chinatown.</li>
+          <li><strong>Signature Job (20+ rep):</strong> Cyber-Bank Raid ($1,200 + rep). Can intercept 20-40% of rival attacks.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Morales Cartel (South American Drug Cartel)</h4>
+        <ul>
+          <li><strong>Boss:</strong> El Jefe Ricardo Morales</li>
+          <li><strong>Specialty:</strong> Drug distribution, territory control.</li>
+          <li><strong>Passive (10+ rep):</strong> "Cartel Connections" -- violent crimes generate -20% heat.</li>
+          <li><strong>Buffs:</strong> -25% violent heat, +15% territory defense.</li>
+          <li><strong>Turf:</strong> Redlight District, The Sprawl.</li>
+          <li><strong>Signature Job (20+ rep):</strong> Border Crossing Run. Passive heat decay 1-3 points daily from corrupt officials.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Reputation</h4>
+        <p>Build faction reputation through story missions, signature jobs, and side operations. At 10+ rep you unlock the faction's passive ability. At 20+ rep you unlock the signature job.</p>
+      `},
+      { id: 'missions-help', icon: '', title: 'Missions & Story', content: `
+        <p>The narrative heart of the game. Follow your crime family's story from street-level nobody to untouchable Don across 25 chapters.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Story Structure</h4>
+        <ul>
+          <li>25 chapters divided into 5 Acts, each with a rank promotion milestone:</li>
+          <li><strong>Act 1 (Ch 1-6)</strong> -- Associate. Learning the ropes.</li>
+          <li><strong>Act 2 (Ch 7-12)</strong> -- Soldier. Proving yourself.</li>
+          <li><strong>Act 3 (Ch 13-18)</strong> -- Capo. Leading your own crew.</li>
+          <li><strong>Act 4 (Ch 19-24)</strong> -- Underboss. Second in command.</li>
+          <li><strong>Act 5 (Ch 25)</strong> -- Don. Running the entire operation.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Chapter Objectives</h4>
+        <p>Each chapter requires completing objectives: a minimum number of jobs, having enough cash, and reaching a reputation threshold. Chapters include dialogue, choices with consequences, and sometimes boss fights.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Side Operations</h4>
+        <ul>
+          <li>Optional multi-step quest chains that run alongside the main story.</li>
+          <li>Each step has a <strong>countdown timer</strong> (1-20 minutes). Wait for the timer and complete the objective to advance.</li>
+          <li>Great source of extra Respect, cash, influence, and unique rewards.</li>
+          <li>20+ side quests available, each with 2-4 steps.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Street Stories</h4>
+        <p>Random narrative events triggered during gameplay. They present choices (pay off a debtor, blackmail a rival, handle a witness, etc.) with consequences affecting money, respect, heat, and gang members. Some are tied to side operation steps.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Post-Don Content</h4>
+        <p>After completing the main story, endgame arcs unlock: Successor Crisis, Internal Power Struggle, and Expansion Into New Territory.</p>
+      `},
+      { id: 'corruption-help', icon: '', title: 'Corruption (Bribes)', content: `
+        <p>Bribe city officials to gain temporary powerful bonuses. Available from the Corruption screen.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Officials You Can Bribe</h4>
+        <ul>
+          <li><strong>Patrol Officer</strong> -- $500. Lasts 7 days. -10% heat. Low influence.</li>
+          <li><strong>Detective</strong> -- $2,000. Lasts 14 days. -25% heat, 30% chance to destroy evidence.</li>
+          <li><strong>Police Captain</strong> -- $8,000. Lasts 30 days. -40% heat, 80% raid warning chance.</li>
+          <li><strong>City Councilman</strong> -- $5,000. Lasts 21 days. -50% business costs, faster territory claims.</li>
+          <li><strong>District Judge</strong> -- $15,000. Lasts 60 days. -60% jail time, 40% cases dismissed.</li>
+          <li><strong>Mayor</strong> -- $25,000. Lasts 90 days. -30% city-wide heat, +50% business opportunities.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Additional Benefits</h4>
+        <ul>
+          <li>Corrupt officials can boost business income by +30-50%.</li>
+          <li>Some officials provide business license discounts (-10-50%).</li>
+          <li>Zone permits speed up territory claiming by +30%.</li>
+          <li>Corruption expires after the listed duration -- you must re-bribe to maintain the bonus.</li>
+        </ul>
+      `},
+    ]
+  },
+  {
+    id: 'systems',
+    title: 'Game Systems',
+    topics: [
+      { id: 'heat-help', icon: '', title: 'Heat System', content: `
+        <p><strong>Heat</strong> is a number from 0 to 100 representing how much the police are watching you. It is one of the most important systems to manage.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Heat Levels & Effects</h4>
+        <ul>
+          <li><strong>0-15 (Cool)</strong> -- Under the radar. Almost no police encounters.</li>
+          <li><strong>16-30 (Warm)</strong> -- Occasional police attention. Minor fines possible.</li>
+          <li><strong>31-50 (Hot)</strong> -- Regular encounters. Risk of being stopped, fined, or arrested.</li>
+          <li><strong>51-75 (Scorching)</strong> -- Frequent raids and patrols. Higher bail. Jobs and heists become riskier.</li>
+          <li><strong>76-100 (Inferno)</strong> -- Maximum pressure. Very high arrest chance. Severe penalties. Lay low!</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">What Causes Heat</h4>
+        <ul>
+          <li>Most jobs generate heat (specified per job: 1-15 heat).</li>
+          <li>Failed jobs and botched crimes.</li>
+          <li>Attacking other players (PvP).</li>
+          <li>Certain story mission actions.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">How to Reduce Heat</h4>
+        <ul>
+          <li><strong>4-Zone Milestone (Neighbourhood Boss)</strong> -- Heat decays -6 per cycle. This is the ONLY way heat decays passively.</li>
+          <li><strong>Bribe Officials</strong> -- Corrupt Patrol Officer (-10%), Detective (-25%), Police Captain (-40%), Mayor (-30%).</li>
+          <li><strong>Light Feet</strong> (Stealth) -- -2% heat GAIN per rank.</li>
+          <li><strong>Ghost Protocol</strong> (Stealth) -- -4% heat GAIN per rank.</li>
+          <li><strong>Forensics</strong> (Intelligence) -- 8% chance per rank to reduce heat passively.</li>
+          <li><strong>Police Scanner</strong> (utility item) -- -20% heat gain on all jobs.</li>
+          <li><strong>Morales faction passive</strong> -- Violent crimes generate -20% heat.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Heat & Territory Income</h4>
+        <p>High heat reduces your weekly turf tribute by up to 70%. Keep heat low to maximise territory income.</p>
+      `},
+      { id: 'jail-help', icon: '', title: 'Jail & Arrest', content: `
+        <p>Getting arrested sends you to jail for a timed sentence. While in jail, you cannot perform most actions.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">How Arrest Works</h4>
+        <ul>
+          <li>Each job has a <strong>jail chance</strong> percentage (e.g., Street Soldier: 20%, Bank Job: 50%, Take Over the City: 70%).</li>
+          <li>High heat increases the chance of random police encounters that can also arrest you.</li>
+          <li>Laundering has suspicion risk that can trigger investigation and arrest.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Jail Sentences</h4>
+        <ul>
+          <li>Base sentence: 5-10 seconds.</li>
+          <li>You get up to <strong>3 breakout attempts</strong> during your sentence.</li>
+          <li>Base breakout chance: 45%.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">In-Jail Activity</h4>
+        <ul>
+          <li><strong>TikTakToe</strong> -- Play against the AI. Win = -10s sentence + 2 Gang Respect. Lose = -1 Gang Respect. Tie = +1 Respect.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Reducing Jail Impact</h4>
+        <ul>
+          <li><strong>Silk Voice</strong> (Charisma) -- +1% per rank chance to avoid jail entirely when arrested. Works on all arrest events.</li>
+          <li><strong>Escape Artist</strong> (Stealth) -- -2s jail time per rank, +3% breakout chance per rank.</li>
+          <li><strong>Iron Will perk</strong> -- Jail sentences -25%, breakout chance +10%.</li>
+          <li><strong>Lockpick Set</strong> (utility item) -- Passively -5s jail time.</li>
+          <li><strong>Shadow Step</strong> (Stealth) -- -2% arrest chance per rank.</li>
+          <li><strong>District Judge bribe</strong> -- -60% jail time, 40% cases dismissed.</li>
+        </ul>
+      `},
+      { id: 'hospital-help', icon: '', title: 'Hospital & Healing', content: `
+        <p>The underground doctor keeps you alive -- for a price. Healing is critical because permadeath means HP 0 = game over.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Healing Options</h4>
+        <ul>
+          <li><strong>Full Treatment</strong> -- Restores health to 100%. Most expensive option.</li>
+          <li><strong>Patch Job</strong> -- Cheaper partial heal (restores ~25 HP). Good for a quick fix between jobs.</li>
+          <li><strong>Rest</strong> -- Free timer-based recovery. Heals a small amount over time.</li>
+          <li><strong>Medkits</strong> -- Consumable items from the Black Market. Use from your Stash instantly.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Passive Healing</h4>
+        <ul>
+          <li><strong>Conditioning</strong> (Endurance skill) -- +1 HP regen every 5 minutes per rank. At rank 10 = 10 HP every 5 minutes automatically.</li>
+          <li><strong>Back-Alley Clinic Level 5</strong> -- Grants passive 5 HP/min while not in jail.</li>
+          <li><strong>Unstoppable</strong> (Endurance skill) -- 3% chance per rank to recover 5 HP after completing a job.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">What Affects Healing Speed</h4>
+        <ul>
+          <li><strong>Recovery</strong> (Endurance skill) -- -5% hospital treatment time per rank.</li>
+          <li><strong>Back-Alley Clinic</strong> property -- Heals gang members 20% faster per level.</li>
+          <li>Base hospital healing time is 30 minutes, reduced by 20% per clinic level (compounding).</li>
+        </ul>
+      `},
+      { id: 'durability-help', icon: '', title: 'Durability System', content: `
+        <p>Weapons, armour, and vehicles all have a durability stat. Every time they are used, durability decreases by 1. When durability hits 0, the item <strong>breaks permanently</strong> and is removed from your inventory.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Durability by Item</h4>
+        <ul>
+          <li><strong>Baseball Bat</strong> -- 50 uses. Highest melee durability.</li>
+          <li><strong>Brass Knuckles</strong> -- 40 uses.</li>
+          <li><strong>Switchblade</strong> -- 35 uses.</li>
+          <li><strong>Revolver</strong> -- 35 uses. Highest firearm durability.</li>
+          <li><strong>Pistol</strong> -- 30 uses.</li>
+          <li><strong>Sawed-Off Shotgun</strong> -- 25 uses.</li>
+          <li><strong>Tommy Gun</strong> -- 20 uses.</li>
+          <li><strong>Sniper Rifle</strong> -- 15 uses. Breaks fastest.</li>
+          <li><strong>Leather Jacket</strong> -- 50 uses. Highest armour durability.</li>
+          <li><strong>Reinforced Body Armor</strong> -- 25 uses. Breaks fastest.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Protecting Your Gear</h4>
+        <ul>
+          <li><strong>Preservation</strong> (Endurance skill) -- +2% chance per rank to skip durability loss on weapons and armour. At rank 10, 20% chance per use.</li>
+          <li><strong>Wheelman</strong> (Stealth skill) -- -3% vehicle durability loss per rank. Separate roll for vehicles.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Damaged Items</h4>
+        <p>Items with 0 durability are automatically removed. Damaged weapons and armour <strong>cannot be sold</strong> at the Fence or Player Market -- only fully functional gear can be traded.</p>
+      `},
+      { id: 'seasons-help', icon: '', title: 'Seasons & Weather', content: `
+        <p>The game world has dynamic seasons and weather that cycle automatically and can affect gameplay.</p>
+        <ul>
+          <li><strong>Seasons</strong> -- Cycle through Spring, Summer, Autumn, and Winter. Each season can influence events, job availability, and NPC behaviour.</li>
+          <li><strong>Weather</strong> -- Changes between Clear, Rain, Fog, Storm, and more. Some weather conditions affect job success rates or trigger unique events.</li>
+          <li>Both are displayed on the Status Bar and update automatically.</li>
+        </ul>
+      `},
+    ]
+  },
+  {
+    id: 'entertainment',
+    title: 'Casino & Mini-Games',
+    topics: [
+      { id: 'casino-help', icon: '', title: 'Casino', content: `
+        <p>High risk, high reward gambling with your real in-game cash. Access the Casino from the main SafeHouse screen.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Casino Games</h4>
+        <ul>
+          <li><strong>Blackjack</strong> -- Classic card game. Get closer to 21 than the dealer without going bust. Standard hit/stand rules.</li>
+          <li><strong>Slots</strong> -- Spin the reels and hope for matching symbols. Quick, luck-based, variable payouts.</li>
+          <li><strong>Roulette</strong> -- Bet on numbers, colours, or ranges. Wide variety of bet types with different odds.</li>
+          <li><strong>Dice</strong> -- Craps-style rolling. Bet on the outcome of the roll.</li>
+          <li><strong>Horse Racing</strong> -- Pick a horse with specific odds and watch the race unfold.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">What Affects Casino Odds</h4>
+        <ul>
+          <li><strong>Lucky Devil perk</strong> -- +20% casino winnings.</li>
+          <li><strong>Gambling</strong> (Luck skill) -- +1% win rate per rank.</li>
+          <li><strong>Luck + Charisma synergy</strong> -- Having both trees invested provides a +10% payout bonus.</li>
+        </ul>
+        <p style="color:#8b3a3a; font-style:italic;">Warning: The Casino uses your real in-game Cash. There is no guaranteed win -- gamble responsibly!</p>
+      `},
+      { id: 'minigames-help', icon: '', title: 'Mini-Games', content: `
+        <p>Casual games that can earn cash and achievements. Available from the Mini-Games screen.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Available Games</h4>
+        <ul>
+          <li><strong>TikTakToe</strong> -- Classic noughts and crosses against the AI. Also playable in jail (Win = -10s sentence + 2 Gang Respect).</li>
+          <li><strong>Number Guessing</strong> -- Guess a number between 1-100. Payouts scale with difficulty.</li>
+          <li><strong>Rock Paper Scissors</strong> -- Best of rounds against the AI with cash wagering.</li>
+          <li><strong>Snake</strong> -- Classic snake game. Score 20+ for the Snake King achievement. Cash rewards for high scores.</li>
+          <li><strong>Quick Draw</strong> -- Timing/reflex challenge. React under 200ms for the Quickdraw title.</li>
+        </ul>
+      `},
+    ]
+  },
+  {
+    id: 'multiplayer',
+    title: 'Multiplayer & Online',
+    topics: [
+      { id: 'multiplayer-help', icon: '', title: 'Multiplayer Overview', content: `
+        <p>Mafia Born works fully offline, but multiplayer features enhance the experience when connected.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Online Features</h4>
+        <ul>
+          <li><strong>Cloud Save</strong> -- Sign in from Settings to sync your save across browsers and devices.</li>
+          <li><strong>World Chat</strong> -- Chat with other players in real time. Global, crew, alliance, and direct message channels.</li>
+          <li><strong>PvP Combat</strong> -- Attack other players to steal cash and gain respect. Climbs the leaderboard.</li>
+          <li><strong>Player Market</strong> -- Buy and sell items with other real players via the Black Market's Player Market tab.</li>
+          <li><strong>Families</strong> -- Create or join a crime family for group play, territory wars, and shared bonuses.</li>
+          <li><strong>Leaderboards</strong> -- Global rankings based on Empire Rating and PvP wins. Monthly seasons with resets.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Offline Play</h4>
+        <p>All core gameplay (jobs, missions, casino, skills, properties, territory) works fully offline. Your local saves are always available without internet.</p>
+      `},
+      { id: 'pvp-help', icon: '', title: 'PvP Combat', content: `
+        <p>Attack other real players to steal their cash and climb the leaderboard.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">How PvP Works</h4>
+        <ul>
+          <li>Select a target from the online players list.</li>
+          <li>Combat outcome is determined by both players' Attack, Defence, HP, crew strength, and randomness.</li>
+          <li>Winning steals a portion of the target's cash and awards Respect.</li>
+          <li>Losing costs you health and potentially cash.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">PvP Consequences</h4>
+        <ul>
+          <li>PvP generates Heat -- the more you fight, the more wanted you become.</li>
+          <li>Higher-ranked opponents give more Respect but are tougher fights.</li>
+        </ul>
+      `},
+      { id: 'player-market-help', icon: '', title: 'Player Market', content: `
+        <p>A marketplace where real players buy and sell items with each other. Access it from the Black Market's third tab.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">What You Can Trade</h4>
+        <ul>
+          <li>Weapons, armour, vehicles, ammunition, gasoline, utility items, and trade goods.</li>
+          <li><strong>Damaged items cannot be listed</strong> -- only functional gear can be sold.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">How It Works</h4>
+        <ul>
+          <li>List items at your chosen price.</li>
+          <li>Browse listings by category to find deals.</li>
+          <li>Transactions happen instantly when a buyer purchases your listing.</li>
+        </ul>
+      `},
+      { id: 'store-help', icon: '', title: 'Black Market (Shopping)', content: `
+        <p>The Black Market has three tabs: <strong>Buy</strong>, <strong>The Fence</strong>, and <strong>Player Market</strong>.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Buy Tab</h4>
+        <ul>
+          <li>Purchase weapons (increase Attack), armour (increase Defence), supplies (bullets, gasoline), utilities (lockpicks, scanners), and trade goods (drugs).</li>
+          <li>Prices are affected by <strong>Smooth Talker</strong> skill (-2% per rank) and <strong>Silver Tongue</strong> perk (-15%).</li>
+          <li>Kozlov faction passive: weapons cost -10% less.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">The Fence</h4>
+        <ul>
+          <li>Sell stolen goods, vehicles, and trade goods at market prices.</li>
+          <li><strong>Connections</strong> (Charisma skill) -- +2% fence sell price per rank.</li>
+          <li><strong>Chop Shop</strong> business at max level -- +55% bonus on stolen car sales.</li>
+          <li>Damaged weapons and armour <strong>cannot be sold</strong> at the Fence.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Player Market</h4>
+        <p>Buy and sell items with other real players. See the Player Market topic for details.</p>
+      `},
+    ]
+  },
+  {
+    id: 'achievements-misc',
+    title: 'Achievements & More',
+    topics: [
+      { id: 'achievements-help', icon: '', title: 'Achievements', content: `
+        <p>Over 40 achievements to unlock across every area of the game. Each awards cash, XP, and sometimes exclusive titles.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Achievement Categories</h4>
+        <ul>
+          <li><strong>Early Game</strong> -- First Job, First Blood, Hot Wheels, Armed & Dangerous, Property Owner.</li>
+          <li><strong>Money Milestones</strong> -- Big Shot ($100K), High Roller ($500K), Millionaire ($1M), Tycoon ($100M).</li>
+          <li><strong>Gang & Social</strong> -- Right Hand Man, Gang Leader, Crime Family, Criminal Army, Connected, Made Man.</li>
+          <li><strong>Combat & Crime</strong> -- Great Escape, Most Wanted, Ghost (10 jobs without arrest), Boss Slayer.</li>
+          <li><strong>Progression</strong> -- Legendary Criminal, Rising Star, Veteran, Kingpin, Skill Master.</li>
+          <li><strong>Empire</strong> -- Neighbourhood Boss, District King, Legitimate Businessman, Workhorse, Professional.</li>
+          <li><strong>Mini-Games</strong> -- Lucky Streak, High Stakes Gambler, Snake King (score 20+), Fastest Gun (Quick Draw under 200ms).</li>
+          <li><strong>Multiplayer</strong> -- Networking, Crew Founder, Dedicated (7-day login), Loyal Soldier (30-day), Contract Killer, Card Shark.</li>
+          <li><strong>Superboss</strong> -- Giant Slayer, Unstoppable (defeat all superbosses).</li>
+        </ul>
+      `},
+      { id: 'stash-help', icon: '', title: 'Stash & Motor Pool', content: `
+        <p>Your inventory and vehicle garage. Access from the SafeHouse.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Stash (Inventory)</h4>
+        <ul>
+          <li>View all your weapons, armour, consumables, utilities, and stolen goods.</li>
+          <li><strong>Equip</strong> a weapon and armour piece to boost your Attack and Defence stats. One of each at a time.</li>
+          <li><strong>Use</strong> consumables (Medkits, etc.) directly from your stash.</li>
+          <li><strong>Sell</strong> functional items at the Fence or Player Market. Damaged items (0 durability) cannot be sold and are automatically removed.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Motor Pool</h4>
+        <ul>
+          <li>Browse your vehicle collection. Vehicles provide speed bonuses and are used in heists and getaways.</li>
+          <li>Equipment-grade vehicles (Luxury Automobile, Private Airplane) can be equipped for specific job requirements.</li>
+          <li>Sell unwanted vehicles at the Fence or Player Market.</li>
+        </ul>
+      `},
+      { id: 'stats-help', icon: '', title: 'Stats & Empire Overview', content: `
+        <p>Track every detail of your criminal career from the Stats screen.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Player Stats</h4>
+        <ul>
+          <li>Full breakdown: Level, Cash, Dirty Money, Health, Attack, Defence, Influence, Respect, Heat.</li>
+          <li>See equipped weapon and armour, total jobs completed, missions finished, and crimes committed.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Empire Overview</h4>
+        <ul>
+          <li>Visual dashboard showing all assets, income sources, crew, territory, and your Empire Rating grade at a glance.</li>
+          <li>Compare your Empire Rating against other players on the leaderboard.</li>
+        </ul>
+      `},
+      { id: 'daily-help', icon: '', title: 'Daily Login & Buffs', content: `
+        <p>Log in daily to earn streak rewards and maintain active buffs.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Daily Login Rewards</h4>
+        <ul>
+          <li>Consecutive day login streaks unlock scaling rewards (cash, XP, buffs).</li>
+          <li>Track your current streak and total days played from the rewards screen.</li>
+          <li>Day 1-30 progression with increasing prizes.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Active Buffs</h4>
+        <ul>
+          <li>Time-limited bonuses from consumables, daily rewards, and special events.</li>
+          <li>Buffs have expiration timestamps and can stack.</li>
+          <li>Check your active buffs from the Stats screen.</li>
+        </ul>
+      `},
+    ]
+  },
 ];
+
+// Flatten all topics for lookup
+const HELP_TOPICS = HELP_CATEGORIES.flatMap(cat => cat.topics);
 
 function showHelpScreen(topicId) {
   hideAllScreens();
@@ -10555,7 +11193,6 @@ function showHelpScreen(topicId) {
   `;
 
   if (topicId) {
-    // Show specific topic
     const topic = HELP_TOPICS.find(t => t.id === topicId);
     if (topic) {
       html += `
@@ -10583,15 +11220,14 @@ function showHelpScreen(topicId) {
       `;
     }
   } else {
-    // Show topic index
     const tutorialMode = getTutorialMode();
     const tutorialsSkipped = localStorage.getItem('tutorialSkipAll') === '1';
     const contextualEnabled = tutorialMode === 'contextual' && !tutorialsSkipped;
-    
+
     html += `
-      <div style="max-width: 700px; margin: 0 auto;">
+      <div style="max-width: 740px; margin: 0 auto;">
         <p style="color: #d4c4a0; text-align: center; margin-bottom: 20px; font-size: 0.95em;">
-          Choose a topic to learn more about any game system.
+          Your complete guide to every system in Mafia Born. Choose a category below.
         </p>
 
         <!-- Tutorial Controls -->
@@ -10626,21 +11262,27 @@ function showHelpScreen(topicId) {
           </div>
         </div>
 
-        <!-- Game Guide Topics -->
-        <h3 style="color: #c0a062; font-family: 'Georgia', serif; font-size: 1.05em; margin: 0 0 12px; text-align: center;">Game Guide Index</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px;">
-          ${HELP_TOPICS.map(topic => `
-            <button onclick="showHelpScreen('${topic.id}')"
-              style="display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-              background: rgba(20, 18, 10,0.5); border: 2px solid #555; border-radius: 10px;
-              cursor: pointer; transition: all 0.2s; text-align: left; width: 100%;"
-              onmouseover="this.style.borderColor='#c0a062'; this.style.background='rgba(192,160,98,0.15)';"
-              onmouseout="this.style.borderColor='#555'; this.style.background='rgba(20, 18, 10,0.5)';">
-              <span style="font-size: 1.5em;">${topic.icon}</span>
-              <span style="color: #f5e6c8; font-weight: bold; font-size: 0.95em;">${topic.title}</span>
-            </button>
-          `).join('')}
-        </div>
+        <!-- Categorised Game Guide -->
+        ${HELP_CATEGORIES.map(cat => `
+          <div style="margin-bottom: 24px;">
+            <h3 style="color: #c0a062; font-family: 'Georgia', serif; font-size: 1.05em; margin: 0 0 12px;
+                 border-bottom: 1px solid rgba(192,160,98,0.3); padding-bottom: 8px;">
+              ${cat.title}
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+              ${cat.topics.map(topic => `
+                <button onclick="showHelpScreen('${topic.id}')"
+                  style="display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+                  background: rgba(20, 18, 10,0.5); border: 2px solid #555; border-radius: 10px;
+                  cursor: pointer; transition: all 0.2s; text-align: left; width: 100%;"
+                  onmouseover="this.style.borderColor='#c0a062'; this.style.background='rgba(192,160,98,0.15)';"
+                  onmouseout="this.style.borderColor='#555'; this.style.background='rgba(20, 18, 10,0.5)';">
+                  <span style="color: #f5e6c8; font-weight: bold; font-size: 0.9em;">${topic.title}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
 
         <div class="page-nav" style="justify-content: center;">
           <button class="nav-btn-back" onclick="showOptions()"><- Back to Settings</button>
@@ -18160,7 +18802,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.37.0';
+const CURRENT_VERSION = '1.38.0';
 const VERSION_UPDATES = {
   '1.35.9': {
     title: 'Dead Code Sweep',
