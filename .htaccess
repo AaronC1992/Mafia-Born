@@ -1,0 +1,16 @@
+# Mafia-Born cPanel Cache Control
+# Ensures players always get fresh JS/CSS/HTML after updates.
+# Place this in the site root on cPanel (public_html or the domain folder).
+
+<IfModule mod_headers.c>
+  # JS, CSS, and HTML: always revalidate with the server
+  <FilesMatch "\.(js|css|html)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+    Header set Pragma "no-cache"
+  </FilesMatch>
+
+  # Images / fonts: cache for 7 days (they rarely change)
+  <FilesMatch "\.(png|jpg|jpeg|gif|webp|svg|ico|woff2|woff|ttf)$">
+    Header set Cache-Control "public, max-age=604800, immutable"
+  </FilesMatch>
+</IfModule>

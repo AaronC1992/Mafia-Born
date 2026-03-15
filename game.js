@@ -3,7 +3,7 @@ import { showEmpireOverview } from './empireOverview.js';
 import { player, gainExperience, getReputationTier, getNextTier, SKILL_TREE_DEFS, getTreePointsSpent, canUnlockNode, achievements, CHARACTER_BACKGROUNDS, CHARACTER_PERKS } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
 import { crimeFamilies, factionEffects } from './factions.js';
-import { familyStories, missionProgress, factionMissions } from './missions.js?v=1.8.1';
+import { familyStories, missionProgress, factionMissions } from './missions.js';
 import { narrationVariations, getRandomNarration, getFamilyNarration, getFamilyAtmosphere } from './narration.js';
 import { storeItems, realEstateProperties, businessTypes, launderingMethods } from './economy.js';
 import { prisonerNames, recruitNames, availableRecruits, jailPrisoners, jailbreakPrisoners, setJailPrisoners, setJailbreakPrisoners, generateJailPrisoners, generateJailbreakPrisoners, generateAvailableRecruits } from './generators.js';
@@ -18803,6 +18803,19 @@ function startGameAfterIntro() {
 // ==================== VERSION UPDATE SYSTEM ====================
 
 const CURRENT_VERSION = '1.38.0';
+
+// Compare two semver strings. Returns true if `server` is strictly newer than `local`.
+function isNewerVersion(server, local) {
+  const parse = v => (v || '0.0.0').split('.').map(Number);
+  const s = parse(server);
+  const l = parse(local);
+  for (let i = 0; i < 3; i++) {
+    if ((s[i] || 0) > (l[i] || 0)) return true;
+    if ((s[i] || 0) < (l[i] || 0)) return false;
+  }
+  return false; // equal
+}
+
 const VERSION_UPDATES = {
   '1.35.9': {
     title: 'Dead Code Sweep',
@@ -22936,7 +22949,7 @@ async function forceHardReload() {
     'auth.js', 'app.js', 'economy.js', 'casino.js', 'empireOverview.js',
     'eventBus.js', 'factions.js', 'generators.js', 'jobs.js', 'logging.js',
     'miniGames.js', 'missions.js', 'mobile-responsive.js', 'narration.js',
-    'passiveManager.js', 'player.js', 'territories.js',
+    'passiveManager.js', 'player.js', 'territories.js', 'storyExpansion.js',
     'ui-events.js', 'ui-modal.js', 'worldPersistence.js'
   ];
   try {
@@ -22987,7 +23000,7 @@ function checkForUpdates() {
       const serverVersion = data.version;
       const localVersion = CURRENT_VERSION;
 
-      if (serverVersion !== localVersion) {
+      if (isNewerVersion(serverVersion, localVersion)) {
         btn.innerHTML = ` Update found! v${localVersion} -> v${serverVersion} -- Updating...`;
         btn.style.borderColor = '#8a9a6a';
         btn.style.color = '#8a9a6a';
@@ -25493,10 +25506,10 @@ function startLoadingSequence() {
       })
       .then(data => {
         // -- Version mismatch check ---
-        if (data.version && data.version !== CURRENT_VERSION) {
-          // Check if we already tried a reload for this server version.
-          // If we did and still have old code, the cache/CDN hasn't updated yet --
-          // stop the loop and let the player through.
+        // Only auto-update if the SERVER version is strictly newer than the
+        // client version. This avoids reload loops when the client runs
+        // ahead of the server (e.g. package.json not yet bumped).
+        if (data.version && isNewerVersion(data.version, CURRENT_VERSION)) {
           const reloadKey = 'mb_update_attempt';
           const lastAttempt = sessionStorage.getItem(reloadKey);
           if (lastAttempt === data.version) {
@@ -25508,17 +25521,16 @@ function startLoadingSequence() {
             if (stepsComplete) finishLoading();
             return;
           }
-          console.warn(`[loading] Version mismatch! Local: ${CURRENT_VERSION} Server: ${data.version} -- auto-updating...`);
+          console.warn(`[loading] Newer version available! Local: ${CURRENT_VERSION} Server: ${data.version} -- auto-updating...`);
           loadingText.textContent = `Update found (v${CURRENT_VERSION} -> v${data.version}) -- refreshing...`;
           loadingProgress.style.width = '100%';
           loadingPercentage.textContent = '100%';
           sessionStorage.setItem(reloadKey, data.version);
-          // Give the player a moment to read the message, then force-reload
           setTimeout(() => forceHardReload(), 1500);
-          return; // stop normal loading flow
+          return;
         }
 
-        // Version matches -- clear any stale reload marker
+        // Version matches or client is ahead -- clear any stale reload marker
         sessionStorage.removeItem('mb_update_attempt');
 
         serverReady = true;
