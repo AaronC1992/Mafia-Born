@@ -15873,7 +15873,11 @@ function buildFenceTabContent() {
 
   // === SELLABLE INVENTORY ITEMS ===
   const sellableItems = (player.inventory || []).filter(item => {
-    return item.price && item.price > 0 && item.name !== player.equippedWeapon && item.name !== player.equippedArmor;
+    if (!item.price || item.price <= 0) return false;
+    if (item === player.equippedWeapon || item === player.equippedArmor) return false;
+    // Exclude damaged weapons/armor
+    if ((item.type === 'weapon' || item.type === 'armor') && typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.durability < item.maxDurability) return false;
+    return true;
   });
   const drugItems = sellableItems.filter(i => i.type === 'highLevelDrug');
   const regularItems = sellableItems.filter(i => i.type !== 'highLevelDrug');
@@ -18123,7 +18127,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.35.9';
+const CURRENT_VERSION = '1.36.0';
 const VERSION_UPDATES = {
   '1.35.9': {
     title: 'Dead Code Sweep',
@@ -19758,7 +19762,9 @@ function buildStashHTML() {
             `<button onclick="equipItem(${globalIdx})" style="background:#c0a062;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Equip</button>` : ''}
           ${equipped ?
             `<button onclick="unequipItem(${globalIdx})" style="background:#e67e22;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Unequip</button>` : ''}
-          <button onclick="sellItem(${globalIdx})" style="background:#8b3a3a;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>
+          ${(item.type === 'weapon' || item.type === 'armor') && hasDurability && item.durability < item.maxDurability ?
+            `<span style="color:#8b3a3a;font-size:0.8em;padding:6px 8px;">Damaged -- cannot sell</span>` :
+            `<button onclick="sellItem(${globalIdx})" style="background:#8b3a3a;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>`}
         </div>
       </div>`;
     });
@@ -19911,6 +19917,11 @@ function unequipItem(index) {
 function sellItem(index) {
   const item = player.inventory[index];
   if (!item) return;
+  // Block selling damaged weapons/armor
+  if ((item.type === 'weapon' || item.type === 'armor') && typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.durability < item.maxDurability) {
+    showBriefNotification('Damaged gear cannot be sold.', 'error');
+    return;
+  }
   // Unequip if currently equipped (reference comparison since we store objects)
   if (player.equippedWeapon === item) player.equippedWeapon = null;
   if (player.equippedArmor === item) player.equippedArmor = null;
@@ -20031,6 +20042,11 @@ function showFence() {
 function fenceSellItem(index, type) {
   const item = player.inventory[index];
   if (!item) return;
+  // Block selling damaged weapons/armor
+  if ((item.type === 'weapon' || item.type === 'armor') && typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.durability < item.maxDurability) {
+    showBriefNotification('Damaged gear cannot be fenced.', 'error');
+    return;
+  }
 
   const rates = getFenceMultiplier();
   let rate = type === 'drug' ? rates.drugs : rates.items;

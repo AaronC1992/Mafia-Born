@@ -5,6 +5,14 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.36.0] - 2026-03-14
+
+### Changes
+- Damaged weapons and armor can no longer be sold, fenced, or listed on the Player Market
+- Inventory sell button now shows "Damaged -- cannot sell" for worn gear
+- Fence merchandise filter excludes damaged weapons/armor
+- Confirmed broken items (0 durability) are already removed from inventory on break
+
 ## [1.35.9] - 2026-03-13
 
 ### Dead Code Sweep

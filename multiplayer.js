@@ -2522,6 +2522,11 @@ function listItemForSale(category, itemIdentifier, price, quantity, pricePerUnit
         const invIndex = parseInt(itemIdentifier);
         const item = player.inventory[invIndex];
         if (!item) return;
+        // Block listing damaged weapons/armor
+        if ((item.type === 'weapon' || item.type === 'armor') && typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.durability < item.maxDurability) {
+            if (typeof showBriefNotification === 'function') showBriefNotification('Damaged gear cannot be listed!', 'error');
+            return;
+        }
         if (price < 100) { if (typeof showBriefNotification === 'function') showBriefNotification('Set a price of at least $100!', 'error'); return; }
         if (price > 5000000) { if (typeof showBriefNotification === 'function') showBriefNotification('Maximum listing price is $5,000,000!', 'error'); return; }
 
@@ -4062,6 +4067,8 @@ function renderMarketplaceTab() {
         playerInv.forEach((item, idx) => {
             const st = sellableTypes.find(s => s.type === item.type);
             if (!st) return;
+            // Skip damaged weapons/armor
+            if ((item.type === 'weapon' || item.type === 'armor') && typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.durability < item.maxDurability) return;
             const meta = catMeta[st.cat] || catMeta.utility;
             const suggested = Math.floor((item.price || 10000) * 0.7);
             const isEquipped = (player.equippedWeapon === item || player.equippedArmor === item || player.equippedVehicle === item);
