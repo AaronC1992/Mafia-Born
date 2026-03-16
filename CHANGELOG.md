@@ -5,6 +5,11 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.2] - 2026-03-16
+
+### Fixed
+- Fixed ~192 buttons across the game that were missing the gold border (inline `border:none` overriding the standard button style). Affected screens: Operations (side ops, turf), Business Empire, Gang Management, Turf Control, Jail, Casino, Mini-Games, Black Market, Real Estate, Territory, Skill Tree, Player Stats, Intro, Help, Multiplayer Heists, and more.
+
 ## [1.41.1] - 2026-03-16
 
 ### Added

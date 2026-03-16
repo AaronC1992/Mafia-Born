@@ -112,7 +112,7 @@ function showDebugPanel() {
   header.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #0f0; padding-bottom: 5px;';
   header.innerHTML = `
     <span>DEBUG LOG (${eventLog.length})</span>
-    <button onclick="GameLogging.closeDebugPanel()" style="background: #f00; color: #fff; border: none; cursor: pointer; padding: 2px 8px;">X</button>
+    <button onclick="GameLogging.closeDebugPanel()" style="background: #f00; color: #fff; border:1px solid #c0a062; cursor: pointer; padding: 2px 8px;">X</button>
   `;
   panel.appendChild(header);
   

@@ -186,12 +186,12 @@ export function startBlackjack() {
       <h3 style="color: #c0a040; margin-bottom: 15px;">Blackjack</h3>
       <p style="color: #d4c4a0;">Place your bet:</p>
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:15px 0;">
-        <button onclick="document.getElementById('bj-bet-input').value=Math.max(100,parseInt(document.getElementById('bj-bet-input').value||0)-100)" style="background:#8b3a3a;color:white;border:none;border-radius:5px;padding:8px 14px;cursor:pointer;font-size:1.1em;">−</button>
+        <button onclick="document.getElementById('bj-bet-input').value=Math.max(100,parseInt(document.getElementById('bj-bet-input').value||0)-100)" style="background:#8b3a3a;color:white;border:1px solid #c0a062;border-radius:5px;padding:8px 14px;cursor:pointer;font-size:1.1em;">−</button>
         <input id="bj-bet-input" type="number" min="100" value="${defaultBet}" style="width:120px;text-align:center;font-size:1.3em;padding:8px;border-radius:5px;border:2px solid #c0a040;background:#1a1a1a;color:#c0a040;" />
-        <button onclick="document.getElementById('bj-bet-input').value=parseInt(document.getElementById('bj-bet-input').value||0)+100" style="background:#7a8a5a;color:white;border:none;border-radius:5px;padding:8px 14px;cursor:pointer;font-size:1.1em;">+</button>
+        <button onclick="document.getElementById('bj-bet-input').value=parseInt(document.getElementById('bj-bet-input').value||0)+100" style="background:#7a8a5a;color:white;border:1px solid #c0a062;border-radius:5px;padding:8px 14px;cursor:pointer;font-size:1.1em;">+</button>
       </div>
-      <button onclick="bjDeal()" style="background:linear-gradient(135deg,#7a8a5a,#8a9a6a);color:white;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;font-size:1.2em;font-weight:bold;">Deal Cards</button>
-      <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;margin-left:10px;">Back to Games</button>
+      <button onclick="bjDeal()" style="background:linear-gradient(135deg,#7a8a5a,#8a9a6a);color:white;padding:12px 30px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-size:1.2em;font-weight:bold;">Deal Cards</button>
+      <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:12px 20px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-size:1em;margin-left:10px;">Back to Games</button>
     </div>`;
 }
 
@@ -254,9 +254,9 @@ function bjRender() {
   // Actions
   if (!s.done && pVal < 21) {
     html += `<div style="text-align:center;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
-      <button onclick="bjHit()" style="background:#e67e22;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">🃏 Hit</button>
-      <button onclick="bjStand()" style="background:#a08850;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">Stand</button>
-      ${canDouble ? '<button onclick="bjDouble()" style="background:#7a5a3a;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">Double Down</button>' : ''}
+      <button onclick="bjHit()" style="background:#e67e22;color:white;padding:10px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">🃏 Hit</button>
+      <button onclick="bjStand()" style="background:#a08850;color:white;padding:10px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">Stand</button>
+      ${canDouble ? '<button onclick="bjDouble()" style="background:#7a5a3a;color:white;padding:10px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;">Double Down</button>' : ''}
     </div>`;
   }
 
@@ -361,8 +361,8 @@ function bjResolve() {
 
   html += `<div style="text-align:center;margin:15px 0;"><p style="color:${resultColor};font-size:1.4em;font-weight:bold;">${resultMsg}</p></div>`;
   html += `<div style="text-align:center;display:flex;justify-content:center;gap:10px;">
-    <button onclick="startBlackjack()" style="background:#7a8a5a;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Play Again</button>
-    <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">Back to Games</button>
+    <button onclick="startBlackjack()" style="background:#7a8a5a;color:white;padding:10px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-weight:bold;">Play Again</button>
+    <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:10px 20px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;">Back to Games</button>
   </div>`;
   html += '</div>';
   gameArea.innerHTML = html;
@@ -391,12 +391,12 @@ export function startSlots() {
       </div>
       <div id="slot-result" style="min-height:30px;margin:10px 0;color:#c0a040;font-size:1.2em;font-weight:bold;"></div>
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:15px 0;">
-        <button onclick="document.getElementById('slot-bet-input').value=Math.max(100,parseInt(document.getElementById('slot-bet-input').value||0)-100)" style="background:#8b3a3a;color:white;border:none;border-radius:5px;padding:8px 14px;cursor:pointer;">−</button>
+        <button onclick="document.getElementById('slot-bet-input').value=Math.max(100,parseInt(document.getElementById('slot-bet-input').value||0)-100)" style="background:#8b3a3a;color:white;border:1px solid #c0a062;border-radius:5px;padding:8px 14px;cursor:pointer;">−</button>
         <input id="slot-bet-input" type="number" min="100" value="${defaultBet}" style="width:120px;text-align:center;font-size:1.2em;padding:8px;border-radius:5px;border:2px solid #c0a040;background:#1a1a1a;color:#c0a040;" />
-        <button onclick="document.getElementById('slot-bet-input').value=parseInt(document.getElementById('slot-bet-input').value||0)+100" style="background:#7a8a5a;color:white;border:none;border-radius:5px;padding:8px 14px;cursor:pointer;">+</button>
+        <button onclick="document.getElementById('slot-bet-input').value=parseInt(document.getElementById('slot-bet-input').value||0)+100" style="background:#7a8a5a;color:white;border:1px solid #c0a062;border-radius:5px;padding:8px 14px;cursor:pointer;">+</button>
       </div>
-      <button id="slot-spin-btn" onclick="slotSpin()" style="background:linear-gradient(135deg,#e67e22,#c0a040);color:white;padding:14px 40px;border:none;border-radius:10px;cursor:pointer;font-size:1.3em;font-weight:bold;">SPIN!</button>
-      <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;margin-left:10px;">Back</button>
+      <button id="slot-spin-btn" onclick="slotSpin()" style="background:linear-gradient(135deg,#e67e22,#c0a040);color:white;padding:14px 40px;border:1px solid #c0a062;border-radius:10px;cursor:pointer;font-size:1.3em;font-weight:bold;">SPIN!</button>
+      <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:12px 20px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-size:1em;margin-left:10px;">Back</button>
       <div style="margin-top:15px;color:#6a5a3a;font-size:0.8em;">
         Payouts: 7️⃣=10x | 💎=7x | ⭐=5x | 🔔=4x | 🍇=3x | 🍊=2x | 🍋=1.5x | 🍒=1x | 2-match=1.5x
       </div>
@@ -525,23 +525,23 @@ export function startRoulette() {
       <div style="margin:15px 0;">
         <div style="color:#d4af37;font-weight:bold;margin-bottom:8px;text-align:center;">Quick Bets (2x payout):</div>
         <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
-          <button onclick="rouletteAddBet('red')" style="background:#7a2a2a;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Red</button>
-          <button onclick="rouletteAddBet('black')" style="background:#14120a;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Black</button>
-          <button onclick="rouletteAddBet('odd')" style="background:#7a5a3a;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Odd</button>
-          <button onclick="rouletteAddBet('even')" style="background:#a08850;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Even</button>
-          <button onclick="rouletteAddBet('low')" style="background:#7a8a5a;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">1-18</button>
-          <button onclick="rouletteAddBet('high')" style="background:#e67e22;color:white;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">19-36</button>
+          <button onclick="rouletteAddBet('red')" style="background:#7a2a2a;color:white;padding:8px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">Red</button>
+          <button onclick="rouletteAddBet('black')" style="background:#14120a;color:white;padding:8px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">Black</button>
+          <button onclick="rouletteAddBet('odd')" style="background:#7a5a3a;color:white;padding:8px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">Odd</button>
+          <button onclick="rouletteAddBet('even')" style="background:#a08850;color:white;padding:8px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">Even</button>
+          <button onclick="rouletteAddBet('low')" style="background:#7a8a5a;color:white;padding:8px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">1-18</button>
+          <button onclick="rouletteAddBet('high')" style="background:#e67e22;color:white;padding:8px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">19-36</button>
         </div>
       </div>
 
       <div style="margin:15px 0;">
         <div style="color:#d4af37;font-weight:bold;margin-bottom:8px;text-align:center;">Pick a Number (35x payout):</div>
         <div id="roulette-numbers" style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;max-width:500px;margin:0 auto;">
-          <button onclick="rouletteAddBet(0)" style="background:#7a8a5a;color:white;padding:5px 10px;border:none;border-radius:4px;cursor:pointer;font-size:0.9em;min-width:36px;">0</button>
+          <button onclick="rouletteAddBet(0)" style="background:#7a8a5a;color:white;padding:5px 10px;border:1px solid #c0a062;border-radius:4px;cursor:pointer;font-size:0.9em;min-width:36px;">0</button>
           ${Array.from({length:36},(_, i) => {
             const n = i+1;
             const isRed = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(n);
-            return `<button onclick="rouletteAddBet(${n})" style="background:${isRed ? '#7a2a2a' : '#14120a'};color:white;padding:5px 10px;border:none;border-radius:4px;cursor:pointer;font-size:0.9em;min-width:36px;">${n}</button>`;
+            return `<button onclick="rouletteAddBet(${n})" style="background:${isRed ? '#7a2a2a' : '#14120a'};color:white;padding:5px 10px;border:1px solid #c0a062;border-radius:4px;cursor:pointer;font-size:0.9em;min-width:36px;">${n}</button>`;
           }).join('')}
         </div>
       </div>
@@ -551,9 +551,9 @@ export function startRoulette() {
       </div>
 
       <div style="text-align:center;display:flex;justify-content:center;gap:10px;">
-        <button onclick="rouletteSpin()" style="background:linear-gradient(135deg,#7a2a2a,#8b3a3a);color:white;padding:14px 35px;border:none;border-radius:10px;cursor:pointer;font-size:1.2em;font-weight:bold;">SPIN!</button>
-        <button onclick="rouletteClear()" style="background:#6a5a3a;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;">Clear Bets</button>
-        <button onclick="showCasino()" style="background:#555;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;">Back</button>
+        <button onclick="rouletteSpin()" style="background:linear-gradient(135deg,#7a2a2a,#8b3a3a);color:white;padding:14px 35px;border:1px solid #c0a062;border-radius:10px;cursor:pointer;font-size:1.2em;font-weight:bold;">SPIN!</button>
+        <button onclick="rouletteClear()" style="background:#6a5a3a;color:white;padding:12px 20px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;">Clear Bets</button>
+        <button onclick="showCasino()" style="background:#555;color:white;padding:12px 20px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;">Back</button>
       </div>
     </div>`;
 }
@@ -671,8 +671,8 @@ export function rouletteSpin() {
   }
 
   html += `<div style="margin-top:15px;display:flex;justify-content:center;gap:10px;">
-    <button onclick="startRoulette()" style="background:#7a2a2a;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Play Again</button>
-    <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">Back to Games</button>
+    <button onclick="startRoulette()" style="background:#7a2a2a;color:white;padding:10px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-weight:bold;">Play Again</button>
+    <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:10px 20px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;">Back to Games</button>
   </div>`;
   html += '</div>';
   gameArea.innerHTML = html;
@@ -699,9 +699,9 @@ export function startDiceGame() {
       <p style="color:#d4c4a0;">Roll higher than the dealer to win. Doubles beat everything!</p>
 
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:15px 0;">
-        <button onclick="document.getElementById('dice-bet-input').value=Math.max(100,parseInt(document.getElementById('dice-bet-input').value||0)-100)" style="background:#8b3a3a;color:white;border:none;border-radius:5px;padding:8px 14px;cursor:pointer;">−</button>
+        <button onclick="document.getElementById('dice-bet-input').value=Math.max(100,parseInt(document.getElementById('dice-bet-input').value||0)-100)" style="background:#8b3a3a;color:white;border:1px solid #c0a062;border-radius:5px;padding:8px 14px;cursor:pointer;">−</button>
         <input id="dice-bet-input" type="number" min="100" value="${defaultBet}" style="width:120px;text-align:center;font-size:1.2em;padding:8px;border-radius:5px;border:2px solid #c0a040;background:#1a1a1a;color:#c0a040;" />
-        <button onclick="document.getElementById('dice-bet-input').value=parseInt(document.getElementById('dice-bet-input').value||0)+100" style="background:#7a8a5a;color:white;border:none;border-radius:5px;padding:8px 14px;cursor:pointer;">+</button>
+        <button onclick="document.getElementById('dice-bet-input').value=parseInt(document.getElementById('dice-bet-input').value||0)+100" style="background:#7a8a5a;color:white;border:1px solid #c0a062;border-radius:5px;padding:8px 14px;cursor:pointer;">+</button>
       </div>
 
       <div id="dice-reels" style="display:flex;justify-content:center;gap:30px;margin:20px 0;">
@@ -723,8 +723,8 @@ export function startDiceGame() {
       </div>
       <div id="dice-result" style="min-height:30px;margin:10px 0;color:#c0a040;font-size:1.2em;font-weight:bold;"></div>
 
-      <button id="dice-roll-btn" onclick="diceRoll()" style="background:linear-gradient(135deg,#a08850,#c0a062);color:white;padding:14px 35px;border:none;border-radius:10px;cursor:pointer;font-size:1.3em;font-weight:bold;">ROLL!</button>
-      <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;margin-left:10px;">Back</button>
+      <button id="dice-roll-btn" onclick="diceRoll()" style="background:linear-gradient(135deg,#a08850,#c0a062);color:white;padding:14px 35px;border:1px solid #c0a062;border-radius:10px;cursor:pointer;font-size:1.3em;font-weight:bold;">ROLL!</button>
+      <button onclick="showCasino()" style="background:#6a5a3a;color:white;padding:12px 20px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-size:1em;margin-left:10px;">Back</button>
     </div>`;
 }
 

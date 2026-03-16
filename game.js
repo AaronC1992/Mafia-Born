@@ -1,4 +1,4 @@
-﻿import { applyDailyPassives, getDrugIncomeMultiplier, getViolenceHeatMultiplier, getWeaponPriceMultiplier } from './passiveManager.js';
+import { applyDailyPassives, getDrugIncomeMultiplier, getViolenceHeatMultiplier, getWeaponPriceMultiplier } from './passiveManager.js';
 import { showEmpireOverview } from './empireOverview.js';
 import { player, gainExperience, getReputationTier, getNextTier, SKILL_TREE_DEFS, getTreePointsSpent, canUnlockNode, achievements, CHARACTER_BACKGROUNDS, CHARACTER_PERKS } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
@@ -1635,7 +1635,7 @@ const RIVAL_FAMILIES = {
         ],
         buff: {
             id: 'family_loyalty',
-            name: 'OmertÃ ',
+            name: 'Omertà',
             description: '+15% income from all turf, -20% heat from jobs',
             incomeMultiplier: 1.15,
             heatReduction: 0.20
@@ -3261,7 +3261,7 @@ function renderSideOpsContent() {
             <span style="color:${objMet?'#8a9a6a':'#c0a040'};">${objMet?'Done':'Pending'}: ${obj.text} (${currentVal.toLocaleString()}/${obj.target.toLocaleString()})</span>
             <span data-quest-timer="${quest.id}" style="color:${timerDone?'#8a9a6a':'#c0a040'};">${timerDone?'Ready!':formatTimeRemaining(remaining)}</span>
           </div>
-          ${canComplete ? `<button onclick="completeSideQuestStep('${quest.id}')" style="background:#c0a040;color:#000;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;">Complete Step</button>` : ''}
+          ${canComplete ? `<button onclick="completeSideQuestStep('${quest.id}')" style="background:#c0a040;color:#000;border:1px solid #c0a062;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;">Complete Step</button>` : ''}
         </div>`;
     });
   }
@@ -3277,7 +3277,7 @@ function renderSideOpsContent() {
           <h4 style="color:#f5e6c8;margin:0 0 4px;">${quest.icon} ${quest.title}</h4>
           <p style="color:#ccc;font-size:0.9em;margin:4px 0;">${quest.description}</p>
           <div style="color:#888;font-size:0.85em;">Respect ${quest.minReputation || quest.minLevel || 0} | ${quest.steps.length} Steps | ~${totalTime}min</div>
-          <button onclick="startSideQuest('${quest.id}')" style="background:linear-gradient(135deg,#c0a062,#a08850);color:#000;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;margin-top:6px;">Accept</button>
+          <button onclick="startSideQuest('${quest.id}')" style="background:linear-gradient(135deg,#c0a062,#a08850);color:#000;border:1px solid #c0a062;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;margin-top:6px;">Accept</button>
         </div>`;
     });
   }
@@ -3349,7 +3349,7 @@ function showPostDonArc(arcId) {
           <div style="color:#8a9a6a;font-size:0.8em;margin-top:8px;">Trait: ${c.trait}</div>
           <div style="color:#8b3a3a;font-size:0.8em;margin-top:4px;">Risk: ${c.risk}</div>
           <button onclick="selectSuccessor('${c.name}', '${c.trait}')"
-            style="margin-top:12px;width:100%;padding:8px;background:${isChosen ? 'linear-gradient(135deg,#c0a040,#a08830)' : 'linear-gradient(135deg,#7a8a5a,#8a9a6a)'};border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">
+            style="margin-top:12px;width:100%;padding:8px;background:${isChosen ? 'linear-gradient(135deg,#c0a040,#a08830)' : 'linear-gradient(135deg,#7a8a5a,#8a9a6a)'};border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">
             ${isChosen ? ' Chosen' : ' Choose'}
           </button>
         </div>`;}).join('') +
@@ -3575,7 +3575,7 @@ function showInteractiveEvent(event) {
         }).join('')}
       </div>
 
-      <button onclick="closeScreenAndContinueQueue(); updateUI();" style="margin-top: 20px; padding: 12px 25px; background: #8a7a5a; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">Close</button>
+      <button onclick="closeScreenAndContinueQueue(); updateUI();" style="margin-top: 20px; padding: 12px 25px; background: #8a7a5a; color: white; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">Close</button>
     </div>
   `;
 
@@ -4429,7 +4429,7 @@ function buildBusinessesHTML() {
         Automatically collects business income, gang tribute, and turf tribute. Service fee applies hourly.
       </div>
       <div>
-        <button onclick="toggleBookieHire()" style="background:${player.services && player.services.bookieHired ? '#8b3a3a' : '#8a9a6a'}; color:white; padding:10px 14px; border:none; border-radius:6px; cursor:pointer;">
+        <button onclick="toggleBookieHire()" style="background:${player.services && player.services.bookieHired ? '#8b3a3a' : '#8a9a6a'}; color:white; padding:10px 14px; border:1px solid #c0a062; border-radius:6px; cursor:pointer;">
           ${player.services && player.services.bookieHired ? 'Dismiss Bookie' : 'Hire Bookie ($5,000/day)'}
         </button>
       </div>
@@ -4442,7 +4442,7 @@ function buildBusinessesHTML() {
       <h3>Your Businesses</h3>
       <div style="margin: 10px 0;">
         <button onclick="collectAllBusinessIncome()"
-            style="background: linear-gradient(135deg, #7a8a5a, #8a9a6a); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 3px 10px rgba(138, 154, 106,0.3);">
+            style="background: linear-gradient(135deg, #7a8a5a, #8a9a6a); color: white; padding: 12px 24px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 3px 10px rgba(138, 154, 106,0.3);">
           Collect All Income
         </button>
       </div>
@@ -4508,19 +4508,19 @@ function buildBusinessesHTML() {
 
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button onclick="collectBusinessIncome(${index})"
-                    style="background: #8a9a6a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                    style="background: #8a9a6a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer;">
                   Collect Income
                 </button>
                 ${business.level < businessType.maxLevel ?
                   `<button onclick="upgradeBusiness(${index})"
-                      style="background: #c0a040; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;"
+                      style="background: #c0a040; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer;"
                       ${player.money < upgradePrice ? 'disabled title="Not enough money"' : ''}>
                     Upgrade ($${upgradePrice.toLocaleString()})
                   </button>` :
                   '<span style="color: #8a7a5a; font-style: italic;">Max Level</span>'
                 }
                 <button onclick="sellBusiness(${index})"
-                    style="background: #8b3a3a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                    style="background: #8b3a3a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer;">
                   Sell Business
                 </button>
               </div>
@@ -4578,7 +4578,7 @@ function buildBusinessesHTML() {
               slotsFull ? '<span style="color: #e67e22; font-style: italic;">District slots full</span>' :
               !curDistrict ? '<span style="color: #e67e22; font-style: italic;">No district selected</span>' :
               `<button onclick="purchaseBusiness('${businessType.id}')"
-                  style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%;"
+                  style="background: #8a9a6a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; width: 100%;"
                   ${player.money < businessType.basePrice ? 'disabled title="Not enough money"' : ''}>
                 Purchase Business
               </button>`
@@ -4983,7 +4983,7 @@ function buildLaunderingHTML() {
                   <span>Dirty: $${op.amount.toLocaleString()}</span>
                   <span>Expected Clean: $${op.cleanAmount.toLocaleString()}</span>
                 </div>
-                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #8a9a6a; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">Collect Clean Money</button>` : ''}
+                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #8a9a6a; color: #fff; padding: 8px 16px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">Collect Clean Money</button>` : ''}
               </div>
             `;
           }).join('')}
@@ -5026,7 +5026,7 @@ function buildLaunderingHTML() {
                     style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #d4c4a0;">
                 <p style="margin: 5px 0; color: #8a9a6a;"><strong>Estimated Clean:</strong> Up to $${estimatedClean.toLocaleString()}</p>
                 <button onclick="startLaundering('${method.id}')"
-                    style="background: #8a9a6a; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
+                    style="background: #8a9a6a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; width: 100%;">
                   Start Laundering
                 </button>` :
                 '<span style="color: #8b3a3a; font-style: italic;">Requirements not met</span>'
@@ -5302,7 +5302,7 @@ function startLaunderingCountdown() {
           parent.style.borderLeftColor = '#8a9a6a';
           const btn = document.createElement('button');
           btn.textContent = 'Collect Clean Money';
-          btn.style.cssText = 'background: #8a9a6a; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;';
+          btn.style.cssText = 'background: #8a9a6a; color: #fff; padding: 8px 16px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;';
           btn.onclick = () => collectLaundering(op.id);
           parent.appendChild(btn);
         }
@@ -5469,11 +5469,11 @@ function showGang(activeTab) {
           if (isManagingBusiness) {
             const bIdx = parseInt(member.assignedTo.replace('business_', ''));
             const biz = businesses[bIdx];
-            businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx});showGang('roster');" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
+            businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx});showGang('roster');" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
           } else if (businesses.length > 0) {
             const unmanaged = businesses.map((b, i) => ({ b, i })).filter(({ b }) => !b.assignedMember);
             if (unmanaged.length > 0) {
-              businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!==''){assignMemberToBusiness(${index},parseInt(s.value));showGang('roster');}" style="background:#1abc9c;color:#fff;border:none;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
+              businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!==''){assignMemberToBusiness(${index},parseInt(s.value));showGang('roster');}" style="background:#1abc9c;color:#fff;border:1px solid #c0a062;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
             }
           }
         }
@@ -5502,9 +5502,9 @@ function showGang(activeTab) {
             ${businessHTML}
             <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:8px;">
               ${member.arrested ? `
-                <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:0.8em;">Break Out</button>
+                <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:1px solid #c0a062; border-radius:3px; cursor:pointer; font-size:0.8em;">Break Out</button>
               ` : ''}
-              <button onclick="fireGangMember(${index});showGang('roster');" style="background:#8a7a5a; color:white; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:0.8em;">Fire</button>
+              <button onclick="fireGangMember(${index});showGang('roster');" style="background:#8a7a5a; color:white; padding:5px 10px; border:1px solid #c0a062; border-radius:3px; cursor:pointer; font-size:0.8em;">Fire</button>
             </div>
           </div>
         `;
@@ -5692,7 +5692,7 @@ function showGangManagementScreen() {
   if (members.length === 0) {
     crewHTML += `<div style="text-align:center; padding:40px; background:rgba(20, 18, 10,0.6); border-radius:10px;">
       <p style="font-size:1.2em;">No crew members yet.</p>
-      <button onclick="showRecruitment()" style="background:#8a9a6a; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer; font-size:1.1em; margin-top:10px;">
+      <button onclick="showRecruitment()" style="background:#8a9a6a; color:white; padding:12px 25px; border:1px solid #c0a062; border-radius:8px; cursor:pointer; font-size:1.1em; margin-top:10px;">
         Recruit Your First Member
       </button>
     </div>`;
@@ -5764,11 +5764,11 @@ function showGangManagementScreen() {
 
           <div style="display:flex; flex-wrap:wrap; gap:5px;">
             ${member.arrested ? `
-              <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
+              <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:1px solid #c0a062; border-radius:4px; cursor:pointer; font-size:0.8em;">
                 Break Out
               </button>
             ` : ''}
-            <button onclick="fireGangMember(${index})" style="background:#8a7a5a; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
+            <button onclick="fireGangMember(${index})" style="background:#8a7a5a; color:white; padding:5px 10px; border:1px solid #c0a062; border-radius:4px; cursor:pointer; font-size:0.8em;">
               Fire
             </button>
           </div>
@@ -5874,7 +5874,7 @@ function generateGangOperationsHTML() {
         </select>
         ${availableMembers.length === 0 ? `<div style="color:#8b3a3a;font-size:0.8em;margin:4px 0;">No crew members with the <strong>${(() => { const eName = GANG_MEMBER_ROLES[operation.requiredRole] ? GANG_MEMBER_ROLES[operation.requiredRole].name : null; return eName || operation.requiredRole; })()}</strong> role available.</div>` : ''}
         <button onclick="startGangOperation('${operation.id}')"
-            style="background: #8b3a3a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%;"
+            style="background: #8b3a3a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%;"
             ${availableMembers.length === 0 || isOnCooldown || activeOp ? 'disabled' : ''}>
           ${activeOp ? 'In Progress' : (isOnCooldown ? 'On Cooldown' : (availableMembers.length === 0 ? 'No Available Members' : 'Start Task'))}
         </button>
@@ -6000,11 +6000,11 @@ function generateGangMembersHTML() {
       if (isManagingBusiness) {
         const bIdx = parseInt(member.assignedTo.replace('business_', ''));
         const biz = businesses[bIdx];
-        businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx})" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
+        businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx})" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
       } else if (businesses.length > 0) {
         const unmanaged = businesses.map((b, i) => ({ b, i })).filter(({ b }) => !b.assignedMember);
         if (unmanaged.length > 0) {
-          businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!=='')assignMemberToBusiness(${index},parseInt(s.value));" style="background:#1abc9c;color:#fff;border:none;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
+          businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!=='')assignMemberToBusiness(${index},parseInt(s.value));" style="background:#1abc9c;color:#fff;border:1px solid #c0a062;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
         }
       }
     }
@@ -6028,11 +6028,11 @@ function generateGangMembersHTML() {
 
         <div style="margin-top: 10px;">
           ${member.arrested ? `
-            <button onclick="breakoutGangMember(${index})" style="background: #8b3a3a; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
+            <button onclick="breakoutGangMember(${index})" style="background: #8b3a3a; color: white; padding: 5px 10px; border:1px solid #c0a062; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
               Break Out
             </button>
           ` : ''}
-          <button onclick="fireGangMember(${index})" style="background: #8a7a5a; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
+          <button onclick="fireGangMember(${index})" style="background: #8a7a5a; color: white; padding: 5px 10px; border:1px solid #c0a062; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
             Fire
           </button>
         </div>
@@ -6413,7 +6413,7 @@ function renderTurfControlContent() {
     <div style="background: rgba(231,76,60,0.2); padding:20px; border-radius:10px; text-align:center; margin-bottom:20px;">
       <h3 style="color:#8b3a3a; margin:0 0 10px 0;">No Family Allegiance</h3>
       <p style="color:#d4c4a0; margin:0 0 15px 0;">Choose a family to pledge your loyalty. Each family offers a unique story and buff.</p>
-      <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#8b3a3a,#7a2a2a); border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">Choose Your Family</button>
+      <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#8b3a3a,#7a2a2a); border:1px solid #c0a062; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">Choose Your Family</button>
     </div>`;
   }
 
@@ -6434,8 +6434,8 @@ function renderTurfControlContent() {
     </div>
 
     <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
-      <button onclick="showTurfMap()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">Turf Map</button>
-      <button onclick="showProtectionRackets()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #c0a040); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">Protection Rackets</button>
+      <button onclick="showTurfMap()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a); border:1px solid #c0a062; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">Turf Map</button>
+      <button onclick="showProtectionRackets()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #c0a040); border:1px solid #c0a062; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">Protection Rackets</button>
     </div>`;
 
   if (ownedZones.length > 0) {
@@ -6488,9 +6488,9 @@ function renderTurfControlContent() {
     // Collect All Tribute button at the top
     html += '<div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;"><h3 style="color: #8b3a3a; margin: 0;">Your Turf</h3>';
     if (turfReady) {
-      html += `<button onclick="collectTurfTribute('${ownedZones[0].id}'); setTimeout(showTurfControl, 300);" style="padding:8px 18px;background:linear-gradient(135deg,#7a8a5a,#229954);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.85em;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
+      html += `<button onclick="collectTurfTribute('${ownedZones[0].id}'); setTimeout(showTurfControl, 300);" style="padding:8px 18px;background:linear-gradient(135deg,#7a8a5a,#229954);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.85em;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
     } else {
-      html += `<button style="padding:8px 18px;background:linear-gradient(135deg,#555,#444);border:none;border-radius:8px;color:#999;font-weight:bold;font-size:0.85em;cursor:default;" disabled>Tribute (${tributeMinsLeft}m)</button>`;
+      html += `<button style="padding:8px 18px;background:linear-gradient(135deg,#555,#444);border:1px solid #c0a062;border-radius:8px;color:#999;font-weight:bold;font-size:0.85em;cursor:default;" disabled>Tribute (${tributeMinsLeft}m)</button>`;
     }
     html += '</div><div style="display: grid; gap: 15px;">';
 
@@ -6504,8 +6504,8 @@ function renderTurfControlContent() {
           <div style="text-align: right; min-width: 120px;"><div style="color: #8a9a6a; font-weight: bold;">$${income.toLocaleString()}/week</div></div>
         </div>
         <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
-          <button onclick="manageTurfDetails('${zone.id}')" style="padding: 5px 10px; background: #c0a062; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">Manage</button>
-          <button onclick="fortifyTurf('${zone.id}')" style="padding: 5px 10px; background: #e67e22; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">Fortify</button>
+          <button onclick="manageTurfDetails('${zone.id}')" style="padding: 5px 10px; background: #c0a062; border:1px solid #c0a062; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">Manage</button>
+          <button onclick="fortifyTurf('${zone.id}')" style="padding: 5px 10px; background: #e67e22; border:1px solid #c0a062; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">Fortify</button>
         </div>
       </div>`;
     });
@@ -6671,7 +6671,7 @@ function showTurfMap() {
     html += '</div><div style="text-align:right; min-width:150px;">';
 
     if (isOwned) {
-      html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#c0a062,#a08850);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
+      html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#c0a062,#a08850);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
     } else if (isAllied) {
       html += '<div style="color:#c0a062;font-size:0.9em;padding:10px;">Allied turf</div>';
     } else {
@@ -6686,7 +6686,7 @@ function showTurfMap() {
           <div style="font-size:0.9em;font-weight:bold;color:${chanceColor};">${winChance}% Win Chance</div>
         </div>
         <button onclick="attackTurfZone('${zone.id}')"
-          style="width:100%;padding:10px;background:linear-gradient(135deg,#8b3a3a,#7a2a2a);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">
+          style="width:100%;padding:10px;background:linear-gradient(135deg,#8b3a3a,#7a2a2a);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">
           Attack
         </button>`;
     }
@@ -6696,7 +6696,7 @@ function showTurfMap() {
 
   html += `</div>
     <div style="text-align:center; margin-top:25px;">
-      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
   document.getElementById('turf-control-content').innerHTML = html;
@@ -6726,7 +6726,7 @@ function showCityPolicies() {
       <div style="font-size:2em;">&#9813;</div>
       <div style="color:#ffd700;font-size:1.4em;font-weight:bold;font-family:'Georgia',serif;">${pol.topDonName}</div>
       ${allianceStr}
-      <div style="color:#c0a062;font-size:0.85em;margin-top:5px;">Top Don — ${pol.territoryCount} Territories</div>
+      <div style="color:#c0a062;font-size:0.85em;margin-top:5px;">Top Don � ${pol.territoryCount} Territories</div>
     </div>`;
   } else {
     html += `<div style="background:rgba(100,100,100,0.15);padding:20px;border-radius:12px;border:2px dashed #555;margin-bottom:20px;text-align:center;">
@@ -6780,7 +6780,7 @@ function showCityPolicies() {
 
   // Back button
   html += `<div style="text-align:center;margin-top:25px;">
-    <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+    <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
   </div>`;
 
   document.getElementById('turf-control-content').innerHTML = html;
@@ -7099,7 +7099,7 @@ function buildTurfDefendersHTML(zone) {
             <span style="color:#8a7a5a;font-size:0.85em;"> - Lv. ${expLevel} | Power: ${member.power || 5}</span>
           </div>
           <button onclick="removeDefenderFromTurf('${zone.id}','${member.id}')"
-            style="background:#8b3a3a;color:white;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;font-size:0.85em;">Recall</button>
+            style="background:#8b3a3a;color:white;border:1px solid #c0a062;padding:5px 12px;border-radius:4px;cursor:pointer;font-size:0.85em;">Recall</button>
         </div>`;
     });
   } else {
@@ -7115,7 +7115,7 @@ function buildTurfDefendersHTML(zone) {
           ${available.map(m => `<option value="${m.id}">${m.name} (Lv. ${m.experienceLevel || 1}, Pwr: ${m.power || 5})</option>`).join('')}
         </select>
         <button onclick="assignDefenderToTurf('${zone.id}')"
-          style="padding:8px 16px;background:linear-gradient(135deg,#5dade2,#2e86c1);border:none;border-radius:6px;color:white;cursor:pointer;font-weight:bold;font-size:0.9em;">Assign</button>
+          style="padding:8px 16px;background:linear-gradient(135deg,#5dade2,#2e86c1);border:1px solid #c0a062;border-radius:6px;color:white;cursor:pointer;font-weight:bold;font-size:0.9em;">Assign</button>
       </div>`;
   } else if (allMembers.length === 0) {
     html += '<p style="color:#8a7a5a;font-size:0.85em;text-align:center;margin-top:8px;">Recruit crew members from the Gang screen first.</p>';
@@ -7249,21 +7249,21 @@ function manageTurfDetails(zoneId) {
     ${buildTurfDefendersHTML(zone)}
 
     <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;">
-      <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Fortify ($${((fort+1)*5000).toLocaleString()})</button>
-      <button onclick="reduceHeatTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#c0a062,#a08850);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Reduce Heat -10 ($20,000)</button>
+      <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:1px solid #c0a062;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Fortify ($${((fort+1)*5000).toLocaleString()})</button>
+      <button onclick="reduceHeatTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#c0a062,#a08850);border:1px solid #c0a062;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Reduce Heat -10 ($20,000)</button>
       ${(() => {
         const turfHoursSince = (Date.now() - (player.turf.lastTributeCollection || 0)) / 3600000;
         const turfReady = turfHoursSince >= 1;
         if (turfReady) {
-          return `<button onclick="collectTurfTribute('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#7a8a5a,#229954);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
+          return `<button onclick="collectTurfTribute('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#7a8a5a,#229954);border:1px solid #c0a062;border-radius:8px;color:white;cursor:pointer;font-weight:bold;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
         } else {
           const minsLeft = Math.ceil(60 - turfHoursSince * 60);
-          return `<button style="padding:10px 20px;background:linear-gradient(135deg,#555,#444);border:none;border-radius:8px;color:#999;cursor:default;font-weight:bold;" disabled>Tribute (${minsLeft}m)</button>`;
+          return `<button style="padding:10px 20px;background:linear-gradient(135deg,#555,#444);border:1px solid #c0a062;border-radius:8px;color:#999;cursor:default;font-weight:bold;" disabled>Tribute (${minsLeft}m)</button>`;
         }
       })()}
     </div>
     <div style="text-align:center;">
-      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
   document.getElementById('turf-control-content').innerHTML = html;
@@ -7389,7 +7389,7 @@ function showFamilyChoice() {
           <div style="font-size:0.85em; color:#8a7a5a;">Capos: ${fam.capos.length}</div>
         </div>
         <button onclick="pledgeToFamily('${famId}')"
-          style="width:100%;padding:12px;background:linear-gradient(135deg,${fam.color},${fam.color}cc);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;font-size:1.05em;">
+          style="width:100%;padding:12px;background:linear-gradient(135deg,${fam.color},${fam.color}cc);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;font-size:1.05em;">
           Pledge to the ${fam.name}
         </button>
       </div>`;
@@ -7397,7 +7397,7 @@ function showFamilyChoice() {
 
   html += `</div>
     <div style="text-align:center; margin-top:25px;">
-      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
   document.getElementById('turf-control-content').innerHTML = html;
@@ -7482,17 +7482,17 @@ function showProtectionRackets() {
           </div>
           <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
             <button onclick="collectProtection('${racket.id}')"
-                style="padding: 5px 10px; background: #7a8a5a; border: none; border-radius: 5px;
+                style="padding: 5px 10px; background: #7a8a5a; border:1px solid #c0a062; border-radius: 5px;
                     color: white; cursor: pointer; font-size: 0.8em;">
               Collect
             </button>
             <button onclick="pressureBusiness('${racket.id}')"
-                style="padding: 5px 10px; background: #e67e22; border: none; border-radius: 5px;
+                style="padding: 5px 10px; background: #e67e22; border:1px solid #c0a062; border-radius: 5px;
                     color: white; cursor: pointer; font-size: 0.8em;">
               Pressure
             </button>
             <button onclick="dropProtection('${racket.id}')"
-                style="padding: 5px 10px; background: #8b3a3a; border: none; border-radius: 5px;
+                style="padding: 5px 10px; background: #8b3a3a; border:1px solid #c0a062; border-radius: 5px;
                     color: white; cursor: pointer; font-size: 0.8em;">
               Drop
             </button>
@@ -7531,7 +7531,7 @@ function showProtectionRackets() {
               <div style="color: #d4c4a0; font-size: 0.9em;">Base Rate</div>
               <button onclick="approachBusiness('${business.id}', '${business.territoryId}')"
                   style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a);
-                      border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
+                      border:1px solid #c0a062; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
                  Approach
               </button>
             </div>
@@ -7553,7 +7553,7 @@ function showProtectionRackets() {
     <div style="text-align: center; margin-top: 25px;">
       <button onclick="window._opsActiveTab='rackets'; showMissions();"
           style="padding: 12px 30px; background: linear-gradient(135deg, #8a7a5a, #6a5a3a);
-              border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
+              border:1px solid #c0a062; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
         <- Back to Operations
       </button>
     </div>`;
@@ -7641,7 +7641,7 @@ function showCorruption() {
               <div style="color: #d4c4a0; font-size: 0.9em;">Protection Active</div>
               <button onclick="renewCorruption('${official.id}')"
                   style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #7a5a3a, #8b6a4a);
-                      border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
+                      border:1px solid #c0a062; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
                 Renew
               </button>
             </div>
@@ -7717,7 +7717,7 @@ function showCorruption() {
               <div style="color: #d4c4a0; font-size: 0.8em;">Bribe Cost</div>
               <button onclick="corruptOfficial('${target.id}')"
                   style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #7a5a3a, #8b6a4a);
-                      border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;
+                      border:1px solid #c0a062; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;
                       ${!canAfford ? 'opacity: 0.6; cursor: not-allowed;' : ''}">
                 Bribe
               </button>
@@ -7736,7 +7736,7 @@ function showCorruption() {
     <div style="text-align: center; margin-top: 25px;">
       <button onclick="goBackToMainMenu()"
           style="padding: 12px 30px; background: linear-gradient(135deg, #8a7a5a, #6a5a3a);
-              border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
+              border:1px solid #c0a062; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
         <- Back to SafeHouse
       </button>
     </div>`;
@@ -8014,7 +8014,7 @@ function getActiveFactionEffect(factionKey) {
 }
 
 // Returns a numeric multiplier/modifier based on a faction's streetReputation.
-// tier25 = value at Â±25, tier50 = value at Â±50, tier75 = value at Â±75, tier100 = value at Â±100.
+// tier25 = value at ±25, tier50 = value at ±50, tier75 = value at ±75, tier100 = value at ±100.
 // Positive rep returns positive modifier, negative rep returns negative modifier.
 function getStreetRepBonus(factionKey, tier25, tier50, tier75, tier100) {
   const rep = (player.streetReputation && player.streetReputation[factionKey]) || 0;
@@ -8356,7 +8356,7 @@ function updateUI() {
   updateQuickActions();
 
   // If player is in jail, just update the jail-specific UI elements (timer, buttons)
-  // without calling showJailScreen() which does hideAllScreens() â†’ scrollTo(0,0).
+  // without calling showJailScreen() which does hideAllScreens() → scrollTo(0,0).
   // showJailScreen() is called explicitly by sendToJail() and game-load only.
   if (player.inJail) {
     updateJailUI();
@@ -9102,8 +9102,8 @@ function showQuickActionCustomizer() {
       </div>
 
       <div style="text-align:center;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <button onclick="resetQuickActionPrefs()" style="background:#8a7a5a;color:#fff;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1em;"><- Reset to Default</button>
-        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
+        <button onclick="resetQuickActionPrefs()" style="background:#8a7a5a;color:#fff;padding:12px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-size:1em;"><- Reset to Default</button>
+        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;padding:12px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
       </div>
     </div>`;
 
@@ -9193,8 +9193,8 @@ function showMobileNavCustomizer() {
       </div>
 
       <div style="text-align:center;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <button onclick="resetMobileNavTabs()" style="background:#8a7a5a;color:#fff;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1em;"><- Reset to Default</button>
-        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
+        <button onclick="resetMobileNavTabs()" style="background:#8a7a5a;color:#fff;padding:12px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-size:1em;"><- Reset to Default</button>
+        <button onclick="showOptions()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;padding:12px 24px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;">Done</button>
       </div>
 
       <!-- Live preview -->
@@ -9710,7 +9710,7 @@ function showTutorialOverlay(screenId) {
       `).join('')}
       <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
         <button onclick="document.getElementById('tutorial-overlay').remove(); markTutorialSeen('${screenId}');"
-          style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border: none;
+          style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border:1px solid #c0a062;
                  padding: 12px 28px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;
                  font-family: 'Georgia', serif;">
           Got It
@@ -9978,7 +9978,7 @@ function renderNarrativeStep() {
           </button>
         ` : ''}
         <button onclick="${isLast ? 'finishNarrativeGuide()' : 'narrativeNext()'}"
-          style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border: none;
+          style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border:1px solid #c0a062;
                  padding: 12px 32px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;
                  font-family: 'Georgia', serif;">
           ${isLast ? 'Start Playing' : 'Next ->'}
@@ -11233,11 +11233,11 @@ function showHelpScreen(topicId) {
           </div>
           <div style="text-align: center; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
             <button onclick="showHelpScreen()" style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a;
-              padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+              padding: 12px 24px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-weight: bold;">
               <- All Topics
             </button>
             <button onclick="showOptions()" style="background: #1a1610; color: #f5e6c8;
-              padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
+              padding: 12px 24px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer;">
               Back to Settings
             </button>
           </div>
@@ -13341,7 +13341,7 @@ function getSynergyBonus(bonusType) {
 }
 window.getSynergyBonus = getSynergyBonus;
 
-// â”€â”€ Gym-Style Skill Training Config â”€â”€
+// ── Gym-Style Skill Training Config ──
 // Training costs scale with tier and current rank.
 const SKILL_TRAINING_CONFIG = {
   1: { baseMoney: 1500, moneyPerRank: 1000, baseTime: 60, timePerRank: 15 },
@@ -13606,7 +13606,7 @@ function renderSkillTreeUI() {
       </div>
 
       <div style="text-align:center;margin-top:20px;">
-        <button class="nav-btn-back" onclick="respecSkillTree()" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;margin-right:8px;font-weight:bold;">Reset Skills ($${(10000 * Math.pow(2, player.respecCount || 0)).toLocaleString()})</button>
+        <button class="nav-btn-back" onclick="respecSkillTree()" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:10px 20px;border-radius:6px;cursor:pointer;margin-right:8px;font-weight:bold;">Reset Skills ($${(10000 * Math.pow(2, player.respecCount || 0)).toLocaleString()})</button>
         <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
       </div>
     </div>
@@ -14216,7 +14216,7 @@ function showJailScreen() {
         <span style="color:#f5e6c8;">Available crew: ${availableMembers.length}</span> |
         <span style="color:${rescueChance >= 60 ? '#8a9a6a' : '#c0a062'};">Success chance: ${rescueChance}%</span>
       </div>
-      <button onclick="attemptGangRescue()" style="background:linear-gradient(135deg,#c0a062,#8b6d2a);color:#000;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:bold;margin-top:6px;">
+      <button onclick="attemptGangRescue()" style="background:linear-gradient(135deg,#c0a062,#8b6d2a);color:#000;border:1px solid #c0a062;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:bold;margin-top:6px;">
         Call in the Crew
       </button>
     </div>`;
@@ -14317,7 +14317,7 @@ function updatePrisonerList() {
           <strong style="color: #f5e6c8;">${member.name}</strong> (Lv. ${expLevel})
           <br><small style="color: #8b3a3a;">Time Left: ${timeLeft}</small>
           ${player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="breakoutGangMember(${realIndex})" style="margin-top: 8px; background: #8b3a3a; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`}
+            `<br><button onclick="breakoutGangMember(${realIndex})" style="margin-top: 8px; background: #8b3a3a; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`}
         </div>
       `;
     });
@@ -14338,7 +14338,7 @@ function updatePrisonerList() {
           <br><small style="color: #8b3a3a;">Online Player * Level ${p.level || 1}</small>
           ${isMe ? '<br><span style="color: #8a7a5a; font-style: italic;">That\'s you!</span>' :
             (player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" style="margin-top: 8px; background: #c0a040; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`)}
+            `<br><button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" style="margin-top: 8px; background: #c0a040; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`)}
         </div>
       `;
     });
@@ -14362,7 +14362,7 @@ function updatePrisonerList() {
           <strong style="color: #f5e6c8;">${bot.name}</strong> - Sentence: ${bot.sentence}s
           <br><small style="color: ${difficultyColor};">Difficulty: ${difficultyText}</small>
           ${player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="margin-top: 8px; background: #c0a062; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out (${bot.breakoutSuccess}%)</button>`}
+            `<br><button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="margin-top: 8px; background: #c0a062; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out (${bot.breakoutSuccess}%)</button>`}
         </div>
       `;
     });
@@ -15281,7 +15281,7 @@ function showUnlockToast(items) {
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <h3 style="color:#d4af37;margin:0;font-size:1.1em;">New Unlocks!</h3>
         <button onclick="document.getElementById('unlock-toast').remove()"
-                style="background:none;border:none;color:#8a7a5a;cursor:pointer;font-size:1.2em;padding:0 4px;"></button>
+                style="background:none;border:1px solid #c0a062;color:#8a7a5a;cursor:pointer;font-size:1.2em;padding:0 4px;"></button>
       </div>
       ${itemList}
       <p style="color:#6a5a3a;font-size:0.8em;margin:8px 0 0;text-align:center;">Visit the SafeHouse to explore</p>
@@ -15358,7 +15358,7 @@ function showSafehouseTip() {
         More locations and features unlock as you rank up. Head to <strong>Settings</strong> to change your UI theme, toggle HUD stats, customise quick actions, and more.
       </p>
       <button onclick="document.getElementById('safehouse-tip-overlay').remove(); localStorage.setItem('safehouseTipSeen', '1');"
-        style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border: none;
+        style="background: linear-gradient(135deg, #d4af37, #b8962e); color: #14120a; border:1px solid #c0a062;
                padding: 14px 36px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.05em;
                font-family: 'Georgia', serif; box-shadow: 0 4px 15px rgba(212,175,55,0.4);">
         Got It -- Let's Go!
@@ -15530,7 +15530,7 @@ function showPlayerStats() {
   content.innerHTML = `
     <!-- Tab Navigation -->
     <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-      <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#14120a;padding:8px 16px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Player Stats</button>
+      <button id="tab-stats" onclick="showPlayerStatsTab('stats')" style="background:#d4af37;color:#14120a;padding:8px 16px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Player Stats</button>
       <button id="tab-career" onclick="showPlayerStatsTab('career')" style="background:rgba(52,152,219,0.3);color:#c0a062;padding:8px 16px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Career Statistics</button>
       <button id="tab-showcase" onclick="showPlayerStatsTab('showcase')" style="background:rgba(155,89,182,0.3);color:#8b6a4a;padding:8px 16px;border:1px solid #8b6a4a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Character Showcase</button>
       <button id="tab-empire" onclick="showPlayerStatsTab('empire')" style="background:rgba(231,76,60,0.3);color:#8b3a3a;padding:8px 16px;border:1px solid #8b3a3a;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:0.95em;">Empire Rating</button>
@@ -15704,7 +15704,7 @@ function buildEventsTabHTML() {
 
   // Check Weather button
   html += `<div style="text-align:center;margin-top:15px;">
-    <button onclick="triggerRandomWeatherChange(); showPlayerStatsTab('events');" style="background:#c0a062;color:white;padding:12px 25px;border:none;border-radius:8px;cursor:pointer;">Check Weather Update</button>
+    <button onclick="triggerRandomWeatherChange(); showPlayerStatsTab('events');" style="background:#c0a062;color:white;padding:12px 25px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;">Check Weather Update</button>
   </div>`;
 
   return html;
@@ -15793,10 +15793,10 @@ function buildCareerStatisticsHTML() {
     </div>
 
     <div style="text-align: center; margin-top: 30px;">
-      <button onclick="exportStatistics()" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="exportStatistics()" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer;">
         Export Stats
       </button>
-      <button onclick="resetStatistics()" style="background: #8b3a3a; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="resetStatistics()" style="background: #8b3a3a; color: white; padding: 12px 25px; margin: 5px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer;">
         Reset Stats
       </button>
     </div>
@@ -15973,7 +15973,7 @@ function updateJailbreakPrisonerList() {
               <p><strong>Success:</strong> <span style="color: ${chanceColor};">${successChance}%</span></p>
               <p style="font-size: 0.85em; color: #8a7a5a;">Bribe: $${bribeCost.toLocaleString()}</p>
               <button onclick="breakoutGangMember(${realIndex})"
-                      style="margin-top: 6px; width: 100%; background: #8b3a3a; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                      style="margin-top: 6px; width: 100%; background: #8b3a3a; color: white; border:1px solid #c0a062; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">
                 Break Out Crew Member
               </button>
             </div>
@@ -16005,7 +16005,7 @@ function updateJailbreakPrisonerList() {
             </div>
             <div style="text-align: center; min-width: 180px;">
               <button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')"
-                      style="margin-top: 10px; width: 100%; background: #c0a040; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">
+                      style="margin-top: 10px; width: 100%; background: #c0a040; color: white; border:1px solid #c0a062; padding: 10px; border-radius: 4px; cursor: pointer;">
                 Break Out Player
               </button>
             </div>
@@ -16040,7 +16040,7 @@ function updateJailbreakPrisonerList() {
             <div style="text-align: center; min-width: 180px;">
               <p><strong>Success Rate:</strong> <span style="color: #c0a062">${bot.breakoutSuccess}%</span></p>
               <button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')"
-                      style="margin-top: 10px; width: 100%; background: #c0a062; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">
+                      style="margin-top: 10px; width: 100%; background: #c0a062; color: white; border:1px solid #c0a062; padding: 10px; border-radius: 4px; cursor: pointer;">
                 Attempt Breakout
               </button>
             </div>
@@ -16179,7 +16179,7 @@ function showRecruitment() {
             <button onclick="hireSpecialRecruit()"
                 ${canAffordSR ? '' : 'disabled'}
                 style="background: ${canAffordSR ? 'linear-gradient(180deg, #c0a040, #8b7340)' : '#555'};
-                    color: white; padding: 12px 20px; border: none; border-radius: 8px;
+                    color: white; padding: 12px 20px; border:1px solid #c0a062; border-radius: 8px;
                     font-weight: bold; cursor: ${canAffordSR ? 'pointer' : 'not-allowed'};
                     font-size: 15px; font-family: 'Georgia', serif; transition: all 0.3s ease;">
               ${canAffordSR ? 'Recruit' : 'Too Expensive'}
@@ -16242,7 +16242,7 @@ function showRecruitment() {
     <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(192, 160, 98, 0.2); display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
       <button onclick="refreshRecruits()"
           style="background: linear-gradient(180deg, #c0a062, #8b7340); color: #1a1a1a; padding: 14px 25px;
-              border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+              border:1px solid #c0a062; border-radius: 8px; font-weight: bold; cursor: pointer;
               font-size: 15px; font-family: 'Georgia', serif; transition: all 0.3s ease;">
         Look for New Recruits ($500)
       </button>
@@ -16735,13 +16735,13 @@ function renderFenceSellSection(tabId, cat) {
           html += '<div><strong style="color: #f5e6c8;">' + car.name + '</strong><br>';
           html += '<small style="color: #d4c4a0;">Base: $' + car.baseValue.toLocaleString() + ' | Condition: <span style="color: ' + carCondColor + ';">' + condition.toFixed(0) + '%</span></small><br>';
           html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #8a9a6a;">(+$' + premium.toLocaleString() + ' vs street)</span></small></div>';
-          html += '<button onclick="fenceSellCar(' + idx + ')" style="background: #7a5a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+          html += '<button onclick="fenceSellCar(' + idx + ')" style="background: #7a5a3a; color: white; border:1px solid #c0a062; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
           html += '</div>';
         });
         html += '</div>';
         if (stolenCars.length > 1) {
           const totalCarValue = stolenCars.reduce((sum, car) => sum + Math.floor(car.baseValue * ((100 - car.damagePercentage) / 100) * rates.cars), 0);
-          html += '<button onclick="fenceSellAllCars()" style="background: #7a2a2a; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold;">Sell All Vehicles ($' + totalCarValue.toLocaleString() + ')</button>';
+          html += '<button onclick="fenceSellAllCars()" style="background: #7a2a2a; color: white; border:1px solid #c0a062; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold;">Sell All Vehicles ($' + totalCarValue.toLocaleString() + ')</button>';
         }
       }
       html += '</div>';
@@ -16779,7 +16779,7 @@ function renderFenceSellSection(tabId, cat) {
         html += '<div><strong style="color: #f5e6c8;">' + item.name + '</strong><br>';
         html += '<small style="color: #d4c4a0;">Bought at: $' + item.price.toLocaleString() + ' | Max street value: $' + maxPayout.toLocaleString() + '</small><br>';
         html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + '</small></div>';
-        html += '<button onclick="fenceSellItem(' + globalIdx + ', \'drug\')" style="background: #8b3a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+        html += '<button onclick="fenceSellItem(' + globalIdx + ', \'drug\')" style="background: #8b3a3a; color: white; border:1px solid #c0a062; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
         html += '</div>';
       });
       html += '</div></div>';
@@ -16797,7 +16797,7 @@ function renderFenceSellSection(tabId, cat) {
         html += '<div><strong style="color: #f5e6c8;">' + item.name + '</strong> ' + (item.power ? '<small style="color: #d4c4a0;">(+' + item.power + ' Power)</small>' : '') + '<br>';
         html += '<small style="color: #d4c4a0;">Value: $' + item.price.toLocaleString() + ' | Regular sell: $' + regularSellPrice.toLocaleString() + '</small><br>';
         html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #8a9a6a;">(+$' + premium.toLocaleString() + ')</span></small></div>';
-        html += '<button onclick="fenceSellItem(' + globalIdx + ', \'item\')" style="background: #7a5a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+        html += '<button onclick="fenceSellItem(' + globalIdx + ', \'item\')" style="background: #7a5a3a; color: white; border:1px solid #c0a062; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
         html += '</div>';
       });
       html += '</div></div>';
@@ -16921,7 +16921,7 @@ async function buyItem(index) {
       if (!confirmed) return;
     }
 
-    // â”€â”€ Bullet daily limit (server-wide 10/day, offline per-player 10/day) â”€â”€
+    // ── Bullet daily limit (server-wide 10/day, offline per-player 10/day) ──
     if (item.type === 'ammo') {
       const MAX_BULLETS_PER_DAY = 10;
       const isConnected = typeof onlineWorldState !== 'undefined' && onlineWorldState && onlineWorldState.isConnected
@@ -17970,7 +17970,7 @@ function showPortraitSelection() {
         </div>
 
         <button onclick="goBackToIntro()"
-            style="background: #6a5a3a; color: white; padding: 15px 30px; border: none;
+            style="background: #6a5a3a; color: white; padding: 15px 30px; border:1px solid #c0a062;
                 border-radius: 10px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-top: 20px;">
           <- Back
         </button>
@@ -18074,7 +18074,7 @@ function showBackgroundAndPerkSelection() {
 
         <div style="text-align: center; margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
           <button id="confirm-bg-perk-btn" onclick="confirmBackgroundAndPerk()" disabled
-            style="padding: 14px 32px; font-size: 1.15em; font-weight: bold; border: none; border-radius: 10px;
+            style="padding: 14px 32px; font-size: 1.15em; font-weight: bold; border:1px solid #c0a062; border-radius: 10px;
                    background: #6a5a3a; color: white; cursor: not-allowed; transition: all 0.3s ease;">
             Continue ->
           </button>
@@ -18748,7 +18748,7 @@ function showIntroNarrative() {
         </p>
       </div>
 
-      <button onclick="finishIntro()" style="margin-top: 25px; padding: 15px 30px; background: #8b3a3a; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold;">
+      <button onclick="finishIntro()" style="margin-top: 25px; padding: 15px 30px; background: #8b3a3a; color: white; border:1px solid #c0a062; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold;">
         Begin Your Empire
       </button>
     </div>
@@ -18800,7 +18800,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.1';
+const CURRENT_VERSION = '1.41.2';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -19175,7 +19175,7 @@ const VERSION_UPDATES = {
       'Turf attacks are now chance-based -- every zone is always attackable',
       'Win chance scales with your Attack Power vs zone Defense (50% at equal, min 1%, max 99%)',
       'Color-coded win chance displayed on each zone card',
-      'Fixed 7 remaining encoding issues in story missions (SÃ£o Paulo, JuÃ¡rez, MedellÃ­n, etc.)',
+      'Fixed 7 remaining encoding issues in story missions (São Paulo, Juárez, Medellín, etc.)',
       "99 mission job objectives clarified -- now say 'Complete N jobs (any type)'",
       'Fixed broken icons in multiplayer territory requirements',
     ]
@@ -19204,9 +19204,9 @@ const VERSION_UPDATES = {
     title: 'UI Consolidation & Dark Board Removal',
     date: 'March 2026',
     changes: [
-      'Back Room â†’ Casino tab, Crew & Friends â†’ Commission tabs, Superboss â†’ Operations tab',
+      'Back Room → Casino tab, Crew & Friends → Commission tabs, Superboss → Operations tab',
       'Dark Board removed -- anonymous bounty option added to Bounty Board (2x cost)',
-      'Friends moved from SafeHouse button to Commission â†’ Friends tab',
+      'Friends moved from SafeHouse button to Commission → Friends tab',
       'Commission now has 9 tabs: Overview, PVP, Territories, Politics, Activities, Crew, Friends, Market, Chat',
       'Fixed all broken placeholder emojis across multiplayer systems',
       'Tutorial tips updated to reflect new screen locations',
@@ -19985,7 +19985,7 @@ function showVersionUpdateNotification(version) {
           color: #1a1a1a;
           font-weight: bold;
           padding: 15px 40px;
-          border: none;
+          border:1px solid #c0a062;
           border-radius: 10px;
           cursor: pointer;
           font-size: 1.2em;
@@ -20031,7 +20031,7 @@ function showRealEstate(initialTab) {
   content.innerHTML = `
     <!-- Tab Navigation -->
     <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-      <button id="prop-tab-properties" onclick="showPropertiesTab('properties')" style="background:#c0a062;color:#fff;padding:8px 20px;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Properties</button>
+      <button id="prop-tab-properties" onclick="showPropertiesTab('properties')" style="background:#c0a062;color:#fff;padding:8px 20px;border:1px solid #c0a062;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Properties</button>
       <button id="prop-tab-fronts" onclick="showPropertiesTab('fronts')" style="background:rgba(243,156,18,0.3);color:#c0a040;padding:8px 20px;border:1px solid #c0a040;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">Fronts</button>
       <button id="prop-tab-wash" onclick="showPropertiesTab('wash')" style="background:rgba(192,160,64,0.3);color:#c0a040;padding:8px 20px;border:1px solid #c0a040;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;font-size:1em;">The Wash</button>
     </div>
@@ -20151,7 +20151,7 @@ function updateRealEstateDisplay() {
               </div>
               ${!isOwned ? `
                 <button onclick="buyProperty(${index})"
-                    style="background: ${canAfford ? '#7a8a5a' : '#6a5a3a'}; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: ${canAfford ? 'pointer' : 'not-allowed'}; font-weight: bold;"
+                    style="background: ${canAfford ? '#7a8a5a' : '#6a5a3a'}; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: ${canAfford ? 'pointer' : 'not-allowed'}; font-weight: bold;"
                     ${!canAfford ? 'disabled' : ''}>
                   ${canAfford ? 'Purchase' : 'Too Expensive'}
                 </button>
@@ -20445,12 +20445,12 @@ function buildStashHTML() {
         </div>
         <div style="display:flex;gap:8px;">
           ${isEquippable && !equipped ?
-            `<button onclick="equipItem(${globalIdx})" style="background:#c0a062;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Equip</button>` : ''}
+            `<button onclick="equipItem(${globalIdx})" style="background:#c0a062;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Equip</button>` : ''}
           ${equipped ?
-            `<button onclick="unequipItem(${globalIdx})" style="background:#e67e22;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Unequip</button>` : ''}
+            `<button onclick="unequipItem(${globalIdx})" style="background:#e67e22;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Unequip</button>` : ''}
           ${(item.type === 'weapon' || item.type === 'armor') && hasDurability && item.durability < item.maxDurability ?
             `<span style="color:#8b3a3a;font-size:0.8em;padding:6px 8px;">Damaged -- cannot sell</span>` :
-            `<button onclick="sellItem(${globalIdx})" style="background:#8b3a3a;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>`}
+            `<button onclick="sellItem(${globalIdx})" style="background:#8b3a3a;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>`}
         </div>
       </div>`;
     });
@@ -20475,8 +20475,8 @@ function buildStashHTML() {
           <small style="color:#d4c4a0;">Value: $${car.baseValue.toLocaleString()} | ${car.damagePercentage}% damaged</small>
         </div>
         <div style="display:flex;gap:8px;">
-          ${!selected ? `<button onclick="selectCar(${idx})" style="background:#c0a062;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Select</button>` : ''}
-          <button onclick="scrapStolenCar(${idx})" style="background:#e67e22;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Scrap</button>
+          ${!selected ? `<button onclick="selectCar(${idx})" style="background:#c0a062;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Select</button>` : ''}
+          <button onclick="scrapStolenCar(${idx})" style="background:#e67e22;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Scrap</button>
         </div>
       </div>`;
     });
@@ -22079,7 +22079,7 @@ function showAchievements() {
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px;">
           ${catAchievements.map(a => {
-            const titleHTML = a.title ? `<div style="color:#d4af37;font-size:0.8em;margin-top:4px;">Title: "${escapeHTML(a.title)}"${a.unlocked && player.title !== a.title ? ` <button onclick="equipTitle('${a.id}')" style="background:#d4af37;color:#14120a;border:none;padding:1px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;">Equip</button>` : (player.title === a.title ? ' <span style="color:#27ae60;">âœ“ Equipped</span>' : '')}</div>` : '';
+            const titleHTML = a.title ? `<div style="color:#d4af37;font-size:0.8em;margin-top:4px;">Title: "${escapeHTML(a.title)}"${a.unlocked && player.title !== a.title ? ` <button onclick="equipTitle('${a.id}')" style="background:#d4af37;color:#14120a;border:1px solid #c0a062;padding:1px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;">Equip</button>` : (player.title === a.title ? ' <span style="color:#27ae60;">✓ Equipped</span>' : '')}</div>` : '';
             return `
               <div style="background: ${a.unlocked ? 'rgba(138, 154, 106, 0.15)' : 'rgba(0,0,0,0.3)'};
                     padding: 12px; border-radius: 8px;
@@ -23268,7 +23268,7 @@ function showMap() {
     </div>
 
     <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-      <button onclick="showTurfControl();" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="showTurfControl();" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer;">
         Turf Management
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
@@ -23531,10 +23531,10 @@ function showStatistics() {
     </div>
 
     <div style="text-align: center; margin-top: 30px;">
-      <button onclick="exportStatistics()" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="exportStatistics()" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer;">
         Export Stats
       </button>
-      <button onclick="resetStatistics()" style="background: #8b3a3a; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="resetStatistics()" style="background: #8b3a3a; color: white; padding: 12px 25px; margin: 5px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer;">
         Reset Stats
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
@@ -24116,7 +24116,7 @@ function applySaveData(saveData) {
   const loadedPlayer = JSON.parse(JSON.stringify(saveData.player));
   Object.assign(player, loadedPlayer);
 
-  // â”€â”€ Save migration: wantedLevel â†’ heat (v1.28.0) â”€â”€
+  // ── Save migration: wantedLevel → heat (v1.28.0) ──
   if (typeof player.wantedLevel === 'number' && player.heat === undefined) {
     player.heat = player.wantedLevel;
     delete player.wantedLevel;
@@ -24130,7 +24130,7 @@ function applySaveData(saveData) {
     delete player.stats.highestWantedLevel;
   }
 
-  // ── Save migration: territory* → turf* (v1.40.0) ──
+  // -- Save migration: territory* ? turf* (v1.40.0) --
   if (player.territoryReputation !== undefined) {
     player.turfReputation = player.territoryReputation;
     delete player.territoryReputation;
@@ -24152,7 +24152,7 @@ function applySaveData(saveData) {
     delete player.stats.territoriesControlled;
   }
 
-  // ── Save migration: backfill new skill tree nodes from definitions ──
+  // -- Save migration: backfill new skill tree nodes from definitions --
   if (player.skillTree && SKILL_TREE_DEFS) {
     for (const treeName of Object.keys(SKILL_TREE_DEFS)) {
       if (!player.skillTree[treeName]) player.skillTree[treeName] = {};
@@ -24164,11 +24164,11 @@ function applySaveData(saveData) {
     }
   }
 
-  // ── Save migration: injured gang members → active (v1.41.0) ──
+  // -- Save migration: injured gang members ? active (v1.41.0) --
   if (player.gang && player.gang.gangMembers) {
     player.gang.gangMembers.forEach(m => {
       if (m.status === 'injured') m.status = 'active';
-      // Migrate Cautious trait → Streetwise
+      // Migrate Cautious trait ? Streetwise
       if (m.traits) {
         m.traits.forEach(t => {
           if (t.name === 'Cautious') {
@@ -25898,7 +25898,7 @@ function checkDailyLogin() {
   });
 
   html += `</div>
-    <button onclick="claimDailyLogin()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:14px 32px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;margin-top:12px;">Claim Reward</button>
+    <button onclick="claimDailyLogin()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:1px solid #c0a062;padding:14px 32px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;margin-top:12px;">Claim Reward</button>
   </div>`;
 
   // Use an overlay div
@@ -26044,11 +26044,11 @@ function respecSkillTree() {
 // ==================== CONTEXTUAL TUTORIALS (EXPANDED) ====================
 // Additional tutorial entries for new screens
 const NEW_TUTORIAL_CONTENT = {
-  friends: { title: 'Friends & Social', tip: 'Add friends to see when they\'re online. Access via The Commission â†’ Friends tab. Invite friends to Superboss fights and crew activities.' },
-  crew: { title: 'Crews', tip: 'Create or join a crew of up to 10 players. Access via The Commission â†’ Crew tab. Leaders can invite members, set mottos, and promote officers.' },
+  friends: { title: 'Friends & Social', tip: 'Add friends to see when they\'re online. Access via The Commission → Friends tab. Invite friends to Superboss fights and crew activities.' },
+  crew: { title: 'Crews', tip: 'Create or join a crew of up to 10 players. Access via The Commission → Crew tab. Leaders can invite members, set mottos, and promote officers.' },
   hitcontracts: { title: 'Bounty Board', tip: 'Place bounties on rival players. Post anonymously for 2x the cost to keep your identity hidden. Kill the target in PvP to auto-collect the reward.' },
-  playergambling: { title: 'PvP Gambling', tip: 'Gamble against other players with dice, coin flip, or high card. Access via Casino â†’ PvP Gambling tab. The server resolves all games fairly.' },
-  superboss: { title: 'Superboss Fights', tip: 'Challenge legendary crime lords via Operations â†’ Superboss tab. Invite up to 4 friends to help. Higher level bosses drop better rewards and unique buffs.' },
+  playergambling: { title: 'PvP Gambling', tip: 'Gamble against other players with dice, coin flip, or high card. Access via Casino → PvP Gambling tab. The server resolves all games fairly.' },
+  superboss: { title: 'Superboss Fights', tip: 'Challenge legendary crime lords via Operations → Superboss tab. Invite up to 4 friends to help. Higher level bosses drop better rewards and unique buffs.' },
   dailylogin: { title: 'Daily Rewards', tip: 'Log in every day to earn increasing rewards. Keep your streak going for 7 days to earn the best prizes!' }
 };
 

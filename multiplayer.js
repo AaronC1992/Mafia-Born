@@ -301,11 +301,11 @@ function showActiveHeists() {
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 6px; min-width: 130px;">
                         ${isMyHeist ? `
-                            <button onclick="manageHeist('${h.id}')" style="background: linear-gradient(180deg, #c0a062, #8b7340); color: #000; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
+                            <button onclick="manageHeist('${h.id}')" style="background: linear-gradient(180deg, #c0a062, #8b7340); color: #000; padding: 10px 18px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                                 Manage
                             </button>
                             ${participantCount >= (h.minCrew || 1) ? `
-                            <button onclick="forceStartHeist('${h.id}')" style="background: linear-gradient(180deg, #7a8a5a, #1a7a40); color: #fff; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
+                            <button onclick="forceStartHeist('${h.id}')" style="background: linear-gradient(180deg, #7a8a5a, #1a7a40); color: #fff; padding: 10px 18px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                                 Launch!
                             </button>` : `
                             <div style="color: #ff8800; font-size: 0.8em; text-align: center;">Need ${h.minCrew || 1}+ crew</div>`}
@@ -341,7 +341,7 @@ function showActiveHeists() {
             <div style="text-align: center; margin-bottom: 20px;">
                 ${myHeist
                     ? '<div style="color: #ff8800; font-size: 0.9em;">You already have an active heist. Manage or complete it first.</div>'
-                    : `<button onclick="showCreateHeist()" style="background: linear-gradient(180deg, #c0a062, #8b7340); color: #000; padding: 14px 30px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-size: 1.1em; font-weight: bold;">
+                    : `<button onclick="showCreateHeist()" style="background: linear-gradient(180deg, #c0a062, #8b7340); color: #000; padding: 14px 30px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-size: 1.1em; font-weight: bold;">
                         Plan a Heist
                     </button>`
                 }
@@ -646,7 +646,7 @@ function manageHeist(heistId) {
             <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                 ${heist.organizerId === onlineWorldState.playerId ? `
                     ${canLaunch ? `
-                        <button onclick="forceStartHeist('${heistId}')" style="background: linear-gradient(180deg, #7a8a5a, #1a7a40); color: #fff; padding: 14px 25px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold; font-size: 1.05em;">
+                        <button onclick="forceStartHeist('${heistId}')" style="background: linear-gradient(180deg, #7a8a5a, #1a7a40); color: #fff; padding: 14px 25px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold; font-size: 1.05em;">
                             Launch Heist!
                         </button>
                     ` : `
@@ -1020,7 +1020,7 @@ function showNearbyPlayers() {
                     <span style="color: #888; font-size: 0.85em;"> Lvl ${p.level || 1}</span>
                 </div>
                 <div>
-                    <button onclick="challengePlayer('${escapeHTML(p.name)}')" style="background: #8b0000; color: #fff; padding: 5px 12px; border: none; border-radius: 4px; cursor: pointer; margin: 0 3px;">Fight</button>
+                    <button onclick="challengePlayer('${escapeHTML(p.name)}')" style="background: #8b0000; color: #fff; padding: 5px 12px; border:1px solid #c0a062; border-radius: 4px; cursor: pointer; margin: 0 3px;">Fight</button>
                 </div>
             </div>
         `).join('')
@@ -1054,7 +1054,7 @@ function viewTerritoryDetails(district) {
                 <p style="color: #ccc;">Defense Power: <span style="color: #8b3a3a;">${info.power || 0}</span></p>
             </div>
             <div style="text-align: center; margin-top: 15px;">
-                <button onclick="challengeForTerritory('${escapeHTML(district)}')" style="background: #8b0000; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Attack</button>
+                <button onclick="challengeForTerritory('${escapeHTML(district)}')" style="background: #8b0000; color: #fff; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; margin: 5px;">Attack</button>
                 <button onclick="showOnlineWorld()" style="background: #333; color: #c0a062; padding: 10px 20px; border: 1px solid #c0a062; border-radius: 5px; cursor: pointer; margin: 5px;">Back</button>
             </div>
         </div>
@@ -3098,12 +3098,12 @@ function showGlobalChat() {
                 <div style="margin-top: 15px;">
                     <h4 style="color: #c0a062; margin-bottom: 10px; font-family: 'Georgia', serif;"> Quick Words</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
-                        <button onclick="sendQuickChat('Respect.')" style="padding: 8px; background: #7a8a5a; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;"> Respect.</button>
+                        <button onclick="sendQuickChat('Respect.')" style="padding: 8px; background: #7a8a5a; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Respect.</button>
                         <button onclick="sendQuickChat('Looking for work.')" style="padding: 8px; background: linear-gradient(45deg, #333, #000); color: #c0a062; border: 1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px; font-family: 'Georgia', serif;"> Looking for work</button>
-                        <button onclick="sendQuickChat('Watch your back.')" style="padding: 8px; background: #8b0000; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;"> Watch your back</button>
-                        <button onclick="sendQuickChat('Good business.')" style="padding: 8px; background: #c0a040; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;"> Good business</button>
-                        <button onclick="sendQuickChat('Anyone need a lawyer?')" style="padding: 8px; background: #8b6a4a; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;"> Need a lawyer?</button>
-                        <button onclick="sendQuickChat('My regards to the Don.')" style="padding: 8px; background: #1abc9c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;"> Regards to the Don</button>
+                        <button onclick="sendQuickChat('Watch your back.')" style="padding: 8px; background: #8b0000; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Watch your back</button>
+                        <button onclick="sendQuickChat('Good business.')" style="padding: 8px; background: #c0a040; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Good business</button>
+                        <button onclick="sendQuickChat('Anyone need a lawyer?')" style="padding: 8px; background: #8b6a4a; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Need a lawyer?</button>
+                        <button onclick="sendQuickChat('My regards to the Don.')" style="padding: 8px; background: #1abc9c; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Regards to the Don</button>
                     </div>
                 </div>
             </div>
@@ -3426,7 +3426,7 @@ function renderChatChannelContent(channel) {
                 <input type="text" id="channel-chat-input" placeholder="Speak to the family..." maxlength="200"
                        style="flex:1;padding:10px;border-radius:5px;border:1px solid #c0a062;background:#222;color:#c0a062;font-size:1em;"
                        onkeypress="if(event.key==='Enter') sendChannelMessage('world')">
-                <button onclick="sendChannelMessage('world')" style="background:#c0a062;color:#000;padding:10px 18px;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
+                <button onclick="sendChannelMessage('world')" style="background:#c0a062;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
             </div>`;
     }
 
@@ -3441,7 +3441,7 @@ function renderChatChannelContent(channel) {
                 <input type="text" id="channel-chat-input" placeholder="Message your crew..." maxlength="200"
                        style="flex:1;padding:10px;border-radius:5px;border:1px solid #3498db;background:#222;color:#3498db;font-size:1em;"
                        onkeypress="if(event.key==='Enter') sendChannelMessage('crew')">
-                <button onclick="sendChannelMessage('crew')" style="background:#3498db;color:#000;padding:10px 18px;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
+                <button onclick="sendChannelMessage('crew')" style="background:#3498db;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
             </div>`;
     }
 
@@ -3456,7 +3456,7 @@ function renderChatChannelContent(channel) {
                 <input type="text" id="channel-chat-input" placeholder="Message your alliance..." maxlength="200"
                        style="flex:1;padding:10px;border-radius:5px;border:1px solid #9b59b6;background:#222;color:#9b59b6;font-size:1em;"
                        onkeypress="if(event.key==='Enter') sendChannelMessage('alliance')">
-                <button onclick="sendChannelMessage('alliance')" style="background:#9b59b6;color:#000;padding:10px 18px;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
+                <button onclick="sendChannelMessage('alliance')" style="background:#9b59b6;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
             </div>`;
     }
 
@@ -3500,7 +3500,7 @@ function renderPrivateChatUI() {
             <input type="text" id="channel-chat-input" placeholder="Message ${escapeHTML(target)}..." maxlength="200"
                    style="flex:1;padding:10px;border-radius:5px;border:1px solid #e67e22;background:#222;color:#e67e22;font-size:1em;"
                    onkeypress="if(event.key==='Enter') sendChannelMessage('private')">
-            <button onclick="sendChannelMessage('private')" style="background:#e67e22;color:#000;padding:10px 18px;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
+            <button onclick="sendChannelMessage('private')" style="background:#e67e22;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
         </div>`;
     } else {
         html += '<p style="color:#8a7a5a;text-align:center;font-size:0.9em;">Select a player above to send a message.</p>';
@@ -3828,7 +3828,7 @@ function showOnlineWorld(activeTab) {
                                     </div>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; min-width: 120px;">
-                                    ${!isHome ? '<button onclick="showTerritoryRelocation()" style="background: #c0a040; color: #000; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">Relocate</button>' : ''}
+                                    ${!isHome ? '<button onclick="showTerritoryRelocation()" style="background: #c0a040; color: #000; padding: 8px 12px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">Relocate</button>' : ''}
                                     ${!isOwned ? `<button onclick="wageWar('${d.id}')" style="background: linear-gradient(180deg, #8b0000, #5a0000); color: #fff; padding: 8px 12px; border: 1px solid #ff0000; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em;">Wage War</button>` : ''}
                                 </div>
                             </div>
@@ -4046,7 +4046,7 @@ function renderMarketplaceTab() {
                 <div><strong style="color: #f5e6c8;">\ud83d\ude97 ${car.name}</strong><br><small style="color: #d4c4a0;">Base: $${car.baseValue.toLocaleString()} | <span style="color: ${condColor};">${car.damagePercentage}% dmg</span></small></div>
                 <div style="display: flex; gap: 6px; align-items: center;">${listed ? '<span style="color: #c0a040; font-size: 0.85em;">Listed</span>' : `
                     <input type="number" id="mkt-veh-${idx}" value="${suggested}" min="100" max="${car.baseValue * 3}" style="width: 90px; padding: 5px; border-radius: 5px; border: 1px solid #c0a062; background: #222; color: #f5e6c8; font-size: 0.85em;">
-                    <button onclick="listItemForSale('vehicle', ${idx}, document.getElementById('mkt-veh-${idx}').value)" style="background: #a08850; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">List</button>`}
+                    <button onclick="listItemForSale('vehicle', ${idx}, document.getElementById('mkt-veh-${idx}').value)" style="background: #a08850; color: #fff; border:1px solid #c0a062; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">List</button>`}
                 </div>
             </div>`;
         });
@@ -4077,7 +4077,7 @@ function renderMarketplaceTab() {
                 <br><small style="color: #d4c4a0;">${meta.label}${item.power ? ' | +' + item.power + ' power' : ''}${item.durability !== undefined ? ' | ' + item.durability + '/' + item.maxDurability + ' dur' : ''}</small></div>
                 <div style="display: flex; gap: 6px; align-items: center;">
                     <input type="number" id="mkt-inv-${idx}" value="${suggested}" min="100" max="5000000" style="width: 90px; padding: 5px; border-radius: 5px; border: 1px solid #c0a062; background: #222; color: #f5e6c8; font-size: 0.85em;">
-                    <button onclick="listItemForSale('${st.cat}', ${idx}, document.getElementById('mkt-inv-${idx}').value)" style="background: ${meta.color}; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">List</button>
+                    <button onclick="listItemForSale('${st.cat}', ${idx}, document.getElementById('mkt-inv-${idx}').value)" style="background: ${meta.color}; color: #fff; border:1px solid #c0a062; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">List</button>
                 </div>
             </div>`;
         });
@@ -4093,7 +4093,7 @@ function renderMarketplaceTab() {
                 <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                     <div><small style="color: #d4c4a0;">Qty:</small><br><input type="number" id="mkt-ammo-qty" value="1" min="1" max="${Math.min(playerAmmo, 100)}" style="width: 55px; padding: 5px; border-radius: 5px; border: 1px solid #e67e22; background: #222; color: #f5e6c8; font-size: 0.85em;"></div>
                     <div><small style="color: #d4c4a0;">$/bullet:</small><br><input type="number" id="mkt-ammo-price" value="150000" min="10000" max="1000000" step="10000" style="width: 100px; padding: 5px; border-radius: 5px; border: 1px solid #e67e22; background: #222; color: #f5e6c8; font-size: 0.85em;"></div>
-                    <div style="padding-top: 14px;"><button onclick="listItemForSale('ammo', null, 0, document.getElementById('mkt-ammo-qty').value, document.getElementById('mkt-ammo-price').value)" style="background: #e67e22; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">List</button></div>
+                    <div style="padding-top: 14px;"><button onclick="listItemForSale('ammo', null, 0, document.getElementById('mkt-ammo-qty').value, document.getElementById('mkt-ammo-price').value)" style="background: #e67e22; color: #fff; border:1px solid #c0a062; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">List</button></div>
                 </div>
             </div>`;
         }
@@ -4103,7 +4103,7 @@ function renderMarketplaceTab() {
                 <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                     <div><small style="color: #d4c4a0;">Qty:</small><br><input type="number" id="mkt-gas-qty" value="1" min="1" max="${Math.min(playerGas, 100)}" style="width: 55px; padding: 5px; border-radius: 5px; border: 1px solid #f39c12; background: #222; color: #f5e6c8; font-size: 0.85em;"></div>
                     <div><small style="color: #d4c4a0;">$/can:</small><br><input type="number" id="mkt-gas-price" value="75000" min="10000" max="1000000" step="10000" style="width: 100px; padding: 5px; border-radius: 5px; border: 1px solid #f39c12; background: #222; color: #f5e6c8; font-size: 0.85em;"></div>
-                    <div style="padding-top: 14px;"><button onclick="listItemForSale('gas', null, 0, document.getElementById('mkt-gas-qty').value, document.getElementById('mkt-gas-price').value)" style="background: #f39c12; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">List</button></div>
+                    <div style="padding-top: 14px;"><button onclick="listItemForSale('gas', null, 0, document.getElementById('mkt-gas-qty').value, document.getElementById('mkt-gas-price').value)" style="background: #f39c12; color: #fff; border:1px solid #c0a062; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">List</button></div>
                 </div>
             </div>`;
         }
@@ -4124,7 +4124,7 @@ function renderMarketplaceTab() {
             html += `<div style="padding: 8px; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid #e67e22; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
                 <div><strong style="color: #f5e6c8;">${meta.icon} ${qtyLabel}${listing.itemName}</strong><br>
                 <small style="color: #d4c4a0;">${meta.label} | Asking: <span style="color: #8a9a6a; font-weight: bold;">$${listing.price.toLocaleString()}</span>${listing.quantity > 1 ? ` ($${listing.pricePerUnit.toLocaleString()}/ea)` : ''}</small></div>
-                <button onclick="cancelMarketListing('${listing.id}')" style="background: #7a2a2a; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">Cancel</button>
+                <button onclick="cancelMarketListing('${listing.id}')" style="background: #7a2a2a; color: #fff; border:1px solid #c0a062; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">Cancel</button>
             </div>`;
         });
         html += '</div></div>';
@@ -4173,7 +4173,7 @@ function renderMarketplaceTab() {
                     ${details ? `<small style="color: #d4c4a0;">${details}</small><br>` : ''}
                     <small style="color: #8a9a6a; font-weight: bold; font-size: 1em;">$${listing.price.toLocaleString()}</small></div>
                     <button onclick="buyMarketListing('${listing.id}')" ${!canAfford ? 'disabled' : ''}
-                        style="background: ${canAfford ? '#7a8a5a' : '#6a5a3a'}; color: #fff; border: none; padding: 8px 16px; border-radius: 8px;
+                        style="background: ${canAfford ? '#7a8a5a' : '#6a5a3a'}; color: #fff; border:1px solid #c0a062; padding: 8px 16px; border-radius: 8px;
                         cursor: ${canAfford ? 'pointer' : 'not-allowed'}; font-weight: bold; white-space: nowrap; font-size: 1em;">
                         ${canAfford ? 'Buy' : "Can't Afford"}
                     </button>
@@ -4735,10 +4735,10 @@ function findPlayersInDistrict(districtName) {
                                 </div>
                             </div>
                             <div style="display: flex; gap: 10px;">
-                                <button onclick="challengePlayer('${escapeHTML(p.name)}')" style="background: #8b0000; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Georgia', serif;">
+                                <button onclick="challengePlayer('${escapeHTML(p.name)}')" style="background: #8b0000; color: white; padding: 8px 12px; border:1px solid #c0a062; border-radius: 4px; cursor: pointer; font-family: 'Georgia', serif;">
                                      Challenge
                                 </button>
-                                <button onclick="inviteToHeist('${escapeHTML(p.name)}')" style="background: #c0a040; color: #000; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Georgia', serif;">
+                                <button onclick="inviteToHeist('${escapeHTML(p.name)}')" style="background: #c0a040; color: #000; padding: 8px 12px; border:1px solid #c0a062; border-radius: 4px; cursor: pointer; font-family: 'Georgia', serif;">
                                      Invite
                                 </button>
                             </div>
@@ -5503,11 +5503,11 @@ function handleAllianceInfoResult(message) {
                 <h4 style="color: #ccc; margin: 10px 0 5px;">Members:</h4>
                 ${myAlliance.members.map(m => `<div style="padding:5px;color:${m === myAlliance.leaderName ? '#ffd700' : '#ccc'};">${m === myAlliance.leaderName ? '' : ''} ${escapeHTML(m)}</div>`).join('')}
                 <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
-                    <button onclick="allianceDeposit()" style="background: #8a9a6a; color: #000; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Deposit</button>
-                    ${isLeader ? '<button onclick="allianceInvitePrompt()" style="background: #c0a062; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Invite</button>' : ''}
-                    ${isLeader ? '<button onclick="allianceKickPrompt()" style="background: #8b3a3a; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Kick</button>' : ''}
-                    ${isLeader ? '<button onclick="showDisciplinePanel()" style="background: #8b0000; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Discipline</button>' : ''}
-                    <button onclick="allianceLeave()" style="background: #666; color: #fff; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;">Leave</button>
+                    <button onclick="allianceDeposit()" style="background: #8a9a6a; color: #000; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-weight: bold;">Deposit</button>
+                    ${isLeader ? '<button onclick="allianceInvitePrompt()" style="background: #c0a062; color: #fff; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer;">Invite</button>' : ''}
+                    ${isLeader ? '<button onclick="allianceKickPrompt()" style="background: #8b3a3a; color: #fff; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer;">Kick</button>' : ''}
+                    ${isLeader ? '<button onclick="showDisciplinePanel()" style="background: #8b0000; color: #fff; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer;">Discipline</button>' : ''}
+                    <button onclick="allianceLeave()" style="background: #666; color: #fff; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer;">Leave</button>
                 </div>
             </div>
         `;
@@ -5522,7 +5522,7 @@ function handleAllianceInfoResult(message) {
                     <input id="alliance-tag-input" type="text" placeholder="Tag (2-4 chars, e.g. MAFIA)" maxlength="4" style="padding: 10px; background: #222; color: #c0a062; border: 1px solid #c0a062; border-radius: 6px; text-transform: uppercase;">
                     <input id="alliance-motto-input" type="text" placeholder="Motto (optional)" maxlength="80" style="padding: 10px; background: #222; color: #c0a062; border: 1px solid #c0a062; border-radius: 6px;">
                 </div>
-                <button onclick="createAlliance()" style="background: #c0a062; color: #000; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%;">Found Alliance ($10,000)</button>
+                <button onclick="createAlliance()" style="background: #c0a062; color: #000; padding: 12px 25px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%;">Found Alliance ($10,000)</button>
             </div>
         `;
     }
@@ -5865,7 +5865,7 @@ function handleAllianceDisciplineResult(message) {
                     </p>
                     ${message.reason ? `<p style="color: #8b3a3a; font-style: italic; border-left: 3px solid ${borderColor}; padding-left: 12px; margin: 15px 20px;">"${escapeHTML(message.reason)}"</p>` : ''}
                     <p style="color: #666; font-size: 0.85em; margin-top: 12px;">This has been broadcast to all players in the city.</p>
-                    <button onclick="document.getElementById('discipline-received-modal').remove()" style="background: ${borderColor}; color: #fff; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; font-family: Georgia, serif; font-weight: bold; margin-top: 15px;">Understood</button>
+                    <button onclick="document.getElementById('discipline-received-modal').remove()" style="background: ${borderColor}; color: #fff; padding: 12px 30px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: Georgia, serif; font-weight: bold; margin-top: 15px;">Understood</button>
                 </div>
             `;
             document.body.appendChild(popup);
@@ -5924,7 +5924,7 @@ function showBountyBoard() {
                     <span style="color: #888; font-size: 0.85em;">(2x cost — your name stays hidden)</span>
                 </label>
             </div>
-            <button onclick="postBounty()" style="background: #ff6600; color: #000; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%; margin-top: 10px;">Post Bounty (money deducted upfront)</button>
+            <button onclick="postBounty()" style="background: #ff6600; color: #000; padding: 12px 25px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: Georgia, serif; width: 100%; margin-top: 10px;">Post Bounty (money deducted upfront)</button>
         </div>
 
         <div id="bounty-list-content" style="color: #888; text-align: center; padding: 20px;">Loading bounties...</div>
@@ -5997,7 +5997,7 @@ function handleBountyListResult(message) {
                         </div>
                         <div style="text-align: right;">
                             <div style="color: #8a9a6a; font-size: 1.3em; font-weight: bold;">$${b.reward.toLocaleString()}</div>
-                            ${isMyBounty ? `<button onclick="sendMP({type:'cancel_bounty',bountyId:'${b.id}'})" style="background:#8b3a3a;color:#fff;padding:4px 10px;border:none;border-radius:4px;cursor:pointer;font-size:0.8em;margin-top:5px;">Cancel</button>` : ''}
+                            ${isMyBounty ? `<button onclick="sendMP({type:'cancel_bounty',bountyId:'${b.id}'})" style="background:#8b3a3a;color:#fff;padding:4px 10px;border:1px solid #c0a062;border-radius:4px;cursor:pointer;font-size:0.8em;margin-top:5px;">Cancel</button>` : ''}
                         </div>
                     </div>
                 </div>
@@ -6362,7 +6362,7 @@ function renderTopDonControls(pol) {
             </div>
             <div style="text-align: center; margin-top: 16px;">
                 <button id="submit-policies-btn" onclick="submitPolicies()"
-                        style="background: ${cooldownActive ? '#444' : 'linear-gradient(135deg, #ffd700, #c0a030)'}; color: #000; padding: 12px 30px; border: none; border-radius: 8px; cursor: ${cooldownActive ? 'not-allowed' : 'pointer'}; font-weight: bold; font-size: 1em; font-family: 'Georgia', serif; letter-spacing: 1px; box-shadow: 0 2px 8px rgba(255,215,0,0.3);"
+                        style="background: ${cooldownActive ? '#444' : 'linear-gradient(135deg, #ffd700, #c0a030)'}; color: #000; padding: 12px 30px; border:1px solid #c0a062; border-radius: 8px; cursor: ${cooldownActive ? 'not-allowed' : 'pointer'}; font-weight: bold; font-size: 1em; font-family: 'Georgia', serif; letter-spacing: 1px; box-shadow: 0 2px 8px rgba(255,215,0,0.3);"
                         ${cooldownActive ? 'disabled' : ''}>
                     Submit Policy
                 </button>
@@ -6646,7 +6646,7 @@ function renderFriendsTabContent() {
       <h4 style="color:#c0a062;">Add Friend</h4>
       <div style="display:flex;gap:8px;margin:8px 0;">
         <input type="text" id="add-friend-input" placeholder="Player name" style="flex:1;padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
-        <button onclick="addFriend(document.getElementById('add-friend-input').value.trim())" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Add</button>
+        <button onclick="addFriend(document.getElementById('add-friend-input').value.trim())" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:1px solid #c0a062;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Add</button>
       </div>
     </div>`;
 
@@ -6659,8 +6659,8 @@ function renderFriendsTabContent() {
         html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #2a2518;">
           <span style="color:#d4c4a0;">${escapeHTML(r.fromName)} wants to be your friend</span>
           <div>
-            <button onclick="acceptFriendRequest('${escapeHTML(r.fromName)}')" style="background:#27ae60;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Accept</button>
-            <button onclick="declineFriendRequest('${escapeHTML(r.fromName)}')" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;">Decline</button>
+            <button onclick="acceptFriendRequest('${escapeHTML(r.fromName)}')" style="background:#27ae60;color:#fff;border:1px solid #c0a062;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Accept</button>
+            <button onclick="declineFriendRequest('${escapeHTML(r.fromName)}')" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;">Decline</button>
           </div>
         </div>`;
       });
@@ -6682,8 +6682,8 @@ function renderFriendsTabContent() {
             ${isOnline ? '<span style="color:#27ae60;font-size:0.8em;"> Online</span>' : '<span style="color:#8a7a5a;font-size:0.8em;"> Offline</span>'}
           </span>
           <div>
-            <button onclick="removeFriend('${escapeHTML(f.name)}')" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Remove</button>
-            <button onclick="blockPlayer('${escapeHTML(f.name)}')" style="background:#555;color:#f5e6c8;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;">Block</button>
+            <button onclick="removeFriend('${escapeHTML(f.name)}')" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Remove</button>
+            <button onclick="blockPlayer('${escapeHTML(f.name)}')" style="background:#555;color:#f5e6c8;border:1px solid #c0a062;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;">Block</button>
           </div>
         </div>`;
       });
@@ -6699,8 +6699,8 @@ function renderFriendsTabContent() {
           html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #2a2518;">
             <span style="color:#d4c4a0;"><span style="color:#27ae60;">●</span> ${escapeHTML(o.name)} <span style="color:#8a7a5a;font-size:0.8em;">Lv.${o.level || '?'}</span></span>
             <div>
-              <button onclick="addFriend('${escapeHTML(o.name)}')" style="background:#27ae60;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Send Request</button>
-              <button onclick="blockPlayer('${escapeHTML(o.name)}')" style="background:#555;color:#f5e6c8;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;">Block</button>
+              <button onclick="addFriend('${escapeHTML(o.name)}')" style="background:#27ae60;color:#fff;border:1px solid #c0a062;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-right:4px;">Send Request</button>
+              <button onclick="blockPlayer('${escapeHTML(o.name)}')" style="background:#555;color:#f5e6c8;border:1px solid #c0a062;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.85em;">Block</button>
             </div>
           </div>`;
         });
@@ -6950,23 +6950,23 @@ function renderCrewScreen(container, data) {
             <div style="margin:8px 0;">
             ${c.members.map(m => `<div style="padding:4px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2518;">
                 <span style="color:#d4c4a0;">${escapeHTML(m.name)} <span style="color:#8a7a5a;font-size:0.85em;">(${m.role})</span></span>
-                ${isLeader && m.role === 'member' ? `<div><button onclick="window.crewPromote('${escapeHTML(m.name)}')" style="background:#27ae60;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.8em;margin-right:4px;">Promote</button><button onclick="window.crewKick('${escapeHTML(m.name)}')" style="background:#8b3a3a;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.8em;">Kick</button></div>` : ''}
+                ${isLeader && m.role === 'member' ? `<div><button onclick="window.crewPromote('${escapeHTML(m.name)}')" style="background:#27ae60;color:#fff;border:1px solid #c0a062;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.8em;margin-right:4px;">Promote</button><button onclick="window.crewKick('${escapeHTML(m.name)}')" style="background:#8b3a3a;color:#fff;border:1px solid #c0a062;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.8em;">Kick</button></div>` : ''}
             </div>`).join('')}
             </div>
             ${isLeader ? `
             <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
                 <span style="color:#d4c4a0;">Recruitment:</span>
-                <button onclick="window.crewToggleOpen(${isOpen ? 'false' : 'true'})" style="background:${isOpen ? '#8b3a3a' : '#27ae60'};color:#fff;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;">${isOpen ? 'Close Recruitment' : 'Open to All Players'}</button>
+                <button onclick="window.crewToggleOpen(${isOpen ? 'false' : 'true'})" style="background:${isOpen ? '#8b3a3a' : '#27ae60'};color:#fff;border:1px solid #c0a062;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;">${isOpen ? 'Close Recruitment' : 'Open to All Players'}</button>
             </div>
             <div style="margin-top:8px;">
                 <input type="text" id="crew-motto-input" placeholder="Crew motto..." maxlength="64" value="${escapeHTML(c.motto || '')}" style="width:70%;padding:6px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
-                <button onclick="window.crewUpdateMotto()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Set Motto</button>
+                <button onclick="window.crewUpdateMotto()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Set Motto</button>
             </div>
             <div style="margin-top:8px;">
                 <input type="text" id="crew-invite-input" placeholder="Player name to invite..." style="width:70%;padding:6px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
-                <button onclick="window.crewInvitePlayer()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Invite</button>
+                <button onclick="window.crewInvitePlayer()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Invite</button>
             </div>` : ''}
-            <button onclick="window.crewLeave()" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;margin-top:12px;font-weight:bold;">Leave Crew</button>
+            <button onclick="window.crewLeave()" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:8px 16px;border-radius:6px;cursor:pointer;margin-top:12px;font-weight:bold;">Leave Crew</button>
         </div>`;
     } else {
         // No crew — show create form and pending invite
@@ -6976,7 +6976,7 @@ function renderCrewScreen(container, data) {
                 <input type="text" id="crew-name-input" placeholder="Crew name (3-24 chars)" maxlength="24" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
                 <input type="text" id="crew-tag-input" placeholder="Tag (2-5 chars, e.g. MFB)" maxlength="5" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
                 <input type="text" id="crew-motto-create" placeholder="Motto (optional)" maxlength="64" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
-                <button onclick="window.crewCreate()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:10px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:1em;">Create Crew</button>
+                <button onclick="window.crewCreate()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:1px solid #c0a062;padding:10px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:1em;">Create Crew</button>
             </div>
         </div>`;
 
@@ -6985,8 +6985,8 @@ function renderCrewScreen(container, data) {
                 <h4 style="color:#d4af37;">Pending Invite</h4>
                 <p style="color:#d4c4a0;">You've been invited to join <strong>${escapeHTML(window._pendingCrewInvite.crewName)}</strong></p>
                 <div style="display:flex;gap:8px;">
-                    <button onclick="window.crewAcceptInvite()" style="background:#27ae60;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Accept</button>
-                    <button onclick="window.crewDeclineInvite()" style="background:#8b3a3a;color:#f5e6c8;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Decline</button>
+                    <button onclick="window.crewAcceptInvite()" style="background:#27ae60;color:#fff;border:1px solid #c0a062;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Accept</button>
+                    <button onclick="window.crewDeclineInvite()" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Decline</button>
                 </div>
             </div>`;
         }
@@ -7004,7 +7004,7 @@ function renderCrewScreen(container, data) {
                         <span style="color:#8a7a5a;font-size:0.85em;"> (${c.memberCount}/10) -- Led by ${escapeHTML(c.leaderName)}</span>
                         ${c.motto ? `<br><span style="color:#8a7a5a;font-size:0.85em;font-style:italic;">"${escapeHTML(c.motto)}"</span>` : ''}
                     </div>
-                    <button onclick="window.crewJoinOpen('${c.id}')" style="background:#27ae60;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold;">Join</button>
+                    <button onclick="window.crewJoinOpen('${c.id}')" style="background:#27ae60;color:#fff;border:1px solid #c0a062;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold;">Join</button>
                 </div>`;
             });
         } else {
@@ -7126,7 +7126,7 @@ function renderPlayerGambling(container) {
                 <option value="highcard">High Card</option>
             </select>
             <input type="number" id="gambling-bet-input" placeholder="Bet amount ($1,000 — $500,000)" min="1000" max="500000" style="padding:8px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;">
-            <button onclick="window.createGamblingTable()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:10px;border-radius:6px;cursor:pointer;font-weight:bold;">Open Table</button>
+            <button onclick="window.createGamblingTable()" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:1px solid #c0a062;padding:10px;border-radius:6px;cursor:pointer;font-weight:bold;">Open Table</button>
         </div>
     </div>`;
 
@@ -7141,7 +7141,7 @@ function renderPlayerGambling(container) {
                         <p style="color:#d4af37;margin:4px 0;">Bet: $${t.bet.toLocaleString()}</p>
                         <small style="color:#8a7a5a;">Hosted by ${escapeHTML(t.hostName)}</small>
                     </div>
-                    <button onclick="window.joinGamblingTable('${t.id}')" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Sit Down ($${t.bet.toLocaleString()})</button>
+                    <button onclick="window.joinGamblingTable('${t.id}')" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#14120a;border:1px solid #c0a062;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Sit Down ($${t.bet.toLocaleString()})</button>
                 </div>
             </div>`;
         });
@@ -7317,9 +7317,9 @@ function renderSuperbossScreen() {
                 <p style="color:#d4af37;text-align:center;">Recruiting phase — invite friends before attacking!</p>
                 <div style="margin:8px 0;">
                     <input type="text" id="superboss-invite-input" placeholder="Player name to invite" style="padding:6px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;width:60%;">
-                    <button onclick="window.superbossInvite()" style="background:#d4af37;color:#14120a;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Invite</button>
+                    <button onclick="window.superbossInvite()" style="background:#d4af37;color:#14120a;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Invite</button>
                 </div>` : ''}
-            <button onclick="window.superbossAttack()" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;width:100%;margin-top:8px;">ATTACK</button>
+            <button onclick="window.superbossAttack()" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:1px solid #c0a062;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;width:100%;margin-top:8px;">ATTACK</button>
         </div>`;
     }
 
@@ -7328,7 +7328,7 @@ function renderSuperbossScreen() {
         html += `<div ${style} style="border-color:#d4af37;">
             <h4 style="color:#d4af37;">Fight Invitation</h4>
             <p style="color:#d4c4a0;">You've been invited to fight <strong>${escapeHTML(window._pendingSuperbossInvite.bossName)}</strong>!</p>
-            <button onclick="window.superbossJoinInvite()" style="background:#27ae60;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Join Fight</button>
+            <button onclick="window.superbossJoinInvite()" style="background:#27ae60;color:#fff;border:1px solid #c0a062;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Join Fight</button>
         </div>`;
     }
 
@@ -7352,7 +7352,7 @@ function renderSuperbossScreen() {
             } else if (onCooldown) {
                 actionBtn = `<span style="color:#e67e22;">Cooldown: ${cdMins}m</span>`;
             } else {
-                actionBtn = `<button onclick="window.startSuperbossFight('${b.id}')" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Challenge</button>`;
+                actionBtn = `<button onclick="window.startSuperbossFight('${b.id}')" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:1px solid #c0a062;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Challenge</button>`;
             }
             html += `<div ${style} style="opacity:${canFight && !onCooldown ? 1 : 0.5};">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
