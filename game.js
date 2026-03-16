@@ -366,35 +366,6 @@ function clearAllGameplayIntervals() {
   stopQuestTimerTick();
 }
 
-
-
-
-
-
-
-
-
-
-
-// Faction Missions - Unique jobs for each crime family
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ==================== MISSION SYSTEM FUNCTIONS ====================
 
 // Function to update mission progress
@@ -1227,12 +1198,6 @@ const SPECIALIZATION_TO_EXPANDED = {
 
 const EXPANDED_SYSTEMS_CONFIG = {
     gangRolesEnabled: true,
-    turfWarsEnabled: true,
-    interactiveEventsEnabled: false, // Disabled -- popup events removed
-    rivalKingpinsEnabled: true,
-    // Balance settings
-    rivalGrowthInterval: 120000, // 2 minutes between rival actions
-    turfAttackChance: 0.15, // 15% chance of attack per check
 };
 
 // ==================== HOSPITAL / HEALING SYSTEM ====================
@@ -8350,8 +8315,6 @@ function updateUI() {
   // Apply user stat-bar visibility preferences (hides toggled-off stats)
   applyStatBarPrefs();
 
-  // Update right panel
-  updateRightPanel();
   updateRightPanelExtras();
   updateQuickActions();
 
@@ -9023,10 +8986,6 @@ function refreshJobsList() {
 }
 
 // Function to update the right panel
-function updateRightPanel() {
-  // Quick stats removed; guard retained for future restore
-}
-
 // Quick Actions panel -- respects the progressive unlock system
 // Default shortcuts shown before the player customizes
 const DEFAULT_QUICK_ACTIONS = ['jobs', 'store', 'missions', 'gang', 'realestate', 'territories', 'casino', 'skills'];
@@ -10373,7 +10332,7 @@ const HELP_CATEGORIES = [
         <ul>
           <li><strong>Vitality</strong> (Endurance) -- -2% damage taken per rank.</li>
           <li><strong>Resistance</strong> (Endurance) -- -5% all damage taken per rank.</li>
-          <li><strong>Resilience</strong> (Endurance) -- -3% injury severity per rank.</li>
+          <li><strong>Resilience</strong> (Endurance) -- -3% damage taken per rank.</li>
           <li><strong>Thick Skin perk</strong> -- -25% health loss from all sources.</li>
         </ul>
       `},
@@ -10475,7 +10434,7 @@ const HELP_CATEGORIES = [
     title: 'Skills & Training',
     topics: [
       { id: 'skills-overview', icon: '', title: 'Skill System Overview', content: `
-        <p>Invest skill points into 6 permanent talent trees to customise your playstyle. Each tree has 7 nodes spread across 3 tiers.</p>
+        <p>Invest skill points into 6 permanent talent trees to customise your playstyle. Each tree has 6-8 nodes spread across 3 tiers.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Earning Skill Points</h4>
         <ul>
           <li>You receive skill points each time you <strong>rank up</strong> (earn enough Respect).</li>
@@ -10489,7 +10448,7 @@ const HELP_CATEGORIES = [
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Max Ranks</h4>
         <ul>
-          <li>Tier 1 and Tier 2 nodes have a max rank of <strong>10</strong>.</li>
+          <li>Tier 1 and Tier 2 nodes have a max rank of <strong>10</strong> (exception: Mastermind caps at 5).</li>
           <li>Tier 3 nodes have a max rank of <strong>5</strong>.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Training Gym</h4>
@@ -10605,7 +10564,7 @@ const HELP_CATEGORIES = [
         <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 2</h4>
         <ul>
           <li><strong>Recovery</strong> (max 10) -- -5% hospital treatment time per rank. Speeds up healing at the Hospital.</li>
-          <li><strong>Resilience</strong> (max 10) -- -3% injury severity per rank. Reduces the severity of damage when you do get hit.</li>
+          <li><strong>Resilience</strong> (max 10) -- -3% damage taken per rank. Reduces the severity of damage when you do get hit.</li>
           <li><strong>Preservation</strong> (max 10) -- +2% chance per rank to prevent durability loss on weapons and armour. At rank 10, a 20% chance to skip durability loss each use.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 3</h4>
@@ -11819,7 +11778,7 @@ async function startJob(index) {
     const choice = await modal.show(
       `Plan the ${job.name}`,
       `<p>This is a <strong>${job.risk.toUpperCase()}</strong> risk job. How do you want to play it?</p>
-       <p style="color:#8b3a3a;"><strong>Go Loud</strong> -- Brute force. Higher success using <em>violence</em>, but more heat & injury risk.</p>
+       <p style="color:#8b3a3a;"><strong>Go Loud</strong> -- Brute force. Higher success using <em>violence</em>, but more heat & damage risk.</p>
        <p style="color:#c0a062;"><strong>Stay Quiet</strong> -- Stealth approach. Higher success using <em>stealth</em>, but lower payout if things go sideways.</p>`,
       [
         { text: 'Go Loud', class: 'modal-btn-primary', value: 'loud', callback: () => true },
@@ -11861,7 +11820,7 @@ async function startJob(index) {
           <strong>Your Power:</strong> ${player.power} | <strong>Health:</strong> ${player.health}
         </div>
         <p style="margin-top:10px;">Choose your approach:</p>
-        <p style="color:#8b3a3a;"><strong>Go Loud</strong> -- Full assault. Higher payout, more heat & injury risk.</p>
+        <p style="color:#8b3a3a;"><strong>Go Loud</strong> -- Full assault. Higher payout, more heat & damage risk.</p>
         <p style="color:#c0a062;"><strong>Stay Quiet</strong> -- Calculated precision. Lower heat, better conversion, reduced risk.</p>
        </div>`,
       [
@@ -12399,7 +12358,7 @@ async function startJob(index) {
     hurtChance = Math.max(0, hurtChance * (1 - luckyBreakLevel * 0.05));
   }
 
-  // Morales Cartel reputation: Sicario training reduces injury chance
+  // Morales Cartel reputation: Sicario training reduces hurt chance
   const moralesHurtMod = getStreetRepBonus('morales', 0, 0.05, 0.10, 0.15);
   if (moralesHurtMod !== 0) {
     hurtChance = Math.max(0, hurtChance * (1 - moralesHurtMod));
@@ -12412,7 +12371,7 @@ async function startJob(index) {
     if (hasPlayerPerk('thick_skin')) {
       healthLoss = Math.max(1, Math.floor(healthLoss * 0.75));
     }
-    // Resilience skill: -3% injury severity per rank
+    // Resilience skill: -3% damage taken per rank
     const resilienceLevel = player.skillTree.endurance?.resilience || 0;
     if (resilienceLevel > 0) {
       healthLoss = Math.max(1, Math.floor(healthLoss * (1 - resilienceLevel * 0.03)));
@@ -13873,168 +13832,6 @@ function collectTribute() {
   showGang(_currentGangTab); // Refresh the gang screen to show new cooldown
 }
 
-function expandTurf() {
-  const actualGangSize = player.gang.gangMembers ? player.gang.gangMembers.length : player.gang.members;
-
-  if (actualGangSize < 5) {
-    showBriefNotification('You need at least 5 gang members to expand turf!', 'warning');
-    return;
-  }
-
-  // Turf expansion costs money
-  const moneyCost = Math.floor(2000 + (player.turf?.owned || []).length * 3000); // Scales with holdings
-
-  if (player.money < moneyCost) {
-    showBriefNotification(`Need $${moneyCost.toLocaleString()} to fund the expansion. You have $${Math.floor(player.money).toLocaleString()}.`, 'warning');
-    return;
-  }
-
-  player.money -= moneyCost;
-
-  // Success chance scales: 70% base, +3% per gang member beyond 5, +2% per leadership level, cap at 95%
-  const leadershipLevel = (player.skillTree.charisma && player.skillTree.charisma.leadership) || 0;
-  const successChance = Math.min(0.95, 0.70 + (actualGangSize - 5) * 0.03 + leadershipLevel * 0.05);
-
-  if (Math.random() < successChance) {
-    player.territory++;
-    player.reputation += 5;
-
-    // Income bonus from new turf
-    const incomeGain = Math.floor(500 + Math.random() * 1500 + (player.turf?.owned || []).length * 200);
-    player.turfIncome += incomeGain;
-
-    // Track statistics
-    updateStatistic('turfsExpanded');
-
-    // Update mission progress
-    updateMissionProgress('turf_controlled');
-
-    showBriefNotification(`Turf expanded! +$${incomeGain.toLocaleString()}/week income.`, 'success');
-    degradeEquipment('turf_expand');
-    logAction('Your influence spreads like ink in water. New blocks fall under your protection, new corners pay tribute. The empire grows one street at a time.');
-  } else {
-    let losses = Math.floor(Math.random() * 4) + 2;
-    player.gang.members = Math.max(0, player.gang.members - losses);
-
-    // Also remove from detailed gang members array
-    for (let i = 0; i < losses && player.gang.gangMembers.length > 0; i++) {
-      const randomIndex = Math.floor(Math.random() * player.gang.gangMembers.length);
-      const lostMember = player.gang.gangMembers[randomIndex];
-      player.gang.gangMembers.splice(randomIndex, 1);
-      // Reduce turf power for lost member
-      const powerLoss = Math.floor((lostMember.experienceLevel || 1) * 2) + 5;
-      player.turfPower = Math.max(50, player.turfPower - powerLoss);
-    }
-    // Keep members count in sync
-    player.gang.members = player.gang.gangMembers.length;
-
-    showBriefNotification(`Expansion failed! Lost ${losses} gang members in the turf war.`, 'danger');
-    logAction(`Failed turf expansion, lost ${losses} members.`);
-  }
-  updateUI();
-  showGang(_currentGangTab);
-}
-
-function gangWar() {
-  const actualGangSize = player.gang.gangMembers ? player.gang.gangMembers.length : player.gang.members;
-
-  if (actualGangSize < 10) {
-    showBriefNotification('You need at least 10 gang members to start a gang war!', 'danger');
-    return;
-  }
-
-  let powerLevel = player.power + (actualGangSize * 10);
-
-  // Kozlov Bratva reputation: gang war power bonus/penalty (Bratva backup at high rep)
-  const kozlovWarMod = getStreetRepBonus('kozlov', 0.05, 0.10, 0.15, 0.20);
-  if (kozlovWarMod !== 0) {
-    const kozlovBonus = Math.floor(powerLevel * kozlovWarMod);
-    powerLevel += kozlovBonus;
-  }
-
-  // Car bonus for gang wars
-  let carBonus = 0;
-  if (player.selectedCar !== null && player.selectedCar < player.stolenCars.length) {
-    let selectedCar = player.stolenCars[player.selectedCar];
-    carBonus = Math.floor(selectedCar.baseValue / 10);
-    powerLevel += carBonus;
-    logAction(`Using ${selectedCar.name} in gang war for +${carBonus} power.`);
-  }
-
-  let enemyPower = Math.floor(Math.random() * 1000) + 500;
-
-  if (powerLevel > enemyPower) {
-    let winnings = Math.floor(Math.random() * 50000) + 25000;
-    // Gang war winnings are illicit funds
-    player.dirtyMoney = (player.dirtyMoney || 0) + winnings;
-    player.reputation += 10;
-    player.heat += 15;
-
-    showBriefNotification(`Gang war victory! Earned $${winnings.toLocaleString()} (dirty) and gained turf respect!`, 'success');
-    logAction(`Victorious in gang warfare! The streets echo with your name as you claim $${winnings.toLocaleString()} (dirty) and expand your domain.`);
-    if (player.turf) player.turf.reputation = (player.turf.reputation || 0) + 10;
-    player.turfReputation = (player.turfReputation || 0) + 10;
-
-    // Rival respect: gang war victory intimidates all rivals
-    const allRivals = player.rivalKingpins || RIVAL_KINGPINS;
-    allRivals.forEach(r => updateRivalRespect(r.id, -5));
-
-    // Underground reputation boost -- you're a force on the streets
-    if (player.streetReputation) {
-      player.streetReputation.underground = Math.min(100, (player.streetReputation.underground || 0) + 3);
-    }
-    // Civilians fear you after gang warfare
-    if (player.streetReputation) {
-      player.streetReputation.civilians = Math.max(-100, (player.streetReputation.civilians || 0) - 2);
-    }
-
-    // Track violent playstyle
-    player.playstyleStats.violentJobs = (player.playstyleStats.violentJobs || 0) + 1;
-
-    // Car takes heavy damage in gang war
-    if (player.selectedCar !== null) {
-      let damageAmount = Math.floor(Math.random() * 25) + 15; // 15-40% damage
-      let carCatastrophe = damageCar(player.selectedCar, damageAmount);
-      if (!carCatastrophe) {
-        logAction(`Your ride bears the scars of war - ${damageAmount}% damage from the intense firefight.`);
-      }
-      player.selectedCar = null;
-    }
-  } else {
-    let losses = Math.floor(actualGangSize * 0.45);
-
-    // Remove from detailed gang members array
-    for (let i = 0; i < losses && player.gang.gangMembers.length > 0; i++) {
-      const randomIndex = Math.floor(Math.random() * player.gang.gangMembers.length);
-      const lostMember = player.gang.gangMembers[randomIndex];
-      player.gang.gangMembers.splice(randomIndex, 1);
-      // Reduce turf power for lost member
-      const powerLoss = Math.floor((lostMember.experienceLevel || 1) * 2) + 5;
-      player.turfPower = Math.max(50, player.turfPower - powerLoss);
-    }
-    player.gang.members = player.gang.gangMembers.length;
-
-    showBriefNotification(`Gang war defeat! Lost ${losses} members.`, 'warning');
-    logAction(`Lost gang war, lost ${losses} members.`);
-
-    // Rival respect: rivals gain confidence from your defeat
-    const defeatRivals = player.rivalKingpins || RIVAL_KINGPINS;
-    defeatRivals.forEach(r => updateRivalRespect(r.id, 3));
-
-    // Car takes extreme damage in defeat
-    if (player.selectedCar !== null) {
-      let damageAmount = Math.floor(Math.random() * 35) + 25; // 25-60% damage
-      let carCatastrophe = damageCar(player.selectedCar, damageAmount);
-      if (!carCatastrophe) {
-        logAction(`Car took extreme damage (${damageAmount}%) in the failed gang war.`);
-      }
-      player.selectedCar = null;
-    }
-  }
-  updateUI();
-  showGang(_currentGangTab);
-}
-
 // Function to fire a gang member
 async function fireGangMember(memberIndex) {
   if (memberIndex < 0 || memberIndex >= player.gang.gangMembers.length) {
@@ -15203,7 +15000,7 @@ const menuUnlockConfig = [
   { id: 'jobs', fn: 'showJobs()', label: 'Jobs', tip: 'Complete tasks for cash & Respect', level: 0 },
   { id: 'store', fn: 'showStore()', label: 'Black Market', tip: 'Buy & sell weapons, armor & supplies', level: 0 },
   { id: 'inventory', fn: 'showInventory()', label: 'Stash', tip: 'Inventory, equipment & motor pool', level: 0 },
-  { id: 'hospital', fn: 'showHospital()', label: 'The Doctor', tip: 'Heal your injuries', level: 0 },
+  { id: 'hospital', fn: 'showHospital()', label: 'The Doctor', tip: 'Restore your health', level: 0 },
   { id: 'bountyboard', fn: 'showBountyBoard()', label: 'Bounty Board', tip: 'Hunt high-value targets for cash', level: 3 },
   { id: 'casino', fn: 'showCasino()', label: 'Gambling', tip: 'Slots, roulette, cards & mini games', level: 0 },
 
@@ -18800,7 +18597,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.2';
+const CURRENT_VERSION = '1.41.3';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -25571,15 +25368,12 @@ function startLoadingSequence() {
 
         serverReady = true;
         window._offlineMode = false;
-        console.log('[loading] Server is ready (v' + (data.version || '?') + ')');
         if (stepsComplete) finishLoading();
       })
       .catch(err => {
         if (loadingFinished || pingAttempts >= MAX_PING_ATTEMPTS) {
-          console.log('[loading] Giving up server ping after ' + pingAttempts + ' attempts.');
           return;
         }
-        console.log('[loading] Server not ready, retrying in 3s...', err.message);
         if (stepsComplete) {
           loadingText.textContent = 'Waking up the server...';
           const serverNote = document.getElementById('loading-server-note');
@@ -25771,30 +25565,6 @@ function injectOfflineButtons() {
   }
 }
 window.injectOfflineButtons = injectOfflineButtons;
-
-// ==================== FRIENDS SCREEN ====================
-function showFriendsScreen() {
-  showOnlineWorld('friends');
-}
-
-// ==================== CREW SCREEN ====================
-function showCrewScreen() {
-  showOnlineWorld('crew');
-}
-
-// ==================== PLAYER GAMBLING SCREEN ====================
-function showPlayerGambling() {
-  showCasino('backroom');
-}
-
-// ==================== SUPERBOSS SCREEN ====================
-function showSuperbossScreen() {
-  showMissions();
-  setTimeout(() => {
-    const btn = document.getElementById('ops-tab-superboss');
-    if (btn) switchOpsTab('superboss', btn);
-  }, 50);
-}
 
 // ==================== ECONOMY SINKS: DAILY UPKEEP ====================
 // Deducts maintenance costs periodically (checked each updateUI cycle)
@@ -26277,10 +26047,6 @@ window.checkForBetrayals = checkForBetrayals;
 window.shouldTriggerBetrayal = shouldTriggerBetrayal;
 window.triggerBetrayalEvent = triggerBetrayalEvent;
 window.showTurfControl = showTurfControl;
-window.showTerritoryControl = showTurfControl; // Legacy alias
-window.showAvailableTerritories = function() { showTurfMap(); };
-window.calculateTerritoryIncome = function() { return recalcTurfIncome(); };
-window.calculateTotalTerritoryIncome = function() { return recalcTurfIncome(); };
 window.showProtectionRackets = showProtectionRackets;
 window.getAvailableBusinessesForProtection = getAvailableBusinessesForProtection;
 window.showCorruption = showCorruption;
@@ -26291,14 +26057,9 @@ window.approachBusiness = approachBusiness;
 window.collectProtection = collectProtection;
 window.pressureBusiness = pressureBusiness;
 
-window.processTerritoryOperations = processTurfOpsWrapper;
-window.generateTerritoryEvent = generateTurfEvent;
 window.collectTribute = collectTribute;
-window.expandTerritory = expandTurf;
-window.gangWar = gangWar;
 window.corruptOfficial = corruptOfficial;
 window.dropProtection = dropProtection;
-window.acquireTerritory = function(zoneId) { attackTurfZone(zoneId); };
 window.fireGangMember = fireGangMember;
 window.breakoutGangMember = breakoutGangMember;
 window.hireSpecialRecruit = hireSpecialRecruit;
@@ -26434,7 +26195,6 @@ window.updateFactionReputation = updateFactionReputation;
 window.getChosenFamilyBuff = getChosenFamilyBuff;
 window.hasRequiredItems = hasRequiredItems;
 window.flashHurtScreen = flashHurtScreen;
-window.updateRightPanel = updateRightPanel;
 
 // Save/Load & Options
 window.saveGame = saveGame;
@@ -26518,12 +26278,6 @@ window.showDayDetails = showDayDetails;
 
 // Auth & Cloud Save
 window.showAuthModal = showAuthModal;
-
-// New Feature Screens
-window.showFriendsScreen = showFriendsScreen;
-window.showCrewScreen = showCrewScreen;
-window.showPlayerGambling = showPlayerGambling;
-window.showSuperbossScreen = showSuperbossScreen;
 
 // Economy Sinks & Daily Login
 window.processEconomySinks = processEconomySinks;

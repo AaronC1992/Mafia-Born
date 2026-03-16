@@ -36,7 +36,7 @@ const onlineWorld = {
 
 // Log resolved server URL for debugging so uploader can see what client will attempt to connect to
 try {
-    console.log('[multiplayer] Resolved serverUrl ->', onlineWorld.serverUrl);
+    // Server URL resolved
 } catch (e) {}
 
 
@@ -170,7 +170,6 @@ function syncMultiplayerTerritoriesToPlayer() {
     // Otherwise use local player.turf.owned
     if (onlineWorldState.isConnected && onlineWorldState.territories) {
         // Server territories override local
-        console.log('[multiplayer] Syncing territories from server');
     }
     // No-op if offline — local territories are already on player object
 }
@@ -1134,7 +1133,6 @@ function initializeOnlineWorld() {
 
 // Function to connect to multiplayer after game is loaded/started
 function connectMultiplayerAfterGame() {
-    console.log('Connecting to multiplayer after game is ready...');
     if (!onlineWorldState.isConnected) {
         connectToOnlineWorld();
     }
@@ -1157,8 +1155,6 @@ function connectToOnlineWorld() {
         // Try to connect to real WebSocket server
         const serverUrl = onlineWorld.serverUrl;
         _safeLogAction(' Connecting to online world...', 'chat');
-        // Add a console log for clearer diagnostics
-        console.log('[multiplayer] Connecting to WebSocket server at', serverUrl);
         
         onlineWorldState.socket = new WebSocket(serverUrl);
         
@@ -1780,7 +1776,7 @@ async function handleServerMessage(message) {
         case 'business_income_tax_result':
             // Server confirmed business income tax was processed
             if (message.success) {
-                console.log(`[Territory] Business tax $${message.taxAmount} processed for ${message.district}`);
+                // Business tax processed
             }
             break;
 
@@ -2186,12 +2182,10 @@ async function handleServerMessage(message) {
 
         // -- Player connect / disconnect notifications --
         case 'player_connect':
-            console.log(`[multiplayer] Player connected: ${message.playerName}`);
             // Player list will be refreshed by the subsequent player_states broadcast
             break;
 
         case 'player_disconnect':
-            console.log(`[multiplayer] Player disconnected: ${message.playerName}`);
             // Player list will be refreshed by the subsequent player_states broadcast
             break;
 
@@ -3219,13 +3213,11 @@ function ensurePlayerName() {
                 // Check for name in player object (new format)
                 if (parsedData.player && parsedData.player.name && parsedData.player.name.trim() !== '') {
                     player.name = parsedData.player.name.trim();
-                    console.log('Retrieved player name from saved data:', player.name);
                     return player.name;
                 }
                 // Fallback to old format for backwards compatibility
                 if (parsedData.name && parsedData.name.trim() !== '') {
                     player.name = parsedData.name.trim();
-                    console.log('Retrieved player name from saved data (legacy format):', player.name);
                     return player.name;
                 }
             } catch (e) {
@@ -3266,7 +3258,6 @@ async function ensurePlayerNameForChat() {
         if (typeof saveGame === 'function') {
             saveGame();
         }
-        console.log('Player entered new name for chat:', player.name);
         return player.name;
     } else {
         // User cancelled or entered empty name
@@ -3871,7 +3862,7 @@ function showOnlineWorld(activeTab) {
                 <button onclick="showActiveHeists()" style="background: linear-gradient(180deg, rgba(139,0,0,0.3) 0%, #1a0000 100%); color: #8b0000; padding: 15px; border: 1px solid #8b0000; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                     Big Scores<br><small style="color: #ccc;">Join crew heists</small>
                 </button>
-                <button onclick="showSuperbossScreen()" style="background: linear-gradient(180deg, rgba(231,76,60,0.2) 0%, #1a0a0a 100%); color: #e74c3c; padding: 15px; border: 1px solid #e74c3c; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
+                <button onclick="showMissions(); setTimeout(() => { const btn = document.getElementById('ops-tab-superboss'); if (btn) switchOpsTab('superboss', btn); }, 50);" style="background: linear-gradient(180deg, rgba(231,76,60,0.2) 0%, #1a0a0a 100%); color: #e74c3c; padding: 15px; border: 1px solid #e74c3c; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                     Superboss<br><small style="color: #ff8888;">Fight legendary crime lords</small>
                 </button>
                 <button onclick="showNearbyPlayers()" style="background: #222; color: #c0a040; padding: 15px; border: 1px solid #c0a040; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
@@ -5256,15 +5247,6 @@ function setupOnlineWorldUI() {
         
         multiplayerScreen.appendChild(multiplayerContent);
         document.getElementById('game').appendChild(multiplayerScreen);
-    }
-}
-
-// Log online world actions
-function logOnlineWorldAction(message) {
-    if (typeof logAction === 'function') {
-        _safeLogAction(`[ONLINE WORLD] ${message}`);
-    } else {
-        console.log(`[ONLINE WORLD] ${message}`);
     }
 }
 

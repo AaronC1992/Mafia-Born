@@ -5,6 +5,23 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.3] - 2026-03-16
+
+### Fixed
+- Fixed help text: skill tree node counts now correctly say "6-8 nodes" instead of "7 nodes"
+- Fixed help text: added Mastermind max-rank exception note (caps at 5, not 10)
+- Fixed ~15 outdated "injury" references left over from v1.41.0 injury removal -- updated to "damage taken" or "hurt chance" across help text, skill definitions, faction effects, code comments, and job approach modals
+- Fixed faction effect descriptions: Police (replaced fake mechanical effects with honest flavor text), Civilians (now accurately describes protection racket bonuses), Underground (now accurately describes black market price discounts), Morales (injury -> hurt terminology)
+- Fixed hospital tooltip: "Heal your injuries" -> "Restore your health"
+- Inlined orphaned showSuperbossScreen() call in The Commission Activities tab
+
+### Removed
+- Removed 8 orphaned functions: expandTurf, gangWar, showFriendsScreen, showCrewScreen, showPlayerGambling, showSuperbossScreen, updateRightPanel, logOnlineWorldAction
+- Removed 5 dead config flags from EXPANDED_SYSTEMS_CONFIG (turfWarsEnabled, interactiveEventsEnabled, rivalKingpinsEnabled, rivalGrowthInterval, turfAttackChance)
+- Removed empty faction missions placeholder block
+- Removed 14 client-side debug console.logs from game.js and multiplayer.js
+- Removed 12+ legacy/orphaned window.* export aliases
+
 ## [1.41.2] - 2026-03-16
 
 ### Fixed

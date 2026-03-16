@@ -462,7 +462,7 @@ export const SKILL_TREE_DEFS = {
       vitality:     { tier: 1, name: 'Vitality',      icon: '❤️', maxRank: 10, desc: 'Raw physical toughness and stamina', effect: '-2% damage taken per rank', prereqs: [] },
       conditioning: { tier: 1, name: 'Conditioning',  icon: '🏃', maxRank: 10, desc: 'Push your body past its limits', effect: '+1 HP per rank passive regen every 5 min', prereqs: [] },
       recovery:     { tier: 2, name: 'Recovery',       icon: '❤️‍🩹', maxRank: 10, desc: 'Bounce back from anything', effect: '-5% hospital treatment time per rank', prereqs: [{ node: 'vitality', rank: 3 }] },
-      resilience:   { tier: 2, name: 'Resilience',     icon: '🦾', maxRank: 10, desc: 'Reduce the impact of injuries', effect: '-3% injury severity per rank', prereqs: [{ node: 'conditioning', rank: 3 }] },
+      resilience:   { tier: 2, name: 'Resilience',     icon: '🦾', maxRank: 10, desc: 'Reduce the impact of damage taken', effect: '-3% damage taken per rank', prereqs: [{ node: 'conditioning', rank: 3 }] },
       preservation: { tier: 2, name: 'Preservation',   icon: '', maxRank: 10, desc: 'Take care of your gear and it takes care of you', effect: '+2% chance per rank to prevent durability loss', prereqs: [{ node: 'vitality', rank: 3 }] },
       resistance:   { tier: 3, name: 'Resistance',     icon: '🛡️', maxRank: 5,  desc: 'Nearly immune to punishment', effect: '-5% all damage taken per rank', prereqs: [{ node: 'resilience', rank: 5 }] },
       unstoppable:  { tier: 3, name: 'Unstoppable',    icon: '⚡', maxRank: 5,  desc: 'Second Wind -- recover health after tough jobs', effect: '3% chance per rank to recover 5 HP after a job', prereqs: [{ node: 'recovery', rank: 5 }] }

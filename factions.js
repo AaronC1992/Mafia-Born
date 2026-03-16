@@ -161,63 +161,63 @@ export const factionEffects = {
         icon: 'MEX',
         positiveEffects: [
             { level: 25, effect: '-5% heat from all activities' },
-            { level: 50, effect: '-10% heat, -5% injury chance' },
-            { level: 75, effect: '-15% heat, -10% injury chance' },
-            { level: 100, effect: '-20% heat, -15% injury chance' }
+            { level: 50, effect: '-10% heat, -5% hurt chance' },
+            { level: 75, effect: '-15% heat, -10% hurt chance' },
+            { level: 100, effect: '-20% heat, -15% hurt chance' }
         ],
         negativeEffects: [
             { level: -25, effect: '+5% heat from all activities' },
-            { level: -50, effect: '+10% heat, +5% injury chance' },
-            { level: -75, effect: '+15% heat, +10% injury chance' },
-            { level: -100, effect: '+20% heat, +15% injury chance' }
+            { level: -50, effect: '+10% heat, +5% hurt chance' },
+            { level: -75, effect: '+15% heat, +10% hurt chance' },
+            { level: -100, effect: '+20% heat, +15% hurt chance' }
         ]
     },
     police: {
         name: 'Police Corruption',
         icon: '',
         positiveEffects: [
-            { level: 25, effect: '10% reduced arrest chance' },
-            { level: 50, effect: 'Inside information on raids' },
-            { level: 75, effect: 'Evidence tampering available' },
-            { level: 100, effect: 'Police protection and cover-ups' }
+            { level: 25, effect: 'Cops look the other way occasionally' },
+            { level: 50, effect: 'Officers tip you off about patrols' },
+            { level: 75, effect: 'Detectives bury your case files' },
+            { level: 100, effect: 'The department is in your pocket' }
         ],
         negativeEffects: [
-            { level: -25, effect: 'Increased police attention' },
-            { level: -50, effect: 'No plea bargains available' },
-            { level: -75, effect: 'Maximum sentences always given' },
-            { level: -100, effect: 'Shoot on sight orders issued' }
+            { level: -25, effect: 'Patrol cars linger on your streets' },
+            { level: -50, effect: 'Detectives build a case against you' },
+            { level: -75, effect: 'Task force assigned to your operation' },
+            { level: -100, effect: 'Marked as public enemy number one' }
         ]
     },
     civilians: {
         name: 'Public Opinion',
         icon: '',
         positiveEffects: [
-            { level: 25, effect: 'Citizens provide tips and intel' },
-            { level: 50, effect: 'Public refuses to cooperate with police' },
-            { level: 75, effect: 'Neighborhood watch protects you' },
-            { level: 100, effect: 'Folk hero status - untouchable' }
+            { level: 25, effect: '+5% protection racket success' },
+            { level: 50, effect: '+10% protection racket success & payments' },
+            { level: 75, effect: '+15% protection racket success & payments' },
+            { level: 100, effect: '+25% protection racket success & +30% payments' }
         ],
         negativeEffects: [
-            { level: -25, effect: 'Citizens report suspicious activity' },
-            { level: -50, effect: 'Vigilante groups form against you' },
-            { level: -75, effect: 'Civilian militia actively hunts you' },
-            { level: -100, effect: 'Public enemy #1 - nowhere to hide' }
+            { level: -25, effect: '-5% protection racket success' },
+            { level: -50, effect: '-10% protection racket success & payments' },
+            { level: -75, effect: '-15% protection racket success & payments' },
+            { level: -100, effect: '-25% protection racket success & -30% payments' }
         ]
     },
     underground: {
         name: 'Criminal Underworld',
         icon: '',
         positiveEffects: [
-            { level: 25, effect: 'Access to black market deals' },
-            { level: 50, effect: 'Criminal contacts provide jobs' },
-            { level: 75, effect: 'Underworld protection and alliances' },
-            { level: 100, effect: 'Kingpin status - rules the shadows' }
+            { level: 25, effect: '-5% black market prices' },
+            { level: 50, effect: '-10% black market prices' },
+            { level: 75, effect: '-15% black market prices' },
+            { level: 100, effect: '-25% black market prices' }
         ],
         negativeEffects: [
-            { level: -25, effect: 'Higher prices in black markets' },
-            { level: -50, effect: 'Criminal contacts avoid you' },
-            { level: -75, effect: 'Bounty hunters target you' },
-            { level: -100, effect: 'Marked by all criminal organizations' }
+            { level: -25, effect: '+5% black market prices' },
+            { level: -50, effect: '+10% black market prices' },
+            { level: -75, effect: '+15% black market prices' },
+            { level: -100, effect: '+25% black market prices' }
         ]
     }
 };
