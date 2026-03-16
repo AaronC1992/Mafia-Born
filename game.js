@@ -9459,8 +9459,9 @@ const TUTORIAL_CONTENT = {
   store: {
     title: 'The Black Market',
     sections: [
-      { heading: 'Buy Tab', text: 'Browse weapons, armour, and consumables. Equipping better gear directly increases your Attack and Defence stats in combat.' },
-      { heading: 'The Fence', text: 'Sell stolen goods from heists and jobs at premium rates. Fence prices fluctuate based on your Heat level -- riskier sales can be more profitable.' },
+      { heading: 'Trade Tab', text: 'Buy weapons, armour, and supplies from the dealer, and sell your goods to the Fence -- all in one place. Use the category sub-tabs to filter by Weapons, Armor, Supplies, Utility, Trade Goods, or Vehicles.' },
+      { heading: 'Fence Rates', text: 'Sell stolen goods at premium rates. Fence prices fluctuate based on your Heat level, Connections skill, and market conditions. Selling adds Heat.' },
+      { heading: 'Vehicles', text: 'Sell stolen cars through the Fence via the Vehicles sub-tab. Condition affects price. Chop Shop businesses boost vehicle fence rates.' },
       { heading: 'Player Market', text: 'Buy and sell vehicles, weapons, armor, ammo, gas, utility items, and trade goods with other real players through The Commission.' },
       { heading: 'Consumables', text: 'Medkits restore health. Stock up before long grinding sessions.' },
     ]
@@ -9778,7 +9779,7 @@ const NARRATIVE_GUIDE_STEPS = [
     body: `<p><strong>Jobs</strong> are your bread and butter -- the main way to earn cash and Respect, especially early on.</p>
       <p>Pick a job from the list and complete it for <strong>cash + Respect</strong>. Each job triggers a <strong>cooldown timer</strong> before you can do it again. Higher-tier jobs pay more but have longer cooldowns.</p>
       <p>Some jobs raise your <strong>Heat</strong> -- the more crimes you commit, the more the police watch you. Getting caught means fines, arrest, or worse.</p>
-      <p>Jobs can also reward <strong>stolen goods</strong> that you sell at The Fence (Black Market) for extra profit.</p>
+      <p>Jobs can also reward <strong>stolen goods</strong> that you sell in the Trade tab (Black Market) for extra profit.</p>
       <p style="color:#c0a062;"><strong>Tip:</strong> Grind low-risk jobs early to build a cash reserve before buying gear. Invest in the Planning skill to reduce cooldown times.</p>`,
     step: '3'
   },
@@ -15176,7 +15177,7 @@ const menuUnlockConfig = [
   // === CORE PROGRESSION (Always Available) ===
   { id: 'missions', fn: 'showMissions()', label: 'Operations', tip: 'Story missions & special ops', level: 0 },
   { id: 'jobs', fn: 'showJobs()', label: 'Jobs', tip: 'Complete tasks for cash & Respect', level: 0 },
-  { id: 'store', fn: 'showStore()', label: 'Black Market', tip: 'Buy weapons, armor & supplies', level: 0 },
+  { id: 'store', fn: 'showStore()', label: 'Black Market', tip: 'Buy & sell weapons, armor & supplies', level: 0 },
   { id: 'inventory', fn: 'showInventory()', label: 'Stash', tip: 'Inventory, equipment & motor pool', level: 0 },
   { id: 'hospital', fn: 'showHospital()', label: 'The Doctor', tip: 'Heal your injuries', level: 0 },
   { id: 'bountyboard', fn: 'showBountyBoard()', label: 'Bounty Board', tip: 'Hunt high-value targets for cash', level: 3 },
@@ -16329,11 +16330,11 @@ function refreshRecruits() {
 }
 
 
-// Function to show the store (Black Market with tabs: Buy / Fence / Player Market)
+// Function to show the store (Black Market with tabs: Trade / Player Market / Stash)
 // Track which store tab is currently active
 let _currentGangTab = 'roster';
 let _currentStoreTab = 'all';
-let _currentBlackMarketTab = 'buy';
+let _currentBlackMarketTab = 'trade';
 
 // Store item category definitions
 const storeCategories = [
@@ -16342,7 +16343,8 @@ const storeCategories = [
   { id: 'armor', label: 'Armor', icon: '', types: ['armor'] },
   { id: 'supplies', label: 'Supplies', icon: '', types: ['ammo', 'gas'] },
   { id: 'utility', label: 'Utility', icon: '', types: ['utility'] },
-  { id: 'trade', label: 'Trade Goods', icon: '', types: ['highLevelDrug'] }
+  { id: 'tradegoods', label: 'Trade Goods', icon: '', types: ['highLevelDrug'] },
+  { id: 'vehicles', label: 'Vehicles', icon: '', types: ['_stolen_cars'] }
 ];
 
 function showStore(activeTab) {
@@ -16353,10 +16355,9 @@ function showStore(activeTab) {
 
   if (activeTab) _currentBlackMarketTab = activeTab;
 
-  // Build top-level tabs (Buy / Fence / Player Market)
+  // Build top-level tabs (Trade / Player Market / Stash)
   const topTabs = [
-    { id: 'buy', label: 'Buy', tip: 'Browse weapons, armor & supplies' },
-    { id: 'fence', label: 'The Fence', tip: 'Sell stolen goods at premium rates' },
+    { id: 'trade', label: 'Trade', tip: 'Buy & sell weapons, armor, supplies & stolen goods' },
     { id: 'market', label: 'Player Market', tip: 'Trade items with other players' },
     { id: 'stash', label: 'Stash', tip: 'Equip and manage your inventory' }
   ];
@@ -16377,10 +16378,8 @@ function showStore(activeTab) {
 
   // Build content based on active tab
   let contentHTML = '';
-  if (_currentBlackMarketTab === 'buy') {
-    contentHTML = buildBuyTabContent();
-  } else if (_currentBlackMarketTab === 'fence') {
-    contentHTML = buildFenceTabContent();
+  if (_currentBlackMarketTab === 'trade') {
+    contentHTML = buildTradeTabContent();
   } else if (_currentBlackMarketTab === 'market') {
     contentHTML = buildPlayerMarketTabContent();
   } else if (_currentBlackMarketTab === 'stash') {
@@ -16412,7 +16411,7 @@ function showStore(activeTab) {
   `;
 
   // After rendering, run tab-specific setup
-  if (_currentBlackMarketTab === 'buy') {
+  if (_currentBlackMarketTab === 'trade') {
     renderStoreTab(_currentStoreTab);
   }
 
@@ -16428,10 +16427,16 @@ function switchBlackMarketTab(tabId) {
   showStore(tabId);
 }
 
-function buildBuyTabContent() {
+function buildTradeTabContent() {
   // Build category sub-tabs
   const tabsHTML = storeCategories.map(cat => {
     const isActive = cat.id === _currentStoreTab;
+    // Show item count badges for sell-only categories
+    let badge = '';
+    if (cat.id === 'vehicles') {
+      const count = (player.stolenCars || []).length;
+      if (count > 0) badge = `<span style="background:#e67e22;color:#fff;padding:1px 6px;border-radius:10px;font-size:0.75em;margin-left:4px;">${count}</span>`;
+    }
     return `<button onclick="switchStoreTab('${cat.id}')"
         style="padding: 10px 16px; border: 2px solid ${isActive ? '#c0a062' : '#555'};
         background: ${isActive ? 'rgba(192, 160, 98, 0.25)' : 'rgba(20, 18, 10, 0.4)'};
@@ -16439,176 +16444,44 @@ function buildBuyTabContent() {
         font-weight: ${isActive ? 'bold' : 'normal'}; font-size: 0.9em; transition: all 0.2s ease;"
         onmouseover="if(!${isActive}) { this.style.borderColor='#c0a062'; this.style.color='#c0a062'; }"
         onmouseout="if(!${isActive}) { this.style.borderColor='#555'; this.style.color='#d4c4a0'; }">
-      ${cat.icon} ${cat.label}
+      ${cat.icon} ${cat.label}${badge}
     </button>`;
   }).join('');
 
-  // Build inventory sidebar
-  let inventoryListHTML = player.inventory.map(item => {
-    const imageSrc = getItemImage(item.name);
-    return `
-      <li style="display: flex; align-items: center; gap: 10px; padding: 10px; margin: 5px 0;
-            background: rgba(122, 138, 90, 0.3); border-radius: 6px; border-left: 3px solid #8a9a6a;">
-        <div style="flex-shrink: 0;">
-          <img src="${imageSrc}" alt="${item.name}"
-             style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover;
-                border: 2px solid #8a9a6a; box-shadow: 0 2px 6px rgba(0,0,0,0.2);"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div style="display: none; width: 50px; height: 50px; border-radius: 6px;
-                background: #7a8a5a; align-items: center; justify-content: center;
-                font-size: 10px; color: white; border: 2px solid #8a9a6a; text-align: center;">
-            ${item.name.substring(0, 6)}
-          </div>
-        </div>
-        <div style="flex: 1; color: #f5e6c8;">
-          <strong>${item.name}</strong><br>
-          <small style="color: #d4c4a0;">Power: ${item.power}</small>
-        </div>
-      </li>
-    `;
-  }).join('');
+  // Fence rates summary bar
+  const rates = getFenceMultiplier();
+  const condColor = rates.marketCondition === 'Hot' ? '#8a9a6a' : rates.marketCondition === 'Cold' ? '#8b3a3a' : '#c0a040';
+  const fenceRatesHTML = `
+    <div style="background: rgba(20, 18, 10, 0.9); padding: 12px 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #7a5a3a;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px;">
+        <strong style="color: #7a5a3a; white-space: nowrap;">Fence Rates:</strong>
+        <span style="color: #f5e6c8;">Items <strong>${Math.round(rates.items * 100)}%</strong></span>
+        <span style="color: #f5e6c8;">Vehicles <strong>${Math.round(rates.cars * 100)}%</strong></span>
+        <span style="color: #f5e6c8;">Contraband <strong>${Math.round(rates.drugs * 100)}%</strong></span>
+        <span style="color: ${condColor}; font-weight: bold;">${rates.marketCondition} Market</span>
+        ${rates.heatPenalty > 0.03 ? '<span style="color: #8b3a3a; font-size: 0.85em;">Heat is lowering prices</span>' : ''}
+        ${rates.chopBonus > 0 ? '<span style="color: #8a9a6a; font-size: 0.85em;">Chop Shop +' + Math.round(rates.chopBonus * 100) + '%</span>' : ''}
+      </div>
+    </div>`;
 
   return `
-    <p>Tools of the trade. Don't ask where they came from.</p>
-    <div id="store-tabs" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; padding: 10px 0; border-bottom: 2px solid #333;">
+    <p>Buy gear. Fence stolen goods. All under one roof.</p>
+    ${fenceRatesHTML}
+    <div id="store-tabs" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; padding: 10px 0; border-bottom: 2px solid #333;">
       ${tabsHTML}
     </div>
-    <div id="store-layout-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 10px;">
-      <div class="content-card">
-        <h3 id="store-section-title">Available Goods</h3>
-        <ul id="item-list" style="list-style: none; padding: 0;"></ul>
-      </div>
-      <div class="content-card">
-        <h3>Your Stash</h3>
-        <ul id="inventory-list" style="list-style: none; padding: 0;">${inventoryListHTML}</ul>
-      </div>
+    <div class="content-card" style="margin-top: 10px;">
+      <h3 id="store-section-title">Available Goods</h3>
+      <ul id="item-list" style="list-style: none; padding: 0;"></ul>
+    </div>
+    <div id="fence-sell-section" class="content-card" style="margin-top: 15px; display: none;">
+      <h3 id="fence-section-title" style="color: #7a5a3a;">Sell to the Fence</h3>
+      <div id="fence-item-list"></div>
     </div>
   `;
 }
 
-function buildFenceTabContent() {
-  const rates = getFenceMultiplier();
-  const condColor = rates.marketCondition === 'Hot' ? '#8a9a6a' : rates.marketCondition === 'Cold' ? '#8b3a3a' : '#c0a040';
-
-  let html = `
-    <div style="background: linear-gradient(135deg, rgba(20, 18, 10, 0.9), rgba(20, 18, 10, 0.9)); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #7a5a3a;">
-      <h3 style="color: #7a5a3a; margin-bottom: 10px;">Today's Fence Rates</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
-        <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
-          <div style="color: #d4c4a0; font-size: 0.8em;">Items</div>
-          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">${Math.round(rates.items * 100)}%</div>
-        </div>
-        <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
-          <div style="color: #d4c4a0; font-size: 0.8em;">Vehicles</div>
-          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">${Math.round(rates.cars * 100)}%</div>
-        </div>
-        <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
-          <div style="color: #d4c4a0; font-size: 0.8em;">Contraband</div>
-          <div style="color: #f5e6c8; font-size: 1.2em; font-weight: bold;">${Math.round(rates.drugs * 100)}%</div>
-        </div>
-        <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
-          <div style="color: #d4c4a0; font-size: 0.8em;">Market</div>
-          <div style="color: ${condColor}; font-size: 1.2em; font-weight: bold;">${rates.marketCondition}</div>
-        </div>
-      </div>
-      ${rates.heatPenalty > 0.03 ? '<p style="color: #8b3a3a; font-size: 0.85em; margin-top: 8px;">Your heat is bringing down prices. Lay low to get better deals.</p>' : ''}
-      ${rates.chopBonus > 0 ? '<p style="color: #8a9a6a; font-size: 0.85em; margin-top: 4px;">Chop Shop connection: +' + Math.round(rates.chopBonus * 100) + '% on vehicle sales</p>' : ''}
-    </div>`;
-
-  // === STOLEN CARS SECTION ===
-  const stolenCars = player.stolenCars || [];
-  html += '<div style="margin-bottom: 20px;">';
-  html += '<h3 style="color: #e67e22; margin-bottom: 10px;">Black Market Vehicles (' + stolenCars.length + ')</h3>';
-  html += '<p style="color: #d4c4a0; font-size: 0.85em; margin: 0 0 10px;">Sell stolen cars through The Fence\'s underground network for full black market value.</p>';
-
-  if (stolenCars.length === 0) {
-    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #6a5a3a;"><p>No stolen vehicles to move. Boost some rides first.</p></div>';
-  } else {
-    html += '<div style="display: grid; gap: 8px;">';
-    stolenCars.forEach((car, idx) => {
-      const condition = 100 - car.damagePercentage;
-      const fencePrice = Math.floor(car.baseValue * (condition / 100) * rates.cars);
-      const regularPrice = Math.floor(car.baseValue * (condition / 100) * 0.6);
-      const premium = fencePrice - regularPrice;
-      const carCondColor = condition > 70 ? '#8a9a6a' : condition > 40 ? '#c0a040' : '#8b3a3a';
-      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #1a1610; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
-      html += '<div><strong style="color: #f5e6c8;">' + car.name + '</strong><br>';
-      html += '<small style="color: #d4c4a0;">Base: $' + car.baseValue.toLocaleString() + ' | Condition: <span style="color: ' + carCondColor + ';">' + condition.toFixed(0) + '%</span></small><br>';
-      html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #8a9a6a;">(+$' + premium.toLocaleString() + ' vs street)</span></small></div>';
-      html += '<button onclick="fenceSellCar(' + idx + ')" style="background: #7a5a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
-      html += '</div>';
-    });
-    html += '</div>';
-    if (stolenCars.length > 1) {
-      const totalCarValue = stolenCars.reduce((sum, car) => sum + Math.floor(car.baseValue * ((100 - car.damagePercentage) / 100) * rates.cars), 0);
-      html += '<button onclick="fenceSellAllCars()" style="background: #7a2a2a; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold;">Sell All Vehicles ($' + totalCarValue.toLocaleString() + ')</button>';
-    }
-  }
-  html += '</div>';
-
-  // === SELLABLE INVENTORY ITEMS ===
-  const sellableItems = (player.inventory || []).filter(item => {
-    if (!item.price || item.price <= 0) return false;
-    if (item === player.equippedWeapon || item === player.equippedArmor) return false;
-    // Exclude damaged weapons/armor
-    if ((item.type === 'weapon' || item.type === 'armor') && typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.durability < item.maxDurability) return false;
-    return true;
-  });
-  const drugItems = sellableItems.filter(i => i.type === 'highLevelDrug');
-  const regularItems = sellableItems.filter(i => i.type !== 'highLevelDrug');
-
-  // Contraband section
-  html += '<div style="margin-bottom: 20px;">';
-  html += '<h3 style="color: #8b3a3a; margin-bottom: 10px;">Contraband (' + drugItems.length + ')</h3>';
-  if (drugItems.length === 0) {
-    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #6a5a3a;"><p>No contraband to move. Buy from the Black Market or cook in your Drug Lab.</p></div>';
-  } else {
-    html += '<div style="display: grid; gap: 8px;">';
-    drugItems.forEach(item => {
-      const globalIdx = player.inventory.indexOf(item);
-      const fencePrice = Math.floor(item.price * rates.drugs);
-      const maxPayout = item.maxPayout || Math.floor(item.price * 1.5);
-      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #8b3a3a40; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
-      html += '<div><strong style="color: #f5e6c8;">' + item.name + '</strong><br>';
-      html += '<small style="color: #d4c4a0;">Bought at: $' + item.price.toLocaleString() + ' | Max street value: $' + maxPayout.toLocaleString() + '</small><br>';
-      html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + '</small></div>';
-      html += '<button onclick="fenceSellItem(' + globalIdx + ', \'drug\')" style="background: #8b3a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
-      html += '</div>';
-    });
-    html += '</div>';
-  }
-  html += '</div>';
-
-  // Merchandise section
-  html += '<div style="margin-bottom: 20px;">';
-  html += '<h3 style="color: #c0a062; margin-bottom: 10px;">Merchandise (' + regularItems.length + ')</h3>';
-  if (regularItems.length === 0) {
-    html += '<div style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: center; color: #6a5a3a;"><p>No merchandise to fence. Equipped items can\'t be sold here - unequip first.</p></div>';
-  } else {
-    html += '<div style="display: grid; gap: 8px;">';
-    regularItems.forEach(item => {
-      const globalIdx = player.inventory.indexOf(item);
-      const fencePrice = Math.floor(item.price * rates.items);
-      const regularSellPrice = Math.floor(item.price * 0.4);
-      const premium = fencePrice - regularSellPrice;
-      html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #1a1610; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
-      html += '<div><strong style="color: #f5e6c8;">' + item.name + '</strong> ' + (item.power ? '<small style="color: #d4c4a0;">(+' + item.power + ' Power)</small>' : '') + '<br>';
-      html += '<small style="color: #d4c4a0;">Value: $' + item.price.toLocaleString() + ' | Regular sell: $' + regularSellPrice.toLocaleString() + '</small><br>';
-      html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #8a9a6a;">(+$' + premium.toLocaleString() + ')</span></small></div>';
-      html += '<button onclick="fenceSellItem(' + globalIdx + ', \'item\')" style="background: #7a5a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
-      html += '</div>';
-    });
-    html += '</div>';
-  }
-  html += '</div>';
-
-  // Heat warning
-  html += '<div style="padding: 12px; background: rgba(142, 68, 173, 0.15); border-radius: 10px; border: 1px solid #7a5a3a40; margin-bottom: 15px; text-align: center;">';
-  html += '<small style="color: #d4c4a0;">Selling through the fence adds heat. Move product carefully.</small>';
-  html += '</div>';
-
-  return html;
-}
+// buildFenceTabContent removed -- fence functionality merged into Trade tab
 
 function buildPlayerMarketTabContent() {
   const isConnected = typeof onlineWorldState !== 'undefined' && onlineWorldState && onlineWorldState.isConnected;
@@ -16654,19 +16527,23 @@ function switchStoreTab(tabId) {
       btn.style.fontWeight = isActive ? 'bold' : 'normal';
     });
   }
-
-  // Update section title
-  const cat = storeCategories.find(c => c.id === tabId);
-  const titleEl = document.getElementById('store-section-title');
-  if (titleEl && cat) {
-    titleEl.textContent = tabId === 'all' ? 'Available Goods' : `${cat.icon} ${cat.label}`;
-  }
 }
 
 // Render store items filtered by tab category
 function renderStoreTab(tabId) {
   const cat = storeCategories.find(c => c.id === tabId) || storeCategories[0];
-  const filteredItems = cat.types ? storeItems.filter(item => cat.types.includes(item.type)) : storeItems;
+
+  // === BUY SECTION ===
+  const buySection = document.getElementById('item-list');
+  const buyCard = buySection ? buySection.closest('.content-card') : null;
+  const titleEl = document.getElementById('store-section-title');
+
+  if (cat.id === 'vehicles') {
+    // Vehicles tab: no buyable items, hide the buy card
+    if (buyCard) buyCard.style.display = 'none';
+  } else {
+    if (buyCard) buyCard.style.display = '';
+    const filteredItems = cat.types ? storeItems.filter(item => cat.types.includes(item.type)) : storeItems;
 
   const storeListHTML = filteredItems.map(item => {
     const index = storeItems.indexOf(item);
@@ -16790,6 +16667,134 @@ function renderStoreTab(tabId) {
 
   const itemList = document.getElementById('item-list');
   if (itemList) itemList.innerHTML = storeListHTML;
+  } // end of non-vehicles buy rendering
+
+  // Update section title
+  if (titleEl && cat) {
+    if (cat.id === 'vehicles') titleEl.textContent = '';
+    else titleEl.textContent = tabId === 'all' ? 'Available Goods' : `${cat.icon} ${cat.label}`;
+  }
+
+  // === SELL / FENCE SECTION ===
+  renderFenceSellSection(tabId, cat);
+}
+
+// Render the fence sell section below buy items, filtered by current category
+function renderFenceSellSection(tabId, cat) {
+  const fenceSection = document.getElementById('fence-sell-section');
+  const fenceList = document.getElementById('fence-item-list');
+  const fenceTitle = document.getElementById('fence-section-title');
+  if (!fenceSection || !fenceList) return;
+
+  const rates = getFenceMultiplier();
+  let html = '';
+  let hasItems = false;
+
+  // Vehicles tab: show stolen cars
+  if (cat.id === 'vehicles' || tabId === 'all') {
+    const stolenCars = player.stolenCars || [];
+    if (cat.id === 'vehicles' || stolenCars.length > 0) {
+      html += '<div style="margin-bottom: 15px;">';
+      html += '<h4 style="color: #e67e22; margin-bottom: 8px;">Stolen Vehicles (' + stolenCars.length + ')</h4>';
+      if (stolenCars.length === 0) {
+        html += '<div style="padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center; color: #6a5a3a;">No stolen vehicles. Boost some rides first.</div>';
+      } else {
+        hasItems = true;
+        html += '<div style="display: grid; gap: 8px;">';
+        stolenCars.forEach((car, idx) => {
+          const condition = 100 - car.damagePercentage;
+          const fencePrice = Math.floor(car.baseValue * (condition / 100) * rates.cars);
+          const regularPrice = Math.floor(car.baseValue * (condition / 100) * 0.6);
+          const premium = fencePrice - regularPrice;
+          const carCondColor = condition > 70 ? '#8a9a6a' : condition > 40 ? '#c0a040' : '#8b3a3a';
+          html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #1a1610; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
+          html += '<div><strong style="color: #f5e6c8;">' + car.name + '</strong><br>';
+          html += '<small style="color: #d4c4a0;">Base: $' + car.baseValue.toLocaleString() + ' | Condition: <span style="color: ' + carCondColor + ';">' + condition.toFixed(0) + '%</span></small><br>';
+          html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #8a9a6a;">(+$' + premium.toLocaleString() + ' vs street)</span></small></div>';
+          html += '<button onclick="fenceSellCar(' + idx + ')" style="background: #7a5a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+          html += '</div>';
+        });
+        html += '</div>';
+        if (stolenCars.length > 1) {
+          const totalCarValue = stolenCars.reduce((sum, car) => sum + Math.floor(car.baseValue * ((100 - car.damagePercentage) / 100) * rates.cars), 0);
+          html += '<button onclick="fenceSellAllCars()" style="background: #7a2a2a; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold;">Sell All Vehicles ($' + totalCarValue.toLocaleString() + ')</button>';
+        }
+      }
+      html += '</div>';
+    }
+  }
+
+  // Inventory items to sell, filtered by category
+  const sellableItems = (player.inventory || []).filter(item => {
+    if (!item.price || item.price <= 0) return false;
+    if (item === player.equippedWeapon || item === player.equippedArmor) return false;
+    if ((item.type === 'weapon' || item.type === 'armor') && typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.durability < item.maxDurability) return false;
+    // Filter by category
+    if (cat.types && !cat.types.includes(item.type) && cat.id !== 'vehicles') return false;
+    if (cat.id === 'vehicles') return false; // vehicles tab only shows stolen cars
+    return true;
+  });
+
+  if (sellableItems.length > 0) {
+    hasItems = true;
+    // Split contraband vs regular items
+    const drugItems = sellableItems.filter(i => i.type === 'highLevelDrug');
+    const regularItems = sellableItems.filter(i => i.type !== 'highLevelDrug');
+
+    if (drugItems.length > 0) {
+      html += '<div style="margin-bottom: 15px;">';
+      if (tabId === 'all' || cat.id === 'tradegoods') {
+        html += '<h4 style="color: #8b3a3a; margin-bottom: 8px;">Contraband (' + drugItems.length + ')</h4>';
+      }
+      html += '<div style="display: grid; gap: 8px;">';
+      drugItems.forEach(item => {
+        const globalIdx = player.inventory.indexOf(item);
+        const fencePrice = Math.floor(item.price * rates.drugs);
+        const maxPayout = item.maxPayout || Math.floor(item.price * 1.5);
+        html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #8b3a3a40; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
+        html += '<div><strong style="color: #f5e6c8;">' + item.name + '</strong><br>';
+        html += '<small style="color: #d4c4a0;">Bought at: $' + item.price.toLocaleString() + ' | Max street value: $' + maxPayout.toLocaleString() + '</small><br>';
+        html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + '</small></div>';
+        html += '<button onclick="fenceSellItem(' + globalIdx + ', \'drug\')" style="background: #8b3a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    if (regularItems.length > 0) {
+      html += '<div style="margin-bottom: 15px;">';
+      html += '<div style="display: grid; gap: 8px;">';
+      regularItems.forEach(item => {
+        const globalIdx = player.inventory.indexOf(item);
+        const fencePrice = Math.floor(item.price * rates.items);
+        const regularSellPrice = Math.floor(item.price * 0.4);
+        const premium = fencePrice - regularSellPrice;
+        html += '<div style="padding: 12px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #1a1610; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">';
+        html += '<div><strong style="color: #f5e6c8;">' + item.name + '</strong> ' + (item.power ? '<small style="color: #d4c4a0;">(+' + item.power + ' Power)</small>' : '') + '<br>';
+        html += '<small style="color: #d4c4a0;">Value: $' + item.price.toLocaleString() + ' | Regular sell: $' + regularSellPrice.toLocaleString() + '</small><br>';
+        html += '<small style="color: #7a5a3a;">Fence price: $' + fencePrice.toLocaleString() + ' <span style="color: #8a9a6a;">(+$' + premium.toLocaleString() + ')</span></small></div>';
+        html += '<button onclick="fenceSellItem(' + globalIdx + ', \'item\')" style="background: #7a5a3a; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap;">Sell $' + fencePrice.toLocaleString() + '</button>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    }
+  }
+
+  // Show/hide the fence section
+  if (hasItems || cat.id === 'vehicles') {
+    fenceSection.style.display = '';
+    if (fenceTitle) {
+      if (cat.id === 'vehicles') fenceTitle.textContent = 'Stolen Vehicles';
+      else fenceTitle.textContent = 'Sell to the Fence';
+    }
+    fenceList.innerHTML = html;
+    // Heat warning
+    if (hasItems) {
+      fenceList.innerHTML += '<div style="padding: 10px; background: rgba(142, 68, 173, 0.15); border-radius: 8px; border: 1px solid #7a5a3a40; margin-top: 10px; text-align: center;"><small style="color: #d4c4a0;">Selling through the fence adds heat. Move product carefully.</small></div>';
+    }
+  } else {
+    fenceSection.style.display = 'none';
+  }
 }
 
 // Refresh only dynamic elements on the store (prices, button states)
@@ -16989,44 +16994,13 @@ function refreshStoreAfterPurchase() {
   const storeScreen = document.getElementById('store-screen');
   if (!storeScreen || storeScreen.style.display === 'none') return;
 
-  // Save scroll position of the item list container
-  const itemListParent = document.getElementById('item-list');
-  const scrollParent = itemListParent ? itemListParent.closest('.content-card') || itemListParent.parentElement : null;
-  const savedScroll = scrollParent ? scrollParent.scrollTop : 0;
+  // Save scroll position
   const pageScroll = window.scrollY || document.documentElement.scrollTop;
 
-  // Rebuild items for the currently active tab
+  // Rebuild items for the currently active tab (includes both buy + sell sections)
   renderStoreTab(_currentStoreTab || 'all');
 
-  // Update inventory sidebar
-  let inventoryListHTML = player.inventory.map(item => {
-    const imageSrc = getItemImage(item.name);
-    return `
-      <li style="display: flex; align-items: center; gap: 10px; padding: 10px; margin: 5px 0;
-            background: rgba(122, 138, 90, 0.3); border-radius: 6px; border-left: 3px solid #8a9a6a;">
-        <div style="flex-shrink: 0;">
-          <img src="${imageSrc}" alt="${item.name}"
-             style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover;
-                border: 2px solid #8a9a6a; box-shadow: 0 2px 6px rgba(0,0,0,0.2);"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div style="display: none; width: 50px; height: 50px; border-radius: 6px;
-                background: #7a8a5a; align-items: center; justify-content: center;
-                font-size: 10px; color: white; border: 2px solid #8a9a6a; text-align: center;">
-            ${item.name.substring(0, 6)}
-          </div>
-        </div>
-        <div style="flex: 1; color: #f5e6c8;">
-          <strong>${item.name}</strong><br>
-          <small style="color: #d4c4a0;">Power: ${item.power}</small>
-        </div>
-      </li>
-    `;
-  }).join('');
-  const invList = document.getElementById('inventory-list');
-  if (invList) invList.innerHTML = inventoryListHTML;
-
-  // Restore scroll positions
-  if (scrollParent) scrollParent.scrollTop = savedScroll;
+  // Restore scroll position
   window.scrollTo(0, pageScroll);
 }
 
@@ -18802,7 +18776,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.38.0';
+const CURRENT_VERSION = '1.39.0';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -20467,7 +20441,7 @@ function buildStashHTML() {
 
   if (player.stolenCars && player.stolenCars.length > 0) {
     html += `<div style="margin-bottom:15px;"><h3 style="color:#e67e22;">Stolen Cars (${player.stolenCars.length})</h3>
-      <p style="color:#d4c4a0;font-size:0.85em;margin:4px 0 10px;">Hot vehicles can't be sold directly. Scrap for parts or sell through <a href="#" onclick="showFence();return false;" style="color:#7a5a3a;font-weight:bold;">The Fence</a>.</p>
+      <p style="color:#d4c4a0;font-size:0.85em;margin:4px 0 10px;">Hot vehicles can't be sold directly. Scrap for parts or <a href="#" onclick="switchBlackMarketTab('trade'); _currentStoreTab='vehicles'; return false;" style="color:#7a5a3a;font-weight:bold;">sell through Trade</a>.</p>
       <div style="display:grid;gap:8px;">`;
     player.stolenCars.forEach((car, idx) => {
       const selected = player.selectedCar === idx;
@@ -20495,9 +20469,9 @@ function buildMotorPoolHTML() {
 
   let carsHTML = `
     <h2>Vehicle Garage</h2>
-    <p>Your collection of acquired vehicles. Scrap them for parts or sell through <strong style="color:#7a5a3a;">The Fence</strong> for full black market value!</p>
+    <p>Your collection of acquired vehicles. Scrap them for parts or sell through the <strong style="color:#7a5a3a;">Trade</strong> tab for full black market value!</p>
     <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-      <button onclick="showFence()">Sell at The Fence</button>
+      <button onclick="switchBlackMarketTab('trade'); _currentStoreTab='vehicles';">Sell in Trade</button>
       ${(typeof showVehicleMarketplace === 'function' || window.showVehicleMarketplace) ? '<button onclick="showVehicleMarketplace()">Player Market</button>' : ''}
     </div>
   `;
@@ -20727,8 +20701,8 @@ function getFenceMultiplier() {
 }
 
 function showFence() {
-  // Fence is now a tab inside the Black Market
-  showStore('fence');
+  // Fence is now merged into the Trade tab
+  showStore('trade');
 }
 
 function fenceSellItem(index, type) {
@@ -20763,7 +20737,7 @@ function fenceSellItem(index, type) {
 
   logAction(`Fenced ${item.name} for $${fencePrice.toLocaleString()} (${Math.round(rate * 100)}% rate). +0.5 heat.`);
   updateUI();
-  showStore('fence');
+  showStore('trade');
 }
 
 function fenceSellCar(index) {
@@ -20787,7 +20761,7 @@ function fenceSellCar(index) {
 
   logAction(`Fenced ${car.name} for $${fencePrice.toLocaleString()} through the Fence. +0.5 heat.`);
   updateUI();
-  showStore('fence');
+  showStore('trade');
 }
 
 function fenceSellAllCars() {
@@ -20812,7 +20786,7 @@ function fenceSellAllCars() {
 
   logAction(`Bulk fenced ${count} vehicles for $${totalEarned.toLocaleString()} through the Fence. +${heatGain} heat.`);
   updateUI();
-  showStore('fence');
+  showStore('trade');
 }
 
 // ==================== BOUNTY BOARD SYSTEM ====================
