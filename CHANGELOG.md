@@ -5,6 +5,21 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.40.0] - 2026-03-15
+
+### Changed
+- **Turf vs Territory Naming Audit** -- Comprehensive pass across all files to enforce consistent naming: "Turf" for singleplayer (turf wars, turf zones, turf control) and "Territory" for multiplayer (districts, relocation, City Policies)
+  - Renamed `showTerritoryControl()` to `showTurfControl()` with legacy alias
+  - Renamed `processTerritoryOperations()` wrapper, `generateTerritoryEvent()` to `generateTurfEvent()`, `expandTerritory()` to `expandTurf()`
+  - Renamed player properties: `territoryReputation` to `turfReputation`, `territoryPower` to `turfPower`, `territoryIncome` to `turfIncome`
+  - Renamed Empire Rating property: `empireRating.territoryPower` to `empireRating.turfPower`
+  - Updated all singleplayer DOM IDs: `territory-control-screen` to `turf-control-screen`, `territory-control-content` to `turf-control-content`, `territory-display` to `turf-display`
+  - Fixed 50+ user-facing strings in notifications, help guide, tutorials, stats, and zone descriptions
+  - Renamed config keys: `turfWarsEnabled`, `turfAttackChance`, `turfDefenseBonus`
+  - Renamed data arrays and internal IDs: `turfEvents`, `turf_sellout`, `turf_violence`, etc.
+  - Added save migration in `applySaveData()` to auto-convert old property names on load
+  - Fixed server.js multiplayer event ID: `capture_turf` to `capture_territory`
+
 ## [1.38.0] - 2026-03-15
 
 ### Revamped
@@ -687,7 +702,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Loan Shark System** — showLoanShark(), takeLoan(), repayLoan(), checkLoanEligibility(), loanOptions data (4 loan types), Shylock SafeHouse menu entry, loan-shark-screen HTML
 
 ### Changed
-- **Gang Member Death Rates Increased** — Turf defense death chance 10%→25%, territory expansion losses 1-3→2-5 members, gang war defeat losses 30%→45% of gang
+- **Gang Member Death Rates Increased** — Turf defense death chance 10%→25%, turf expansion losses 1-3→2-5 members, gang war defeat losses 30%→45% of gang
 - Gang operations now have 8% chance of member death (previously only arrest/betrayal)
 - Turf defense victories now 25% chance of injury/death with 30% death sub-chance (was 15% injury only)
 - Expertise screen now has 3 tabs: Basic Skills, Skill Trees, Reputation

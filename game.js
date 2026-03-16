@@ -247,8 +247,8 @@ function recalculatePower() {
   if (player.turf) {
     player.turf.power = 100 + total;
   }
-  // Keep legacy territoryPower in sync
-  player.territoryPower = (player.turf?.power) || (100 + total);
+  // Keep legacy turfPower in sync
+  player.turfPower = (player.turf?.power) || (100 + total);
 
   return total;
 }
@@ -409,7 +409,7 @@ function updateMissionProgress(actionType, value = 1) {
       stats.gangMembersRecruited += value;
       break;
     case 'turf_controlled':
-      stats.territoriesControlled = player.territory; // Update to current territory count
+      stats.turfsControlled = player.territory; // Update to current turf count
       break;
     case 'boss_defeated':
       stats.bossesDefeated += value;
@@ -602,7 +602,7 @@ async function beginFamilyStory(familyKey) {
   player.familyRank = 'associate';
   if (!player.turf) player.turf = { owned: [], power: 100, income: 0, reputation: 0 };
   player.turf.reputation = (player.turf.reputation || 0) + 10;
-  player.territoryReputation = (player.territoryReputation || 0) + 10;
+  player.turfReputation = (player.turfReputation || 0) + 10;
 
   // Init story progress
   player.storyProgress = {
@@ -1017,7 +1017,7 @@ function advanceStoryChapter() {
       logAction('You are now the <strong>Don</strong>. The city bows to your will.');
       showBriefNotification('You are the Don! Turf Wars unlocked!', 'success');
 
-      // Transfer all faction-controlled territory to the player
+      // Transfer all faction-controlled turf to the player
       initTurfZones();
       const familyKey = player.chosenFamily;
       if (familyKey) {
@@ -1031,14 +1031,14 @@ function advanceStoryChapter() {
             zone.defendingMembers = [];
             player.turf.owned.push(zone.id);
             player.turf.reputation = (player.turf.reputation || 0) + 10;
-            player.territoryReputation = (player.territoryReputation || 0) + 10;
+            player.turfReputation = (player.turfReputation || 0) + 10;
             logAction(`<strong>${zone.name}</strong> is now under your direct control.`);
           }
         });
         recalcTurfIncome();
         checkTurfMilestoneUnlocks();
         checkTurfDominance();
-        showBriefNotification(`All ${RIVAL_FAMILIES[familyKey].name} territory is now yours!`, 'success');
+        showBriefNotification(`All ${RIVAL_FAMILIES[familyKey].name} turf is now yours!`, 'success');
       }
     }
   }
@@ -1216,7 +1216,7 @@ const SPECIALIZATION_TO_EXPANDED = {
 
 // ==================== MERGED FROM EXPANDED-SYSTEMS.JS & EXPANDED-UI.JS ====================
 // These systems were consolidated from separate files into the main game module.
-// Contains: Gang roles/stats/traits, Expanded territory wars, Interactive events,
+// Contains: Gang roles/stats/traits, Expanded turf wars, Interactive events,
 // Rival AI kingpins, Respect system, and all related UI screens.
 // Original files deleted -- this is now the canonical source.
 
@@ -1224,12 +1224,12 @@ const SPECIALIZATION_TO_EXPANDED = {
 
 const EXPANDED_SYSTEMS_CONFIG = {
     gangRolesEnabled: true,
-    territoryWarsEnabled: true,
+    turfWarsEnabled: true,
     interactiveEventsEnabled: false, // Disabled -- popup events removed
     rivalKingpinsEnabled: true,
     // Balance settings
     rivalGrowthInterval: 120000, // 2 minutes between rival actions
-    territoryAttackChance: 0.15, // 15% chance of attack per check
+    turfAttackChance: 0.15, // 15% chance of attack per check
 };
 
 // ==================== HOSPITAL / HEALING SYSTEM ====================
@@ -1317,7 +1317,7 @@ const GANG_MEMBER_ROLES = {
         cleanCashTribute: true,
         perk: {
             name: 'Assassin',
-            effect: '+15% damage in territory wars'
+            effect: '+15% damage in turf wars'
         }
     },
     driver: {
@@ -1339,7 +1339,7 @@ const GANG_MEMBER_ROLES = {
         cleanCashTribute: false,
         perk: {
             name: 'Eyes Everywhere',
-            effect: 'Reveals territory attack warnings 30 seconds early'
+            effect: 'Reveals turf attack warnings 30 seconds early'
         }
     },
     accountant: {
@@ -1398,7 +1398,7 @@ function generateExpandedGangMember(role = null, name = null) {
         level: 1,
         experience: 0,
         status: 'active', // active, injured, jailed, dead
-        assignedTo: null, // null, "territory_X", "operation_Y"
+        assignedTo: null, // null, "turf_X", "operation_Y"
         traits: generateRandomTraits(),
         joinedDate: Date.now()
     };
@@ -1516,7 +1516,7 @@ const TURF_ZONES = [
         id: 'redlight_district',
         name: 'Redlight District',
         icon: '',
-        description: 'Neon-soaked blocks of vice parlors, strip clubs, and underground dens. Morales Cartel territory.',
+        description: 'Neon-soaked blocks of vice parlors, strip clubs, and underground dens. Morales Cartel turf.',
         baseIncome: 5500,
         defenseRequired: 200,
         riskLevel: 'high',
@@ -1728,9 +1728,9 @@ const RIVAL_FAMILIES = {
         buff: {
             id: 'cartel_connections',
             name: 'Cartel Supply Line',
-            description: 'Violent jobs generate 25% less heat, +15% territory defense',
+            description: 'Violent jobs generate 25% less heat, +15% turf defense',
             violentHeatReduction: 0.25,
-            territoryDefenseBonus: 0.15
+            turfDefenseBonus: 0.15
         },
         turfZones: ['redlight_district', 'the_sprawl'],
         storyIntro: "The Cartel doesn't recruit -- they conscript. But Morales saw a fire in you, and offered a choice: serve willingly, or be buried with the rest."
@@ -1798,9 +1798,9 @@ function checkTurfDominance(_justTakenZoneId) {
     player.reputation += repReward;
     player.turf.power = (player.turf.power || 100) + powerReward;
     player.turf.reputation = (player.turf.reputation || 0) + 30;
-    player.territoryReputation = (player.territoryReputation || 0) + 30;
+    player.turfReputation = (player.turfReputation || 0) + 30;
 
-    showBriefNotification(`DOMINANCE! You control all ${fam.name} territory! +$${cashReward.toLocaleString()}, +${repReward} Respect, +${powerReward} Power`, 'success');
+    showBriefNotification(`DOMINANCE! You control all ${fam.name} turf! +$${cashReward.toLocaleString()}, +${repReward} Respect, +${powerReward} Power`, 'success');
     logAction(`<strong>${fam.name} ELIMINATED.</strong> Every block, every alley -- yours. The streets will remember this. +$${cashReward.toLocaleString()}, +${repReward} Respect, +${powerReward} permanent Turf Power.`);
   });
 }
@@ -1829,7 +1829,7 @@ function checkTurfMilestoneUnlocks() {
 
 // ==================== RIVAL FAMILY AI ====================
 // Each rival family (except the player's) is an active AI that grows,
-// attacks player-held turf, and tries to reclaim lost territory.
+// attacks player-held turf, and tries to reclaim lost turf.
 
 const RIVAL_AI_PERSONALITY = {
   torrino: { aggression: 0.6, growth: 1.0, preference: 'reclaim', label: 'methodical' },
@@ -2021,7 +2021,7 @@ function processRivalFamilyAttacks() {
       // If they were cornered with eliminationAvailable, retaking a zone cancels it
       if (ai.eliminationAvailable) {
         ai.eliminationAvailable = false;
-        logAction(`<strong style="color:${fam.color}">${fam.name}</strong> recaptured territory -- elimination mission cancelled!`);
+        logAction(`<strong style="color:${fam.color}">${fam.name}</strong> recaptured turf -- elimination mission cancelled!`);
       }
       logAction(`<strong style="color:${fam.color}">${fam.name}</strong> seized <strong>${zone.name}</strong>!${warTag} Their ${personality.label} assault overwhelmed your defenses.`);
       showBriefNotification(`${fam.name} took ${zone.name}!${ai.atWar ? ' [WAR]' : ''}`, 'danger');
@@ -2050,7 +2050,7 @@ function onPlayerTookZone(zoneId, previousOwner) {
     ai.atWar = true;
     ai.warDeclaredTime = Date.now();
     ai.lastWarAttackTime = Date.now(); // grace period -- first hourly check starts in 1 hour
-    logAction(`<strong style="color:${fam.color}">${fam.name} has declared WAR!</strong> Expect relentless attacks on your territory.`);
+    logAction(`<strong style="color:${fam.color}">${fam.name} has declared WAR!</strong> Expect relentless attacks on your turf.`);
     showBriefNotification(`${fam.name} declares WAR!`, 'danger');
   }
 
@@ -2058,7 +2058,7 @@ function onPlayerTookZone(zoneId, previousOwner) {
   const familyZonesRemaining = (player.turf._zones || []).filter(z => z.controlledBy === previousOwner).length;
   if (familyZonesRemaining === 0 && !ai.eliminationAvailable) {
     ai.eliminationAvailable = true;
-    logAction(`<strong style="color:${fam.color}">${fam.name}</strong> has lost all territory! A final elimination mission is now available.`);
+    logAction(`<strong style="color:${fam.color}">${fam.name}</strong> has lost all turf! A final elimination mission is now available.`);
     showBriefNotification(`${fam.name} cornered -- Elimination mission available!`, 'success');
     // Show the elimination mission popup
     showEliminationMission(previousOwner);
@@ -2084,7 +2084,7 @@ function showEliminationMission(famKey) {
       <div style="color:#e74c3c; font-size:1.1em; font-weight:bold;">ELIMINATION MISSION</div>
     </div>
     <div style="color:#d4c4a0; line-height:1.6; margin-bottom:15px;">
-      ${fam.name} has been stripped of all territory. Their leadership is cornered and desperate.
+      ${fam.name} has been stripped of all turf. Their leadership is cornered and desperate.
       To end this war permanently, you must strike at their command structure -- eliminate their
       capos, their underboss, and finally their Don, <strong style="color:${fam.color}">${donName}</strong>.
     </div>
@@ -2098,7 +2098,7 @@ function showEliminationMission(famKey) {
       </div>
     </div>
     <div style="color:#8a7a5a; font-size:0.85em;">
-      Warning: If ${fam.name} retakes any territory before you complete this mission, the operation will be called off.
+      Warning: If ${fam.name} retakes any turf before you complete this mission, the operation will be called off.
     </div>`;
 
   ui.show('Elimination Mission', missionHTML, [
@@ -2124,7 +2124,7 @@ function executeEliminationMission(famKey) {
 
   // Check elimination is still available (family might have retaken turf)
   if (!ai.eliminationAvailable) {
-    showBriefNotification(`${fam.name} retook territory -- mission cancelled!`, 'danger');
+    showBriefNotification(`${fam.name} retook turf -- mission cancelled!`, 'danger');
     return;
   }
 
@@ -2213,7 +2213,7 @@ function executeEliminationMission(famKey) {
     const repReward = 50;
     player.money += cashReward;
     player.turf.reputation = (player.turf.reputation || 0) + repReward;
-    player.territoryReputation = (player.territoryReputation || 0) + repReward;
+    player.turfReputation = (player.turfReputation || 0) + repReward;
 
     let resultHTML = `
       <div style="text-align:center; margin-bottom:12px;">
@@ -2230,7 +2230,7 @@ function executeEliminationMission(famKey) {
         ${injured.length ? `<br>Injured: <span style="color:#e67e22;">${injured.join(', ')}</span>` : ''}
       </div>
       <div style="margin-top:10px; color:#8a7a5a; font-size:0.9em;">
-        ${fam.name} is no more. Their territory, soldiers, and operations have been absorbed. The streets remember.
+        ${fam.name} is no more. Their turf, soldiers, and operations have been absorbed. The streets remember.
       </div>`;
 
     ui.show(`${fam.name} Destroyed`, resultHTML);
@@ -2255,7 +2255,7 @@ function executeEliminationMission(famKey) {
         ${injured.length ? `<br>Injured: <span style="color:#e67e22;">${injured.join(', ')}</span>` : ''}
       </div>
       <div style="margin-top:10px; color:#8a7a5a; font-size:0.9em;">
-        ${fam.name}'s leadership survived the assault. They remain a threat. Regroup and try again while they still hold no territory.
+        ${fam.name}'s leadership survived the assault. They remain a threat. Regroup and try again while they still hold no turf.
       </div>`;
 
     ui.show('Assault Failed', failHTML);
@@ -2355,10 +2355,10 @@ function calculateTurfDefense(zone, player) {
       totalDefense = Math.floor(totalDefense * (1 + torrinoDefMod));
     }
 
-    // Morales Cartel Supply Line: +15% territory defense for chosen family
+    // Morales Cartel Supply Line: +15% turf defense for chosen family
     const defBuff = getChosenFamilyBuff();
-    if (defBuff && defBuff.territoryDefenseBonus) {
-      totalDefense = Math.floor(totalDefense * (1 + defBuff.territoryDefenseBonus));
+    if (defBuff && defBuff.turfDefenseBonus) {
+      totalDefense = Math.floor(totalDefense * (1 + defBuff.turfDefenseBonus));
     }
 
     return Math.floor(totalDefense);
@@ -2597,7 +2597,7 @@ const INTERACTIVE_EVENTS = [
                     success: {
                         respect: 10,
                         factionRespect: { target: 'rival', change: -40 },
-                        territoryVulnerable: 'rival', // Their territories become easier to capture
+                        turfVulnerable: 'rival', // Their turf becomes easier to capture
                         message: 'The scandal destroyed their reputation. Their operations are in chaos.'
                     }
                 },
@@ -3497,10 +3497,10 @@ export default {
     generateGangMember: generateExpandedGangMember,
     calculateMemberEffectiveness,
 
-    // Territory functions -- now use turf system
-    assignMembersToTerritory: assignMembersToTurf,
-    calculateTerritoryDefense: calculateTurfDefense,
-    processTerritoryAttack: processTurfAttack,
+    // Turf functions
+    assignMembersToTurf: assignMembersToTurf,
+    calculateTurfDefense: calculateTurfDefense,
+    processTurfAttack: processTurfAttack,
 
     // Event functions
     triggerInteractiveEvent,
@@ -3717,7 +3717,7 @@ const specialistRoles = [
       jobSuccessBonus: 0.15, // 15% bonus to violent jobs
       healthProtection: 0.10 // 10% less health loss
     },
-    requiredFor: ['territory_war', 'protection_racket', 'rival_assassination']
+    requiredFor: ['turf_war', 'protection_racket', 'rival_assassination']
   },
   {
     id: 'thief',
@@ -3759,7 +3759,7 @@ const specialistRoles = [
       intimidationBonus: 0.25, // 25% bonus to intimidation jobs
       businessProtection: 0.20 // 20% better business income protection
     },
-    requiredFor: ['debt_collection', 'business_protection', 'territory_control']
+    requiredFor: ['debt_collection', 'business_protection', 'turf_control']
   },
   {
     id: 'driver',
@@ -4141,14 +4141,14 @@ const betrayalEvents = [
     detectionChance: 70 // 70% chance to detect the betrayal
   },
   {
-    id: 'territory_sellout',
+    id: 'turf_sellout',
     name: 'Turf Sellout',
     description: 'A gang member sells turf information to rivals',
     triggerConditions: {
-      minTerritory: 2
+      minTurf: 2
     },
     consequences: {
-      territoryLoss: 1,
+      turfLoss: 1,
       reputationLoss: 10,
       gangMemberLoss: 1,
       rivalAttack: true
@@ -4328,7 +4328,7 @@ const corruptionTargets = [
     influence: 'medium',
     benefits: {
       businessLicense: 0.5, // 50% cheaper business costs
-      zonePermits: 0.3, // 30% faster territory acquisition
+      zonePermits: 0.3, // 30% faster turf acquisition
       duration: 21
     },
     description: 'Local politician with zoning influence',
@@ -4364,8 +4364,8 @@ const corruptionTargets = [
   }
 ];
 
-// Territory Events
-const territoryEvents = [
+// Turf Events
+const turfEvents = [
   {
     id: 'police_crackdown',
     name: 'Police Crackdown',
@@ -4381,7 +4381,7 @@ const territoryEvents = [
   {
     id: 'rival_encroachment',
     name: 'Rival Family Encroachment',
-    description: 'A rival family is pushing into your territory',
+    description: 'A rival family is pushing into your turf',
     effects: {
       incomeReduction: 0.4,
       conflictRisk: 0.6,
@@ -6323,7 +6323,7 @@ function shouldTriggerBetrayal(event) {
   const conditions = event.triggerConditions;
 
   if (conditions.minHeat && player.heat < conditions.minHeat) return false;
-  if (conditions.minTerritory && (player.turf?.owned || []).length < conditions.minTerritory) return false;
+  if (conditions.minTurf && (player.turf?.owned || []).length < conditions.minTurf) return false;
   if (conditions.minBusinesses && player.businesses.length < conditions.minBusinesses) return false;
   if (conditions.minGangMembers && player.gang.gangMembers.length < conditions.minGangMembers) return false;
 
@@ -6353,9 +6353,9 @@ function triggerBetrayalEvent(event) {
     recalculatePower();
   }
 
-  if (consequences.territoryLoss) {
+  if (consequences.turfLoss) {
     // Reduce turf power; zone loss happens via turf attack system
-    if (player.turf) player.turf.power = Math.max(0, (player.turf.power || 100) - consequences.territoryLoss * 20);
+    if (player.turf) player.turf.power = Math.max(0, (player.turf.power || 100) - consequences.turfLoss * 20);
   }
 
   if (consequences.gangMemberLoss) {
@@ -6495,7 +6495,7 @@ function renderTurfControlContent() {
     // Collect All Tribute button at the top
     html += '<div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;"><h3 style="color: #8b3a3a; margin: 0;">Your Turf</h3>';
     if (turfReady) {
-      html += `<button onclick="collectTurfTribute('${ownedZones[0].id}'); setTimeout(showTerritoryControl, 300);" style="padding:8px 18px;background:linear-gradient(135deg,#7a8a5a,#229954);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.85em;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
+      html += `<button onclick="collectTurfTribute('${ownedZones[0].id}'); setTimeout(showTurfControl, 300);" style="padding:8px 18px;background:linear-gradient(135deg,#7a8a5a,#229954);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.85em;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
     } else {
       html += `<button style="padding:8px 18px;background:linear-gradient(135deg,#555,#444);border:none;border-radius:8px;color:#999;font-weight:bold;font-size:0.85em;cursor:default;" disabled>Tribute (${tributeMinsLeft}m)</button>`;
     }
@@ -6555,7 +6555,7 @@ function renderTurfControlContent() {
   return html;
 }
 
-function showTerritoryControl() {
+function showTurfControl() {
   if (player.inJail) { showBriefNotification("You can't manage turf while you're in jail!", 'danger'); return; }
 
   const html = renderTurfControlContent() + `
@@ -6563,9 +6563,9 @@ function showTerritoryControl() {
       <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
     </div>`;
 
-  document.getElementById('territory-control-content').innerHTML = html;
+  document.getElementById('turf-control-content').innerHTML = html;
   hideAllScreens();
-  document.getElementById('territory-control-screen').style.display = 'block';
+  document.getElementById('turf-control-screen').style.display = 'block';
 }
 
 // Show Turf Map -- all zones with ownership and actions
@@ -6680,7 +6680,7 @@ function showTurfMap() {
     if (isOwned) {
       html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#c0a062,#a08850);border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
     } else if (isAllied) {
-      html += '<div style="color:#c0a062;font-size:0.9em;padding:10px;">Allied territory</div>';
+      html += '<div style="color:#c0a062;font-size:0.9em;padding:10px;">Allied turf</div>';
     } else {
       const winChance = calculateTurfWinChance(playerAtkPower, zone.defenseRequired);
       const chanceColor = winChance >= 70 ? '#2ecc71' : winChance >= 40 ? '#f1c40f' : winChance >= 15 ? '#e67e22' : '#e74c3c';
@@ -6703,12 +6703,12 @@ function showTurfMap() {
 
   html += `</div>
     <div style="text-align:center; margin-top:25px;">
-      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
-  document.getElementById('territory-control-content').innerHTML = html;
+  document.getElementById('turf-control-content').innerHTML = html;
   hideAllScreens();
-  document.getElementById('territory-control-screen').style.display = 'block';
+  document.getElementById('turf-control-screen').style.display = 'block';
 }
 window.showTurfMap = showTurfMap;
 
@@ -6787,12 +6787,12 @@ function showCityPolicies() {
 
   // Back button
   html += `<div style="text-align:center;margin-top:25px;">
-    <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+    <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
   </div>`;
 
-  document.getElementById('territory-control-content').innerHTML = html;
+  document.getElementById('turf-control-content').innerHTML = html;
   hideAllScreens();
-  document.getElementById('territory-control-screen').style.display = 'block';
+  document.getElementById('turf-control-screen').style.display = 'block';
 }
 window.showCityPolicies = showCityPolicies;
 
@@ -6949,7 +6949,7 @@ async function attackTurfZone(zoneId) {
       player.turf.bossesDefeated.push(bossInfo.id);
       player.money += bossInfo.reward;
       player.turf.reputation = (player.turf.reputation || 0) + 25;
-      player.territoryReputation = (player.territoryReputation || 0) + 25;
+      player.turfReputation = (player.turfReputation || 0) + 25;
       logAction(`<strong>${bossInfo.name}</strong> has been eliminated! +$${bossInfo.reward.toLocaleString()} and +25 respect.`);
 
       // Update rival respect: defeating a boss lowers their faction's respect for you
@@ -7009,7 +7009,7 @@ async function attackTurfZone(zoneId) {
     player.turf.owned.push(zone.id);
     player.heat = Math.min(100, (player.heat || 0) + 15);
     player.turf.reputation = (player.turf.reputation || 0) + 15;
-    player.territoryReputation = (player.territoryReputation || 0) + 15;
+    player.turfReputation = (player.turfReputation || 0) + 15;
     recalcTurfIncome();
     checkFamilyRankUp();
     checkTurfMilestoneUnlocks();
@@ -7087,7 +7087,7 @@ function recalcTurfIncome() {
   const zones = (player.turf._zones || []).filter(z => owned.includes(z.id));
   player.turf.income = zones.reduce((sum, z) => sum + calculateTurfZoneIncome(z), 0);
   // Also keep legacy property in sync
-  player.territoryIncome = player.turf.income;
+  player.turfIncome = player.turf.income;
 }
 
 // Build the Defenders management HTML for a turf zone
@@ -7285,12 +7285,12 @@ function manageTurfDetails(zoneId) {
       })()}
     </div>
     <div style="text-align:center;">
-      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
-  document.getElementById('territory-control-content').innerHTML = html;
+  document.getElementById('turf-control-content').innerHTML = html;
   hideAllScreens();
-  document.getElementById('territory-control-screen').style.display = 'block';
+  document.getElementById('turf-control-screen').style.display = 'block';
 }
 window.manageTurfDetails = manageTurfDetails;
 
@@ -7419,12 +7419,12 @@ function showFamilyChoice() {
 
   html += `</div>
     <div style="text-align:center; margin-top:25px;">
-      <button onclick="showTerritoryControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:none;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
-  document.getElementById('territory-control-content').innerHTML = html;
+  document.getElementById('turf-control-content').innerHTML = html;
   hideAllScreens();
-  document.getElementById('territory-control-screen').style.display = 'block';
+  document.getElementById('turf-control-screen').style.display = 'block';
 }
 window.showFamilyChoice = showFamilyChoice;
 
@@ -7443,7 +7443,7 @@ async function pledgeToFamily(familyId) {
     player.chosenFamily = familyId;
     player.familyRank = 'associate';
     player.turf.reputation = (player.turf.reputation || 0) + 10;
-    player.territoryReputation = (player.territoryReputation || 0) + 10;
+    player.turfReputation = (player.turfReputation || 0) + 10;
 
     showBriefNotification(`You've joined the ${fam.name}!`, 'success');
     logAction(`You pledged your loyalty to <strong>the ${fam.name}</strong>. ${fam.storyIntro}`);
@@ -7580,9 +7580,9 @@ function showProtectionRackets() {
       </button>
     </div>`;
 
-  document.getElementById('territory-control-content').innerHTML = html;
+  document.getElementById('turf-control-content').innerHTML = html;
   hideAllScreens();
-  document.getElementById('territory-control-screen').style.display = 'block';
+  document.getElementById('turf-control-screen').style.display = 'block';
 }
 
 // Get Available Businesses for Protection
@@ -7763,12 +7763,12 @@ function showCorruption() {
       </button>
     </div>`;
 
-  document.getElementById('territory-control-content').innerHTML = html;
+  document.getElementById('turf-control-content').innerHTML = html;
   hideAllScreens();
-  document.getElementById('territory-control-screen').style.display = 'block';
+  document.getElementById('turf-control-screen').style.display = 'block';
 }
 
-// Helper Functions for Territory Control
+// Helper Functions for Turf Control
 function getHeatColor(heat) {
   if (heat < 20) return '#8a9a6a';
   if (heat < 50) return '#c0a040';
@@ -7786,7 +7786,7 @@ function getRiskColor(riskLevel) {
   }
 }
 
-// Territory Control Action Functions
+// Turf Control Action Functions
 async function renewCorruption(officialId) {
   const official = player.corruptedOfficials.find(o => o.id === officialId);
   if (!official) {
@@ -7877,8 +7877,8 @@ function approachBusiness(businessId, territoryId) {
   const business = _cachedAvailableBusinesses.find(b => b.id === businessId);
   if (!business) return;
 
-  // Success chance based on gang reputation and territory power
-  let successChance = 0.4 + (player.territoryReputation / 100) + (player.territoryPower / 1000);
+  // Success chance based on gang reputation and turf power
+  let successChance = 0.4 + (player.turfReputation / 100) + (player.turfPower / 1000);
   // Civilians streetRep: positive = locals cooperate, negative = locals resist
   const civRepMod = getStreetRepBonus('civilians', 0.05, 0.10, 0.15, 0.25);
   successChance += civRepMod;
@@ -7896,7 +7896,7 @@ function approachBusiness(businessId, territoryId) {
     };
 
     player.protectionRackets.push(racket);
-    player.territoryReputation += 5;
+    player.turfReputation += 5;
 
     // Protection rackets hurt civilian relations (intimidation)
     if (player.streetReputation) {
@@ -8068,13 +8068,13 @@ function updateFactionRivalRespect(factionKey, amount) {
   rivals.filter(r => r.faction === factionKey).forEach(r => updateRivalRespect(r.id, amount));
 }
 
-// Process Territory Events and Income (called periodically) -- now delegates to turf
-function processTerritoryOperations() {
+// Process Turf Events and Income (called periodically) -- delegates to turf
+function processTurfOpsWrapper() {
   processTurfOperations();
 
-  // Generate random territory events (30% chance each cycle)
+  // Generate random turf events (30% chance each cycle)
   if ((player.turf?.owned || []).length > 0 && Math.random() < 0.30) {
-    generateTerritoryEvent();
+    generateTurfEvent();
   }
 
   // Expire corrupted officials (kept from original)
@@ -8089,17 +8089,17 @@ function processTerritoryOperations() {
   });
 }
 
-function generateTerritoryEvent() {
-  // Generate events using the richer territoryEvents array (probability-weighted)
+function generateTurfEvent() {
+  // Generate events using the richer turfEvents array (probability-weighted)
   initTurfZones();
   const owned = player.turf.owned || [];
   if (owned.length === 0) return;
 
   // Weighted random selection based on probability
-  const totalProb = territoryEvents.reduce((sum, e) => sum + e.probability, 0);
+  const totalProb = turfEvents.reduce((sum, e) => sum + e.probability, 0);
   let roll = Math.random() * totalProb;
-  let evt = territoryEvents[0];
-  for (const te of territoryEvents) {
+  let evt = turfEvents[0];
+  for (const te of turfEvents) {
     roll -= te.probability;
     if (roll <= 0) { evt = te; break; }
   }
@@ -8124,11 +8124,11 @@ function generateTerritoryEvent() {
   }
   if (evt.effects.recruitmentPenalty && player.gang) {
     // Reduce gang morale briefly -- lower max recruitable
-    logAction(`Community resistance makes recruiting harder in ${zone?.name || 'your territory'}.`);
+    logAction(`Community resistance makes recruiting harder in ${zone?.name || 'your turf'}.`);
   }
   if (evt.effects.businessOpportunity) {
-    player.territoryReputation = (player.territoryReputation || 0) + 5;
-    logAction('New business opportunities give you +5 territory respect.');
+    player.turfReputation = (player.turfReputation || 0) + 5;
+    logAction('New business opportunities give you +5 turf respect.');
   }
   if (evt.effects.conflictRisk && Math.random() < evt.effects.conflictRisk) {
     // Trigger a bonus rival family attack on this zone
@@ -8146,9 +8146,9 @@ function generateTerritoryEvent() {
     }
   }
 
-  // Merge turf.reputation into territoryReputation
+  // Merge turf.reputation into turfReputation
   player.turf.reputation = (player.turf.reputation || 0) + (evt.category === 'opportunity' ? 10 : 0);
-  player.territoryReputation = (player.territoryReputation || 0) + (evt.category === 'opportunity' ? 10 : 0);
+  player.turfReputation = (player.turfReputation || 0) + (evt.category === 'opportunity' ? 10 : 0);
 
   player.turf.events = player.turf.events || [];
   player.turf.events.push({ id: evt.id, name: evt.name, description: evt.description, duration: evt.effects.duration || 3, zone: randomZoneId, category: evt.category });
@@ -8177,7 +8177,7 @@ function updateUI() {
   // Recalculate all power (equipment + gang + turf) every UI update
   recalculatePower();
 
-  // Keep legacy territory count in sync with turf owned zones
+  // Keep legacy turf count in sync with turf owned zones
   player.territory = (player.turf?.owned || []).length;
 
   // Update player portrait and name
@@ -8262,18 +8262,18 @@ function updateUI() {
   document.getElementById('power-display').innerText = `Influence: ${player.power}`;
 
   // Add turf display if player has turf
-  const territoryDisplay = document.getElementById('territory-display');
-  if (territoryDisplay) {
+  const turfDisplay = document.getElementById('turf-display');
+  if (turfDisplay) {
     const ownedCount = (player.turf?.owned || []).length;
     if (ownedCount > 0) {
-      territoryDisplay.innerText = `Turf: ${ownedCount} | Tribute: $${(player.turf?.income || 0).toLocaleString()}/week`;
-      territoryDisplay.style.display = 'block';
+      turfDisplay.innerText = `Turf: ${ownedCount} | Tribute: $${(player.turf?.income || 0).toLocaleString()}/week`;
+      turfDisplay.style.display = 'block';
     } else {
-      territoryDisplay.style.display = 'none';
+      turfDisplay.style.display = 'none';
     }
   }
 
-  // Update current district display (Phase 1 territory system)
+  // Update current district display (multiplayer district system)
   const curTerritoryDisplay = document.getElementById('current-territory-display');
   if (curTerritoryDisplay) {
     if (player.currentTerritory) {
@@ -9314,7 +9314,7 @@ window.applyUIToggles = applyUIToggles;
 const STAT_BAR_ITEMS = [
   'money-display', 'health-display',
   'wanted-level-display', 'level-display', 'dirty-money-display',
-  'power-display', 'territory-display',
+  'power-display', 'turf-display',
   'current-territory-display', 'skill-points-display',
   'season-display', 'weather-display', 'ammo-display', 'gas-display',
   'reputation-display', 'jail-status-display', 'family-rank-display'
@@ -9419,7 +9419,7 @@ function hideAllScreens(skipScroll) {
     'jail-screen', 'court-house-screen', 'inventory-screen', 'hospital-screen',
     'death-screen', 'achievements-screen', 'jailbreak-screen', 'recruitment-screen',
     'casino-screen', 'missions-screen', 'business-screen', 'loan-shark-screen',
-    'money-laundering-screen', 'territory-control-screen', 'territories-screen',
+    'money-laundering-screen', 'turf-control-screen', 'territories-screen',
     'events-screen', 'map-screen', 'calendar-screen', 'statistics-screen',
     'options-screen', 'player-stats-screen', 'safehouse', 'multiplayer-screen',
     'friends-screen', 'bountyboard-screen', 'skills-screen'
@@ -9478,10 +9478,10 @@ const TUTORIAL_CONTENT = {
   gang: {
     title: 'The Family',
     sections: [
-      { heading: 'Create or Join', text: 'Start your own crime family (costs cash) or join an existing one. Families share territory, resources, and bonuses.' },
+      { heading: 'Create or Join', text: 'Start your own crime family (costs cash) or join an existing one. Families share turf, resources, and bonuses.' },
       { heading: 'Members & Roles', text: 'Recruit AI crew members or invite real players. Assign roles: Boss, Underboss, Capo, Soldier -- each with different authority levels.' },
-      { heading: 'Family Wars', text: 'Clash with rival families for territory and dominance. Coordinate attacks with your crew to win turf.' },
-      { heading: 'Benefits', text: 'Being in a family gives stat bonuses, shared defence of territory, and access to family-only missions and features.' },
+      { heading: 'Family Wars', text: 'Clash with rival families for turf and dominance. Coordinate attacks with your crew to win turf.' },
+      { heading: 'Benefits', text: 'Being in a family gives stat bonuses, shared defence of turf, and access to family-only missions and features.' },
     ]
   },
   properties: {
@@ -9519,7 +9519,7 @@ const TUTORIAL_CONTENT = {
   skills: {
     title: 'Talents & Skills',
     sections: [
-      { heading: 'Six Skill Trees', text: 'Spend skill points in: <b>Combat</b> (attack, crit), <b>Stealth</b> (dodge, heat reduction), <b>Business</b> (income, prices), <b>Endurance</b> (HP, cooldowns), <b>Street Smarts</b> (Respect, loot), <b>Leadership</b> (crew, territory).' },
+      { heading: 'Six Skill Trees', text: 'Spend skill points in: <b>Combat</b> (attack, crit), <b>Stealth</b> (dodge, heat reduction), <b>Business</b> (income, prices), <b>Endurance</b> (HP, cooldowns), <b>Street Smarts</b> (Respect, loot), <b>Leadership</b> (crew, turf).' },
       { heading: 'Skill Points', text: 'You earn skill points when you rank up. Spend them wisely -- each node gives permanent passive bonuses to your character.' },
       { heading: 'Passive Bonuses', text: 'Examples: extra damage per hit, higher income from jobs, cheaper hospital visits, reduced cooldown times, better loot drops, and stronger crew defence.' },
     ]
@@ -9528,15 +9528,15 @@ const TUTORIAL_CONTENT = {
     title: 'Player Stats',
     sections: [
       { heading: 'Overview', text: 'Full breakdown of your character: rank, cash, dirty money, health, attack, defence, influence, reputation, and more.' },
-      { heading: 'Empire Rating', text: 'A composite score measuring your overall power -- based on territory controlled, income streams, crew size, properties, and story progress.' },
-      { heading: 'Empire Overview', text: 'A visual dashboard showing all your assets, income sources, crew members, and territory at a glance. Great for tracking your empire\'s growth.' },
+      { heading: 'Empire Rating', text: 'A composite score measuring your overall power -- based on turf controlled, income streams, crew size, properties, and story progress.' },
+      { heading: 'Empire Overview', text: 'A visual dashboard showing all your assets, income sources, crew members, and turf at a glance. Great for tracking your empire\'s growth.' },
     ]
   },
-  territory: {
-    title: 'Territory Control',
+  turf: {
+    title: 'Turf Control',
     sections: [
       { heading: 'Districts', text: 'The city is divided into districts. Claim them by spending Influence and fighting NPCs or rival players.' },
-      { heading: 'Turf Wars', text: 'Attack rival territories or defend your own. Bring your best weapons, armour, and crew for the best odds.' },
+      { heading: 'Turf Wars', text: 'Attack rival turf or defend your own. Bring your best weapons, armour, and crew for the best odds.' },
       { heading: 'Tribute', text: 'Every district you control generates Tribute income each game cycle. The more turf you hold, the richer you get.' },
       { heading: 'Defence & Relocation', text: 'Upgrade district defences and assign crew to hold your turf. You can also relocate to a different district to access local bonuses and job variants.' },
     ]
@@ -9859,12 +9859,12 @@ const NARRATIVE_GUIDE_STEPS = [
       <p><strong>Business</strong> -- Job income, property returns, purchase discounts.</p>
       <p><strong>Endurance</strong> -- Damage reduction, cooldown reduction, health recovery.</p>
       <p><strong>Street Smarts</strong> -- Respect gains, jail time reduction, loot quality.</p>
-      <p><strong>Leadership</strong> -- Crew bonuses, family buffs, territory defence.</p>
+      <p><strong>Leadership</strong> -- Crew bonuses, family buffs, turf defence.</p>
       <p style="color:#c0a062;"><strong>Tip:</strong> You earn skill points each time you rank up. Each node is permanent once purchased, so spend wisely.</p>`,
     step: '11'
   },
   {
-    title: 'Territory Control',
+    title: 'Turf Control',
     subtitle: 'Dominate the City',
     body: `<p>Claim districts and build your turf empire.</p>
       <p>The city has <strong>8 turf zones</strong> controlled by rival families. Attack from the Turf Map to seize control. Each zone you hold generates <strong>weekly Tribute</strong> (dirty money).</p>
@@ -9878,8 +9878,8 @@ const NARRATIVE_GUIDE_STEPS = [
     subtitle: 'Track Your Progress',
     body: `<p>The Stats screen gives you a complete breakdown of your criminal career.</p>
       <p>View your <strong>rank, cash, dirty money, health, attack, defence, influence, respect</strong>, and every other stat in one place.</p>
-      <p>Your <strong>Empire Rating</strong> is a composite score measuring overall power -- factoring in territory, income, crew size, properties, and story progress.</p>
-      <p>The <strong>Empire Overview</strong> dashboard shows all your assets, income sources, crew, and territory at a glance.</p>`,
+      <p>Your <strong>Empire Rating</strong> is a composite score measuring overall power -- factoring in turf, income, crew size, properties, and story progress.</p>
+      <p>The <strong>Empire Overview</strong> dashboard shows all your assets, income sources, crew, and turf at a glance.</p>`,
     step: '13'
   },
   {
@@ -9922,7 +9922,7 @@ const NARRATIVE_GUIDE_STEPS = [
         <li>Follow the <strong>Missions</strong> storyline.</li>
         <li>Heal at the <strong>Hospital</strong> -- health at 0 = permadeath.</li>
         <li>Watch your <strong>Heat</strong> -- the cops are always watching.</li>
-        <li>Build your empire with <strong>Properties</strong>, <strong>Territory</strong>, and <strong>Skills</strong>.</li>
+        <li>Build your empire with <strong>Properties</strong>, <strong>Turf</strong>, and <strong>Skills</strong>.</li>
         <li>Visit <strong>Settings > Help</strong> for detailed guides on anything.</li>
       </ul>
       <p style="color:#c0a062; font-family:'Georgia', serif; font-size:1.05em; margin-top:16px;"><strong>Now get out there and carve your name into the streets.</strong></p>`,
@@ -10080,7 +10080,7 @@ const SCREEN_TUTORIAL_MAP = {
   'hospital-screen': 'hospital',
   'skills-screen': 'skills',
   'player-stats-screen': 'stats',
-  'territory-control-screen': 'territory',
+  'turf-control-screen': 'turf',
   'options-screen': 'settings',
 };
 
@@ -10140,7 +10140,7 @@ const HELP_CATEGORIES = [
           <li><strong>Health (HP)</strong> -- Your life total. Drops from failed jobs, combat, and random events. If it hits 0, your character dies permanently. Base HP is 100 (115 with Thick Skin perk).</li>
           <li><strong>Heat (0-100)</strong> -- Represents police attention. Higher heat means more encounters, bigger fines, and arrest risk. Does not decay on its own unless you have the Neighbourhood Boss turf milestone (4 zones).</li>
           <li><strong>Respect</strong> -- Experience points that determine your Rank. Earned from jobs, missions, side ops, bounties, and combat. Each rank unlocks new screens, gear, story chapters, and features.</li>
-          <li><strong>Influence</strong> -- A measure of your underworld power. Gained from territory control, missions, and faction standing. Affects your Empire Rating.</li>
+          <li><strong>Influence</strong> -- A measure of your underworld power. Gained from turf control, missions, and faction standing. Affects your Empire Rating.</li>
           <li><strong>Bullets</strong> -- Ammunition required for firearm-based jobs (Hit on a Rival, Bank Job, etc.). Purchased from the Black Market. Scarce -- only 10 available per day.</li>
           <li><strong>Gasoline</strong> -- Fuel required for vehicle-based jobs (Cross-Border Smuggling, etc.). Purchased from the Black Market and consumed on use.</li>
         </ul>
@@ -10341,7 +10341,7 @@ const HELP_CATEGORIES = [
         <p>Not all money is created equal. Dirty money is earned from high-risk crimes and must be cleaned before you can spend it.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">What is Dirty Money?</h4>
         <ul>
-          <li>Earned from heists, illegal business fronts, certain jobs, and territory tribute.</li>
+          <li>Earned from heists, illegal business fronts, certain jobs, and turf tribute.</li>
           <li>Shown as a separate counter on your Status Bar.</li>
           <li><strong>Cannot be spent directly</strong> on anything.</li>
         </ul>
@@ -10369,7 +10369,7 @@ const HELP_CATEGORIES = [
     title: 'Combat & Equipment',
     topics: [
       { id: 'combat-help', icon: '', title: 'Combat System', content: `
-        <p>Combat occurs during jobs, bounty hunts, territory wars, PvP, and story missions. Your success depends on your gear, skills, and crew.</p>
+        <p>Combat occurs during jobs, bounty hunts, turf wars, PvP, and story missions. Your success depends on your gear, skills, and crew.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Attack & Defence</h4>
         <ul>
           <li><strong>Attack</strong> -- Determines your damage output. Increased by equipping weapons and investing in Combat skills.</li>
@@ -10417,7 +10417,7 @@ const HELP_CATEGORIES = [
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Special Weapons</h4>
         <ul>
-          <li><strong>Overlord's Scepter</strong> -- 60 power. Awarded for controlling all 8 territory zones (City Overlord milestone). Cannot be purchased.</li>
+          <li><strong>Overlord's Scepter</strong> -- 60 power. Awarded for controlling all 8 turf zones (City Overlord milestone). Cannot be purchased.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Durability</h4>
         <p>Weapons lose 1 durability each time they are used in combat or jobs. When durability hits 0, the weapon <strong>breaks and is permanently removed</strong> from your inventory. Damaged weapons cannot be sold.</p>
@@ -10690,21 +10690,21 @@ const HELP_CATEGORIES = [
           <li>Each upgrade level multiplies income (1.2x-1.8x per level).</li>
           <li>Assigning a gang member as manager adds +15-40% income based on their level.</li>
           <li>Corrupt officials can add +30-50% income bonus.</li>
-          <li>Territory control provides district multipliers (up to +100% in premium districts).</li>
-          <li>Buildings in rival-controlled districts pay a -10% territory tax to the controller.</li>
+          <li>Turf control provides district multipliers (up to +100% in premium districts).</li>
+          <li>Buildings in rival-controlled districts pay a -10% turf tax to the controller.</li>
         </ul>
       `},
-      { id: 'territory-help', icon: '', title: 'Territory Control', content: `
-        <p>Dominate the city district by district. Territory is your path to real power -- but expansion paints a bigger target on your back.</p>
+      { id: 'territory-help', icon: '', title: 'Turf Control', content: `
+        <p>Dominate the city district by district. Turf is your path to real power -- but expansion paints a bigger target on your back.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">The 8 Turf Zones</h4>
         <ul>
           <li><strong>The Slums</strong> -- $1,500/week base income. 120 defense. Contested (no boss).</li>
-          <li><strong>The Sprawl</strong> -- $2,500/week. 120 defense. Morales territory.</li>
-          <li><strong>The Old Quarter</strong> -- $3,000/week. 140 defense. Torrino territory.</li>
+          <li><strong>The Sprawl</strong> -- $2,500/week. 120 defense. Morales turf.</li>
+          <li><strong>The Old Quarter</strong> -- $3,000/week. 140 defense. Torrino turf.</li>
           <li><strong>Little Italy</strong> -- $4,000/week. 180 defense. Torrino. Boss: Vinnie-The-Rat.</li>
-          <li><strong>Chinatown</strong> -- $4,500/week. 190 defense. Chen territory.</li>
-          <li><strong>Harbor Row</strong> -- $5,000/week. 210 defense. Kozlov territory.</li>
-          <li><strong>Redlight District</strong> -- $5,500/week. 200 defense. Morales territory.</li>
+          <li><strong>Chinatown</strong> -- $4,500/week. 190 defense. Chen turf.</li>
+          <li><strong>Harbor Row</strong> -- $5,000/week. 210 defense. Kozlov turf.</li>
+          <li><strong>Redlight District</strong> -- $5,500/week. 200 defense. Morales turf.</li>
           <li><strong>Midtown Heights</strong> -- $6,000/week. 250 defense. Independent. Boss: Kane.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Claiming & Defending</h4>
@@ -10738,7 +10738,7 @@ const HELP_CATEGORIES = [
           <li><strong>Money Power</strong> (max 2,000 pts) -- Based on total cash held.</li>
           <li><strong>Reputation Power</strong> (max 2,000 pts) -- Based on total reputation earned.</li>
           <li><strong>Gang Power</strong> (max 1,500 pts) -- Based on number and quality of crew members.</li>
-          <li><strong>Territory Power</strong> (max 1,500 pts) -- Based on turf zones controlled.</li>
+          <li><strong>Turf Power</strong> (max 1,500 pts) -- Based on turf zones controlled.</li>
           <li><strong>Business Power</strong> (max 1,500 pts) -- Based on businesses owned.</li>
           <li><strong>Skill Power</strong> (max 1,500 pts) -- Based on total skill ranks invested.</li>
         </ul>
@@ -10762,7 +10762,7 @@ const HELP_CATEGORIES = [
     title: 'Gangs, Factions & Story',
     topics: [
       { id: 'gang-help', icon: '', title: 'Your Gang (AI Crew)', content: `
-        <p>Recruit AI crew members to boost your stats, run operations, defend territory, and manage businesses.</p>
+        <p>Recruit AI crew members to boost your stats, run operations, defend turf, and manage businesses.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Crew Roles</h4>
         <p>Each gang member has a specialisation that provides unique bonuses:</p>
         <ul>
@@ -10830,9 +10830,9 @@ const HELP_CATEGORIES = [
         <h4 style="color:#c0a062; margin:14px 0 6px;">Morales Cartel (South American Drug Cartel)</h4>
         <ul>
           <li><strong>Boss:</strong> El Jefe Ricardo Morales</li>
-          <li><strong>Specialty:</strong> Drug distribution, territory control.</li>
+          <li><strong>Specialty:</strong> Drug distribution, turf control.</li>
           <li><strong>Passive (10+ rep):</strong> "Cartel Connections" -- violent crimes generate -20% heat.</li>
-          <li><strong>Buffs:</strong> -25% violent heat, +15% territory defense.</li>
+          <li><strong>Buffs:</strong> -25% violent heat, +15% turf defense.</li>
           <li><strong>Turf:</strong> Redlight District, The Sprawl.</li>
           <li><strong>Signature Job (20+ rep):</strong> Border Crossing Run. Passive heat decay 1-3 points daily from corrupt officials.</li>
         </ul>
@@ -10862,7 +10862,7 @@ const HELP_CATEGORIES = [
         <h4 style="color:#c0a062; margin:14px 0 6px;">Street Stories</h4>
         <p>Random narrative events triggered during gameplay. They present choices (pay off a debtor, blackmail a rival, handle a witness, etc.) with consequences affecting money, respect, heat, and gang members. Some are tied to side operation steps.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Post-Don Content</h4>
-        <p>After completing the main story, endgame arcs unlock: Successor Crisis, Internal Power Struggle, and Expansion Into New Territory.</p>
+        <p>After completing the main story, endgame arcs unlock: Successor Crisis, Internal Power Struggle, and Expansion Into New Turf.</p>
       `},
       { id: 'corruption-help', icon: '', title: 'Corruption (Bribes)', content: `
         <p>Bribe city officials to gain temporary powerful bonuses. Available from the Corruption screen.</p>
@@ -10871,7 +10871,7 @@ const HELP_CATEGORIES = [
           <li><strong>Patrol Officer</strong> -- $500. Lasts 7 days. -10% heat. Low influence.</li>
           <li><strong>Detective</strong> -- $2,000. Lasts 14 days. -25% heat, 30% chance to destroy evidence.</li>
           <li><strong>Police Captain</strong> -- $8,000. Lasts 30 days. -40% heat, 80% raid warning chance.</li>
-          <li><strong>City Councilman</strong> -- $5,000. Lasts 21 days. -50% business costs, faster territory claims.</li>
+          <li><strong>City Councilman</strong> -- $5,000. Lasts 21 days. -50% business costs, faster turf claims.</li>
           <li><strong>District Judge</strong> -- $15,000. Lasts 60 days. -60% jail time, 40% cases dismissed.</li>
           <li><strong>Mayor</strong> -- $25,000. Lasts 90 days. -30% city-wide heat, +50% business opportunities.</li>
         </ul>
@@ -10879,7 +10879,7 @@ const HELP_CATEGORIES = [
         <ul>
           <li>Corrupt officials can boost business income by +30-50%.</li>
           <li>Some officials provide business license discounts (-10-50%).</li>
-          <li>Zone permits speed up territory claiming by +30%.</li>
+          <li>Zone permits speed up turf claiming by +30%.</li>
           <li>Corruption expires after the listed duration -- you must re-bribe to maintain the bonus.</li>
         </ul>
       `},
@@ -10916,8 +10916,8 @@ const HELP_CATEGORIES = [
           <li><strong>Police Scanner</strong> (utility item) -- -20% heat gain on all jobs.</li>
           <li><strong>Morales faction passive</strong> -- Violent crimes generate -20% heat.</li>
         </ul>
-        <h4 style="color:#c0a062; margin:14px 0 6px;">Heat & Territory Income</h4>
-        <p>High heat reduces your weekly turf tribute by up to 70%. Keep heat low to maximise territory income.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Heat & Turf Income</h4>
+        <p>High heat reduces your weekly turf tribute by up to 70%. Keep heat low to maximise turf income.</p>
       `},
       { id: 'jail-help', icon: '', title: 'Jail & Arrest', content: `
         <p>Getting arrested sends you to jail for a timed sentence. While in jail, you cannot perform most actions.</p>
@@ -11053,7 +11053,7 @@ const HELP_CATEGORIES = [
           <li><strong>Leaderboards</strong> -- Global rankings based on Empire Rating and PvP wins. Monthly seasons with resets.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Offline Play</h4>
-        <p>All core gameplay (jobs, missions, casino, skills, properties, territory) works fully offline. Your local saves are always available without internet.</p>
+        <p>All core gameplay (jobs, missions, casino, skills, properties, turf) works fully offline. Your local saves are always available without internet.</p>
       `},
       { id: 'pvp-help', icon: '', title: 'PvP Combat', content: `
         <p>Attack other real players to steal their cash and climb the leaderboard.</p>
@@ -11148,7 +11148,7 @@ const HELP_CATEGORIES = [
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Empire Overview</h4>
         <ul>
-          <li>Visual dashboard showing all assets, income sources, crew, territory, and your Empire Rating grade at a glance.</li>
+          <li>Visual dashboard showing all assets, income sources, crew, turf, and your Empire Rating grade at a glance.</li>
           <li>Compare your Empire Rating against other players on the leaderboard.</li>
         </ul>
       `},
@@ -13818,9 +13818,9 @@ function collectTribute() {
     dirtyTribute = player.gang.members * 180;
   }
 
-  // Bonus based on territory controlled (dirty cash)
-  const territoryBonus = player.territory * 35;
-  dirtyTribute += territoryBonus;
+  // Bonus based on turf controlled (dirty cash)
+  const turfBonus = player.territory * 35;
+  dirtyTribute += turfBonus;
 
   const totalTribute = cleanTribute + dirtyTribute;
 
@@ -13834,8 +13834,8 @@ function collectTribute() {
   updateStatistic('totalMoneyEarned', totalTribute);
 
   let bonusText = '';
-  if (territoryBonus > 0) {
-    bonusText += ` (+$${territoryBonus} territory bonus)`;
+  if (turfBonus > 0) {
+    bonusText += ` (+$${turfBonus} turf bonus)`;
   }
 
   const breakdownParts = [];
@@ -13849,15 +13849,15 @@ function collectTribute() {
   showGang(_currentGangTab); // Refresh the gang screen to show new cooldown
 }
 
-function expandTerritory() {
+function expandTurf() {
   const actualGangSize = player.gang.gangMembers ? player.gang.gangMembers.length : player.gang.members;
 
   if (actualGangSize < 5) {
-    showBriefNotification('You need at least 5 gang members to expand territory!', 'warning');
+    showBriefNotification('You need at least 5 gang members to expand turf!', 'warning');
     return;
   }
 
-  // Territory expansion costs money
+  // Turf expansion costs money
   const moneyCost = Math.floor(2000 + (player.turf?.owned || []).length * 3000); // Scales with holdings
 
   if (player.money < moneyCost) {
@@ -13875,18 +13875,18 @@ function expandTerritory() {
     player.territory++;
     player.reputation += 5;
 
-    // Income bonus from new territory
+    // Income bonus from new turf
     const incomeGain = Math.floor(500 + Math.random() * 1500 + (player.turf?.owned || []).length * 200);
-    player.territoryIncome += incomeGain;
+    player.turfIncome += incomeGain;
 
     // Track statistics
-    updateStatistic('territoriesExpanded');
+    updateStatistic('turfsExpanded');
 
     // Update mission progress
     updateMissionProgress('turf_controlled');
 
-    showBriefNotification(`Territory expanded! +$${incomeGain.toLocaleString()}/week income.`, 'success');
-    degradeEquipment('territory_expand');
+    showBriefNotification(`Turf expanded! +$${incomeGain.toLocaleString()}/week income.`, 'success');
+    degradeEquipment('turf_expand');
     logAction('Your influence spreads like ink in water. New blocks fall under your protection, new corners pay tribute. The empire grows one street at a time.');
   } else {
     let losses = Math.floor(Math.random() * 4) + 2;
@@ -13897,15 +13897,15 @@ function expandTerritory() {
       const randomIndex = Math.floor(Math.random() * player.gang.gangMembers.length);
       const lostMember = player.gang.gangMembers[randomIndex];
       player.gang.gangMembers.splice(randomIndex, 1);
-      // Reduce territory power for lost member
+      // Reduce turf power for lost member
       const powerLoss = Math.floor((lostMember.experienceLevel || 1) * 2) + 5;
-      player.territoryPower = Math.max(50, player.territoryPower - powerLoss);
+      player.turfPower = Math.max(50, player.turfPower - powerLoss);
     }
     // Keep members count in sync
     player.gang.members = player.gang.gangMembers.length;
 
     showBriefNotification(`Expansion failed! Lost ${losses} gang members in the turf war.`, 'danger');
-    logAction(`Failed territory expansion, lost ${losses} members.`);
+    logAction(`Failed turf expansion, lost ${losses} members.`);
   }
   updateUI();
   showGang(_currentGangTab);
@@ -13949,7 +13949,7 @@ function gangWar() {
     showBriefNotification(`Gang war victory! Earned $${winnings.toLocaleString()} (dirty) and gained turf respect!`, 'success');
     logAction(`Victorious in gang warfare! The streets echo with your name as you claim $${winnings.toLocaleString()} (dirty) and expand your domain.`);
     if (player.turf) player.turf.reputation = (player.turf.reputation || 0) + 10;
-    player.territoryReputation = (player.territoryReputation || 0) + 10;
+    player.turfReputation = (player.turfReputation || 0) + 10;
 
     // Rival respect: gang war victory intimidates all rivals
     const allRivals = player.rivalKingpins || RIVAL_KINGPINS;
@@ -13984,9 +13984,9 @@ function gangWar() {
       const randomIndex = Math.floor(Math.random() * player.gang.gangMembers.length);
       const lostMember = player.gang.gangMembers[randomIndex];
       player.gang.gangMembers.splice(randomIndex, 1);
-      // Reduce territory power for lost member
+      // Reduce turf power for lost member
       const powerLoss = Math.floor((lostMember.experienceLevel || 1) * 2) + 5;
-      player.territoryPower = Math.max(50, player.territoryPower - powerLoss);
+      player.turfPower = Math.max(50, player.turfPower - powerLoss);
     }
     player.gang.members = player.gang.gangMembers.length;
 
@@ -14029,7 +14029,7 @@ async function fireGangMember(memberIndex) {
   player.gang.gangMembers.splice(memberIndex, 1);
   player.gang.members = player.gang.gangMembers.length;
 
-  // Recalculate power after removing member (handles territory power automatically)
+  // Recalculate power after removing member (handles turf power automatically)
   recalculatePower();
 
   // Update UI and refresh gang screen
@@ -14740,7 +14740,7 @@ const newsEvents = [
     effects: {
       heatGain: 1.4,
       policePresence: 0.3,
-      territoryRisk: 0.25,
+      turfRisk: 0.25,
       duration: 14 * 24 * 60 * 60 * 1000 // 2 weeks
     },
     probability: 0.15,
@@ -14800,10 +14800,10 @@ const crackdownTypes = [
     effects: {
       gangOperationRisk: 0.5,
       recruitmentRisk: 0.3,
-      territoryHeat: 0.4,
+      turfHeat: 0.4,
       duration: 14 * 24 * 60 * 60 * 1000 // 2 weeks
     },
-    triggers: ['territory_violence', 'gang_visibility'],
+    triggers: ['turf_violence', 'gang_visibility'],
     severity: 'extreme',
     icon: ''
   },
@@ -15005,7 +15005,7 @@ function triggerPoliceCrackdown() {
       switch(trigger) {
         case 'high_drug_activity': return (player.reputation || 0) > 30;
         case 'public_pressure': return player.heat > 30;
-        case 'territory_violence': return (player.turf?.owned || []).length > 2;
+        case 'turf_violence': return (player.turf?.owned || []).length > 2;
         case 'gang_visibility': return player.gang.members > 5;
         case 'car_theft_reports': return player.stolenCars.length > 3;
         case 'insurance_pressure': return player.stolenCars.length > 5;
@@ -15443,15 +15443,15 @@ function showPlayerStats() {
     skillTreeOverviewHTML += '</div>';
   }
 
-  // ---- SECTION 3: Gang & Territory ----
+  // ---- SECTION 3: Gang & Turf ----
 
-  // ---- SECTION 4: Gang & Territory ----
+  // ---- SECTION 4: Gang & Turf ----
   const gangHTML = [
     row('Gang Members', (player.gang.gangMembers || []).length, '#c0a062'),
     row('Max Gang Size', player.realEstate.maxGangMembers || 5, '#f5e6c8'),
-    row('Territories Held', (player.turf?.owned || []).length, '#e67e22'),
-    row('Territory Power', player.territoryPower || 100, '#8b3a3a'),
-    row('Territory Respect', player.territoryReputation || 0, '#8b6a4a'),
+    row('Turf Held', (player.turf?.owned || []).length, '#e67e22'),
+    row('Turf Power', player.turfPower || 100, '#8b3a3a'),
+    row('Turf Respect', player.turfReputation || 0, '#8b6a4a'),
     row('Properties Owned', (player.realEstate.ownedProperties || []).length, '#d4af37'),
     row('Businesses Owned', (player.businesses || []).length, '#7a8a5a'),
   ].join('');
@@ -15520,7 +15520,7 @@ function showPlayerStats() {
       ${card('Origin &amp; Perk', '', originHTML)}
       ${card('Core Stats', '', coreHTML)}
       ${card('Skill Trees', '', skillTreeOverviewHTML)}
-      ${card('Gang & Territory', '', gangHTML)}
+      ${card('Gang & Turf', '', gangHTML)}
       ${card('Faction Reputation', '', factionHTML)}
       ${card('Equipment', '', equipHTML)}
       ${card('Playstyle', '', playstyleHTML)}
@@ -16293,7 +16293,7 @@ function recruitMember(index) {
     player.gang.gangMembers.push(newMember);
     player.gang.members = player.gang.gangMembers.length;
 
-    // Recalculate power (handles territory power automatically)
+    // Recalculate power (handles turf power automatically)
     recalculatePower();
 
     // Remove recruited member from available list
@@ -17475,10 +17475,10 @@ function resetPlayerForNewGame() {
     launderingSetups: [],
     businessLastCollected: {},
     protectionRackets: [],
-    territoryIncome: 0,
+    turfIncome: 0,
     corruptedOfficials: [],
-    territoryPower: 100,
-    territoryReputation: 0,
+    turfPower: 100,
+    turfReputation: 0,
     quickActionPrefs: [],
     storyProgress: {
       currentChapter: 0,
@@ -18602,7 +18602,7 @@ function showTerritoryRelocation() {
     : 'You haven\'t chosen a home district yet.';
 
   hideAllScreens();
-  document.getElementById('territory-control-content').innerHTML = `
+  document.getElementById('turf-control-content').innerHTML = `
     <div style="padding: 20px; color: white; max-width: 1000px; margin: 0 auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
@@ -18616,7 +18616,7 @@ function showTerritoryRelocation() {
       </div>
     </div>
   `;
-  document.getElementById('territory-control-screen').style.display = 'block';
+  document.getElementById('turf-control-screen').style.display = 'block';
 }
 
 async function confirmRelocation(districtId) {
@@ -18776,7 +18776,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.39.1';
+const CURRENT_VERSION = '1.40.0';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -22259,7 +22259,7 @@ function hireSpecialRecruit() {
   player.gang.members = player.gang.gangMembers.length;
 
   const powerGain = Math.floor(recruit.experienceLevel * 2) + 5;
-  player.territoryPower += powerGain;
+  player.turfPower += powerGain;
   recalculatePower();
 
   // Clear special recruit
@@ -22314,7 +22314,7 @@ function generatePassiveIncome() {
 function startPassiveIncomeGenerator() {
   gameplayIntervals.push(setInterval(() => {
     generatePassiveIncome();
-    processTerritoryOperations(); // Process territory income and events
+    processTurfOpsWrapper(); // Process turf income and events
     applyDailyPassives(); // Apply faction passives (interest, ammo regen, etc.)
     releaseArrestedGangMembers(); // Check if any arrested members should be released
     processGangPassiveIncome(); // Idle gang members earn from street hustles
@@ -23094,8 +23094,8 @@ function initGame() {
   // Initialize mission system
   updateMissionAvailability();
 
-  // Initialize territory system
-  calculateTotalTerritoryIncome();
+  // Initialize turf system
+  recalcTurfIncome();
 
   // Show the title screen and let the player choose
   document.getElementById('menu').style.display = 'none';
@@ -23244,7 +23244,7 @@ function showMap() {
     </div>
 
     <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-      <button onclick="showTerritoryControl();" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
+      <button onclick="showTurfControl();" style="background: #c0a062; color: white; padding: 12px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;">
         Turf Management
       </button>
       <button class="nav-btn-back" onclick="goBackToMainMenu()"><- Back to SafeHouse</button>
@@ -23621,7 +23621,7 @@ function calculateEmpireRating() {
       totalScore: 0,
       moneyPower: 0,
       gangPower: 0,
-      territoryPower: 0,
+      turfPower: 0,
       businessPower: 0,
       reputationPower: 0,
       skillPower: 0
@@ -23635,8 +23635,8 @@ function calculateEmpireRating() {
   const gangSize = player.gang.gangMembers ? player.gang.gangMembers.length : player.gang.members;
   player.empireRating.gangPower = Math.min(1500, gangSize * 50);
 
-  // Territory Power (max 1500 points)
-  player.empireRating.territoryPower = Math.min(1500, player.territory * 100);
+  // Turf Power (max 1500 points)
+  player.empireRating.turfPower = Math.min(1500, player.territory * 100);
 
   // Business Power (max 1500 points)
   const businessCount = player.businesses ? player.businesses.length : 0;
@@ -23653,7 +23653,7 @@ function calculateEmpireRating() {
   player.empireRating.totalScore =
     player.empireRating.moneyPower +
     player.empireRating.gangPower +
-    player.empireRating.territoryPower +
+    player.empireRating.turfPower +
     player.empireRating.businessPower +
     player.empireRating.reputationPower +
     player.empireRating.skillPower;
@@ -23712,11 +23712,11 @@ function buildEmpireRatingHTML() {
         </div>
 
         <div class="rating-category">
-          <h3 style="color: #c0a040;">Territory Power</h3>
+          <h3 style="color: #c0a040;">Turf Power</h3>
           <div class="progress-bar">
-            <div style="width: ${(rating.territoryPower/1500)*100}%; background: #c0a040;"></div>
+            <div style="width: ${(rating.turfPower/1500)*100}%; background: #c0a040;"></div>
           </div>
-          <p>${rating.territoryPower}/1500 points</p>
+          <p>${rating.turfPower}/1500 points</p>
         </div>
 
         <div class="rating-category">
@@ -24104,6 +24104,28 @@ function applySaveData(saveData) {
   if (player.stats && typeof player.stats.highestWantedLevel === 'number') {
     player.stats.highestHeat = player.stats.highestWantedLevel;
     delete player.stats.highestWantedLevel;
+  }
+
+  // ── Save migration: territory* → turf* (v1.40.0) ──
+  if (player.territoryReputation !== undefined) {
+    player.turfReputation = player.territoryReputation;
+    delete player.territoryReputation;
+  }
+  if (player.territoryPower !== undefined) {
+    player.turfPower = player.territoryPower;
+    delete player.territoryPower;
+  }
+  if (player.territoryIncome !== undefined) {
+    player.turfIncome = player.territoryIncome;
+    delete player.territoryIncome;
+  }
+  if (player.empireRating && player.empireRating.territoryPower !== undefined) {
+    player.empireRating.turfPower = player.empireRating.territoryPower;
+    delete player.empireRating.territoryPower;
+  }
+  if (player.stats && player.stats.territoriesControlled !== undefined) {
+    player.stats.turfsControlled = player.stats.territoriesControlled;
+    delete player.stats.territoriesControlled;
   }
 
   // ── Save migration: backfill new skill tree nodes from definitions ──
@@ -26214,7 +26236,8 @@ window.handleOperationArrest = handleOperationArrest;
 window.checkForBetrayals = checkForBetrayals;
 window.shouldTriggerBetrayal = shouldTriggerBetrayal;
 window.triggerBetrayalEvent = triggerBetrayalEvent;
-window.showTerritoryControl = showTerritoryControl;
+window.showTurfControl = showTurfControl;
+window.showTerritoryControl = showTurfControl; // Legacy alias
 window.showAvailableTerritories = function() { showTurfMap(); };
 window.calculateTerritoryIncome = function() { return recalcTurfIncome(); };
 window.calculateTotalTerritoryIncome = function() { return recalcTurfIncome(); };
@@ -26228,10 +26251,10 @@ window.approachBusiness = approachBusiness;
 window.collectProtection = collectProtection;
 window.pressureBusiness = pressureBusiness;
 
-window.processTerritoryOperations = processTerritoryOperations;
-window.generateTerritoryEvent = generateTerritoryEvent;
+window.processTerritoryOperations = processTurfOpsWrapper;
+window.generateTerritoryEvent = generateTurfEvent;
 window.collectTribute = collectTribute;
-window.expandTerritory = expandTerritory;
+window.expandTerritory = expandTurf;
 window.gangWar = gangWar;
 window.corruptOfficial = corruptOfficial;
 window.dropProtection = dropProtection;

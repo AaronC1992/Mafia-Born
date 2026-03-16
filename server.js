@@ -6200,7 +6200,7 @@ const SEASONAL_EVENT_TEMPLATES = [
         description: 'All-out war! Territory rewards are doubled, but the streets are more dangerous.',
         durationDays: 7,
         objectives: [
-            { id: 'capture_turf', description: 'Capture 3 territories', target: 3, reward: { money: 200000, xp: 3000 } },
+            { id: 'capture_territory', description: 'Capture 3 territories', target: 3, reward: { money: 200000, xp: 3000 } },
             { id: 'pvp_wins', description: 'Win 5 PvP fights', target: 5, reward: { money: 150000, xp: 2000 } }
         ],
         globalEffects: { territoryRewardMultiplier: 2.0, pvpDamageMultiplier: 1.25 }
