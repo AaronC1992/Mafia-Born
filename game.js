@@ -11027,6 +11027,8 @@ const HELP_CATEGORIES = [
           <li><strong>PvP Combat</strong> -- Attack other players to steal cash and gain respect. Climbs the leaderboard.</li>
           <li><strong>Player Market</strong> -- Buy and sell items with other real players via the Black Market's Player Market tab.</li>
           <li><strong>Families</strong> -- Create or join a crime family for group play, territory wars, and shared bonuses.</li>
+          <li><strong>Territories</strong> -- Relocate between 8 city districts, conquer territory from NPC bosses or rival players, and earn tax revenue.</li>
+          <li><strong>Top Don</strong> -- The player who controls the most territories sets city-wide policies that affect all players.</li>
           <li><strong>Leaderboards</strong> -- Global rankings based on Empire Rating and PvP wins. Monthly seasons with resets.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Offline Play</h4>
@@ -11060,6 +11062,51 @@ const HELP_CATEGORIES = [
           <li>Browse listings by category to find deals.</li>
           <li>Transactions happen instantly when a buyer purchases your listing.</li>
         </ul>
+      `},
+      { id: 'territory-help', icon: '', title: 'Territories & Districts', content: `
+        <p>The city is divided into 8 districts, each with unique benefits and risks. Your district affects income, business capacity, and gameplay bonuses.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Districts</h4>
+        <ul>
+          <li><strong>The Slums</strong> -- Cheap to move to. Bonus to drug sales and recruitment.</li>
+          <li><strong>Suburbia</strong> -- Balanced. Bonus to protection and legitimacy.</li>
+          <li><strong>The Hills</strong> -- Expensive, high police. Bonus to protection and heist rewards.</li>
+          <li><strong>Downtown</strong> -- Business hub. Bonus to business income, laundering, and networking.</li>
+          <li><strong>The Strip</strong> -- Retail area. Bonus to theft, smuggling, and business.</li>
+          <li><strong>The Yards</strong> -- Warehouses. Bonus to smuggling, weapons, and storage.</li>
+          <li><strong>The Docks</strong> -- Highest income, highest risk. Bonus to smuggling and international connections.</li>
+          <li><strong>Neon Row</strong> -- Nightlife area. Bonus to vice, recruitment, and information.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Relocation</h4>
+        <ul>
+          <li>Move between districts from the Territory Management screen. Each district has a different move cost.</li>
+          <li>There is a <strong>1-hour cooldown</strong> between relocations.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Ownership & Territory Wars</h4>
+        <ul>
+          <li>Each district starts controlled by an NPC boss. Claim or conquer districts to take ownership.</li>
+          <li>Owning a district earns you <strong>tax revenue</strong> from businesses operating there.</li>
+          <li>To wage a territory war you must <strong>live in the target district</strong> and have at least <strong>5 gang members</strong>.</li>
+          <li>Your gang's size and total power determine the outcome of territory wars.</li>
+        </ul>
+      `},
+      { id: 'politics-help', icon: '', title: 'Top Don & City Policies', content: `
+        <p>The player who controls the most territories becomes the <strong>Top Don</strong> and gains the power to set city-wide policies that affect every player.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Becoming Top Don</h4>
+        <ul>
+          <li>Conquer and hold more territories than any other player.</li>
+          <li>The Top Don title updates dynamically as territory control shifts.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">City Policies</h4>
+        <p>The Top Don sets five policies that affect all players in the city:</p>
+        <ul>
+          <li><strong>Tax Rate</strong> -- Percentage taken from job earnings city-wide.</li>
+          <li><strong>Market Fee</strong> -- Transaction fee on all marketplace trades.</li>
+          <li><strong>Crime Bonus</strong> -- Bonus (or penalty) to crime job earnings.</li>
+          <li><strong>Jail Time Modifier</strong> -- Increases or decreases jail sentence lengths.</li>
+          <li><strong>Heist Bonus</strong> -- Bonus (or penalty) to heist payouts.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Viewing Policies</h4>
+        <p>Check current city policies from the <strong>City Policies</strong> button on the Territory Management screen. Each policy shows whether it is favorable or harsh for the population.</p>
       `},
       { id: 'store-help', icon: '', title: 'Black Market (Shopping)', content: `
         <p>The Black Market has three tabs: <strong>Buy</strong>, <strong>The Fence</strong>, and <strong>Player Market</strong>.</p>
@@ -18753,7 +18800,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.0';
+const CURRENT_VERSION = '1.41.1';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {

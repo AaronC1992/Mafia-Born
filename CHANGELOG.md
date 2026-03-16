@@ -5,6 +5,13 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.1] - 2026-03-16
+
+### Added
+- Help screen now includes a **Territories & Districts** topic covering all 8 districts, relocation, ownership, and territory wars.
+- Help screen now includes a **Top Don & City Policies** topic explaining how the Top Don is determined and what the five city-wide policies do.
+- Multiplayer Overview help bullets now mention Territories and Top Don.
+
 ## [1.41.0] - 2026-03-16
 
 ### Removed
