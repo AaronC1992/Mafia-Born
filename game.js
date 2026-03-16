@@ -1237,18 +1237,6 @@ const EXPANDED_SYSTEMS_CONFIG = {
 
 // ==================== HOSPITAL / HEALING SYSTEM ====================
 
-// Returns heal time in ms for injured gang members.
-// Base: 30 minutes. Hospital property reduces it per level.
-function getGangHealTimeMs() {
-  const baseHealMs = 30 * 60 * 1000; // 30 minutes
-  const hospital = getOwnedHospital();
-  if (!hospital) return baseHealMs;
-  // Each level reduces heal time: Lv1=20min, Lv2=14min, Lv3=10min, Lv4=7min, Lv5=5min
-  const reductionPerLevel = 0.20; // 20% reduction per level (compounding)
-  const multiplier = Math.pow(1 - reductionPerLevel, hospital.level || 1);
-  return Math.max(5 * 60 * 1000, Math.floor(baseHealMs * multiplier)); // Min 5 min
-}
-
 // Returns the player's hospital property if owned, null otherwise
 function getOwnedHospital() {
   if (!player.properties) return null;
@@ -1400,7 +1388,7 @@ function generateExpandedGangMember(role = null, name = null) {
         perk: roleData.perk,
         level: 1,
         experience: 0,
-        status: 'active', // active, injured, jailed, dead
+        status: 'active', // active, jailed, dead
         assignedTo: null, // null, "turf_X", "operation_Y"
         traits: generateRandomTraits(),
         joinedDate: Date.now()
@@ -1446,7 +1434,7 @@ function generateRandomTraits() {
         { name: 'Cool Under Pressure', effect: '+10% success in high-heat jobs' },
         { name: 'Loyal to the End', effect: 'Never betrays, +10% morale' },
         { name: 'Greedy', effect: '+15% payout demand' },
-        { name: 'Cautious', effect: '-10% arrest chance, -5% success' },
+        { name: 'Streetwise', effect: '-10% arrest chance, -30% death chance in turf fights' },
         { name: 'Reckless', effect: '+10% success, +15% arrest chance' },
         { name: 'Charming', effect: '+10% respect gains' },
         { name: 'Paranoid', effect: '+20% detection of betrayals' },
@@ -1488,7 +1476,7 @@ function calculateMemberEffectiveness(member, taskType) {
         if (trait.name === 'Veteran') baseScore *= 1.15;
         if (trait.name === 'Greenhorn') baseScore *= 0.85;
         if (trait.name === 'Reckless' && taskType === 'violence') baseScore *= 1.1;
-        if (trait.name === 'Cautious' && taskType === 'stealth') baseScore *= 1.1;
+        if (trait.name === 'Streetwise' && taskType === 'stealth') baseScore *= 1.1;
     });
 
     return Math.floor(baseScore);
@@ -2191,7 +2179,7 @@ function executeEliminationMission(famKey) {
   }
 
   // Process gang casualties from the mission
-  const { casualties, injured } = processTurfAttackCasualties(missionSuccess, player.gang?.gangMembers || [], `${fam.name} Elimination`);
+  const { casualties } = processTurfAttackCasualties(missionSuccess, player.gang?.gangMembers || [], `${fam.name} Elimination`);
 
   if (missionSuccess) {
     // Eliminate the family
@@ -2230,7 +2218,6 @@ function executeEliminationMission(famKey) {
         Rewards: <span style="color:#8a9a6a;">+$${cashReward.toLocaleString()}</span> | <span style="color:#c0a062;">+${repReward} Reputation</span><br>
         Damage Taken: <span style="color:#e67e22;">${totalDamage} HP</span>
         ${casualties.length ? `<br>Lost: <span style="color:#e74c3c;">${casualties.join(', ')}</span>` : ''}
-        ${injured.length ? `<br>Injured: <span style="color:#e67e22;">${injured.join(', ')}</span>` : ''}
       </div>
       <div style="margin-top:10px; color:#8a7a5a; font-size:0.9em;">
         ${fam.name} is no more. Their turf, soldiers, and operations have been absorbed. The streets remember.
@@ -2255,7 +2242,6 @@ function executeEliminationMission(famKey) {
       <div style="color:#d4c4a0;">
         Damage Taken: <span style="color:#e74c3c;">${totalDamage} HP</span>
         ${casualties.length ? `<br>Lost: <span style="color:#e74c3c;">${casualties.join(', ')}</span>` : ''}
-        ${injured.length ? `<br>Injured: <span style="color:#e67e22;">${injured.join(', ')}</span>` : ''}
       </div>
       <div style="margin-top:10px; color:#8a7a5a; font-size:0.9em;">
         ${fam.name}'s leadership survived the assault. They remain a threat. Regroup and try again while they still hold no turf.
@@ -2410,7 +2396,7 @@ function processTurfAttack(zone, attackerName, attackStrength, player) {
         zone: zone.name,
         attacker: attackerName,
         attackStrength, defenseStrength,
-        casualties: [], injuredDefenders: [],
+        casualties: [],
         lostTurf: false, rewards: {}
     };
 
@@ -2428,7 +2414,6 @@ function processTurfAttack(zone, attackerName, attackStrength, player) {
             const roll = Math.random();
             if (roll < 0.25) { member.status = 'dead'; result.casualties.push(member.name); }
             else if (roll < 0.40) { member.status = 'jailed'; result.casualties.push(member.name + ' (arrested)'); }
-            else if (roll < 0.65) { member.status = 'injured'; result.injuredDefenders.push(member.name); const mId = member.id; setTimeout(() => { const gm = player.gang?.gangMembers?.find(x => x.id === mId); if (gm && gm.status === 'injured') gm.status = 'active'; }, getGangHealTimeMs()); }
         });
         zone.defendingMembers = [];
     } else {
@@ -2440,7 +2425,6 @@ function processTurfAttack(zone, attackerName, attackStrength, player) {
             const rand = player.gang.gangMembers.find(m => m.id === zone.defendingMembers[Math.floor(Math.random() * zone.defendingMembers.length)]);
             if (rand) {
                 if (Math.random() < 0.3) { rand.status = 'dead'; result.casualties.push(rand.name); }
-                else { rand.status = 'injured'; result.injuredDefenders.push(rand.name); const rId = rand.id; setTimeout(() => { const gm = player.gang?.gangMembers?.find(x => x.id === rId); if (gm && gm.status === 'injured') gm.status = 'active'; }, getGangHealTimeMs()); }
             }
         }
     }
@@ -5419,7 +5403,7 @@ function showGang(activeTab) {
           <div style="font-size:0.8em; color:#8a7a5a; text-transform:uppercase; letter-spacing:1px;">Active Ops</div>
         </div>
       </div>
-      <div style="font-size:0.8em; color:#6a5a3a; text-align:center; margin:-8px 0 14px 0; font-style:italic;">Available members are ready for action -- not in jail, injured, or dead.</div>
+      <div style="font-size:0.8em; color:#6a5a3a; text-align:center; margin:-8px 0 14px 0; font-style:italic;">Available members are ready for action -- not in jail or dead.</div>
       <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
         ${(() => {
           const tributeElapsed = Math.floor((Date.now() - (player.gang.lastTributeTime || 0)) / 1000);
@@ -6860,35 +6844,25 @@ function calculateTurfWinChance(attackPower, defense) {
 window.calculateTurfWinChance = calculateTurfWinChance;
 
 // -- Process casualties among gang members after a turf fight --
-// deathChance / injuryChance are base rates; actual chance per member is randomised.
+// deathChance is the base rate; actual chance per member is randomised.
 function processTurfAttackCasualties(won, gangMembers, _zoneName) {
   const casualties = [];
-  const injured = [];
   const active = gangMembers.filter(m => m.status === 'active' && !m.arrested);
-  if (active.length === 0) return { casualties, injured };
+  if (active.length === 0) return { casualties };
 
   // Losing fights are bloodier
   const baseDeathChance = won ? 0.08 : 0.18;
-  const baseInjuryChance = won ? 0.15 : 0.30;
 
   active.forEach(m => {
     const roll = Math.random();
     // Veteran trait halves death chance
     const deathMod = m.traits?.some(t => t.name === 'Veteran') ? 0.5 : 1;
-    const injMod = m.traits?.some(t => t.name === 'Cautious') ? 0.6 : 1;
+    // Streetwise trait reduces death chance by 30%
+    const streetMod = m.traits?.some(t => t.name === 'Streetwise') ? 0.7 : 1;
 
-    if (roll < baseDeathChance * deathMod) {
+    if (roll < baseDeathChance * deathMod * streetMod) {
       m.status = 'dead';
       casualties.push(m.name);
-    } else if (roll < (baseDeathChance * deathMod) + (baseInjuryChance * injMod)) {
-      m.status = 'injured';
-      injured.push(m.name);
-      // Recover after heal time (reduced by hospital) - use ID lookup to survive save/load
-      const memberId = m.id;
-      setTimeout(() => {
-        const member = player.gang?.gangMembers?.find(gm => gm.id === memberId);
-        if (member && member.status === 'injured') member.status = 'active';
-      }, getGangHealTimeMs());
     }
   });
 
@@ -6902,7 +6876,7 @@ function processTurfAttackCasualties(won, gangMembers, _zoneName) {
     player.gang.members = player.gang.gangMembers.length;
   }
 
-  return { casualties, injured };
+  return { casualties };
 }
 
 // Attack a rival-held turf zone
@@ -6929,7 +6903,7 @@ async function attackTurfZone(zoneId) {
   if (bossAlive) confirmMsg += `\n\n ${bossInfo.name} guards this zone! (Power: ${bossInfo.power})`;
   confirmMsg += `\n\nYour Attack: ${attackPower} vs Their Defense: ${powerNeeded}\nWin Chance: ${winChance}%${gangStr}`;
   if (winChance < 20) confirmMsg += `\n\n This is a risky attack! You only have a ${winChance}% chance of winning.`;
-  if (activeGang.length > 0) confirmMsg += '\n\n Warning: Gang members may be killed or injured in the assault.';
+  if (activeGang.length > 0) confirmMsg += '\n\n Warning: Gang members may be killed in the assault.';
 
   if (await ui.confirm(confirmMsg)) {
     // Boss fight if boss is alive
@@ -6943,10 +6917,9 @@ async function attackTurfZone(zoneId) {
           return;
         }
         // Gang casualties even on boss loss
-        const { casualties, injured } = processTurfAttackCasualties(false, player.gang?.gangMembers || [], zone.name);
+        const { casualties } = processTurfAttackCasualties(false, player.gang?.gangMembers || [], zone.name);
         let lossMsg = `${bossInfo.name} defeated you! Lost 15 power and ${result.damageTaken} health.`;
         if (casualties.length) lossMsg += ` KILLED: ${casualties.join(', ')}.`;
-        if (injured.length) lossMsg += ` Injured: ${injured.join(', ')}.`;
         showBriefNotification(lossMsg, 'danger');
         logAction(`You attacked ${zone.name} but ${bossInfo.name} crushed your assault. Regroup and try again.`);
         if (casualties.length) logAction(` Lost in the fight: ${casualties.join(', ')}`);
@@ -6995,20 +6968,18 @@ async function attackTurfZone(zoneId) {
         showDeathScreen(`Killed in the failed assault on ${zone.name}`);
         return;
       }
-      const { casualties, injured } = processTurfAttackCasualties(false, player.gang?.gangMembers || [], zone.name);
+      const { casualties } = processTurfAttackCasualties(false, player.gang?.gangMembers || [], zone.name);
       let failMsg = `Attack on ${zone.name} failed! (${effectiveChance}% chance) Lost 10 power.`;
       if (casualties.length) failMsg += ` KILLED: ${casualties.join(', ')}.`;
-      if (injured.length) failMsg += ` Injured: ${injured.join(', ')}.`;
       showBriefNotification(failMsg, 'danger');
       logAction(`Your assault on <strong>${zone.name}</strong> was repelled. The garrison held firm.`);
       if (casualties.length) logAction(` Lost in the fight: ${casualties.join(', ')}`);
-      if (injured.length) logAction(` Injured: ${injured.join(', ')}`);
       updateUI();
       return;
     }
 
     // Attack SUCCEEDED -- process gang casualties (lighter on victory)
-    const { casualties, injured } = processTurfAttackCasualties(true, player.gang?.gangMembers || [], zone.name);
+    const { casualties } = processTurfAttackCasualties(true, player.gang?.gangMembers || [], zone.name);
 
     // Take the zone
     const previousOwner = zone.controlledBy;
@@ -7039,11 +7010,9 @@ async function attackTurfZone(zoneId) {
 
     let successMsg = `${zone.name} is now your turf!`;
     if (casualties.length) successMsg += ` But you lost: ${casualties.join(', ')}.`;
-    if (injured.length) successMsg += ` Injured: ${injured.join(', ')}.`;
     showBriefNotification(successMsg, casualties.length ? 'warning' : 'success');
     logAction(`You seized control of <strong>${zone.name}</strong>. The streets know your name.`);
     if (casualties.length) logAction(` Fallen in the assault: ${casualties.join(', ')}`);
-    if (injured.length) logAction(` Wounded: ${injured.join(', ')}`);
     updateUI();
     showTurfMap();
   }
@@ -10671,7 +10640,7 @@ const HELP_CATEGORIES = [
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Medical</h4>
         <ul>
-          <li><strong>Back-Alley Clinic</strong> -- $500,000. Upgradeable to Level 5. Heals gang members 20% faster per level. At Level 5 grants passive healing of 5 HP/min while not in jail.</li>
+          <li><strong>Back-Alley Clinic</strong> -- $500,000. Upgradeable to Level 5. At Level 5 grants passive healing of 5 HP/min while not in jail.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Gang Capacity</h4>
         <p>You start with a base capacity of 5 gang members. Each property adds to your maximum crew size as listed above. To hire more crew, buy more properties.</p>
@@ -10788,7 +10757,7 @@ const HELP_CATEGORIES = [
           <li>Each member has <strong>Violence, Stealth, Intelligence</strong> base stats plus random variation.</li>
           <li>Members gain <strong>XP</strong> from operations and level up, increasing all stats.</li>
           <li>Members can have <strong>Traits</strong> (Hothead, Cool, Loyal, Greedy, etc.) that affect behaviour.</li>
-          <li>Members can be <strong>Active, Injured, Jailed, or Dead</strong>.</li>
+          <li>Members can be <strong>Active, Jailed, or Dead</strong>.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Gang Operations (12 Types)</h4>
         <p>Send crew on timed operations that earn cash and XP:</p>
@@ -10974,8 +10943,7 @@ const HELP_CATEGORIES = [
         <h4 style="color:#c0a062; margin:14px 0 6px;">What Affects Healing Speed</h4>
         <ul>
           <li><strong>Recovery</strong> (Endurance skill) -- -5% hospital treatment time per rank.</li>
-          <li><strong>Back-Alley Clinic</strong> property -- Heals gang members 20% faster per level.</li>
-          <li>Base hospital healing time is 30 minutes, reduced by 20% per clinic level (compounding).</li>
+          <li><strong>Back-Alley Clinic</strong> property -- At Level 5 grants passive 5 HP/min while not in jail.</li>
         </ul>
       `},
       { id: 'durability-help', icon: '', title: 'Durability System', content: `
@@ -18785,7 +18753,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.40.1';
+const CURRENT_VERSION = '1.41.0';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -24147,6 +24115,22 @@ function applySaveData(saveData) {
         }
       }
     }
+  }
+
+  // ── Save migration: injured gang members → active (v1.41.0) ──
+  if (player.gang && player.gang.gangMembers) {
+    player.gang.gangMembers.forEach(m => {
+      if (m.status === 'injured') m.status = 'active';
+      // Migrate Cautious trait → Streetwise
+      if (m.traits) {
+        m.traits.forEach(t => {
+          if (t.name === 'Cautious') {
+            t.name = 'Streetwise';
+            t.effect = '-10% arrest chance, -30% death chance in turf fights';
+          }
+        });
+      }
+    });
   }
 
   // Apply achievements

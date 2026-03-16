@@ -5,6 +5,24 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.0] - 2026-03-16
+
+### Removed
+- **Gang Member Injury System** -- Removed the broken injury mechanic from turf fights. Members now either survive or die -- no more invisible "injured" status that was stuck permanently on page refresh
+  - Removed `getGangHealTimeMs()` function and all injury `setTimeout` heal timers
+  - Removed injury outcomes from `processTurfAttackCasualties()` and `processTurfAttack()` (turf defense)
+  - Removed all "Injured" display lines from turf attack results, boss fight losses, and family elimination missions
+  - Removed gang-member-heal references from Back-Alley Clinic help text (clinic still provides player passive HP regen)
+  - Updated help text: member statuses are now "Active, Jailed, or Dead"
+
+### Changed
+- **Cautious Trait → Streetwise** -- Replaced the now-redundant "Cautious" trait with "Streetwise": -10% arrest chance, -30% death chance in turf fights, +10% stealth task effectiveness
+- Updated family screen "Available" note to say "not in jail or dead" (removed "injured")
+- Turf attack warning now says "may be killed" instead of "may be killed or injured"
+
+### Fixed
+- Save migration (v1.41.0): automatically converts any existing injured gang members to active and renames Cautious traits to Streetwise on load
+
 ## [1.40.1] - 2026-03-15
 
 ### Fixed
