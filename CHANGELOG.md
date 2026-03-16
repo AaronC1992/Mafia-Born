@@ -5,6 +5,17 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.40.1] - 2026-03-15
+
+### Fixed
+- **Turf Map Power Accuracy** -- Fixed two bugs causing inaccurate gang power display on the turf map
+  - `recalculatePower()` no longer counts gang members toward `player.turf.power`; gang contribution is handled solely by `calculateTurfAttackPower()` to prevent double-counting
+  - Active gang member filters now also exclude arrested members (`!m.arrested`) across turf attack power, active crew count, and casualty processing
+  - Turf Power (overview) now reflects base infrastructure power; Attack Power (turf map) reflects full combat strength including active crew
+
+### Added
+- **Available Members on Family Screen** -- The roster tab now shows an "Available" count (X / total) alongside Members, Gang Power, and Active Ops, with a note explaining that available members are ready for action -- not in jail, injured, or dead
+
 ## [1.40.0] - 2026-03-15
 
 ### Changed

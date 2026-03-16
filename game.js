@@ -235,6 +235,8 @@ function recalculatePower() {
   if (player.realEstate && player.realEstate.ownedProperties) {
     player.realEstate.ownedProperties.forEach(p => { total += p.power || 0; });
   }
+  // Base power from equipment/real-estate only (used for turf base)
+  const basePower = total;
   // Gang member power -- use explicit .power if set, otherwise derive from experience level
   if (player.gang && player.gang.gangMembers) {
     player.gang.gangMembers.forEach(m => {
@@ -243,12 +245,13 @@ function recalculatePower() {
   }
   player.power = total;
 
-  // Sync turf power -- base 100 + total from equipment and gang
+  // Sync turf power -- base 100 + equipment/real-estate only
+  // Gang members are added separately in calculateTurfAttackPower() to avoid double-counting
   if (player.turf) {
-    player.turf.power = 100 + total;
+    player.turf.power = 100 + basePower;
   }
   // Keep legacy turfPower in sync
-  player.turfPower = (player.turf?.power) || (100 + total);
+  player.turfPower = (player.turf?.power) || (100 + basePower);
 
   return total;
 }
@@ -5395,12 +5398,17 @@ function showGang(activeTab) {
 
   // ===== ROSTER TAB =====
   if (tab === 'roster') {
+    const availableCount = members.filter(m => m.status === 'active' && !m.arrested).length;
     // Overview stats row
     gangHTML += `
       <div style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap;">
         <div class="game-card" style="flex:1; min-width:120px; text-align:center;">
           <div style="font-size:1.6em; color:#c0a062; font-weight:bold;">${members.length}<span style="font-size:0.5em; color:#8a7a5a;">/${maxMembers}</span></div>
           <div style="font-size:0.8em; color:#8a7a5a; text-transform:uppercase; letter-spacing:1px;">Members</div>
+        </div>
+        <div class="game-card" style="flex:1; min-width:120px; text-align:center;">
+          <div style="font-size:1.6em; color:#8a9a6a; font-weight:bold;">${availableCount}<span style="font-size:0.5em; color:#8a7a5a;">/${members.length}</span></div>
+          <div style="font-size:0.8em; color:#8a7a5a; text-transform:uppercase; letter-spacing:1px;">Available</div>
         </div>
         <div class="game-card" style="flex:1; min-width:120px; text-align:center;">
           <div style="font-size:1.6em; color:#c0a062; font-weight:bold;">${power}</div>
@@ -5411,6 +5419,7 @@ function showGang(activeTab) {
           <div style="font-size:0.8em; color:#8a7a5a; text-transform:uppercase; letter-spacing:1px;">Active Ops</div>
         </div>
       </div>
+      <div style="font-size:0.8em; color:#6a5a3a; text-align:center; margin:-8px 0 14px 0; font-style:italic;">Available members are ready for action -- not in jail, injured, or dead.</div>
       <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
         ${(() => {
           const tributeElapsed = Math.floor((Date.now() - (player.gang.lastTributeTime || 0)) / 1000);
@@ -6577,7 +6586,7 @@ function showTurfMap() {
   const alliedZones = fam ? (RIVAL_FAMILIES[fam]?.turfZones || []) : [];
 
   const playerAtkPower = typeof calculateTurfAttackPower === 'function' ? calculateTurfAttackPower() : (player.turf.power || 100);
-  const activeGangCount = (player.gang?.gangMembers || []).filter(m => m.status === 'active').length;
+  const activeGangCount = (player.gang?.gangMembers || []).filter(m => m.status === 'active' && !m.arrested).length;
 
   let html = `
     <h2 style="color:#7a8a5a; text-align:center; margin-bottom:25px; font-size:2.2em;">Turf Map</h2>
@@ -6822,7 +6831,7 @@ function calculateTurfAttackPower() {
   if (player.equippedArmor) power += 8;
 
   // Gang member offensive contribution -- the key to winning turf
-  const active = (player.gang?.gangMembers || []).filter(m => m.status === 'active');
+  const active = (player.gang?.gangMembers || []).filter(m => m.status === 'active' && !m.arrested);
   active.forEach(m => {
     let contrib = calculateMemberEffectiveness(m, 'violence');
     // Role-specific multipliers for offence
@@ -6855,7 +6864,7 @@ window.calculateTurfWinChance = calculateTurfWinChance;
 function processTurfAttackCasualties(won, gangMembers, _zoneName) {
   const casualties = [];
   const injured = [];
-  const active = gangMembers.filter(m => m.status === 'active');
+  const active = gangMembers.filter(m => m.status === 'active' && !m.arrested);
   if (active.length === 0) return { casualties, injured };
 
   // Losing fights are bloodier
@@ -18776,7 +18785,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.40.0';
+const CURRENT_VERSION = '1.40.1';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
