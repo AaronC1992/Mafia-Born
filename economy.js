@@ -18,9 +18,9 @@ export const storeItems = [
     // === Mid-tier Guns ===
     { name: 'Pistol', price: 40000, power: 50, type: 'weapon', durability: 30, maxDurability: 30, description: 'Reliable sidearm for any occasion. +50 attack power. Requires Bullets.' },
     { name: 'Revolver', price: 60000, power: 70, type: 'weapon', durability: 35, maxDurability: 35, description: 'Six shots, six problems solved. +70 attack power. Requires Bullets.' },
-    { name: 'Sawed-Off Shotgun', price: 165000, power: 90, type: 'weapon', durability: 25, maxDurability: 25, description: 'Devastating at close range. +90 attack power. Requires Bullets.' },
-    { name: 'Tommy Gun', price: 200000, power: 100, type: 'weapon', durability: 20, maxDurability: 20, description: "The kingpin's weapon of choice. +100 attack power. Requires Bullets." },
-    { name: 'Sniper Rifle', price: 325000, power: 120, type: 'weapon', durability: 15, maxDurability: 15, description: 'For when you need distance. +120 attack power. Requires Bullets.' },
+    { name: 'Sawed-Off Shotgun', price: 165000, power: 120, type: 'weapon', durability: 25, maxDurability: 25, description: 'Devastating at close range. +120 attack power. Requires Bullets.' },
+    { name: 'Tommy Gun', price: 200000, power: 160, type: 'weapon', durability: 20, maxDurability: 20, description: "The kingpin's weapon of choice. +160 attack power. Requires Bullets." },
+    { name: 'Sniper Rifle', price: 325000, power: 220, type: 'weapon', durability: 15, maxDurability: 15, description: 'For when you need distance. +220 attack power. Requires Bullets.' },
     // === Armor ===
     { name: 'Leather Jacket', price: 20000, power: 15, type: 'armor', durability: 50, maxDurability: 50, description: 'Looks cool, stops a knife. +15 defense power. Basic protection against melee attacks.' },
     { name: 'Stab Vest', price: 65000, power: 25, type: 'armor', durability: 40, maxDurability: 40, description: 'Lightweight protection from blades. +25 defense power. Reduces damage from melee weapons.' },
@@ -94,7 +94,7 @@ export const realEstateProperties = [
         gangCapacity: 20, 
         description: 'A high-class penthouse that provides legitimacy and luxury for your operations.',
         power: 250,
-        income: 4000
+        income: 7500
     },
     { 
         name: 'Private Island', 
@@ -103,7 +103,7 @@ export const realEstateProperties = [
         gangCapacity: 50, 
         description: 'Your own private island - the ultimate symbol of criminal success.',
         power: 500,
-        income: 8000
+        income: 20000
     },
     { 
         name: 'Back-Alley Clinic', 

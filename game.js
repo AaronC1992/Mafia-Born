@@ -152,7 +152,7 @@ const RISK_COOLDOWNS = {
   high: 120,      // 2 minutes
   'very high': 300, // 5 minutes
   extreme: 600,   // 10 minutes
-  legendary: 1200  // 20 minutes
+  legendary: 3600  // 60 minutes
 };
 
 // Get the cooldown duration (in seconds) for a job, reduced by Planning skill & Quick Hands perk
@@ -437,6 +437,18 @@ function updateMissionProgress(actionType, value = 1) {
 
 // Function to update mission availability based on player progress
 function updateMissionAvailability() {
+  if (!player.missions) return;
+  // Unlock turf missions when player has enough reputation
+  const rep = player.reputation || 0;
+  const turfMissions = player.missions.unlockedTurfMissions || [];
+  TURF_ZONES.forEach(zone => {
+    if (turfMissions.includes(zone.id)) return;
+    const needed = zone.riskLevel === 'low' ? 50 : zone.riskLevel === 'medium' ? 150 : zone.riskLevel === 'high' ? 300 : 500;
+    if (rep >= needed) {
+      turfMissions.push(zone.id);
+    }
+  });
+  player.missions.unlockedTurfMissions = turfMissions;
 }
 
 // Function to show missions/story screen
@@ -2340,7 +2352,9 @@ function initTurfZones() {
 function calculateTurfDefense(zone, player) {
     // Use the per-zone fortification the player upgrades (fortifyTurf) -- stored in player.turf.fortifications
     const fortLevel = (player.turf?.fortifications || {})[zone.id] || zone.fortificationLevel || 0;
-    let totalDefense = fortLevel * 25; // Each fort level = 25 defense (was 10)
+    // Percentage-based fortification: +5% of zone base defense per level
+    const baseDef = zone.baseDefenseRequired || zone.defenseRequired || 200;
+    let totalDefense = Math.floor(baseDef * fortLevel * 0.05);
 
     // Gang members assigned to defend
     (zone.defendingMembers || []).forEach(memberId => {
@@ -7304,7 +7318,7 @@ function fortifyTurf(zoneId) {
   player.money -= cost;
   player.turf.fortifications[zoneId] = current + 1;
   recalcTurfIncome();
-  showBriefNotification(`Fortification upgraded to Lv ${current + 1}!`, 'success');
+  showBriefNotification(`Fortification upgraded to Lv ${current + 1} (+${(current + 1) * 5}% defense)!`, 'success');
   logAction('Fortified turf zone. Defense strengthened.');
   updateUI();
 }
@@ -18683,7 +18697,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.10';
+const CURRENT_VERSION = '1.42.0';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {

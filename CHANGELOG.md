@@ -4,6 +4,16 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.42.0] - 2025-07-14
+### Balance
+- Legendary job cooldown increased from 20 minutes to 60 minutes (was too profitable per-second)
+- Weapon power scaling improved: Sawed-Off Shotgun 90->120, Tommy Gun 100->160, Sniper Rifle 120->220 (better value at higher price tiers)
+- Real estate ROI rebalanced: Luxury Penthouse income $4k->$7.5k/cycle, Private Island income $8k->$20k/cycle (higher-tier properties are now worthwhile investments)
+- Turf fortification changed from flat +25 defense/level to percentage-based +5%/level of zone base defense (now scales properly across all zone difficulty tiers)
+
+### Fixed
+- Implemented `updateMissionAvailability()` which was an empty stub -- now unlocks turf missions based on player reputation thresholds
+
 ## [1.41.10] - 2025-07-14
 ### Fixed
 - Gang member trait crash: added null-check on `member.traits` in `calculateMemberTaskScore()` preventing crash when traits array is undefined
