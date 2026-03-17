@@ -1192,6 +1192,11 @@ function connectToOnlineWorld() {
             initializeWorldData();
             startWorldUpdates();
             
+            // Fetch crew info early so _myCrewSize is available for job bonuses
+            if (player.crewId) {
+                sendMP({ type: 'crew_info' });
+            }
+            
             _safeLogAction(` Connected to online world! Player ID: ${onlineWorldState.playerId}`, 'chat');
             showWelcomeMessage();
             
@@ -2241,6 +2246,16 @@ async function handleServerMessage(message) {
             if (typeof showBriefNotification === 'function') showBriefNotification(`You were kicked from ${message.crewName}.`, 'error');
             player.crewId = null;
             player.crewRole = null;
+            window._myCrewSize = 0;
+            break;
+        case 'crew_job_share_reward':
+            if (typeof player !== 'undefined') player.money += message.amount;
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Crew cut: +$${message.amount.toLocaleString()} from ${message.fromPlayer}'s ${message.jobName}!`, 'success');
+            if (typeof logAction === 'function') _safeLogAction(`Your crew member ${message.fromPlayer} completed ${message.jobName} -- your cut: $${message.amount.toLocaleString()}.`, 'income');
+            if (typeof updateUI === 'function') updateUI();
+            break;
+        case 'crew_job_share_sent':
+            if (typeof showBriefNotification === 'function') showBriefNotification(`Crew share: $${message.amountEach.toLocaleString()} sent to ${message.sharedWith} crew member${message.sharedWith > 1 ? 's' : ''}.`, 'success');
             break;
 
         // Player gambling
@@ -6886,6 +6901,7 @@ function handleCrewResult(message) {
         } else if (message.action === 'left') {
             player.crewId = null;
             player.crewRole = null;
+            window._myCrewSize = 0;
             if (typeof showBriefNotification === 'function') showBriefNotification('Left your crew.', 'info');
         } else if (message.action === 'kicked') {
             if (typeof showBriefNotification === 'function') showBriefNotification(`${message.targetName} kicked from crew.`, 'info');
@@ -6910,6 +6926,8 @@ function handleCrewInviteReceived(message) {
 
 function handleCrewInfoResult(message) {
     _crewInfoCache = message;
+    // Track crew size for job bonus calculations
+    window._myCrewSize = message.myCrew ? message.myCrew.members.length : 0;
     const container = document.getElementById('crew-content');
     if (container) renderCrewScreen(container, message);
 }

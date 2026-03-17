@@ -12136,6 +12136,19 @@ async function startJob(index) {
     if (netMult > 1) { earnings = Math.floor(earnings * netMult); }
   }
 
+  // Crew bonus: being in a crew boosts job earnings (+15% per crew member)
+  let crewBonusAmount = 0;
+  let crewSize = 0;
+  if (player.crewId) {
+    crewSize = window._myCrewSize || 1;
+    if (crewSize > 1) {
+      const crewMultiplier = (crewSize - 1) * 0.15; // +15% per additional crew member
+      crewBonusAmount = Math.floor(earnings * crewMultiplier);
+      earnings += crewBonusAmount;
+      logAction(`Your crew of ${crewSize} boosts the take -- +$${crewBonusAmount.toLocaleString()} crew bonus.`);
+    }
+  }
+
   // Calculate jail chance with stealth skill reducing it
   let stealthBonus = player.skillTree.stealth.shadow_step * 2;
   stealthBonus += player.skillTree.stealth.escape_artist * 3; // Advanced escape skills
@@ -12492,6 +12505,11 @@ async function startJob(index) {
     flashSuccessScreen();
     showBriefNotification(`You completed the job as a ${job.name} (${job.risk} risk) and earned $${earnings.toLocaleString()}${moneyType}!`, 'success');
     logAction(`${getFamilyNarration('jobSuccess')} (+$${earnings.toLocaleString()}${moneyType}).`);
+  }
+
+  // Share rewards with online crew members
+  if (player.crewId && typeof sendMP === 'function') {
+    sendMP({ type: 'crew_job_share', earnings: earnings, jobName: job.name, crewSize: crewSize });
   }
 
   degradeEquipment('job');
@@ -18623,7 +18641,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.5';
+const CURRENT_VERSION = '1.41.6';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -24376,7 +24394,7 @@ async function checkCrewBeforeAction(actionName, canSolo = true) {
   const choice = await modal.show(
     'No Crew',
     `<p style="color:#d4c4a0;">You're about to attempt <strong>${actionName}</strong> without a crew.</p>
-     <p style="color:#8a7a5a;">Teaming up with a crew improves your chances and unlocks bigger payouts.${canSolo ? ' You can still attempt this solo if you prefer.' : ' This action requires a crew.'}</p>`,
+     <p style="color:#8a7a5a;">Crew members boost your earnings by <strong>+15% each</strong> and every online member gets a 25% cut of your take.${canSolo ? ' You can still attempt this solo if you prefer.' : ' This action requires a crew.'}</p>`,
     buttons
   );
   if (choice === 'crew') {

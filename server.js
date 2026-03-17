@@ -1214,6 +1214,9 @@ function handleClientMessage(clientId, message, ws) {
         case 'crew_update':
             handleCrewUpdate(clientId, message);
             break;
+        case 'crew_job_share':
+            handleCrewJobShare(clientId, message);
+            break;
 
         // Heist role selection
         case 'heist_set_role':
@@ -5706,6 +5709,58 @@ function handleCrewInfo(clientId) {
     }
     
     safeSend(ws, { type: 'crew_info_result', myCrew: playerCrew, allCrews });
+}
+
+// Crew Job Share: when a player completes a job while in a crew, share earnings with online crew members
+function handleCrewJobShare(clientId, message) {
+    const player = gameState.players.get(clientId);
+    if (!player) return;
+
+    const earnings = parseInt(message.earnings, 10);
+    if (!earnings || earnings <= 0 || earnings > 10000000) return; // sanity cap
+
+    // Find the player's crew
+    let playerCrew = null;
+    for (const [, c] of gameState.crews) {
+        const member = c.members.find(m => m.name === player.name);
+        if (member) { playerCrew = c; break; }
+    }
+    if (!playerCrew || playerCrew.members.length <= 1) return;
+
+    // Each other online crew member gets 25% of the earner's payout
+    const shareAmount = Math.floor(earnings * 0.25);
+    if (shareAmount < 1) return;
+
+    const jobName = (message.jobName || 'a job').substring(0, 50);
+    let sharedCount = 0;
+
+    for (const member of playerCrew.members) {
+        if (member.name === player.name) continue; // skip the player who did the job
+        const memberWs = clients.get(member.playerId);
+        const memberPlayer = gameState.players.get(member.playerId);
+        if (memberPlayer && memberWs && memberWs.readyState === 1) {
+            memberPlayer.money += shareAmount;
+            sharedCount++;
+            safeSend(memberWs, {
+                type: 'crew_job_share_reward',
+                fromPlayer: player.name,
+                jobName: jobName,
+                amount: shareAmount
+            });
+        }
+    }
+
+    // Tell the original player how many crew members got a cut
+    if (sharedCount > 0) {
+        const ws = clients.get(clientId);
+        if (ws && ws.readyState === 1) {
+            safeSend(ws, {
+                type: 'crew_job_share_sent',
+                sharedWith: sharedCount,
+                amountEach: shareAmount
+            });
+        }
+    }
 }
 
 function handleCrewUpdate(clientId, message) {

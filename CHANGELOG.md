@@ -5,6 +5,14 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.6] - 2026-03-17
+
+### Added
+- Crew job bonus: being in a crew boosts job earnings by +15% per crew member
+- Crew job sharing: online crew members automatically receive 25% of your job earnings
+- Crew bonus details shown in the "No Crew" modal prompt
+- Crew size tracked on connection for immediate bonus availability
+
 ## [1.41.5] - 2026-03-17
 
 ### Fixed
