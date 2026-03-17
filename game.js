@@ -289,25 +289,24 @@ function degradeEquipment(_context) {
       player.equippedArmor = null;
     }
   }
-  // Vehicle: lose 1-4% durability per use (Wheelman skill reduces chance)
+  // Vehicle: add 1-4% damage per use (Wheelman skill reduces chance)
   let vehicleDestroyed = false;
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
     const wheelmanLevel = player.skillTree?.stealth?.wheelman || 0;
     if (wheelmanLevel <= 0 || Math.random() * 100 >= wheelmanLevel * 3) {
-      const vMax = player.equippedVehicle.maxDurability || 40;
-      const dmgAmount = Math.max(1, Math.round(vMax * (1 + Math.floor(Math.random() * 4)) / 100));
-      player.equippedVehicle.durability = Math.max(0, (player.equippedVehicle.durability || 0) - dmgAmount);
+      // Vehicle tracks damage as 0-100%. Each job adds 1-4%.
+      const currentDmg = player.equippedVehicle.vehicleDamage || 0;
+      const addedDmg = 1 + Math.floor(Math.random() * 4); // 1-4%
+      player.equippedVehicle.vehicleDamage = Math.min(100, currentDmg + addedDmg);
     }
     // Warn player when vehicle is getting beat up
-    const vDur = player.equippedVehicle.durability || 0;
-    const vMax = player.equippedVehicle.maxDurability || 40;
-    const vDmgPct = Math.round((1 - vDur / vMax) * 100);
-    if (vDur > 0 && vDmgPct >= 75) {
+    const vDmgPct = player.equippedVehicle.vehicleDamage || 0;
+    if (vDmgPct < 100 && vDmgPct >= 75) {
       showBriefNotification(`Your ${player.equippedVehicle.name} is falling apart! (${vDmgPct}% damaged)`, 'warning');
-    } else if (vDur > 0 && vDmgPct >= 50 && Math.random() < 0.3) {
+    } else if (vDmgPct < 100 && vDmgPct >= 50 && Math.random() < 0.3) {
       showBriefNotification(`Your ${player.equippedVehicle.name} is looking rough... (${vDmgPct}% damaged)`, 'warning');
     }
-    if (player.equippedVehicle.durability <= 0) {
+    if (player.equippedVehicle.vehicleDamage >= 100) {
       vehicleDestroyed = true;
       const vName = player.equippedVehicle.name;
       const idx = player.inventory.findIndex(i => i === player.equippedVehicle);
@@ -10467,10 +10466,10 @@ const HELP_CATEGORIES = [
           <li><strong>Private Airplane</strong> -- $1,800,000, required for Cross-Border Smuggling.</li>
           <li><strong>Freight Truck</strong> -- Required for drug trade jobs (Bootleg Run, etc.).</li>
         </ul>
-        <h4 style="color:#c0a062; margin:14px 0 6px;">Vehicle Durability</h4>
-        <p>Vehicles lose 1 durability per use. When durability hits 0, the vehicle breaks and is permanently removed.</p>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Vehicle Damage</h4>
+        <p>Vehicles accumulate damage from 0-100% with each job (1-4% per use). At 100% damage the vehicle is destroyed and permanently removed.</p>
         <ul>
-          <li><strong>Wheelman</strong> (Stealth skill) -- -3% vehicle durability loss per rank. Reduces the chance of losing durability each use.</li>
+          <li><strong>Wheelman</strong> (Stealth skill) -- -3% chance per rank for your vehicle to take damage on a job.</li>
           <li><strong>Chop Shop</strong> business at max level -- +55% bonus on stolen car sales at the Fence.</li>
         </ul>
       `},
@@ -10544,7 +10543,7 @@ const HELP_CATEGORIES = [
         <ul>
           <li><strong>Infiltration</strong> (max 10) -- +5% stealth job success per rank. Boosts success on theft and infiltration jobs.</li>
           <li><strong>Escape Artist</strong> (max 10) -- -2s jail time per rank, +3% breakout chance per rank. Makes jail sentences shorter and escapes more likely.</li>
-          <li><strong>Wheelman</strong> (max 10) -- -3% vehicle durability loss per rank. Each rank gives a chance to prevent your vehicle from losing durability when used.</li>
+          <li><strong>Wheelman</strong> (max 10) -- -3% vehicle damage chance per rank. Each rank gives a chance to prevent your vehicle from taking damage when used on a job.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Tier 3</h4>
         <ul>
@@ -10980,7 +10979,8 @@ const HELP_CATEGORIES = [
         </ul>
       `},
       { id: 'durability-help', icon: '', title: 'Durability System', content: `
-        <p>Weapons, armour, and vehicles all have a durability stat. Every time they are used, durability decreases by 1. When durability hits 0, the item <strong>breaks permanently</strong> and is removed from your inventory.</p>
+        <p>Weapons and armour have a durability stat. Every time they are used, durability decreases by 1. When durability hits 0, the item <strong>breaks permanently</strong> and is removed from your inventory.</p>
+        <p>Vehicles work differently -- they accumulate damage from 0-100% (1-4% per job). At 100% damage the vehicle is destroyed.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Durability by Item</h4>
         <ul>
           <li><strong>Baseball Bat</strong> -- 50 uses. Highest melee durability.</li>
@@ -10997,7 +10997,7 @@ const HELP_CATEGORIES = [
         <h4 style="color:#c0a062; margin:14px 0 6px;">Protecting Your Gear</h4>
         <ul>
           <li><strong>Preservation</strong> (Endurance skill) -- +2% chance per rank to skip durability loss on weapons and armour. At rank 10, 20% chance per use.</li>
-          <li><strong>Wheelman</strong> (Stealth skill) -- -3% vehicle durability loss per rank. Separate roll for vehicles.</li>
+          <li><strong>Wheelman</strong> (Stealth skill) -- -3% vehicle damage chance per rank. Separate roll for vehicles.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Damaged Items</h4>
         <p>Items with 0 durability are automatically removed. Damaged weapons and armour <strong>cannot be sold</strong> at the Fence or Player Market -- only fully functional gear can be traded.</p>
@@ -11965,12 +11965,11 @@ async function startJob(index) {
   let vehicleBonus = 0;
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
     const veh = player.equippedVehicle;
-    const durPct = (typeof veh.durability === 'number' && typeof veh.maxDurability === 'number' && veh.maxDurability > 0)
-      ? veh.durability / veh.maxDurability : 1;
+    const vCondition = (100 - (veh.vehicleDamage || 0)) / 100;
     // Base bonus scales with vehicle power; condition scales it down
-    vehicleBonus = Math.floor((veh.power || 0) * 0.5 * durPct);
+    vehicleBonus = Math.floor((veh.power || 0) * 0.5 * vCondition);
     if (vehicleBonus > 0) {
-      logAction(`Your ${veh.name} is in ${Math.round(durPct * 100)}% condition, boosting your odds (+${vehicleBonus}% success).`);
+      logAction(`Your ${veh.name} is in ${Math.round(vCondition * 100)}% condition, boosting your odds (+${vehicleBonus}% success).`);
     }
   }
 
@@ -18699,7 +18698,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.42.2';
+const CURRENT_VERSION = '1.42.3';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -20322,18 +20321,18 @@ function buildStashHTML() {
       const globalIdx = player.inventory.indexOf(item);
       const equipped = player.equippedWeapon === item || player.equippedArmor === item || player.equippedVehicle === item;
       const sellPrice = Math.floor((item.price || 0) * 0.4);
-      const hasDurability = typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.maxDurability > 0;
+      const hasDurability = item.type !== 'vehicle' && typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.maxDurability > 0;
       const durPct = hasDurability ? Math.round((item.durability / item.maxDurability) * 100) : 100;
       const durColor = durPct > 60 ? '#8a9a6a' : durPct > 30 ? '#c0a040' : '#8b3a3a';
       const durBar = hasDurability ? `<div style="margin-top:4px;width:120px;height:6px;background:#555;border-radius:3px;"><div style="width:${durPct}%;height:100%;background:${durColor};border-radius:3px;"></div></div><small style="color:${durColor};">${item.durability}/${item.maxDurability}</small>` : '';
       // Vehicle condition bonus preview
       let vehicleBonusInfo = '';
       if (item.type === 'vehicle') {
-        const vDurPct = hasDurability && item.maxDurability > 0 ? item.durability / item.maxDurability : 1;
-        const vBonus = Math.floor((item.power || 0) * 0.5 * vDurPct);
-        const dmgPct = 100 - durPct;
-        const condLabel = durPct > 75 ? 'Excellent' : durPct > 50 ? 'Good' : durPct > 25 ? 'Worn' : 'Critical';
-        const condColor = durPct > 75 ? '#8a9a6a' : durPct > 50 ? '#c0a040' : durPct > 25 ? '#e67e22' : '#8b3a3a';
+        const dmgPct = item.vehicleDamage || 0;
+        const condPct = 100 - dmgPct;
+        const vBonus = Math.floor((item.power || 0) * 0.5 * (condPct / 100));
+        const condLabel = condPct > 75 ? 'Excellent' : condPct > 50 ? 'Good' : condPct > 25 ? 'Worn' : 'Critical';
+        const condColor = condPct > 75 ? '#8a9a6a' : condPct > 50 ? '#c0a040' : condPct > 25 ? '#e67e22' : '#8b3a3a';
         vehicleBonusInfo = `<br><small style="color:${condColor};">Condition: ${condLabel} | Damage: ${dmgPct}% | Job Success: <strong>+${vBonus}%</strong></small>`;
       }
       const isEquippable = item.type === 'weapon' || item.type === 'armor' || item.type === 'vehicle';
@@ -20473,10 +20472,9 @@ function equipItem(index) {
   } else if (item.type === 'vehicle') {
     player.equippedVehicle = item;
     recalculatePower();
-    const vDur = (typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.maxDurability > 0)
-      ? item.durability / item.maxDurability : 1;
-    const vBonus = Math.floor((item.power || 0) * 0.5 * vDur);
-    logAction(`Equipped ${item.name} (Durability: ${item.durability || '?'}/${item.maxDurability || '?'}) -- Job Success +${vBonus}%.`);
+    const vDmg = item.vehicleDamage || 0;
+    const vBonus = Math.floor((item.power || 0) * 0.5 * ((100 - vDmg) / 100));
+    logAction(`Equipped ${item.name} (${vDmg}% damaged) -- Job Success +${vBonus}%.`);
   }
   showInventory();
 }
@@ -24325,9 +24323,22 @@ function initializeMissingData() {
   }
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
     const ev = player.equippedVehicle;
-    const match = player.inventory.find(i => i.name === ev.name && i.type === 'vehicle' && i.durability === ev.durability)
+    const match = player.inventory.find(i => i.name === ev.name && i.type === 'vehicle' && (i.vehicleDamage || 0) === (ev.vehicleDamage || 0))
       || player.inventory.find(i => i.name === ev.name && i.type === 'vehicle');
     player.equippedVehicle = match || null;
+  }
+
+  // v1.42.3 -- Vehicle damage migration: convert old durability-based vehicles to vehicleDamage (0-100%)
+  if (player.inventory && player.inventory.length > 0) {
+    player.inventory.forEach(item => {
+      if (item.type === 'vehicle' && typeof item.vehicleDamage !== 'number') {
+        if (typeof item.durability === 'number' && typeof item.maxDurability === 'number' && item.maxDurability > 0) {
+          item.vehicleDamage = Math.round((1 - item.durability / item.maxDurability) * 100);
+        } else {
+          item.vehicleDamage = 0;
+        }
+      }
+    });
   }
 
   // v1.6.0 -- Turf system migration for older saves

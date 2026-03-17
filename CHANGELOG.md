@@ -4,6 +4,16 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.42.3] - 2025-07-14
+### Changed
+- Vehicles now use a direct damage percentage (0-100%) instead of the durability/maxDurability system used by weapons and armor
+- Each job adds 1-4% to a vehicle's damage counter; at 100% the vehicle is destroyed
+- Vehicle condition now displayed as "Damage: X%" in inventory instead of durability points
+- Inventory durability bar hidden for vehicles (they show the damage percentage info instead)
+- Equip message for vehicles shows damage % and job success bonus
+- Job success log uses new damage-based condition instead of old durability ratio
+- Save migration converts existing vehicles from durability-based to vehicleDamage percentage
+
 ## [1.42.2] - 2025-07-14
 ### Changed
 - Vehicle durability loss on jobs now deals 1-4% damage per use instead of a flat 1 durability point (scales with vehicle max durability)
