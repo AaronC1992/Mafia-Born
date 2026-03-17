@@ -289,14 +289,14 @@ function degradeEquipment(_context) {
       player.equippedArmor = null;
     }
   }
-  // Vehicle: add 1-4% damage per use (Wheelman skill reduces chance)
+  // Vehicle: add 1% damage per use (Wheelman skill reduces chance)
   let vehicleDestroyed = false;
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
     const wheelmanLevel = player.skillTree?.stealth?.wheelman || 0;
     if (wheelmanLevel <= 0 || Math.random() * 100 >= wheelmanLevel * 3) {
-      // Vehicle tracks damage as 0-100%. Each job adds 1-4%.
+      // Vehicle tracks damage as 0-100%. Each job adds 1%.
       const currentDmg = player.equippedVehicle.vehicleDamage || 0;
-      const addedDmg = 1 + Math.floor(Math.random() * 4); // 1-4%
+      const addedDmg = 1;
       player.equippedVehicle.vehicleDamage = Math.min(100, currentDmg + addedDmg);
     }
     // Warn player when vehicle is getting beat up
@@ -10467,7 +10467,7 @@ const HELP_CATEGORIES = [
           <li><strong>Freight Truck</strong> -- Required for drug trade jobs (Bootleg Run, etc.).</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Vehicle Damage</h4>
-        <p>Vehicles accumulate damage from 0-100% with each job (1-4% per use). At 100% damage the vehicle is destroyed and permanently removed.</p>
+        <p>Vehicles accumulate damage from 0-100% with each job (1% per use). At 100% damage the vehicle is destroyed and permanently removed.</p>
         <ul>
           <li><strong>Wheelman</strong> (Stealth skill) -- -3% chance per rank for your vehicle to take damage on a job.</li>
           <li><strong>Chop Shop</strong> business at max level -- +55% bonus on stolen car sales at the Fence.</li>
@@ -10980,7 +10980,7 @@ const HELP_CATEGORIES = [
       `},
       { id: 'durability-help', icon: '', title: 'Durability System', content: `
         <p>Weapons and armour have a durability stat. Every time they are used, durability decreases by 1. When durability hits 0, the item <strong>breaks permanently</strong> and is removed from your inventory.</p>
-        <p>Vehicles work differently -- they accumulate damage from 0-100% (1-4% per job). At 100% damage the vehicle is destroyed.</p>
+        <p>Vehicles work differently -- they accumulate damage from 0-100% (1% per job). At 100% damage the vehicle is destroyed.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Durability by Item</h4>
         <ul>
           <li><strong>Baseball Bat</strong> -- 50 uses. Highest melee durability.</li>
@@ -18698,7 +18698,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.42.3';
+const CURRENT_VERSION = '1.42.4';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
