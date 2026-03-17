@@ -4,6 +4,10 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.42.1] - 2025-07-14
+### Fixed
+- Crash in faction passive functions (`getWeaponPriceMultiplier`, `getDrugIncomeMultiplier`, `getViolenceHeatMultiplier`) when `player.missions` is undefined -- `hasPassive()` now guards against null
+
 ## [1.42.0] - 2025-07-14
 ### Balance
 - Legendary job cooldown increased from 20 minutes to 60 minutes (was too profitable per-second)

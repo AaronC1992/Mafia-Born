@@ -17,8 +17,7 @@ import { crimeFamilies } from './factions.js';
  * @returns {boolean}
  */
 function hasPassive(factionKey) {
-    // In a full implementation, this might require a specific alliance state or perk.
-    // For now, let's say you get the passive if you have > 10 reputation with them.
+    if (!player.missions || !player.missions.factionReputation) return false;
     return player.missions.factionReputation[factionKey] >= 10;
 }
 
