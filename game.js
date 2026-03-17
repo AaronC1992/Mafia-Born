@@ -4464,11 +4464,11 @@ function buildBusinessesHTML() {
     <div style="margin: 15px 0; padding: 12px; border: 1px solid #6a5a3a; border-radius: 8px; background: rgba(0,0,0,0.25); display: flex; gap: 12px; align-items: center;">
       <div style="flex:1; color:#f5e6c8;">
         <strong>Bookie Service</strong><br>
-        Automatically collects business income, gang tribute, and turf tribute. Service fee applies hourly.
+        Automatically collects business income, gang tribute, turf tribute, and protection rackets. Takes a 30% cut of all collections.
       </div>
       <div>
         <button onclick="toggleBookieHire()" style="background:${player.services && player.services.bookieHired ? '#8b3a3a' : '#8a9a6a'}; color:white; padding:10px 14px; border:1px solid #c0a062; border-radius:6px; cursor:pointer;">
-          ${player.services && player.services.bookieHired ? 'Dismiss Bookie' : 'Hire Bookie ($208/hr)'}
+          ${player.services && player.services.bookieHired ? 'Dismiss Bookie' : 'Hire Bookie (30% cut)'}
         </button>
       </div>
     </div>
@@ -18743,7 +18743,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.42.7';
+const CURRENT_VERSION = '1.42.8';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -22291,7 +22291,6 @@ function startPassiveIncomeGenerator() {
     if (player.services.bookieHired) {
       try {
         autoCollectBusinessesAndTribute();
-        chargeBookieFeeHourly();
       } catch (e) { console.warn('Auto-collect error', e); }
     }
   }, 300000)); // Every 5 minutes
@@ -22321,12 +22320,11 @@ function toggleBookieHire() {
   } else {
     player.services.bookieHired = true;
     player.services.bookieLastPaid = Date.now();
-    logAction('You hire a trusted bookie to keep the cash flowing. Income and tribute will be auto-collected.');
-    if (typeof showBriefNotification === 'function') showBriefNotification('Bookie hired', 'success');
+    logAction('You hire a trusted bookie to keep the cash flowing. He takes a 30% cut of all collections.');
+    if (typeof showBriefNotification === 'function') showBriefNotification('Bookie hired (30% cut)', 'success');
     // Immediately collect anything that's available
     try {
       autoCollectBusinessesAndTribute();
-      chargeBookieFeeHourly();
     } catch (e) { console.warn('Bookie initial collect error', e); }
   }
   // Refresh fronts panel if open (now a tab in Properties screen)
@@ -22472,28 +22470,28 @@ function autoCollectBusinessesAndTribute() {
     });
   }
 
-  if (collected > 0 && typeof showBriefNotification === 'function') {
-    showBriefNotification(`Bookie collected $${collected.toLocaleString()}`, 'success');
+  if (collected > 0) {
+    // Bookie takes a 30% cut
+    const bookieCut = Math.floor(collected * 0.30);
+    const playerNet = collected - bookieCut;
+    // Deduct the cut from player (collected was already added above, so remove the cut)
+    if (player.money >= bookieCut) {
+      player.money -= bookieCut;
+    } else {
+      // Take what we can from clean, rest from dirty
+      const fromClean = Math.min(player.money, bookieCut);
+      player.money -= fromClean;
+      player.dirtyMoney = Math.max(0, (player.dirtyMoney || 0) - (bookieCut - fromClean));
+    }
+    if (typeof showBriefNotification === 'function') {
+      showBriefNotification(`Bookie collected $${collected.toLocaleString()} (kept $${bookieCut.toLocaleString()}, you get $${playerNet.toLocaleString()})`, 'success');
+    }
   }
 }
 
-// Deduct bookie fee hourly (5000/day)
+// Bookie fee is now percentage-based (30% cut taken in autoCollectBusinessesAndTribute)
 function chargeBookieFeeHourly() {
-  const HOURLY_FEE = Math.ceil(5000 / 24);
-  if (!player.services) player.services = {};
-  const now = Date.now();
-  const last = player.services.bookieLastPaid || 0;
-  if (now - last >= 60 * 60 * 1000) {
-    if (player.money >= HOURLY_FEE) {
-      player.money -= HOURLY_FEE;
-      player.services.bookieLastPaid = now;
-    } else {
-      // Can't pay fee -> dismiss
-      player.services.bookieHired = false;
-      logAction('Your bookie quits - no funds to cover fees.');
-      if (typeof showBriefNotification === 'function') showBriefNotification('Bookie dismissed (unpaid)', 'danger');
-    }
-  }
+  // Legacy function kept for compatibility -- fee is now taken as 30% of collections
 }
 
 // Function to periodically check for random events
