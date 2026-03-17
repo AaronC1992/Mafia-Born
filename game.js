@@ -417,7 +417,7 @@ function updateMissionProgress(actionType, value = 1) {
       stats.gangMembersRecruited += value;
       break;
     case 'turf_controlled':
-      stats.turfsControlled = player.territory; // Update to current turf count
+      stats.turfsControlled = (player.turf?.owned || []).length;
       break;
     case 'boss_defeated':
       stats.bossesDefeated += value;
@@ -1471,7 +1471,7 @@ function calculateMemberEffectiveness(member, taskType) {
     }
 
     // Apply trait modifiers
-    member.traits.forEach(trait => {
+    (member.traits || []).forEach(trait => {
         if (trait.name === 'Veteran') baseScore *= 1.15;
         if (trait.name === 'Greenhorn') baseScore *= 0.85;
         if (trait.name === 'Reckless' && taskType === 'violence') baseScore *= 1.1;
@@ -2444,8 +2444,6 @@ function processTurfAttack(zone, attackerName, attackStrength, player) {
     } else {
         result.rewards.money = Math.floor(zone.baseIncome * 0.5);
         result.rewards.respect = Math.floor(zone.baseIncome / 100);
-        (zone.defendingMembers || []).forEach(_memberId => {
-        });
         if (Math.random() < 0.25 && zone.defendingMembers.length > 0) {
             const rand = player.gang.gangMembers.find(m => m.id === zone.defendingMembers[Math.floor(Math.random() * zone.defendingMembers.length)]);
             if (rand) {
@@ -18685,7 +18683,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.9';
+const CURRENT_VERSION = '1.41.10';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {

@@ -965,6 +965,10 @@ wss.on('connection', (ws, _req) => {
         clients.delete(clientId);
         sessions.delete(ws);
         clientMessageHistory.delete(clientId);
+        pvpCooldowns.delete(clientId);
+        territoryWarCooldowns.delete(clientId);
+        assassinationCooldowns.delete(clientId);
+        disciplineCooldowns.delete(clientId);
     });
     
     // Send welcome message

@@ -3,6 +3,13 @@
 All notable changes to From Dusk To Don (Mafia Born) will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+
+## [1.41.10] - 2025-07-14
+### Fixed
+- Gang member trait crash: added null-check on `member.traits` in `calculateMemberTaskScore()` preventing crash when traits array is undefined
+- Mission stats corruption: `turfsControlled` stat now uses safe `(player.turf?.owned || []).length` instead of `player.territory` which could be undefined before first UI render
+- Dead code cleanup: removed empty `forEach` loop body in `processTurfAttack()` failed-attack branch
+- Server memory leak: cooldown maps (`pvpCooldowns`, `territoryWarCooldowns`, `assassinationCooldowns`, `disciplineCooldowns`) are now cleaned up on player disconnect
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.41.9] - 2026-03-17
