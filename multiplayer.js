@@ -7152,6 +7152,9 @@ window.joinGamblingTable = function(tableId) {
 
 let _superbossListCache = null;
 let _activeSuperbossFight = null;
+let _superbossAttackOnCooldown = false;
+let _superbossAttackCooldownTimer = null;
+const SUPERBOSS_ATTACK_COOLDOWN_MS = 2000;
 
 function handleSuperbossResult(message) {
     if (message.success) {
@@ -7210,6 +7213,8 @@ function handleSuperbossUpdate(message) {
 
 function handleSuperbossVictory(message) {
     _activeSuperbossFight = null;
+    _superbossAttackOnCooldown = false;
+    if (_superbossAttackCooldownTimer) { clearInterval(_superbossAttackCooldownTimer); _superbossAttackCooldownTimer = null; }
     player.money += message.moneyReward;
     if (typeof gainExperience === 'function') gainExperience(message.xpReward);
     
@@ -7253,6 +7258,8 @@ function handleSuperbossVictory(message) {
 
 function handleSuperbossDefeat(message) {
     _activeSuperbossFight = null;
+    _superbossAttackOnCooldown = false;
+    if (_superbossAttackCooldownTimer) { clearInterval(_superbossAttackCooldownTimer); _superbossAttackCooldownTimer = null; }
     if (typeof showBriefNotification === 'function') showBriefNotification(message.message || 'Your crew was wiped out!', 'danger');
     if (typeof logAction === 'function') _safeLogAction(`SUPERBOSS WIPE: ${message.bossName} destroyed your entire crew! Regroup and try again.`, 'combat');
     renderSuperbossScreen();
@@ -7301,7 +7308,14 @@ function renderSuperbossScreen() {
                     <input type="text" id="superboss-invite-input" placeholder="Player name to invite" style="padding:6px;background:#1a1810;border:1px solid #3a3520;color:#d4c4a0;border-radius:4px;width:60%;">
                     <button onclick="window.superbossInvite()" style="background:#d4af37;color:#14120a;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Invite</button>
                 </div>` : ''}
-            <button onclick="window.superbossAttack()" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:1px solid #c0a062;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;width:100%;margin-top:8px;">ATTACK</button>
+            <div style="width:100%;margin-top:8px;">
+              <button id="superboss-attack-btn" onclick="window.superbossAttack()" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:1px solid #c0a062;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1.1em;width:100%;${_superbossAttackOnCooldown ? 'display:none;' : ''}">ATTACK</button>
+              <div id="superboss-cooldown-bar" style="${_superbossAttackOnCooldown ? '' : 'display:none;'}background:#1a1810;border:1px solid #3a3520;border-radius:8px;overflow:hidden;height:44px;">
+                <div id="superboss-cooldown-fill" style="background:linear-gradient(90deg,#5a2a2a,#e74c3c);height:100%;width:0%;display:flex;align-items:center;justify-content:center;">
+                  <span style="color:#fff;font-weight:bold;font-size:1.1em;text-shadow:1px 1px 2px #000;">Reloading...</span>
+                </div>
+              </div>
+            </div>
         </div>`;
     }
 
@@ -7365,6 +7379,14 @@ function renderSuperbossScreen() {
     }
 
     container.innerHTML = html;
+
+    // Re-sync cooldown bar state after render (DOM was rebuilt)
+    if (_superbossAttackOnCooldown) {
+        const btn = document.getElementById('superboss-attack-btn');
+        const bar = document.getElementById('superboss-cooldown-bar');
+        if (btn) btn.style.display = 'none';
+        if (bar) bar.style.display = 'block';
+    }
 }
 
 window.startSuperbossFight = async function(bossId) {
@@ -7375,9 +7397,32 @@ window.startSuperbossFight = async function(bossId) {
     sendMP({ type: 'superboss_start', bossId, equipment: getEquipmentSummary() });
 };
 window.superbossAttack = function() {
-    if (_activeSuperbossFight) {
-        sendMP({ type: 'superboss_attack', fightId: _activeSuperbossFight.id });
-    }
+    if (!_activeSuperbossFight || _superbossAttackOnCooldown) return;
+    sendMP({ type: 'superboss_attack', fightId: _activeSuperbossFight.id });
+    _superbossAttackOnCooldown = true;
+    const btn = document.getElementById('superboss-attack-btn');
+    const bar = document.getElementById('superboss-cooldown-bar');
+    const fill = document.getElementById('superboss-cooldown-fill');
+    if (btn) btn.style.display = 'none';
+    if (bar) bar.style.display = 'block';
+    if (fill) fill.style.width = '0%';
+    if (_superbossAttackCooldownTimer) clearInterval(_superbossAttackCooldownTimer);
+    const startTime = Date.now();
+    _superbossAttackCooldownTimer = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const pct = Math.min(100, (elapsed / SUPERBOSS_ATTACK_COOLDOWN_MS) * 100);
+        const f = document.getElementById('superboss-cooldown-fill');
+        if (f) f.style.width = pct + '%';
+        if (elapsed >= SUPERBOSS_ATTACK_COOLDOWN_MS) {
+            clearInterval(_superbossAttackCooldownTimer);
+            _superbossAttackCooldownTimer = null;
+            _superbossAttackOnCooldown = false;
+            const b = document.getElementById('superboss-attack-btn');
+            const br = document.getElementById('superboss-cooldown-bar');
+            if (b) b.style.display = 'block';
+            if (br) br.style.display = 'none';
+        }
+    }, 50);
 };
 window.superbossInvite = function() {
     const name = document.getElementById('superboss-invite-input')?.value?.trim();

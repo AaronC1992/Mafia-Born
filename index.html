@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -14,31 +14,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Playfair+Display+SC:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.41.3">
+    <link rel="stylesheet" href="styles.css?v=1.41.4">
     <!-- Cache-busting import map for ES modules -- update version on each release -->
     <script type="importmap">
     {
       "imports": {
-        "./passiveManager.js": "./passiveManager.js?v=1.41.3",
-        "./empireOverview.js": "./empireOverview.js?v=1.41.3",
-        "./player.js": "./player.js?v=1.41.3",
-        "./jobs.js": "./jobs.js?v=1.41.3",
-        "./factions.js": "./factions.js?v=1.41.3",
-        "./missions.js": "./missions.js?v=1.41.3",
-        "./narration.js": "./narration.js?v=1.41.3",
-        "./economy.js": "./economy.js?v=1.41.3",
-        "./generators.js": "./generators.js?v=1.41.3",
-        "./eventBus.js": "./eventBus.js?v=1.41.3",
-        "./logging.js": "./logging.js?v=1.41.3",
-        "./ui-modal.js": "./ui-modal.js?v=1.41.3",
-        "./mobile-responsive.js": "./mobile-responsive.js?v=1.41.3",
-        "./ui-events.js": "./ui-events.js?v=1.41.3",
-        "./auth.js": "./auth.js?v=1.41.3",
-        "./territories.js": "./territories.js?v=1.41.3",
-        "./storyExpansion.js": "./storyExpansion.js?v=1.41.3",
-        "./casino.js": "./casino.js?v=1.41.3",
-        "./miniGames.js": "./miniGames.js?v=1.41.3",
-        "./worldPersistence.js": "./worldPersistence.js?v=1.41.3"
+        "./passiveManager.js": "./passiveManager.js?v=1.41.4",
+        "./empireOverview.js": "./empireOverview.js?v=1.41.4",
+        "./player.js": "./player.js?v=1.41.4",
+        "./jobs.js": "./jobs.js?v=1.41.4",
+        "./factions.js": "./factions.js?v=1.41.4",
+        "./missions.js": "./missions.js?v=1.41.4",
+        "./narration.js": "./narration.js?v=1.41.4",
+        "./economy.js": "./economy.js?v=1.41.4",
+        "./generators.js": "./generators.js?v=1.41.4",
+        "./eventBus.js": "./eventBus.js?v=1.41.4",
+        "./logging.js": "./logging.js?v=1.41.4",
+        "./ui-modal.js": "./ui-modal.js?v=1.41.4",
+        "./mobile-responsive.js": "./mobile-responsive.js?v=1.41.4",
+        "./ui-events.js": "./ui-events.js?v=1.41.4",
+        "./auth.js": "./auth.js?v=1.41.4",
+        "./territories.js": "./territories.js?v=1.41.4",
+        "./storyExpansion.js": "./storyExpansion.js?v=1.41.4",
+        "./casino.js": "./casino.js?v=1.41.4",
+        "./miniGames.js": "./miniGames.js?v=1.41.4",
+        "./worldPersistence.js": "./worldPersistence.js?v=1.41.4"
       }
     }
     </script>
@@ -140,7 +140,7 @@
                     <p id="dirty-money-display">Dirty: $0</p>
                     <p id="power-display">Influence: 0</p>
                     <p id="turf-display" style="display: none;">Turf: 0 | Tribute: $0/week</p>
-                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: â€”</p>
+                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: —</p>
                     <p id="skill-points-display">Training: Idle</p>
                     <p id="season-display">Season: Spring</p>
                     <p id="weather-display">Weather: Clear</p>
@@ -866,9 +866,9 @@
             
             <div style="margin-top: 20px; padding: 15px; background: #1a0000; border-radius: 4px; border: 1px solid #ff0000;">
                 <h4>Risks</h4>
-                <p>â€¢ Failure means you join them</p>
-                <p>â€¢ Stealth helps you stay unseen</p>
-                <p>â€¢ Earns respect</p>
+                <p>• Failure means you join them</p>
+                <p>• Stealth helps you stay unseen</p>
+                <p>• Earns respect</p>
             </div>
             
             <button onclick="if(typeof requestJailRoster==='function') requestJailRoster(); if(typeof updateJailbreakPrisonerList==='function') updateJailbreakPrisonerList();">Refresh Intel</button>
@@ -1020,14 +1020,14 @@
             </div>
         </div>
 
-        <!-- Friends & Social Screen (redirects to Commission â†’ Friends tab) -->
+        <!-- Friends & Social Screen (redirects to Commission ? Friends tab) -->
         <div id="friends-screen" class="game-screen" style="display:none;">
             <div class="page-header">
                 <h1><span class="icon">&#128101;</span> Friends & Social</h1>
                 <div class="breadcrumb">
                     <a href="#" onclick="goBackToMainMenu(); return false;">SafeHouse</a>
                     <span class="separator">&#9670;</span>
-                    <a href="#" onclick="showOnlineWorld('friends'); return false;">Commission â†’ Friends</a>
+                    <a href="#" onclick="showOnlineWorld('friends'); return false;">Commission ? Friends</a>
                 </div>
             </div>
             <div id="friends-content">
@@ -1058,8 +1058,8 @@
     </div>
 
     <!-- Multiplayer client (global script, must load before game.js module) -->
-    <script src="multiplayer.js?v=1.41.3"></script>
+    <script src="multiplayer.js?v=1.41.4"></script>
     <!-- Main game logic (Module) -->
-    <script type="module" src="game.js?v=1.41.3"></script>
+    <script type="module" src="game.js?v=1.41.4"></script>
 </body>
 </html>

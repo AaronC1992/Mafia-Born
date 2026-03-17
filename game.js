@@ -1459,7 +1459,7 @@ const TURF_ZONES = [
         icon: '',
         description: "Old-world streets lined with trattorias and back-room card games. The Torrino Family's ancestral stronghold.",
         baseIncome: 4000,
-        defenseRequired: 180,
+        defenseRequired: 450,
         riskLevel: 'high',
         controlledBy: 'torrino',
         boss: 'torrino_underboss',
@@ -1474,7 +1474,7 @@ const TURF_ZONES = [
         icon: '',
         description: 'Neon-soaked blocks of vice parlors, strip clubs, and underground dens. Morales Cartel turf.',
         baseIncome: 5500,
-        defenseRequired: 200,
+        defenseRequired: 500,
         riskLevel: 'high',
         controlledBy: 'morales',
         boss: 'morales_underboss',
@@ -1489,7 +1489,7 @@ const TURF_ZONES = [
         icon: '',
         description: 'A labyrinth of narrow alleys, tea houses, and hidden parlors. The Chen Triad rules from the shadows.',
         baseIncome: 4500,
-        defenseRequired: 190,
+        defenseRequired: 475,
         riskLevel: 'high',
         controlledBy: 'chen',
         boss: 'chen_underboss',
@@ -1504,7 +1504,7 @@ const TURF_ZONES = [
         icon: '',
         description: "Fog-cloaked wharves where containers vanish overnight. The Kozlov Bratva's smuggling nerve center.",
         baseIncome: 5000,
-        defenseRequired: 210,
+        defenseRequired: 550,
         riskLevel: 'very high',
         controlledBy: 'kozlov',
         boss: 'kozlov_underboss',
@@ -1519,7 +1519,7 @@ const TURF_ZONES = [
         icon: '',
         description: 'Crumbling tenements and burned-out lots. No single family controls it -- gangs fight for every block.',
         baseIncome: 1500,
-        defenseRequired: 120,
+        defenseRequired: 200,
         riskLevel: 'low',
         controlledBy: 'contested',
         boss: null,
@@ -1534,7 +1534,7 @@ const TURF_ZONES = [
         icon: '',
         description: 'Glass towers and penthouse suites. White-collar crime thrives behind boardroom doors.',
         baseIncome: 6000,
-        defenseRequired: 250,
+        defenseRequired: 400,
         riskLevel: 'very high',
         controlledBy: 'independent',
         boss: 'kane_boss',
@@ -1549,7 +1549,7 @@ const TURF_ZONES = [
         icon: '',
         description: 'Historic cobblestone streets with speakeasies and antique shops hiding contraband.',
         baseIncome: 3000,
-        defenseRequired: 140,
+        defenseRequired: 320,
         riskLevel: 'medium',
         controlledBy: 'torrino',
         boss: 'torrino_capo',
@@ -1564,7 +1564,7 @@ const TURF_ZONES = [
         icon: '',
         description: 'Endless suburban strip malls and quiet cul-de-sacs. Prescription drugs and suburban rackets.',
         baseIncome: 2500,
-        defenseRequired: 120,
+        defenseRequired: 300,
         riskLevel: 'medium',
         controlledBy: 'morales',
         boss: 'morales_capo',
@@ -1587,16 +1587,16 @@ const RIVAL_FAMILIES = {
         motto: 'Blood is thicker than wine.',
         don: {
             id: 'torrino_don', name: 'Don Salvatore Torrino',
-            power: 300, health: 500, reward: 50000,
+            power: 550, health: 800, reward: 50000,
             description: 'The old lion of Little Italy. Rules with an iron fist wrapped in a velvet glove.'
         },
         underboss: {
             id: 'torrino_underboss', name: "Vinnie 'The Hammer' Torrino",
-            power: 180, health: 300, reward: 25000,
+            power: 380, health: 550, reward: 25000,
             description: "Salvatore's nephew. Brutal, loyal, and dangerously ambitious."
         },
         capos: [
-            { id: 'torrino_capo', name: "Carla 'Stiletto' Bianchi", power: 100, health: 200, reward: 10000, zone: 'old_quarter' }
+            { id: 'torrino_capo', name: "Carla 'Stiletto' Bianchi", power: 220, health: 380, reward: 10000, zone: 'old_quarter' }
         ],
         buff: {
             id: 'family_loyalty',
@@ -1616,12 +1616,12 @@ const RIVAL_FAMILIES = {
         motto: 'Strength is the only law.',
         don: {
             id: 'kozlov_don', name: "Dimitri 'The Bear' Kozlov",
-            power: 350, health: 550, reward: 55000,
+            power: 650, health: 900, reward: 55000,
             description: 'Ex-Spetsnaz turned crime lord. His word is backed by an arsenal.'
         },
         underboss: {
             id: 'kozlov_underboss', name: 'Nadia Kozlova',
-            power: 200, health: 320, reward: 28000,
+            power: 420, health: 570, reward: 28000,
             description: "Dimitri's daughter. Colder and smarter than her father -- some say more dangerous."
         },
         capos: [],
@@ -1643,12 +1643,12 @@ const RIVAL_FAMILIES = {
         motto: 'Patience is the sharpest blade.',
         don: {
             id: 'chen_don', name: 'Master Chen Wei',
-            power: 280, health: 400, reward: 48000,
+            power: 520, health: 700, reward: 48000,
             description: 'Ancient traditions, modern empire. Chen Wei plays the long game -- and always wins.'
         },
         underboss: {
             id: 'chen_underboss', name: "Liang 'Ghost' Zhao",
-            power: 190, health: 280, reward: 26000,
+            power: 400, health: 500, reward: 26000,
             description: "Chen Wei's silent enforcer. You never see him coming."
         },
         capos: [],
@@ -1670,16 +1670,16 @@ const RIVAL_FAMILIES = {
         motto: 'Fear is the foundation of empire.',
         don: {
             id: 'morales_don', name: 'El Jefe Ricardo Morales',
-            power: 320, health: 480, reward: 52000,
+            power: 600, health: 800, reward: 52000,
             description: 'Built his empire from the coca fields to the city streets. Ruthless, charismatic, untouchable.'
         },
         underboss: {
             id: 'morales_underboss', name: "Sofia 'La Reina' Morales",
-            power: 210, health: 340, reward: 30000,
+            power: 440, health: 580, reward: 30000,
             description: "Ricardo's wife. Runs the day-to-day with a smile that hides a killer's instinct."
         },
         capos: [
-            { id: 'morales_capo', name: "Diego 'El Cuchillo' Vargas", power: 110, health: 210, reward: 12000, zone: 'the_sprawl' }
+            { id: 'morales_capo', name: "Diego 'El Cuchillo' Vargas", power: 240, health: 380, reward: 12000, zone: 'the_sprawl' }
         ],
         buff: {
             id: 'cartel_connections',
@@ -1698,7 +1698,7 @@ const INDEPENDENT_BOSSES = {
     kane_boss: {
         id: 'kane_boss',
         name: "Marcus 'The Jackal' Kane",
-        power: 160, health: 260, reward: 18000,
+        power: 320, health: 450, reward: 18000,
         zone: 'midtown_heights',
         description: 'A lone wolf with corporate connections. Plays every family against each other.'
     }
@@ -1835,6 +1835,18 @@ function rivalAIGrowth() {
     const ai = player.turf.rivalAI[famKey];
     // Migrate old saves: add war fields if missing
     if (ai.atWar === undefined) { ai.atWar = false; ai.warDeclaredTime = 0; ai.lastWarAttackTime = 0; ai.eliminationAvailable = false; }
+    // v1.41.4 balance migration: bump rival AI power/maxPower if still using old low values
+    const fam = RIVAL_FAMILIES[famKey];
+    if (fam) {
+      const bossPowers = [fam.don.power, fam.underboss.power, ...fam.capos.map(c => c.power)];
+      const newAvg = Math.floor(bossPowers.reduce((a, b) => a + b, 0) / bossPowers.length);
+      const newMax = Math.floor(newAvg * 2.5);
+      if (ai.maxPower < newMax) {
+        const ratio = ai.power / ai.maxPower;
+        ai.maxPower = newMax;
+        ai.power = Math.max(ai.power, Math.floor(newAvg * ratio));
+      }
+    }
     const personality = RIVAL_AI_PERSONALITY[famKey];
     // Count how many zones this family still controls
     const familyZones = (player.turf._zones || []).filter(z => z.controlledBy === famKey);
@@ -2273,6 +2285,20 @@ function initTurfZones() {
     player.turf._zones.forEach(z => {
         if (z.baseDefenseRequired === undefined) z.baseDefenseRequired = z.defenseRequired;
     });
+
+    // v1.41.4 balance migration: update zone defenses for existing saves
+    if (!player.turf._turfBalanceV2) {
+        const updatedDefs = {};
+        TURF_ZONES.forEach(z => { updatedDefs[z.id] = z.defenseRequired; });
+        player.turf._zones.forEach(z => {
+            const newDef = updatedDefs[z.id];
+            if (newDef && z.defenseRequired < newDef) {
+                z.defenseRequired = newDef;
+                z.baseDefenseRequired = newDef;
+            }
+        });
+        player.turf._turfBalanceV2 = true;
+    }
 }
 
 // Calculate total defense strength of a turf zone
@@ -18597,7 +18623,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.3';
+const CURRENT_VERSION = '1.41.4';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {

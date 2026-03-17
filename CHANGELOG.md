@@ -5,6 +5,21 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.4] - 2026-03-16
+
+### Added
+- Superboss attack button now shows a 2-second cooldown bar so players can see when they can attack again
+
+### Changed
+- **Turf balance overhaul** -- Zone defenses increased ~2-2.5x across the board to prevent steamrolling early game
+  - The Slums: 120 -> 200, Old Quarter: 140 -> 320, The Sprawl: 120 -> 300
+  - Little Italy: 180 -> 450, Chinatown: 190 -> 475, Redlight: 200 -> 500
+  - Harbor Row: 210 -> 550, Midtown Heights: 250 -> 400
+- All rival family boss powers roughly doubled (Capos ~220-240, Underbosses ~380-440, Dons ~520-650)
+- Independent boss Marcus Kane power: 160 -> 320
+- Rival AI starting power and max power scale with updated boss values
+- Existing saves automatically migrate to the new balance values on load
+
 ## [1.41.3] - 2026-03-16
 
 ### Fixed
