@@ -8265,7 +8265,7 @@ function updateUI() {
     dirtyMoneyDisplay.innerText = `Dirty: $${dirtyAmount.toLocaleString()}`;
   }
 
-  document.getElementById('power-display').innerText = `Influence: ${player.power}`;
+  document.getElementById('power-display').innerText = `Power: ${player.power}`;
 
   // Add turf display with next tribute countdown
   const turfDisplay = document.getElementById('turf-display');
@@ -18743,7 +18743,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.42.8';
+const CURRENT_VERSION = '1.42.9';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {

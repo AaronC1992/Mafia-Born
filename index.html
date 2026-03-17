@@ -14,31 +14,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Playfair+Display+SC:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.42.8">
+    <link rel="stylesheet" href="styles.css?v=1.42.9">
     <!-- Cache-busting import map for ES modules -- update version on each release -->
     <script type="importmap">
     {
       "imports": {
-        "./passiveManager.js": "./passiveManager.js?v=1.42.8",
-        "./empireOverview.js": "./empireOverview.js?v=1.42.8",
-        "./player.js": "./player.js?v=1.42.8",
-        "./jobs.js": "./jobs.js?v=1.42.8",
-        "./factions.js": "./factions.js?v=1.42.8",
-        "./missions.js": "./missions.js?v=1.42.8",
-        "./narration.js": "./narration.js?v=1.42.8",
-        "./economy.js": "./economy.js?v=1.42.8",
-        "./generators.js": "./generators.js?v=1.42.8",
-        "./eventBus.js": "./eventBus.js?v=1.42.8",
-        "./logging.js": "./logging.js?v=1.42.8",
-        "./ui-modal.js": "./ui-modal.js?v=1.42.8",
-        "./mobile-responsive.js": "./mobile-responsive.js?v=1.42.8",
-        "./ui-events.js": "./ui-events.js?v=1.42.8",
-        "./auth.js": "./auth.js?v=1.42.8",
-        "./territories.js": "./territories.js?v=1.42.8",
-        "./storyExpansion.js": "./storyExpansion.js?v=1.42.8",
-        "./casino.js": "./casino.js?v=1.42.8",
-        "./miniGames.js": "./miniGames.js?v=1.42.8",
-        "./worldPersistence.js": "./worldPersistence.js?v=1.42.8"
+        "./passiveManager.js": "./passiveManager.js?v=1.42.9",
+        "./empireOverview.js": "./empireOverview.js?v=1.42.9",
+        "./player.js": "./player.js?v=1.42.9",
+        "./jobs.js": "./jobs.js?v=1.42.9",
+        "./factions.js": "./factions.js?v=1.42.9",
+        "./missions.js": "./missions.js?v=1.42.9",
+        "./narration.js": "./narration.js?v=1.42.9",
+        "./economy.js": "./economy.js?v=1.42.9",
+        "./generators.js": "./generators.js?v=1.42.9",
+        "./eventBus.js": "./eventBus.js?v=1.42.9",
+        "./logging.js": "./logging.js?v=1.42.9",
+        "./ui-modal.js": "./ui-modal.js?v=1.42.9",
+        "./mobile-responsive.js": "./mobile-responsive.js?v=1.42.9",
+        "./ui-events.js": "./ui-events.js?v=1.42.9",
+        "./auth.js": "./auth.js?v=1.42.9",
+        "./territories.js": "./territories.js?v=1.42.9",
+        "./storyExpansion.js": "./storyExpansion.js?v=1.42.9",
+        "./casino.js": "./casino.js?v=1.42.9",
+        "./miniGames.js": "./miniGames.js?v=1.42.9",
+        "./worldPersistence.js": "./worldPersistence.js?v=1.42.9"
       }
     }
     </script>
@@ -138,9 +138,9 @@
                 </div>
                 <div class="stats-secondary stats-expanded">
                     <p id="dirty-money-display">Dirty: $0</p>
-                    <p id="power-display">Influence: 0</p>
+                    <p id="power-display">Power: 0</p>
                     <p id="turf-display" style="display: none;">Turf: 0 | Tribute: $0/week</p>
-                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: —</p>
+                    <p id="current-territory-display" style="display: none; cursor: pointer;" onclick="showTerritoryRelocation()">District: ï¿½</p>
                     <p id="skill-points-display">Training: Idle</p>
                     <p id="season-display">Season: Spring</p>
                     <p id="weather-display">Weather: Clear</p>
@@ -738,7 +738,7 @@
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="power-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
-                        <span style="color:#8a9a6a;">Influence</span>
+                        <span style="color:#8a9a6a;">Power</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                         <input type="checkbox" class="stat-toggle" data-stat="turf-display" checked onchange="toggleStatDisplay(this)" style="width:16px; height:16px; accent-color:#c0a062;">
@@ -866,9 +866,9 @@
             
             <div style="margin-top: 20px; padding: 15px; background: #1a0000; border-radius: 4px; border: 1px solid #ff0000;">
                 <h4>Risks</h4>
-                <p>• Failure means you join them</p>
-                <p>• Stealth helps you stay unseen</p>
-                <p>• Earns respect</p>
+                <p>ï¿½ Failure means you join them</p>
+                <p>ï¿½ Stealth helps you stay unseen</p>
+                <p>ï¿½ Earns respect</p>
             </div>
             
             <button onclick="if(typeof requestJailRoster==='function') requestJailRoster(); if(typeof updateJailbreakPrisonerList==='function') updateJailbreakPrisonerList();">Refresh Intel</button>
@@ -1058,8 +1058,8 @@
     </div>
 
     <!-- Multiplayer client (global script, must load before game.js module) -->
-    <script src="multiplayer.js?v=1.42.8"></script>
+    <script src="multiplayer.js?v=1.42.9"></script>
     <!-- Main game logic (Module) -->
-    <script type="module" src="game.js?v=1.42.8"></script>
+    <script type="module" src="game.js?v=1.42.9"></script>
 </body>
 </html>
