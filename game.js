@@ -18743,7 +18743,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.42.6';
+const CURRENT_VERSION = '1.42.7';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -22323,6 +22323,11 @@ function toggleBookieHire() {
     player.services.bookieLastPaid = Date.now();
     logAction('You hire a trusted bookie to keep the cash flowing. Income and tribute will be auto-collected.');
     if (typeof showBriefNotification === 'function') showBriefNotification('Bookie hired', 'success');
+    // Immediately collect anything that's available
+    try {
+      autoCollectBusinessesAndTribute();
+      chargeBookieFeeHourly();
+    } catch (e) { console.warn('Bookie initial collect error', e); }
   }
   // Refresh fronts panel if open (now a tab in Properties screen)
   refreshFrontsPanel();
@@ -22345,7 +22350,20 @@ function autoCollectBusinessesAndTribute() {
         // Phase 3: district multiplier
         const bizMultiplier = getBusinessMultiplier(biz.districtId || player.currentTerritory);
         const hourlyIncome = Math.floor(businessType.baseIncome * Math.pow(businessType.incomeMultiplier, biz.level - 1) / 24);
-        const grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 24) * bizMultiplier);
+        let grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 24) * bizMultiplier);
+
+        // Gang member manager bonus
+        const memberBonus = getBusinessMemberBonus(biz);
+        if (memberBonus > 1.0) {
+          grossIncome = Math.floor(grossIncome * memberBonus);
+        }
+
+        // Corruption: contractAccess boosts business income
+        const corruptContractBonus = getCorruptionBenefit('contractAccess');
+        if (corruptContractBonus > 0) {
+          grossIncome = Math.floor(grossIncome * (1 + corruptContractBonus));
+        }
+
         // Phase 3: territory tax
         let taxAmount = 0;
         const bizDistrict = biz.districtId || player.currentTerritory;
@@ -22432,6 +22450,28 @@ function autoCollectBusinessesAndTribute() {
       }
     }
   }
+  // Protection rackets: collect if 24h cooldown elapsed
+  if (player.protectionRackets && player.protectionRackets.length > 0) {
+    const now = Date.now();
+    player.protectionRackets.forEach(racket => {
+      const timeSinceLastCollection = now - racket.lastCollection;
+      const hoursElapsed = Math.floor(timeSinceLastCollection / (60 * 60 * 1000));
+      if (hoursElapsed >= 24) {
+        const periodsElapsed = Math.floor(hoursElapsed / 24);
+        let totalPayment = racket.weeklyPayment * periodsElapsed;
+        const civPayMod = getStreetRepBonus('civilians', 0.05, 0.10, 0.20, 0.30);
+        if (civPayMod !== 0) totalPayment = Math.max(1, Math.floor(totalPayment * (1 + civPayMod)));
+        player.money += totalPayment;
+        racket.lastCollection = now;
+        racket.fearLevel = Math.min(10, racket.fearLevel + 0.5);
+        if (player.streetReputation) {
+          player.streetReputation.civilians = Math.max(-100, (player.streetReputation.civilians || 0) - 1);
+        }
+        collected += totalPayment;
+      }
+    });
+  }
+
   if (collected > 0 && typeof showBriefNotification === 'function') {
     showBriefNotification(`Bookie collected $${collected.toLocaleString()}`, 'success');
   }
