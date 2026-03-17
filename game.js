@@ -17258,6 +17258,9 @@ function resetPlayerForNewGame() {
     perk: null,
     money: 0,
     inventory: [],
+    equippedWeapon: null,
+    equippedArmor: null,
+    equippedVehicle: null,
     stolenCars: [],
     selectedCar: null,
     ammo: 0,
@@ -18641,7 +18644,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.6';
+const CURRENT_VERSION = '1.41.7';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -24247,6 +24250,28 @@ function initializeMissingData() {
   if (player.equippedVehicle && typeof player.equippedVehicle === 'string') {
     const found = player.inventory.find(i => i.name === player.equippedVehicle && i.type === 'vehicle');
     player.equippedVehicle = found || null;
+  }
+
+  // Re-link equipped items to their actual inventory references after save/load.
+  // JSON.parse(JSON.stringify()) creates separate copies, breaking === identity checks.
+  // Match by name + type + durability and reassign to the real inventory object so === works everywhere.
+  if (player.equippedWeapon && typeof player.equippedWeapon === 'object') {
+    const ew = player.equippedWeapon;
+    const match = player.inventory.find(i => i.name === ew.name && i.type === 'weapon' && i.durability === ew.durability)
+      || player.inventory.find(i => i.name === ew.name && i.type === 'weapon');
+    player.equippedWeapon = match || null;
+  }
+  if (player.equippedArmor && typeof player.equippedArmor === 'object') {
+    const ea = player.equippedArmor;
+    const match = player.inventory.find(i => i.name === ea.name && i.type === 'armor' && i.durability === ea.durability)
+      || player.inventory.find(i => i.name === ea.name && i.type === 'armor');
+    player.equippedArmor = match || null;
+  }
+  if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
+    const ev = player.equippedVehicle;
+    const match = player.inventory.find(i => i.name === ev.name && i.type === 'vehicle' && i.durability === ev.durability)
+      || player.inventory.find(i => i.name === ev.name && i.type === 'vehicle');
+    player.equippedVehicle = match || null;
   }
 
   // v1.6.0 -- Turf system migration for older saves

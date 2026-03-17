@@ -5,6 +5,14 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.7] - 2026-03-17
+
+### Fixed
+- Equipped weapons, armor, and vehicles no longer silently unequip after save/load
+- Root cause: JSON serialization broke object reference identity; all "is equipped?" checks used === which failed after deserialization
+- Equipment is now re-linked to inventory references on every load by matching name, type, and durability
+- Added equippedWeapon, equippedArmor, equippedVehicle to initial player definition and new game reset
+
 ## [1.41.6] - 2026-03-17
 
 ### Added

@@ -133,6 +133,9 @@ export const player = {
   storyProgress: null, // Set when player begins a family story
   money: 0, // Starting with no money for maximum challenge
   inventory: [],
+  equippedWeapon: null,
+  equippedArmor: null,
+  equippedVehicle: null,
   stolenCars: [], // Array to store stolen cars
   selectedCar: null, // Currently selected car for jobs
   jobCooldowns: {}, // Crime cooldown timers: { jobIndex: endTimestamp }
