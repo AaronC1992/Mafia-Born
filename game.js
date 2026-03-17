@@ -11066,12 +11066,19 @@ const HELP_CATEGORIES = [
           <li>Move between districts from the Territory Management screen. Each district has a different move cost.</li>
           <li>There is a <strong>1-hour cooldown</strong> between relocations.</li>
         </ul>
-        <h4 style="color:#c0a062; margin:14px 0 6px;">Ownership & Territory Wars</h4>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Territory Wars (PvP)</h4>
         <ul>
-          <li>Each district starts controlled by an NPC boss. Claim or conquer districts to take ownership.</li>
-          <li>Owning a district earns you <strong>tax revenue</strong> from businesses operating there.</li>
-          <li>To wage a territory war you must <strong>live in the target district</strong> and have at least <strong>5 gang members</strong>.</li>
-          <li>Your gang's size and total power determine the outcome of territory wars.</li>
+          <li>Each district starts controlled by an NPC boss. Wage war to seize control for yourself.</li>
+          <li>Once you own a district, <strong>other players can challenge you</strong> for it -- and you can do the same to them.</li>
+          <li>You need at least <strong>5 gang members</strong> to wage a territory war. There is a <strong>30-minute cooldown</strong> between wars.</li>
+          <li>Your gang's size, loyalty, and your attack power all contribute to the battle outcome -- but so does the defender's strength, fortifications, and alliance support.</li>
+          <li>Defeat carries risk: <strong>25% gang casualties</strong>, reputation loss, health damage, and a <strong>30% chance of arrest</strong>.</li>
+          <li>Victory still costs you: <strong>10% gang casualties</strong> and increased heat.</li>
+        </ul>
+        <h4 style="color:#c0a062; margin:14px 0 6px;">Ownership Rewards</h4>
+        <ul>
+          <li>The district owner collects <strong>10% tax</strong> on all job earnings and business income from every player living in that district.</li>
+          <li>The player who controls the <strong>most territories</strong> becomes the <strong>Top Don</strong> and gains the power to set city-wide policies (see Top Don & City Policies).</li>
         </ul>
       `},
       { id: 'politics-help', icon: '', title: 'Top Don & City Policies', content: `
@@ -18644,7 +18651,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.7';
+const CURRENT_VERSION = '1.41.8';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {

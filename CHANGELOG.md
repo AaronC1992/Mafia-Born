@@ -5,6 +5,11 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.8] - 2026-03-17
+
+### Fixed
+- Multiplayer help screen: rewrote the Territories & Districts help topic to accurately describe MP territory wars (PvP conquest, gang casualties, arrest risk, 30-min cooldown, 10% resident tax, Top Don connection) instead of vague turf-like descriptions
+
 ## [1.41.7] - 2026-03-17
 
 ### Fixed
