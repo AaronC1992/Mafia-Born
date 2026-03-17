@@ -766,6 +766,16 @@ try {
         }
     }
 
+    // Load gambling tables (only 'waiting' tables that haven't expired)
+    if (persisted.gamblingTables && typeof persisted.gamblingTables === 'object') {
+        const now = Date.now();
+        for (const [id, table] of Object.entries(persisted.gamblingTables)) {
+            if (table.state === 'waiting' && now - table.createdAt < 600000) {
+                gameState.gamblingTables.set(id, table);
+            }
+        }
+    }
+
     // Migration: assign NPC bosses to any territory still unclaimed (owner: null)
     for (const id of TERRITORY_IDS) {
         const terr = gameState.territories[id];
@@ -812,6 +822,7 @@ function buildWorldSavePayload() {
         alliances: Object.fromEntries(gameState.alliances),
         bounties: gameState.bounties,
         playerMarket: gameState.playerMarket,
+        gamblingTables: Object.fromEntries(gameState.gamblingTables),
         offlineDeathNewspapers: Object.fromEntries(gameState.offlineDeathNewspapers),
         crewChats: Object.fromEntries(gameState.crewChats),
         allianceChats: Object.fromEntries(gameState.allianceChats),
@@ -969,6 +980,13 @@ wss.on('connection', (ws, _req) => {
         territoryWarCooldowns.delete(clientId);
         assassinationCooldowns.delete(clientId);
         disciplineCooldowns.delete(clientId);
+
+        // Clean up gambling tables hosted by this player
+        for (const [tableId, table] of gameState.gamblingTables) {
+            if (table.hostId === clientId && table.state === 'waiting') {
+                gameState.gamblingTables.delete(tableId);
+            }
+        }
     });
     
     // Send welcome message
@@ -5267,11 +5285,6 @@ function handleMarketCancel(clientId, message) {
 function handleMarketGetListings(clientId) {
     const ws = clients.get(clientId);
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
-
-    // Clean expired listings (24h)
-    const now = Date.now();
-    const expiry = 24 * 60 * 60 * 1000;
-    gameState.playerMarket = gameState.playerMarket.filter(l => (now - l.listedAt) < expiry);
 
     safeSend(ws, {
         type: 'market_listings',
