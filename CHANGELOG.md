@@ -5,6 +5,21 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.9] - 2026-03-17
+
+### Fixed
+- Territory persistence: conquered multiplayer territories no longer reset after logout or server restart
+- Root cause: double-throttled saves (5s server + 5s persistence) meant data could be lost if server shut down within 10 seconds of a conquest
+- Eliminated double-throttle by writing immediately after the server-level debounce
+- Added `flushPendingWorldSave()` to graceful shutdown so pending territory changes are never lost
+- Added 60-second periodic auto-save as a safety net for all world state
+
+### Added
+- Vehicle destruction events: when an equipped vehicle reaches 100% damage it is destroyed with dramatic flavor text (8 variations)
+- Some destruction events deal health damage to the player (explosions, crashes, flips)
+- Vehicle damage warnings at 50% and 75% damage thresholds
+- Inventory now shows vehicle damage percentage alongside condition label
+
 ## [1.41.8] - 2026-03-17
 
 ### Fixed

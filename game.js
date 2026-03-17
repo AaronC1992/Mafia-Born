@@ -290,16 +290,50 @@ function degradeEquipment(_context) {
     }
   }
   // Vehicle: lose 1 durability per use (Wheelman skill reduces chance)
+  let vehicleDestroyed = false;
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
     const wheelmanLevel = player.skillTree?.stealth?.wheelman || 0;
     if (wheelmanLevel <= 0 || Math.random() * 100 >= wheelmanLevel * 3) {
       player.equippedVehicle.durability = Math.max(0, (player.equippedVehicle.durability || 0) - 1);
     }
+    // Warn player when vehicle is getting beat up
+    const vDur = player.equippedVehicle.durability || 0;
+    const vMax = player.equippedVehicle.maxDurability || 40;
+    const vDmgPct = Math.round((1 - vDur / vMax) * 100);
+    if (vDur > 0 && vDmgPct >= 75) {
+      showBriefNotification(`Your ${player.equippedVehicle.name} is falling apart! (${vDmgPct}% damaged)`, 'warning');
+    } else if (vDur > 0 && vDmgPct >= 50 && Math.random() < 0.3) {
+      showBriefNotification(`Your ${player.equippedVehicle.name} is looking rough... (${vDmgPct}% damaged)`, 'warning');
+    }
     if (player.equippedVehicle.durability <= 0) {
-      broken.push(player.equippedVehicle.name);
+      vehicleDestroyed = true;
+      const vName = player.equippedVehicle.name;
       const idx = player.inventory.findIndex(i => i === player.equippedVehicle);
       if (idx !== -1) player.inventory.splice(idx, 1);
       player.equippedVehicle = null;
+      recalculatePower();
+
+      // Dramatic vehicle destruction events
+      const destructionEvents = [
+        { text: `Your ${vName} finally gave out mid-getaway -- the engine seized, smoke poured from the hood, and you had to bail on foot. It's scrap metal now.`, damage: 0 },
+        { text: `BOOM! Your ${vName} exploded during the getaway! The fuel line must have been leaking. You barely dove out in time, but the blast caught you.`, damage: Math.floor(Math.random() * 10) + 5 },
+        { text: `Your ${vName} wrapped around a lamppost at full speed trying to shake a tail. You crawled out of the wreckage battered and bruised -- the car wasn't so lucky.`, damage: Math.floor(Math.random() * 12) + 8 },
+        { text: `The wheels on your ${vName} locked up mid-chase and it flipped three times before coming to rest on its roof. You kicked out the windshield and limped away. The car is toast.`, damage: Math.floor(Math.random() * 15) + 5 },
+        { text: `Your ${vName} died the way it lived -- running from the cops. The transmission dropped out at 90mph. You ditched it in an alley and didn't look back.`, damage: 0 },
+        { text: `A stray bullet hit the radiator of your ${vName} during the escape. Steam, sparks, then flames. You jumped out just before the whole thing went up.`, damage: Math.floor(Math.random() * 8) + 3 },
+        { text: `Your ${vName} broke down in the middle of hostile territory. The steering gave out, you swerved into a dumpster, and the frame buckled. It's done.`, damage: Math.floor(Math.random() * 6) + 2 },
+        { text: `The brakes on your ${vName} finally failed on a backstreet descent. You rode it out as long as you could before bailing. The wreck slid into the river.`, damage: Math.floor(Math.random() * 10) + 3 }
+      ];
+      const event = destructionEvents[Math.floor(Math.random() * destructionEvents.length)];
+      if (event.damage > 0) {
+        player.health = Math.max(1, player.health - event.damage);
+        flashHurtScreen();
+        logAction(`${event.text} (-${event.damage} health)`);
+        showBriefNotification(`Your ${vName} is destroyed! (-${event.damage} HP)`, 'danger');
+      } else {
+        logAction(event.text);
+        showBriefNotification(`Your ${vName} is destroyed!`, 'danger');
+      }
     }
   }
   if (broken.length > 0) {
@@ -18651,7 +18685,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.41.8';
+const CURRENT_VERSION = '1.41.9';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -20283,9 +20317,10 @@ function buildStashHTML() {
       if (item.type === 'vehicle') {
         const vDurPct = hasDurability && item.maxDurability > 0 ? item.durability / item.maxDurability : 1;
         const vBonus = Math.floor((item.power || 0) * 0.5 * vDurPct);
+        const dmgPct = 100 - durPct;
         const condLabel = durPct > 75 ? 'Excellent' : durPct > 50 ? 'Good' : durPct > 25 ? 'Worn' : 'Critical';
         const condColor = durPct > 75 ? '#8a9a6a' : durPct > 50 ? '#c0a040' : durPct > 25 ? '#e67e22' : '#8b3a3a';
-        vehicleBonusInfo = `<br><small style="color:${condColor};">Condition: ${condLabel} (${durPct}%) | Job Success: <strong>+${vBonus}%</strong></small>`;
+        vehicleBonusInfo = `<br><small style="color:${condColor};">Condition: ${condLabel} | Damage: ${dmgPct}% | Job Success: <strong>+${vBonus}%</strong></small>`;
       }
       const isEquippable = item.type === 'weapon' || item.type === 'armor' || item.type === 'vehicle';
       s += `<div style="padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:2px solid ${equipped ? '#8a9a6a' : '#1a1610'};display:flex;justify-content:space-between;align-items:center;">

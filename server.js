@@ -4,7 +4,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 // JSON file persistence utilities
-const { loadWorldState, saveWorldState, flushWorldState } = require('./worldPersistence');
+const { loadWorldState, saveWorldState, saveWorldStateImmediate, flushWorldState } = require('./worldPersistence');
 // MongoDB connection
 const mongodb = require('./db');
 // User accounts & authentication
@@ -800,37 +800,67 @@ try {
 
 // Debounced save to avoid frequent disk writes
 let savePending = false;
+let saveTimer = null;
+
+function buildWorldSavePayload() {
+    return {
+        cityDistricts: gameState.cityDistricts,
+        cityEvents: gameState.cityEvents,
+        leaderboard: persistedLeaderboard,
+        territories: gameState.territories,
+        politics: gameState.politics,
+        alliances: Object.fromEntries(gameState.alliances),
+        bounties: gameState.bounties,
+        playerMarket: gameState.playerMarket,
+        offlineDeathNewspapers: Object.fromEntries(gameState.offlineDeathNewspapers),
+        crewChats: Object.fromEntries(gameState.crewChats),
+        allianceChats: Object.fromEntries(gameState.allianceChats),
+        privateChats: Object.fromEntries(gameState.privateChats),
+        season: {
+            number: gameState.season.number,
+            startedAt: gameState.season.startedAt,
+            endsAt: gameState.season.endsAt,
+            ratings: Object.fromEntries(gameState.season.ratings)
+        }
+    };
+}
+
 function scheduleWorldSave() {
     if (savePending) return;
     savePending = true;
-    setTimeout(() => {
+    saveTimer = setTimeout(() => {
         savePending = false;
+        saveTimer = null;
         try {
-            saveWorldState({
-                cityDistricts: gameState.cityDistricts,
-                cityEvents: gameState.cityEvents,
-                leaderboard: persistedLeaderboard,
-                territories: gameState.territories,
-                politics: gameState.politics,
-                alliances: Object.fromEntries(gameState.alliances),
-                bounties: gameState.bounties,
-                playerMarket: gameState.playerMarket,
-                offlineDeathNewspapers: Object.fromEntries(gameState.offlineDeathNewspapers),
-                crewChats: Object.fromEntries(gameState.crewChats),
-                allianceChats: Object.fromEntries(gameState.allianceChats),
-                privateChats: Object.fromEntries(gameState.privateChats),
-                season: {
-                    number: gameState.season.number,
-                    startedAt: gameState.season.startedAt,
-                    endsAt: gameState.season.endsAt,
-                    ratings: Object.fromEntries(gameState.season.ratings)
-                }
-            });
+            saveWorldStateImmediate(buildWorldSavePayload());
         } catch (err) {
             console.error(' Error during world save:', err.message);
         }
     }, 5000);
 }
+
+// Force-write any pending world save (call on shutdown)
+function flushPendingWorldSave() {
+    if (saveTimer) {
+        clearTimeout(saveTimer);
+        saveTimer = null;
+    }
+    savePending = false;
+    try {
+        saveWorldStateImmediate(buildWorldSavePayload());
+    } catch (err) {
+        console.error(' Error during flush world save:', err.message);
+    }
+}
+
+// Periodic auto-save every 60 seconds as safety net
+setInterval(() => {
+    try {
+        saveWorldStateImmediate(buildWorldSavePayload());
+    } catch (err) {
+        console.error(' Error during periodic world save:', err.message);
+    }
+}, 60000);
 
 // Connected clients
 // Identity/session management
@@ -6469,8 +6499,9 @@ process.on('uncaughtException', (error) => {
 async function gracefulShutdown() {
     console.log('\n Server shutting down gracefully...');
     
-    // Flush any pending world state changes
+    // Flush any pending world state changes (both server-level and persistence-level)
     try {
+        flushPendingWorldSave();
         flushWorldState();
         await mongodb.close();
         console.log(' World state flushed & MongoDB closed');
