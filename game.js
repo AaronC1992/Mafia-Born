@@ -289,12 +289,14 @@ function degradeEquipment(_context) {
       player.equippedArmor = null;
     }
   }
-  // Vehicle: lose 1 durability per use (Wheelman skill reduces chance)
+  // Vehicle: lose 1-4% durability per use (Wheelman skill reduces chance)
   let vehicleDestroyed = false;
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
     const wheelmanLevel = player.skillTree?.stealth?.wheelman || 0;
     if (wheelmanLevel <= 0 || Math.random() * 100 >= wheelmanLevel * 3) {
-      player.equippedVehicle.durability = Math.max(0, (player.equippedVehicle.durability || 0) - 1);
+      const vMax = player.equippedVehicle.maxDurability || 40;
+      const dmgAmount = Math.max(1, Math.round(vMax * (1 + Math.floor(Math.random() * 4)) / 100));
+      player.equippedVehicle.durability = Math.max(0, (player.equippedVehicle.durability || 0) - dmgAmount);
     }
     // Warn player when vehicle is getting beat up
     const vDur = player.equippedVehicle.durability || 0;
@@ -18697,7 +18699,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.42.1';
+const CURRENT_VERSION = '1.42.2';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
