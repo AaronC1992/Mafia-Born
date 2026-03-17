@@ -4468,7 +4468,7 @@ function buildBusinessesHTML() {
       </div>
       <div>
         <button onclick="toggleBookieHire()" style="background:${player.services && player.services.bookieHired ? '#8b3a3a' : '#8a9a6a'}; color:white; padding:10px 14px; border:1px solid #c0a062; border-radius:6px; cursor:pointer;">
-          ${player.services && player.services.bookieHired ? 'Dismiss Bookie' : 'Hire Bookie ($5,000/day)'}
+          ${player.services && player.services.bookieHired ? 'Dismiss Bookie' : 'Hire Bookie ($208/hr)'}
         </button>
       </div>
     </div>
@@ -4500,7 +4500,7 @@ function buildBusinessesHTML() {
           // Calculate hourly income and accrued hours
           const hourlyIncome = Math.floor(currentIncome / 24);
           const lastCollection = business.lastCollection || Date.now();
-          const hoursAccrued = Math.min(48, Math.floor((Date.now() - lastCollection) / (1000 * 60 * 60)));
+          const hoursAccrued = Math.min(24, Math.floor((Date.now() - lastCollection) / (1000 * 60 * 60)));
           const pendingIncome = Math.floor(hourlyIncome * hoursAccrued * bizMult);
 
           // Unique upgrade flavor text for illegal businesses
@@ -4534,8 +4534,8 @@ function buildBusinessesHTML() {
 
               <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                 <p style="margin: 5px 0;"><strong>Level:</strong> ${business.level}/${businessType.maxLevel}</p>
-                <p style="margin: 5px 0;"><strong>Daily Income:</strong> $${currentIncome.toLocaleString()}${businessType.paysDirty ? ' <span style="color:#8b3a3a;">(DIRTY MONEY)</span>' : ''}</p>
-                <p style="margin: 5px 0; color: #8a7a5a; font-size: 0.9em;"><strong>Accrues:</strong> ~$${hourlyIncome.toLocaleString()}/hr (max 48h) | <strong>Pending:</strong> $${pendingIncome.toLocaleString()} (${hoursAccrued}h)</p>
+                <p style="margin: 5px 0;"><strong>Income:</strong> ~$${hourlyIncome.toLocaleString()}/hr (collectable every 60 min, max 24h)${businessType.paysDirty ? ' <span style="color:#8b3a3a;">(DIRTY MONEY)</span>' : ''}</p>
+                <p style="margin: 5px 0; color: #8a7a5a; font-size: 0.9em;"><strong>Accrues:</strong> ~$${hourlyIncome.toLocaleString()}/hr (max 24h) | <strong>Pending:</strong> $${pendingIncome.toLocaleString()} (${hoursAccrued}h)</p>
                 <p style="margin: 5px 0;"><strong>District:</strong> ${bizDistrict ? bizDistrict.name : 'Unassigned'}${bonusPct > 0 ? ` <span style="color:#8a9a6a;">(+${bonusPct}% income bonus)</span>` : ''}</p>
                 <p style="margin: 5px 0;"><strong>Laundering Capacity:</strong> $${(businessType.launderingCapacity * business.level).toLocaleString()}</p>
                 <p style="margin: 5px 0;"><strong>Legitimacy:</strong> ${businessType.legitimacy}%</p>
@@ -4606,7 +4606,7 @@ function buildBusinessesHTML() {
 
             <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
               <p style="margin: 5px 0;"><strong>Price:</strong> $${businessType.basePrice.toLocaleString()}</p>
-              <p style="margin: 5px 0;"><strong>Base Income:</strong> $${businessType.baseIncome.toLocaleString()}/day${businessType.paysDirty ? ' <span style="color:#8b3a3a;">(DIRTY MONEY)</span>' : ''}</p>
+              <p style="margin: 5px 0;"><strong>Base Income:</strong> ~$${Math.floor(businessType.baseIncome / 24).toLocaleString()}/hr${businessType.paysDirty ? ' <span style="color:#8b3a3a;">(DIRTY MONEY)</span>' : ''}</p>
               <p style="margin: 5px 0;"><strong>Category:</strong> ${businessType.category}</p>
               <p style="margin: 5px 0;"><strong>Max Level:</strong> ${businessType.maxLevel}</p>
             </div>
@@ -4731,7 +4731,7 @@ async function upgradeBusiness(businessIndex) {
 
   const newIncome = Math.floor(businessType.baseIncome * Math.pow(businessType.incomeMultiplier, business.level - 1));
 
-  showBriefNotification(`${business.name} upgraded to Lv${business.level}! Income: $${newIncome.toLocaleString()}/day`, 'success');
+  showBriefNotification(`${business.name} upgraded to Lv${business.level}! Income: ~$${Math.floor(newIncome / 24).toLocaleString()}/hr`, 'success');
 
   // Unique upgrade narration for illegal businesses
   const upgradeNarrations = {
@@ -4801,7 +4801,7 @@ async function collectBusinessIncome(businessIndex) {
   const bizMultiplier = getBusinessMultiplier(business.districtId || player.currentTerritory);
 
   const hourlyIncome = Math.floor(businessType.baseIncome * Math.pow(businessType.incomeMultiplier, business.level - 1) / 24);
-  let grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 48) * bizMultiplier);
+  let grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 24) * bizMultiplier);
 
   // Gang member manager bonus
   const memberBonus = getBusinessMemberBonus(business);
@@ -4888,7 +4888,7 @@ async function collectAllBusinessIncome() {
     const bizMultiplier = getBusinessMultiplier(business.districtId || player.currentTerritory);
 
     const hourlyIncome = Math.floor(businessType.baseIncome * Math.pow(businessType.incomeMultiplier, business.level - 1) / 24);
-    let grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 48) * bizMultiplier);
+    let grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 24) * bizMultiplier);
 
     // Gang member manager bonus
     const memberBonus = getBusinessMemberBonus(business);
@@ -6462,8 +6462,8 @@ function renderTurfControlContent() {
         <div style="font-size: 1.3em; font-weight: bold; color: #f5e6c8;">${player.turf.power || 100}</div>
       </div>
       <div style="background: rgba(138, 154, 106, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
-        <div style="font-size: 0.9em; color: #d4c4a0;">Weekly Income</div>
-        <div style="font-size: 1.3em; font-weight: bold; color: #f5e6c8;">$${(player.turf.income || 0).toLocaleString()}</div>
+        <div style="font-size: 0.9em; color: #d4c4a0;">Tribute (per hr)</div>
+        <div style="font-size: 1.3em; font-weight: bold; color: #f5e6c8;">$${Math.floor((player.turf.income || 0) / 24).toLocaleString()}</div>
       </div>
       <div style="background: rgba(155, 89, 182, 0.2); padding: 15px; border-radius: 10px; text-align: center; min-width: 120px;">
         <div style="font-size: 0.9em; color: #d4c4a0;">Turf Zones</div>
@@ -6514,9 +6514,9 @@ function renderTurfControlContent() {
     if (totalRep > 0) breakdownLines.push(`Reputation: +$${totalRep.toLocaleString()}`);
 
     html += `<div style="background:rgba(138,154,106,0.12);padding:12px 16px;border-radius:8px;margin-bottom:18px;border:1px solid rgba(138,154,106,0.25);">
-      <div style="font-size:0.85em;color:#8a9a6a;font-weight:bold;margin-bottom:6px;">Weekly Income Breakdown</div>
+      <div style="font-size:0.85em;color:#8a9a6a;font-weight:bold;margin-bottom:6px;">Tribute Breakdown (per hr)</div>
       <div style="font-size:0.8em;color:#d4c4a0;line-height:1.6;">${breakdownLines.join('<br>')}</div>
-      <div style="margin-top:6px;font-size:0.9em;color:#f5e6c8;font-weight:bold;">Total: $${(player.turf.income || 0).toLocaleString()}/week</div>
+      <div style="margin-top:6px;font-size:0.9em;color:#f5e6c8;font-weight:bold;">Per Hour: $${Math.floor((player.turf.income || 0) / 24).toLocaleString()} | Collectable every 60 min</div>
     </div>`;
 
     // Heat & tribute info
@@ -6548,7 +6548,7 @@ function renderTurfControlContent() {
       html += `<div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px; border-left: 4px solid #c0a062;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 200px;"><h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${zone.icon} ${zone.name}</h4><p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${zone.description}</p><div style="font-size:0.8em; color:#8a7a5a; margin-top:4px;">Fort Lv ${fortLevel}</div></div>
-          <div style="text-align: right; min-width: 120px;"><div style="color: #8a9a6a; font-weight: bold;">$${income.toLocaleString()}/week</div></div>
+          <div style="text-align: right; min-width: 120px;"><div style="color: #8a9a6a; font-weight: bold;">$${Math.floor(income / 24).toLocaleString()}/hr</div></div>
         </div>
         <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
           <button onclick="manageTurfDetails('${zone.id}')" style="padding: 5px 10px; background: #c0a062; border:1px solid #c0a062; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">Manage</button>
@@ -6696,7 +6696,7 @@ function showTurfMap() {
             <h3 style="color:#f5e6c8; margin:0 0 8px 0;">${zone.icon} ${zone.name}</h3>
             <p style="color:#d4c4a0; margin:0 0 8px 0; font-size:0.95em;">${zone.description}</p>
             <div style="font-size:0.85em; color:#d4c4a0;">
-              <span style="color:#8a9a6a;">Income:</span> $${zone.baseIncome.toLocaleString()}/week |
+              <span style="color:#8a9a6a;">Income:</span> $${Math.floor(zone.baseIncome / 24).toLocaleString()}/hr |
               <span style="color:${getRiskColor(zone.riskLevel)};">${zone.riskLevel}</span>
             </div>
             <div style="margin-top:5px; font-size:0.85em; color:${borderColor};">${statusLabel}</div>`;
@@ -7339,7 +7339,7 @@ function collectTurfTribute(zoneId) {
   const zone = (player.turf._zones || []).find(z => z.id === zoneId);
   if (!zone) return;
   const income = calculateTurfZoneIncome(zone);
-  const tribute = Math.floor(income * Math.min(hoursSince / 168, 1));
+  const tribute = Math.floor(income * Math.min(hoursSince / 24, 1));
   player.dirtyMoney = (player.dirtyMoney || 0) + tribute;
   player.turf.lastTributeCollection = now;
   player.heat = Math.min(100, (player.heat || 0) + 3);
@@ -7349,7 +7349,7 @@ function collectTurfTribute(zoneId) {
 }
 window.collectTurfTribute = collectTurfTribute;
 
-// Process weekly turf operations (called periodically)
+// Process turf operations (called periodically)
 function processTurfOperations() {
   initTurfZones();
   const owned = player.turf.owned || [];
@@ -7359,7 +7359,7 @@ function processTurfOperations() {
   recalcTurfIncome();
   if (player.turf.income > 0) {
     player.dirtyMoney = (player.dirtyMoney || 0) + player.turf.income;
-    logAction(`Weekly turf tribute: +$${player.turf.income.toLocaleString()} (dirty money)`);
+    logAction(`Turf tribute collected: +$${player.turf.income.toLocaleString()} (dirty money)`);
   }
 
   // Heat only decays if the player has the heat_reduction milestone perk
@@ -7502,7 +7502,7 @@ function showProtectionRackets() {
               <div style="font-size: 0.8em; color: #8a7a5a;">${zoneName}</div>
             </div>
             <div style="text-align: right; min-width: 120px;">
-              <div style="color: #c0a040; font-weight: bold;">$${racket.weeklyPayment.toLocaleString()}/week</div>
+              <div style="color: #c0a040; font-weight: bold;">$${racket.weeklyPayment.toLocaleString()} (every 24h)</div>
               <div style="color: #d4c4a0; font-size: 0.9em;">Fear: ${racket.fearLevel.toFixed(1)}</div>
             </div>
           </div>
@@ -7553,7 +7553,7 @@ function showProtectionRackets() {
               </div>
             </div>
             <div style="text-align: right; min-width: 120px;">
-              <div style="color: #c0a040; font-weight: bold;">$${business.basePayment.toLocaleString()}/week</div>
+              <div style="color: #c0a040; font-weight: bold;">$${business.basePayment.toLocaleString()} (every 24h)</div>
               <div style="color: #d4c4a0; font-size: 0.9em;">Base Rate</div>
               <button onclick="approachBusiness('${business.id}', '${business.territoryId}')"
                   style="margin-top: 10px; padding: 8px 15px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a);
@@ -7907,7 +7907,7 @@ function approachBusiness(businessId, territoryId) {
       player.streetReputation.civilians = Math.max(-100, (player.streetReputation.civilians || 0) - 2);
     }
 
-    showBriefNotification(`${business.name} pays $${business.basePayment.toLocaleString()}/week for protection`, 'success');
+    showBriefNotification(`${business.name} pays $${business.basePayment.toLocaleString()} every 24h for protection`, 'success');
     logAction(`${business.name} now pays tribute. Fear is the foundation of respect, and respect is the currency of power.`);
   } else {
     // Failed approach - business calls police or refuses
@@ -7931,14 +7931,16 @@ function collectProtection(racketId) {
 
   const business = protectionBusinesses.find(b => b.id === racket.businessId);
   const timeSinceLastCollection = Date.now() - racket.lastCollection;
-  const weeksElapsed = Math.floor(timeSinceLastCollection / (7 * 24 * 60 * 60 * 1000));
+  const hoursElapsed = Math.floor(timeSinceLastCollection / (60 * 60 * 1000));
 
-  if (weeksElapsed < 1) {
-    showBriefNotification('You already collected from this business recently. Give them time to make money first.', 'warning');
+  if (hoursElapsed < 24) {
+    const hrsLeft = 24 - hoursElapsed;
+    showBriefNotification(`Come back in ${hrsLeft}h. Give them time to make money first.`, 'warning');
     return;
   }
 
-  let totalPayment = racket.weeklyPayment * weeksElapsed;
+  const periodsElapsed = Math.floor(hoursElapsed / 24);
+  let totalPayment = racket.weeklyPayment * periodsElapsed;
   // Civilians streetRep: positive = locals pay more willingly, negative = less
   const civPayMod = getStreetRepBonus('civilians', 0.05, 0.10, 0.20, 0.30);
   if (civPayMod !== 0) totalPayment = Math.max(1, Math.floor(totalPayment * (1 + civPayMod)));
@@ -7953,7 +7955,7 @@ function collectProtection(racketId) {
   // Maintain fear level
   racket.fearLevel = Math.min(10, racket.fearLevel + 0.5);
 
-  showBriefNotification(`Collected $${totalPayment.toLocaleString()} from ${business.name} (${weeksElapsed} week${weeksElapsed > 1 ? 's' : ''})`, 'success');
+  showBriefNotification(`Collected $${totalPayment.toLocaleString()} from ${business.name}`, 'success');
   logAction(`${business.name} pays their tribute without question. Fear keeps the money flowing like clockwork.`);
 
   updateUI();
@@ -7972,7 +7974,7 @@ function pressureBusiness(racketId) {
     racket.weeklyPayment = Math.min(business.maxExtortion, racket.weeklyPayment + increase);
     racket.fearLevel = Math.min(10, racket.fearLevel + 1);
 
-    showBriefNotification(`${business.name} agrees to pay more! Weekly payment increased by $${increase.toLocaleString()}.`, 'success');
+    showBriefNotification(`${business.name} agrees to pay more! Payment increased by $${increase.toLocaleString()}.`, 'success');
     logAction(`Applied pressure to ${business.name}. A reminder of consequences speaks louder than words.`);
   } else {
     // Pressure backfires
@@ -8265,12 +8267,69 @@ function updateUI() {
 
   document.getElementById('power-display').innerText = `Influence: ${player.power}`;
 
-  // Add turf display if player has turf
+  // Add turf display with next tribute countdown
   const turfDisplay = document.getElementById('turf-display');
   if (turfDisplay) {
     const ownedCount = (player.turf?.owned || []).length;
-    if (ownedCount > 0) {
-      turfDisplay.innerText = `Turf: ${ownedCount} | Tribute: $${(player.turf?.income || 0).toLocaleString()}/week`;
+    const hasGang = player.gang && (player.gang.gangMembers && player.gang.gangMembers.length > 0);
+    const hasBusinesses = player.businesses && player.businesses.length > 0;
+    const hasRackets = player.protectionRackets && player.protectionRackets.length > 0;
+    const hasTurf = ownedCount > 0;
+
+    if (hasTurf || hasGang || hasBusinesses || hasRackets) {
+      const now = Date.now();
+      let soonestSec = Infinity;
+      let allReady = true;
+
+      // Gang tribute: 5 min (300s) cooldown
+      if (hasGang) {
+        const gangElapsed = (now - (player.gang.lastTributeTime || 0)) / 1000;
+        if (gangElapsed < 300) { allReady = false; soonestSec = Math.min(soonestSec, 300 - gangElapsed); }
+      }
+
+      // Turf tribute: 60 min cooldown
+      if (hasTurf) {
+        const turfElapsed = (now - (player.turf.lastTributeCollection || 0)) / 1000;
+        if (turfElapsed < 3600) { allReady = false; soonestSec = Math.min(soonestSec, 3600 - turfElapsed); }
+      }
+
+      // Business income: 60 min accrual
+      if (hasBusinesses) {
+        player.businesses.forEach(biz => {
+          const bizElapsed = (now - (biz.lastCollection || now)) / 1000;
+          if (bizElapsed < 3600) { allReady = false; soonestSec = Math.min(soonestSec, 3600 - bizElapsed); }
+        });
+      }
+
+      // Protection rackets: 24 hour cooldown
+      if (hasRackets) {
+        const rackCD = 24 * 3600;
+        player.protectionRackets.forEach(r => {
+          const rElapsed = (now - (r.lastCollection || 0)) / 1000;
+          if (rElapsed < rackCD) { allReady = false; soonestSec = Math.min(soonestSec, rackCD - rElapsed); }
+        });
+      }
+
+      let tributeText;
+      if (allReady) {
+        tributeText = 'Next Tribute: Ready';
+      } else {
+        const sec = Math.ceil(soonestSec);
+        if (sec >= 86400) {
+          const d = Math.floor(sec / 86400);
+          const h = Math.floor((sec % 86400) / 3600);
+          tributeText = `Next Tribute: ${d}d ${h}h`;
+        } else if (sec >= 3600) {
+          const h = Math.floor(sec / 3600);
+          const m = Math.floor((sec % 3600) / 60);
+          tributeText = `Next Tribute: ${h}h ${m}m`;
+        } else {
+          const m = Math.floor(sec / 60);
+          const s = sec % 60;
+          tributeText = `Next Tribute: ${m}:${String(s).padStart(2, '0')}`;
+        }
+      }
+      turfDisplay.innerText = tributeText;
       turfDisplay.style.display = 'block';
     } else {
       turfDisplay.style.display = 'none';
@@ -8354,9 +8413,7 @@ function updateUI() {
   const reputationDisplay = document.getElementById('reputation-display');
   if (reputationDisplay) {
     const next = getNextTier(player.reputation);
-    reputationDisplay.innerText = next
-      ? `Respect: ${Math.floor(player.reputation)}/${next.minRep}`
-      : `Respect: ${Math.floor(player.reputation)} (Max)`;
+    reputationDisplay.innerText = `Respect: ${Math.floor(player.reputation)}`;
   }
   const jailStatusDisplay = document.getElementById('jail-status-display');
   if (jailStatusDisplay) {
@@ -9865,7 +9922,7 @@ const NARRATIVE_GUIDE_STEPS = [
     title: 'Turf Control',
     subtitle: 'Dominate the City',
     body: `<p>Claim districts and build your turf empire.</p>
-      <p>The city has <strong>8 turf zones</strong> controlled by rival families. Attack from the Turf Map to seize control. Each zone you hold generates <strong>weekly Tribute</strong> (dirty money).</p>
+      <p>The city has <strong>8 turf zones</strong> controlled by rival families. Attack from the Turf Map to seize control. Each zone you hold generates <strong>hourly Tribute</strong> (dirty money), collectable every 60 minutes.</p>
       <p><strong>Fortify</strong> zones to boost their defence. Assign <strong>crew members</strong> as defenders. The more zones you own, the harder and more frequent rival attacks become.</p>
       <p><strong>Turf Milestones:</strong> 2 zones = +10% Respect. 4 zones = passive heat decay. 6 zones = +15% turf income. 8 zones = +25% income + Overlord's Scepter weapon.</p>
       <p style="color:#c0a062;"><strong>Tip:</strong> Don't over-expand without fortifying -- more zones means stronger retaliation!</p>`,
@@ -10645,18 +10702,18 @@ const HELP_CATEGORIES = [
         <h4 style="color:#c0a062; margin:14px 0 6px;">Hideouts</h4>
         <ul>
           <li><strong>Abandoned Warehouse</strong> -- $50,000. +3 gang capacity. No income.</li>
-          <li><strong>Basement Hideout</strong> -- $120,000. +5 gang capacity. +$250/day income.</li>
-          <li><strong>Criminal Safehouse</strong> -- $300,000. +8 gang capacity. +$750/day income.</li>
+          <li><strong>Basement Hideout</strong> -- $120,000. +5 gang capacity. +~$10/hr income.</li>
+          <li><strong>Criminal Safehouse</strong> -- $300,000. +8 gang capacity. +~$31/hr income.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Compounds</h4>
         <ul>
-          <li><strong>Underground Bunker</strong> -- $750,000. +15 gang capacity. +$2,500/day income.</li>
-          <li><strong>Criminal Fortress</strong> -- $1,500,000. +25 gang capacity. +$2,500/day income.</li>
+          <li><strong>Underground Bunker</strong> -- $750,000. +15 gang capacity. +~$104/hr income.</li>
+          <li><strong>Criminal Fortress</strong> -- $1,500,000. +25 gang capacity. +~$104/hr income.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Residences</h4>
         <ul>
-          <li><strong>Luxury Penthouse</strong> -- $3,000,000. +20 gang capacity. +$4,000/day income.</li>
-          <li><strong>Private Island</strong> -- $8,000,000. +50 gang capacity. +$8,000/day income.</li>
+          <li><strong>Luxury Penthouse</strong> -- $3,000,000. +20 gang capacity. +~$166/hr income.</li>
+          <li><strong>Private Island</strong> -- $8,000,000. +50 gang capacity. +~$333/hr income.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Medical</h4>
         <ul>
@@ -10669,19 +10726,19 @@ const HELP_CATEGORIES = [
         <p>Business Fronts generate income, launder dirty money, and provide special perks at max level. Buy them from the Properties screen under the Fronts tab.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Legitimate Fronts</h4>
         <ul>
-          <li><strong>24/7 Laundromat</strong> -- $1,500,000. $15,000/day income. 95% legitimacy. $800K laundering cap. Max level 3.</li>
-          <li><strong>Family Restaurant</strong> -- $2,500,000. $25,000/day income. 85% legitimacy. $200K laundering cap. Max level 5.</li>
-          <li><strong>Discount Pawn Shop</strong> -- $2,000,000. $20,000/day income. 70% legitimacy. $300K laundering cap. Max level 4.</li>
-          <li><strong>Premium Car Wash</strong> -- $3,000,000. $30,000/day income. 90% legitimacy. $400K laundering cap. Max level 4.</li>
-          <li><strong>Underground Nightclub</strong> -- $5,000,000. $60,000/day income. 60% legitimacy. $500K laundering cap. Max level 5.</li>
-          <li><strong>Private Casino</strong> -- $10,000,000. $125,000/day income. 40% legitimacy. $1M laundering cap. Max level 5.</li>
+          <li><strong>24/7 Laundromat</strong> -- $1,500,000. ~$625/hr income. 95% legitimacy. $800K laundering cap. Max level 3.</li>
+          <li><strong>Family Restaurant</strong> -- $2,500,000. ~$1,041/hr income. 85% legitimacy. $200K laundering cap. Max level 5.</li>
+          <li><strong>Discount Pawn Shop</strong> -- $2,000,000. ~$833/hr income. 70% legitimacy. $300K laundering cap. Max level 4.</li>
+          <li><strong>Premium Car Wash</strong> -- $3,000,000. ~$1,250/hr income. 90% legitimacy. $400K laundering cap. Max level 4.</li>
+          <li><strong>Underground Nightclub</strong> -- $5,000,000. ~$2,500/hr income. 60% legitimacy. $500K laundering cap. Max level 5.</li>
+          <li><strong>Private Casino</strong> -- $10,000,000. ~$5,208/hr income. 40% legitimacy. $1M laundering cap. Max level 5.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Illegal Fronts</h4>
         <p>These cost dirty money to purchase and have very low legitimacy but high income:</p>
         <ul>
-          <li><strong>Chop Shop</strong> -- $3,500,000. $45,000/day. 15% legitimacy. Max level 5. Max-level perk: +55% stolen car sale bonus.</li>
-          <li><strong>Counterfeiting</strong> -- $4,000,000. $60,000/day. 10% legitimacy. Max level 5. Max-level perk: +5% laundering conversion rate on all methods. Requires Fake ID Kit.</li>
-          <li><strong>Drug Lab</strong> -- $6,000,000. $75,000/day. 5% legitimacy. Max level 5. Max-level perk: Drug goods cost 35% less in the store.</li>
+          <li><strong>Chop Shop</strong> -- $3,500,000. ~$1,875/hr. 15% legitimacy. Max level 5. Max-level perk: +55% stolen car sale bonus.</li>
+          <li><strong>Counterfeiting</strong> -- $4,000,000. ~$2,500/hr. 10% legitimacy. Max level 5. Max-level perk: +5% laundering conversion rate on all methods. Requires Fake ID Kit.</li>
+          <li><strong>Drug Lab</strong> -- $6,000,000. ~$3,125/hr. 5% legitimacy. Max level 5. Max-level perk: Drug goods cost 35% less in the store.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Income Scaling</h4>
         <ul>
@@ -10696,14 +10753,14 @@ const HELP_CATEGORIES = [
         <p>Dominate the city district by district. Turf is your path to real power -- but expansion paints a bigger target on your back.</p>
         <h4 style="color:#c0a062; margin:14px 0 6px;">The 8 Turf Zones</h4>
         <ul>
-          <li><strong>The Slums</strong> -- $1,500/week base income. 120 defense. Contested (no boss).</li>
-          <li><strong>The Sprawl</strong> -- $2,500/week. 120 defense. Morales turf.</li>
-          <li><strong>The Old Quarter</strong> -- $3,000/week. 140 defense. Torrino turf.</li>
-          <li><strong>Little Italy</strong> -- $4,000/week. 180 defense. Torrino. Boss: Vinnie-The-Rat.</li>
-          <li><strong>Chinatown</strong> -- $4,500/week. 190 defense. Chen turf.</li>
-          <li><strong>Harbor Row</strong> -- $5,000/week. 210 defense. Kozlov turf.</li>
-          <li><strong>Redlight District</strong> -- $5,500/week. 200 defense. Morales turf.</li>
-          <li><strong>Midtown Heights</strong> -- $6,000/week. 250 defense. Independent. Boss: Kane.</li>
+          <li><strong>The Slums</strong> -- ~$8/hr base income. 120 defense. Contested (no boss).</li>
+          <li><strong>The Sprawl</strong> -- ~$14/hr. 120 defense. Morales turf.</li>
+          <li><strong>The Old Quarter</strong> -- ~$17/hr. 140 defense. Torrino turf.</li>
+          <li><strong>Little Italy</strong> -- ~$23/hr. 180 defense. Torrino. Boss: Vinnie-The-Rat.</li>
+          <li><strong>Chinatown</strong> -- ~$26/hr. 190 defense. Chen turf.</li>
+          <li><strong>Harbor Row</strong> -- ~$29/hr. 210 defense. Kozlov turf.</li>
+          <li><strong>Redlight District</strong> -- ~$32/hr. 200 defense. Morales turf.</li>
+          <li><strong>Midtown Heights</strong> -- ~$35/hr. 250 defense. Independent. Boss: Kane.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Claiming & Defending</h4>
         <ul>
@@ -10802,7 +10859,7 @@ const HELP_CATEGORIES = [
         <ul>
           <li><strong>Boss:</strong> Don Salvatore Torrino</li>
           <li><strong>Specialty:</strong> Protection rackets, loan sharking.</li>
-          <li><strong>Passive (10+ rep):</strong> "The Books" -- 5% interest on unspent cash (capped $50K/day).</li>
+          <li><strong>Passive (10+ rep):</strong> "The Books" -- 5% interest on unspent cash (capped ~$2,083/hr).</li>
           <li><strong>Buffs:</strong> +15% turf income, -20% job heat, +10% respect.</li>
           <li><strong>Turf:</strong> Little Italy, The Old Quarter.</li>
           <li><strong>Signature Job (20+ rep):</strong> Union Shake-down ($800-850 + rep).</li>
@@ -10915,7 +10972,7 @@ const HELP_CATEGORIES = [
           <li><strong>Morales faction passive</strong> -- Violent crimes generate -20% heat.</li>
         </ul>
         <h4 style="color:#c0a062; margin:14px 0 6px;">Heat & Turf Income</h4>
-        <p>High heat reduces your weekly turf tribute by up to 70%. Keep heat low to maximise turf income.</p>
+        <p>High heat reduces your turf tribute by up to 70%. Keep heat low to maximise turf income.</p>
       `},
       { id: 'jail-help', icon: '', title: 'Jail & Arrest', content: `
         <p>Getting arrested sends you to jail for a timed sentence. While in jail, you cannot perform most actions.</p>
@@ -18686,7 +18743,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.42.5';
+const CURRENT_VERSION = '1.42.6';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -22288,7 +22345,7 @@ function autoCollectBusinessesAndTribute() {
         // Phase 3: district multiplier
         const bizMultiplier = getBusinessMultiplier(biz.districtId || player.currentTerritory);
         const hourlyIncome = Math.floor(businessType.baseIncome * Math.pow(businessType.incomeMultiplier, biz.level - 1) / 24);
-        const grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 48) * bizMultiplier);
+        const grossIncome = Math.floor(hourlyIncome * Math.min(hoursElapsed, 24) * bizMultiplier);
         // Phase 3: territory tax
         let taxAmount = 0;
         const bizDistrict = biz.districtId || player.currentTerritory;
@@ -22364,7 +22421,7 @@ function autoCollectBusinessesAndTribute() {
       zones.forEach(z => {
         if (player.turf.owned.includes(z.id)) {
           const income = typeof calculateTurfZoneIncome === 'function' ? calculateTurfZoneIncome(z) : 0;
-          turfTotal += Math.floor(income * Math.min(turfHours / 168, 1));
+          turfTotal += Math.floor(income * Math.min(turfHours / 24, 1));
         }
       });
       if (turfTotal > 0) {
@@ -23143,7 +23200,7 @@ function showMap() {
         <div class="territory-name">${zone.name}</div>
         <div class="territory-info">
           <div style="color: ${statusColor}; font-weight: bold;">${statusText}</div>
-          <div style="font-size: 0.8em;">Income: $${zone.baseIncome.toLocaleString()}/week</div>
+          <div style="font-size: 0.8em;">Income: ~$${Math.floor(zone.baseIncome / 24).toLocaleString()}/hr</div>
           <div style="font-size: 0.75em; color: #8a7a5a;">Defense: ${zone.defenseRequired}${(zone.baseDefenseRequired && zone.defenseRequired > zone.baseDefenseRequired) ? ' <span style="color:#e67e22;">(fortified)</span>' : ''} | Risk: ${zone.riskLevel}</div>
         </div>
       </div>
