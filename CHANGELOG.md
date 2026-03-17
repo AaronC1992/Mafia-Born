@@ -5,6 +5,11 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.5] - 2026-03-17
+
+### Fixed
+- Fixed modal buttons having inconsistent styles -- secondary buttons (Go Solo, Stay Quiet, Cancel, Abort, etc.) now match the same gold/dark style as primary buttons instead of appearing dim and washed out
+
 ## [1.41.4] - 2026-03-16
 
 ### Added

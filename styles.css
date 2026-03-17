@@ -4034,14 +4034,14 @@ p, ul {
 }
 
 .modal-btn-secondary {
-    background: #1a1610;
-    color: #8a7a5a;
-    border-color: #555;
+    background: linear-gradient(to bottom, #2c2c2c, #1a1a1a);
+    color: #d4af37;
+    border-color: #d4af37;
 }
 
 .modal-btn-secondary:hover {
-    background: #444;
-    color: var(--color-cream);
+    background: linear-gradient(to bottom, #3c3c3c, #2a2a2a);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
 }
 
 /* Toast Notifications */
