@@ -6519,6 +6519,16 @@ function renderTurfControlContent() {
       <div style="margin-top:6px;font-size:0.9em;color:#f5e6c8;font-weight:bold;">Total: $${(player.turf.income || 0).toLocaleString()}/week</div>
     </div>`;
 
+    // Heat & tribute info
+    const currentHeat = player.heat || 0;
+    const heatMultDisplay = Math.max(0.3, 1 - (currentHeat / 100) * 0.5);
+    const heatPenaltyPct = Math.round((1 - heatMultDisplay) * 100);
+    const heatColor = currentHeat >= 70 ? '#e74c3c' : currentHeat >= 40 ? '#e67e22' : '#8a9a6a';
+    html += `<div style="background:rgba(0,0,0,0.35);padding:14px 16px;border-radius:8px;margin-bottom:18px;border:1px solid ${heatColor}44;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <div style="color:#d4c4a0;font-size:0.85em;line-height:1.5;">Your <span style="color:${heatColor};font-weight:bold;">Heat (${currentHeat})</span> reduces tribute collection by <span style="color:${heatColor};font-weight:bold;">${heatPenaltyPct}%</span>. Keep heat low to maximise income.</div>
+      <div style="text-align:right;white-space:nowrap;"><span style="color:#8a7a5a;font-size:0.8em;">Collecting at</span> <span style="color:#f5e6c8;font-weight:bold;font-size:0.95em;">${Math.round(heatMultDisplay * 100)}%</span></div>
+    </div>`;
+
     const turfHoursSince = (Date.now() - (player.turf.lastTributeCollection || 0)) / 3600000;
     const turfReady = turfHoursSince >= 1;
     const tributeMinsLeft = turfReady ? 0 : Math.ceil(60 - turfHoursSince * 60);
@@ -6534,11 +6544,10 @@ function renderTurfControlContent() {
 
     ownedZones.forEach(zone => {
       const income = calculateTurfZoneIncome(zone);
-      const heatLevel = player.heat || 0;
       const fortLevel = (player.turf.fortifications || {})[zone.id] || 0;
-      html += `<div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px; border-left: 4px solid ${getHeatColor(heatLevel)};">
+      html += `<div style="background: rgba(20, 18, 10, 0.8); padding: 15px; border-radius: 10px; border-left: 4px solid #c0a062;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 200px;"><h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${zone.icon} ${zone.name}</h4><p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${zone.description}</p><div style="font-size:0.8em; color:#8a7a5a; margin-top:4px;">Fort Lv ${fortLevel} | Heat: ${heatLevel}</div></div>
+          <div style="flex: 1; min-width: 200px;"><h4 style="color: #f5e6c8; margin: 0 0 5px 0;">${zone.icon} ${zone.name}</h4><p style="color: #d4c4a0; margin: 0; font-size: 0.9em;">${zone.description}</p><div style="font-size:0.8em; color:#8a7a5a; margin-top:4px;">Fort Lv ${fortLevel}</div></div>
           <div style="text-align: right; min-width: 120px;"><div style="color: #8a9a6a; font-weight: bold;">$${income.toLocaleString()}/week</div></div>
         </div>
         <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
@@ -7250,10 +7259,6 @@ function manageTurfDetails(zoneId) {
         <div style="font-size:0.85em;color:#d4c4a0;">Income</div>
         <div style="font-size:1.2em;font-weight:bold;color:#8a9a6a;">$${income.toLocaleString()}/wk</div>
       </div>
-      <div style="background:rgba(231,76,60,0.2);padding:12px;border-radius:10px;text-align:center;">
-        <div style="font-size:0.85em;color:#d4c4a0;">Heat</div>
-        <div style="font-size:1.2em;font-weight:bold;color:${getHeatColor(heat)};">${heat}</div>
-      </div>
       <div style="background:rgba(52,152,219,0.2);padding:12px;border-radius:10px;text-align:center;">
         <div style="font-size:0.85em;color:#d4c4a0;">Fortification</div>
         <div style="font-size:1.2em;font-weight:bold;color:#c0a062;">Lv ${fort}</div>
@@ -7288,7 +7293,6 @@ function manageTurfDetails(zoneId) {
 
     <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;">
       <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:1px solid #c0a062;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Fortify ($${((fort+1)*5000).toLocaleString()})</button>
-      <button onclick="reduceHeatTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#c0a062,#a08850);border:1px solid #c0a062;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Reduce Heat -10 ($20,000)</button>
       ${(() => {
         const turfHoursSince = (Date.now() - (player.turf.lastTributeCollection || 0)) / 3600000;
         const turfReady = turfHoursSince >= 1;
@@ -7324,22 +7328,6 @@ function fortifyTurf(zoneId) {
   updateUI();
 }
 window.fortifyTurf = fortifyTurf;
-
-// Reduce global heat from turf screen
-function reduceHeatTurf(_zoneId) {
-  const heat = player.heat || 0;
-  const cost = 20000;
-  if (player.money < cost) { showBriefNotification('Need $20,000!', 'danger'); return; }
-  if (heat <= 0) { showBriefNotification('Heat is already at 0!', 'info'); return; }
-  player.money -= cost;
-  const reduced = Math.min(10, heat);
-  player.heat = heat - reduced;
-  recalcTurfIncome();
-  showBriefNotification(`Heat reduced by ${reduced}!`, 'success');
-  logAction('Paid $20,000 to lay low and reduce heat.');
-  updateUI();
-}
-window.reduceHeatTurf = reduceHeatTurf;
 
 // Collect tribute from turf
 function collectTurfTribute(zoneId) {
@@ -18698,7 +18686,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.42.4';
+const CURRENT_VERSION = '1.42.5';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
