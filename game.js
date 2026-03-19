@@ -18743,7 +18743,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.43.0';
+const CURRENT_VERSION = '1.43.1';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -25546,10 +25546,11 @@ function startLoadingSequence() {
   })();
 
   let pingAttempts = 0;
-  const MAX_PING_ATTEMPTS = 10; // Stop after ~30s (10 x 3s)
+  let connectionTimedOut = false; // true once 50s elapses without server
+  const MAX_PING_ATTEMPTS = 17; // ~51s of pinging (17 x 3s)
 
   function pingServer() {
-    if (loadingFinished) return; // Loading already resolved, stop pinging
+    if (loadingFinished || connectionTimedOut) return;
     pingAttempts++;
     fetch(SERVER_HEALTH_URL, { cache: 'no-store' })
       .then(res => {
@@ -25557,6 +25558,7 @@ function startLoadingSequence() {
         throw new Error('Server returned ' + res.status);
       })
       .then(data => {
+        if (connectionTimedOut) return; // Too late, already timed out
         // -- Version mismatch check ---
         // Only auto-update if the SERVER version is strictly newer than the
         // client version. This avoids reload loops when the client runs
@@ -25590,7 +25592,7 @@ function startLoadingSequence() {
         if (stepsComplete) finishLoading();
       })
       .catch(err => {
-        if (loadingFinished || pingAttempts >= MAX_PING_ATTEMPTS) {
+        if (loadingFinished || connectionTimedOut || pingAttempts >= MAX_PING_ATTEMPTS) {
           return;
         }
         if (stepsComplete) {
@@ -25605,19 +25607,34 @@ function startLoadingSequence() {
   // Start pinging immediately so the server wakes while visual steps run
   pingServer();
 
-  // -- Timeout guard ---
-  // Render cold-starts can take ~15-20 s; give up to 30 s before forcing.
-  const maxLoadingTime = 30000;
+  // -- Progressive timeout messages ---
+  // 40s: warn the user it's taking longer than expected
   setTimeout(() => {
-    if (!loadingFinished) {
-      console.warn('Loading timeout reached. Proceeding without server...');
-      loadingText.textContent = 'Server unavailable -- starting in offline mode...';
-      loadingPercentage.textContent = '100%';
-      loadingProgress.style.width = '100%';
-      window._offlineMode = true;
-      finishLoading();
+    if (!loadingFinished && !serverReady) {
+      loadingText.textContent = 'Server is taking longer than expected...';
+      const serverNote = document.getElementById('loading-server-note');
+      if (serverNote) {
+        serverNote.textContent = 'Please wait a moment longer.';
+        serverNote.style.display = 'block';
+      }
     }
-  }, maxLoadingTime);
+  }, 40000);
+
+  // 50s: give up and tell the user to refresh
+  setTimeout(() => {
+    if (!loadingFinished && !serverReady) {
+      connectionTimedOut = true;
+      console.warn('Loading timeout reached (50s). Server unreachable.');
+      loadingText.textContent = 'Connection not established -- try refreshing the page';
+      loadingProgress.style.width = '99%';
+      loadingPercentage.textContent = '99%';
+      const serverNote = document.getElementById('loading-server-note');
+      if (serverNote) {
+        serverNote.textContent = 'The server may be temporarily unavailable.';
+        serverNote.style.display = 'block';
+      }
+    }
+  }, 50000);
 
   function finishLoading() {
     if (loadingFinished) return; // prevent double-fire
