@@ -1472,6 +1472,9 @@ function handlePlayerConnect(clientId, message, ws) {
     
     gameState.playerStates.set(clientId, playerState);
 
+    // Connection successful — remove from connecting guard so user can reconnect later
+    if (authenticatedUser) connectingUsers.delete(authenticatedUser);
+
     // Re-add player to their territory's resident list on reconnect
     if (player.currentTerritory && gameState.territories[player.currentTerritory]) {
         const residents = gameState.territories[player.currentTerritory].residents;

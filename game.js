@@ -12531,7 +12531,7 @@ async function startJob(index) {
     }
     player.health -= healthLoss;
     flashHurtScreen();
-    showBriefNotification(`${getRandomNarration('healthLoss')} You have ${player.health} health left.`, true, 'success');
+    showBriefNotification(`${getRandomNarration('healthLoss')} You have ${player.health} health left.`, 'danger');
     logAction(`${getRandomNarration('healthLoss')} (-${healthLoss} health).`);
   }
 
@@ -18743,7 +18743,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.43.1';
+const CURRENT_VERSION = '1.43.2';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -24582,12 +24582,12 @@ window.checkCrewBeforeAction = checkCrewBeforeAction;
 
 function showBriefNotification(message, durationOrType = 2000) {
   // Support type strings as second arg: 'success', 'warning', 'danger', or a number for duration
-  let duration = 2000;
+  let duration = 3500;
   let borderColor = '#c0a062';
   let bgColor = 'rgba(20, 18, 10, 0.95)';
 
   if (typeof durationOrType === 'string') {
-    duration = 3000;
+    duration = 5000;
     switch (durationOrType) {
       case 'success': borderColor = '#8a9a6a'; bgColor = 'rgba(20, 18, 10, 0.95)'; break;
       case 'warning': borderColor = '#c0a040'; bgColor = 'rgba(20, 18, 10, 0.95)'; break;
@@ -24618,6 +24618,7 @@ function showBriefNotification(message, durationOrType = 2000) {
     max-width: 400px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     animation: slideInRight 0.3s ease;
+    cursor: pointer;
   `;
   notification.textContent = message;
 
@@ -24640,15 +24641,25 @@ function showBriefNotification(message, durationOrType = 2000) {
 
   document.body.appendChild(notification);
 
-  // Remove after duration
-  setTimeout(() => {
+  // Dismiss helper -- slides out and removes the element
+  let dismissed = false;
+  function dismiss() {
+    if (dismissed) return;
+    dismissed = true;
+    clearTimeout(autoTimer);
     notification.style.animation = 'slideOutRight 0.3s ease';
     setTimeout(() => {
       if (notification.parentNode) {
         notification.parentNode.removeChild(notification);
       }
     }, 300);
-  }, duration);
+  }
+
+  // Click to dismiss
+  notification.addEventListener('click', dismiss);
+
+  // Auto-dismiss after duration
+  const autoTimer = setTimeout(dismiss, duration);
 }
 
 // ==================== END SAVE SYSTEM ====================
