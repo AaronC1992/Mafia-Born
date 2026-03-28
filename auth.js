@@ -297,7 +297,7 @@ export function showAuthModal(onSuccessOrOpts) {
                         <button class="auth-btn auth-btn-secondary" id="auth-cloud-load-btn">Load from Cloud</button>
                         <button class="auth-btn auth-btn-danger" id="auth-logout-btn">Sign Out</button>
                         <hr style="border-color: #333; margin: 15px 0;">
-                        <button class="auth-btn auth-btn-danger" id="auth-delete-account-btn" style="border-color: #ff2222; margin-top: 5px;">Delete Account & Save</button>
+                        <button class="auth-btn auth-btn-danger" id="auth-delete-account-btn" style="border-color: #8b3a3a; margin-top: 5px;">Delete Account & Save</button>
                     </div>
                 </div>
             </div>

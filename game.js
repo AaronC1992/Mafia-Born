@@ -3299,7 +3299,7 @@ function renderSideOpsContent() {
             <span style="color:${objMet?'#8a9a6a':'#c0a040'};">${objMet?'Done':'Pending'}: ${obj.text} (${currentVal.toLocaleString()}/${obj.target.toLocaleString()})</span>
             <span data-quest-timer="${quest.id}" style="color:${timerDone?'#8a9a6a':'#c0a040'};">${timerDone?'Ready!':formatTimeRemaining(remaining)}</span>
           </div>
-          ${canComplete ? `<button onclick="completeSideQuestStep('${quest.id}')" style="background:#c0a040;color:#000;border:1px solid #c0a062;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;">Complete Step</button>` : ''}
+          ${canComplete ? `<button onclick="completeSideQuestStep('${quest.id}')" style="background:#c0a040;color:#000;border:1px solid #c0a062;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold;">Complete Step</button>` : ''}
         </div>`;
     });
   }
@@ -3315,7 +3315,7 @@ function renderSideOpsContent() {
           <h4 style="color:#f5e6c8;margin:0 0 4px;">${quest.icon} ${quest.title}</h4>
           <p style="color:#ccc;font-size:0.9em;margin:4px 0;">${quest.description}</p>
           <div style="color:#888;font-size:0.85em;">Respect ${quest.minReputation || quest.minLevel || 0} | ${quest.steps.length} Steps | ~${totalTime}min</div>
-          <button onclick="startSideQuest('${quest.id}')" style="background:linear-gradient(135deg,#c0a062,#a08850);color:#000;border:1px solid #c0a062;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:bold;margin-top:6px;">Accept</button>
+          <button onclick="startSideQuest('${quest.id}')" style="background:linear-gradient(135deg,#c0a062,#a08850);color:#000;border:1px solid #c0a062;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold;margin-top:6px;">Accept</button>
         </div>`;
     });
   }
@@ -3387,7 +3387,7 @@ function showPostDonArc(arcId) {
           <div style="color:#8a9a6a;font-size:0.8em;margin-top:8px;">Trait: ${c.trait}</div>
           <div style="color:#8b3a3a;font-size:0.8em;margin-top:4px;">Risk: ${c.risk}</div>
           <button onclick="selectSuccessor('${c.name}', '${c.trait}')"
-            style="margin-top:12px;width:100%;padding:8px;background:${isChosen ? 'linear-gradient(135deg,#c0a040,#a08830)' : 'linear-gradient(135deg,#7a8a5a,#8a9a6a)'};border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">
+            style="margin-top:12px;width:100%;padding:8px;background:${isChosen ? 'linear-gradient(135deg,#c0a040,#a08830)' : 'linear-gradient(135deg,#7a8a5a,#8a9a6a)'};border:1px solid #c0a062;border-radius:6px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">
             ${isChosen ? ' Chosen' : ' Choose'}
           </button>
         </div>`;}).join('') +
@@ -3613,7 +3613,7 @@ function showInteractiveEvent(event) {
         }).join('')}
       </div>
 
-      <button onclick="closeScreenAndContinueQueue(); updateUI();" style="margin-top: 20px; padding: 12px 25px; background: #8a7a5a; color: white; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">Close</button>
+      <button onclick="closeScreenAndContinueQueue(); updateUI();" style="margin-top: 20px; padding: 12px 25px; background: #8a7a5a; color: white; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em;">Close</button>
     </div>
   `;
 
@@ -4546,19 +4546,19 @@ function buildBusinessesHTML() {
 
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button onclick="collectBusinessIncome(${index})"
-                    style="background: #8a9a6a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer;">
+                    style="background: #8a9a6a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer;">
                   Collect Income
                 </button>
                 ${business.level < businessType.maxLevel ?
                   `<button onclick="upgradeBusiness(${index})"
-                      style="background: #c0a040; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer;"
+                      style="background: #c0a040; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer;"
                       ${player.money < upgradePrice ? 'disabled title="Not enough money"' : ''}>
                     Upgrade ($${upgradePrice.toLocaleString()})
                   </button>` :
                   '<span style="color: #8a7a5a; font-style: italic;">Max Level</span>'
                 }
                 <button onclick="sellBusiness(${index})"
-                    style="background: #8b3a3a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer;">
+                    style="background: #8b3a3a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer;">
                   Sell Business
                 </button>
               </div>
@@ -4616,7 +4616,7 @@ function buildBusinessesHTML() {
               slotsFull ? '<span style="color: #e67e22; font-style: italic;">District slots full</span>' :
               !curDistrict ? '<span style="color: #e67e22; font-style: italic;">No district selected</span>' :
               `<button onclick="purchaseBusiness('${businessType.id}')"
-                  style="background: #8a9a6a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; width: 100%;"
+                  style="background: #8a9a6a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; width: 100%;"
                   ${player.money < businessType.basePrice ? 'disabled title="Not enough money"' : ''}>
                 Purchase Business
               </button>`
@@ -5021,7 +5021,7 @@ function buildLaunderingHTML() {
                   <span>Dirty: $${op.amount.toLocaleString()}</span>
                   <span>Expected Clean: $${op.cleanAmount.toLocaleString()}</span>
                 </div>
-                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #8a9a6a; color: #fff; padding: 8px 16px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">Collect Clean Money</button>` : ''}
+                ${isDone ? `<button onclick="collectLaundering('${op.id}')" style="background: #8a9a6a; color: #fff; padding: 8px 16px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: bold;">Collect Clean Money</button>` : ''}
               </div>
             `;
           }).join('')}
@@ -5064,7 +5064,7 @@ function buildLaunderingHTML() {
                     style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #d4c4a0;">
                 <p style="margin: 5px 0; color: #8a9a6a;"><strong>Estimated Clean:</strong> Up to $${estimatedClean.toLocaleString()}</p>
                 <button onclick="startLaundering('${method.id}')"
-                    style="background: #8a9a6a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; width: 100%;">
+                    style="background: #8a9a6a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; width: 100%;">
                   Start Laundering
                 </button>` :
                 '<span style="color: #8b3a3a; font-style: italic;">Requirements not met</span>'
@@ -5507,11 +5507,11 @@ function showGang(activeTab) {
           if (isManagingBusiness) {
             const bIdx = parseInt(member.assignedTo.replace('business_', ''));
             const biz = businesses[bIdx];
-            businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx});showGang('roster');" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
+            businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx});showGang('roster');" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
           } else if (businesses.length > 0) {
             const unmanaged = businesses.map((b, i) => ({ b, i })).filter(({ b }) => !b.assignedMember);
             if (unmanaged.length > 0) {
-              businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!==''){assignMemberToBusiness(${index},parseInt(s.value));showGang('roster');}" style="background:#1abc9c;color:#fff;border:1px solid #c0a062;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
+              businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!==''){assignMemberToBusiness(${index},parseInt(s.value));showGang('roster');}" style="background:#1abc9c;color:#fff;border:1px solid #c0a062;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
             }
           }
         }
@@ -5540,9 +5540,9 @@ function showGang(activeTab) {
             ${businessHTML}
             <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:8px;">
               ${member.arrested ? `
-                <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:1px solid #c0a062; border-radius:3px; cursor:pointer; font-size:0.8em;">Break Out</button>
+                <button onclick="breakoutGangMember(${index})" style="background:#8b3a3a; color:white; padding:5px 10px; border:1px solid #c0a062; border-radius:4px; cursor:pointer; font-size:0.8em;">Break Out</button>
               ` : ''}
-              <button onclick="fireGangMember(${index});showGang('roster');" style="background:#8a7a5a; color:white; padding:5px 10px; border:1px solid #c0a062; border-radius:3px; cursor:pointer; font-size:0.8em;">Fire</button>
+              <button onclick="fireGangMember(${index});showGang('roster');" style="background:#8a7a5a; color:white; padding:5px 10px; border:1px solid #c0a062; border-radius:4px; cursor:pointer; font-size:0.8em;">Fire</button>
             </div>
           </div>
         `;
@@ -5899,10 +5899,10 @@ function generateGangOperationsHTML() {
         <div id="tier-info-${operation.id}" style="margin:4px 0;font-size:0.8em;color:#c0a062;"></div>
         ${activeOpStatus}
         ${cooldownStatus}
-        <select id="tier-select-${operation.id}" onchange="updateOperationTierInfo('${operation.id}')" style="margin: 5px 0; padding: 10px; width: 100%; font-size: 16px; border-radius: 5px; background: #1a1610; color: #f5e6c8; border: 1px solid #c0a062; -webkit-appearance: menulist;">
+        <select id="tier-select-${operation.id}" onchange="updateOperationTierInfo('${operation.id}')" style="margin: 5px 0; padding: 10px; width: 100%; font-size: 16px; border-radius: 4px; background: #1a1610; color: #f5e6c8; border: 1px solid #c0a062; -webkit-appearance: menulist;">
           ${Object.entries(OPERATION_TIERS).map(([key, tier]) => `<option value="${key}" ${key === 'standard' ? 'selected' : ''}>${tier.label}</option>`).join('')}
         </select>
-        <select id="member-select-${operation.id}" style="margin: 5px 0; padding: 10px; width: 100%; font-size: 16px; border-radius: 5px; background: #1a1610; color: #f5e6c8; border: 1px solid #c0a062; -webkit-appearance: menulist;">
+        <select id="member-select-${operation.id}" style="margin: 5px 0; padding: 10px; width: 100%; font-size: 16px; border-radius: 4px; background: #1a1610; color: #f5e6c8; border: 1px solid #c0a062; -webkit-appearance: menulist;">
           <option value="">Select a crew member</option>
           ${availableMembers.map(member => {
             const eName = member.role && GANG_MEMBER_ROLES[member.role] ? GANG_MEMBER_ROLES[member.role].name : member.specialization;
@@ -5912,7 +5912,7 @@ function generateGangOperationsHTML() {
         </select>
         ${availableMembers.length === 0 ? `<div style="color:#8b3a3a;font-size:0.8em;margin:4px 0;">No crew members with the <strong>${(() => { const eName = GANG_MEMBER_ROLES[operation.requiredRole] ? GANG_MEMBER_ROLES[operation.requiredRole].name : null; return eName || operation.requiredRole; })()}</strong> role available.</div>` : ''}
         <button onclick="startGangOperation('${operation.id}')"
-            style="background: #8b3a3a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%;"
+            style="background: #8b3a3a; color: white; padding: 8px 15px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; margin-top: 5px; width: 100%;"
             ${availableMembers.length === 0 || isOnCooldown || activeOp ? 'disabled' : ''}>
           ${activeOp ? 'In Progress' : (isOnCooldown ? 'On Cooldown' : (availableMembers.length === 0 ? 'No Available Members' : 'Start Task'))}
         </button>
@@ -6038,11 +6038,11 @@ function generateGangMembersHTML() {
       if (isManagingBusiness) {
         const bIdx = parseInt(member.assignedTo.replace('business_', ''));
         const biz = businesses[bIdx];
-        businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx})" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
+        businessHTML = `<div style="margin-top:6px;font-size:0.85em;color:#c0a062;">Managing: ${biz ? biz.name : 'Unknown'} <button onclick="unassignMemberFromBusiness(${bIdx})" style="background:#8b3a3a;color:#f5e6c8;border:1px solid #c0a062;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.85em;margin-left:4px;">Remove</button></div>`;
       } else if (businesses.length > 0) {
         const unmanaged = businesses.map((b, i) => ({ b, i })).filter(({ b }) => !b.assignedMember);
         if (unmanaged.length > 0) {
-          businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!=='')assignMemberToBusiness(${index},parseInt(s.value));" style="background:#1abc9c;color:#fff;border:1px solid #c0a062;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
+          businessHTML = `<div style="margin-top:6px;"><select id="biz-assign-${index}" style="padding:3px;font-size:0.8em;width:65%;"><option value="">Assign to business...</option>${unmanaged.map(({ b, i }) => `<option value="${i}">${b.name}</option>`).join('')}</select> <button onclick="var s=document.getElementById('biz-assign-${index}');if(s.value!=='')assignMemberToBusiness(${index},parseInt(s.value));" style="background:#1abc9c;color:#fff;border:1px solid #c0a062;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:0.8em;">Assign</button></div>`;
         }
       }
     }
@@ -6066,11 +6066,11 @@ function generateGangMembersHTML() {
 
         <div style="margin-top: 10px;">
           ${member.arrested ? `
-            <button onclick="breakoutGangMember(${index})" style="background: #8b3a3a; color: white; padding: 5px 10px; border:1px solid #c0a062; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
+            <button onclick="breakoutGangMember(${index})" style="background: #8b3a3a; color: white; padding: 5px 10px; border:1px solid #c0a062; border-radius: 4px; cursor: pointer; margin: 2px; font-size: 0.8em;">
               Break Out
             </button>
           ` : ''}
-          <button onclick="fireGangMember(${index})" style="background: #8a7a5a; color: white; padding: 5px 10px; border:1px solid #c0a062; border-radius: 3px; cursor: pointer; margin: 2px; font-size: 0.8em;">
+          <button onclick="fireGangMember(${index})" style="background: #8a7a5a; color: white; padding: 5px 10px; border:1px solid #c0a062; border-radius: 4px; cursor: pointer; margin: 2px; font-size: 0.8em;">
             Fire
           </button>
         </div>
@@ -6451,7 +6451,7 @@ function renderTurfControlContent() {
     <div style="background: rgba(231,76,60,0.2); padding:20px; border-radius:10px; text-align:center; margin-bottom:20px;">
       <h3 style="color:#8b3a3a; margin:0 0 10px 0;">No Family Allegiance</h3>
       <p style="color:#d4c4a0; margin:0 0 15px 0;">Choose a family to pledge your loyalty. Each family offers a unique story and buff.</p>
-      <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#8b3a3a,#7a2a2a); border:1px solid #c0a062; border-radius:10px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">Choose Your Family</button>
+      <button onclick="showFamilyChoice()" style="padding:12px 30px; background:linear-gradient(135deg,#8b3a3a,#7a2a2a); border:1px solid #c0a062; border-radius:8px; color:white; font-weight:bold; cursor:pointer; font-size:1.1em;">Choose Your Family</button>
     </div>`;
   }
 
@@ -6472,8 +6472,8 @@ function renderTurfControlContent() {
     </div>
 
     <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
-      <button onclick="showTurfMap()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a); border:1px solid #c0a062; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">Turf Map</button>
-      <button onclick="showProtectionRackets()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #c0a040); border:1px solid #c0a062; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">Protection Rackets</button>
+      <button onclick="showTurfMap()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #7a8a5a, #8a9a6a); border:1px solid #c0a062; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">Turf Map</button>
+      <button onclick="showProtectionRackets()" style="flex: 1; min-width: 150px; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #c0a040); border:1px solid #c0a062; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">Protection Rackets</button>
     </div>`;
 
   if (ownedZones.length > 0) {
@@ -6536,9 +6536,9 @@ function renderTurfControlContent() {
     // Collect All Tribute button at the top
     html += '<div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;"><h3 style="color: #8b3a3a; margin: 0;">Your Turf</h3>';
     if (turfReady) {
-      html += `<button onclick="collectTurfTribute('${ownedZones[0].id}'); setTimeout(showTurfControl, 300);" style="padding:8px 18px;background:linear-gradient(135deg,#7a8a5a,#229954);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.85em;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
+      html += `<button onclick="collectTurfTribute('${ownedZones[0].id}'); setTimeout(showTurfControl, 300);" style="padding:8px 18px;background:linear-gradient(135deg,#7a8a5a,#229954);border:1px solid #c0a062;border-radius:6px;color:white;font-weight:bold;cursor:pointer;font-size:0.85em;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
     } else {
-      html += `<button style="padding:8px 18px;background:linear-gradient(135deg,#555,#444);border:1px solid #c0a062;border-radius:8px;color:#999;font-weight:bold;font-size:0.85em;cursor:default;" disabled>Tribute (${tributeMinsLeft}m)</button>`;
+      html += `<button style="padding:8px 18px;background:linear-gradient(135deg,#555,#444);border:1px solid #c0a062;border-radius:6px;color:#999;font-weight:bold;font-size:0.85em;cursor:default;" disabled>Tribute (${tributeMinsLeft}m)</button>`;
     }
     html += '</div><div style="display: grid; gap: 15px;">';
 
@@ -6551,8 +6551,8 @@ function renderTurfControlContent() {
           <div style="text-align: right; min-width: 120px;"><div style="color: #8a9a6a; font-weight: bold;">$${Math.floor(income / 24).toLocaleString()}/hr</div></div>
         </div>
         <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
-          <button onclick="manageTurfDetails('${zone.id}')" style="padding: 5px 10px; background: #c0a062; border:1px solid #c0a062; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">Manage</button>
-          <button onclick="fortifyTurf('${zone.id}')" style="padding: 5px 10px; background: #e67e22; border:1px solid #c0a062; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8em;">Fortify</button>
+          <button onclick="manageTurfDetails('${zone.id}')" style="padding: 5px 10px; background: #c0a062; border:1px solid #c0a062; border-radius: 6px; color: white; cursor: pointer; font-size: 0.8em;">Manage</button>
+          <button onclick="fortifyTurf('${zone.id}')" style="padding: 5px 10px; background: #e67e22; border:1px solid #c0a062; border-radius: 6px; color: white; cursor: pointer; font-size: 0.8em;">Fortify</button>
         </div>
       </div>`;
     });
@@ -6718,7 +6718,7 @@ function showTurfMap() {
     html += '</div><div style="text-align:right; min-width:150px;">';
 
     if (isOwned) {
-      html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#c0a062,#a08850);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
+      html += `<button onclick="manageTurfDetails('${zone.id}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#c0a062,#a08850);border:1px solid #c0a062;border-radius:6px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">Manage</button>`;
     } else if (isAllied) {
       html += '<div style="color:#c0a062;font-size:0.9em;padding:10px;">Allied turf</div>';
     } else {
@@ -6733,7 +6733,7 @@ function showTurfMap() {
           <div style="font-size:0.9em;font-weight:bold;color:${chanceColor};">${winChance}% Win Chance</div>
         </div>
         <button onclick="attackTurfZone('${zone.id}')"
-          style="width:100%;padding:10px;background:linear-gradient(135deg,#8b3a3a,#7a2a2a);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">
+          style="width:100%;padding:10px;background:linear-gradient(135deg,#8b3a3a,#7a2a2a);border:1px solid #c0a062;border-radius:6px;color:white;font-weight:bold;cursor:pointer;font-size:0.9em;">
           Attack
         </button>`;
     }
@@ -6743,7 +6743,7 @@ function showTurfMap() {
 
   html += `</div>
     <div style="text-align:center; margin-top:25px;">
-      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
   document.getElementById('turf-control-content').innerHTML = html;
@@ -6827,7 +6827,7 @@ function showCityPolicies() {
 
   // Back button
   html += `<div style="text-align:center;margin-top:25px;">
-    <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+    <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
   </div>`;
 
   document.getElementById('turf-control-content').innerHTML = html;
@@ -7292,20 +7292,20 @@ function manageTurfDetails(zoneId) {
     ${buildTurfDefendersHTML(zone)}
 
     <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;">
-      <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:1px solid #c0a062;border-radius:8px;color:white;cursor:pointer;font-weight:bold;">Fortify ($${((fort+1)*5000).toLocaleString()})</button>
+      <button onclick="fortifyTurf('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#e67e22,#d35400);border:1px solid #c0a062;border-radius:6px;color:white;cursor:pointer;font-weight:bold;">Fortify ($${((fort+1)*5000).toLocaleString()})</button>
       ${(() => {
         const turfHoursSince = (Date.now() - (player.turf.lastTributeCollection || 0)) / 3600000;
         const turfReady = turfHoursSince >= 1;
         if (turfReady) {
-          return `<button onclick="collectTurfTribute('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#7a8a5a,#229954);border:1px solid #c0a062;border-radius:8px;color:white;cursor:pointer;font-weight:bold;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
+          return `<button onclick="collectTurfTribute('${zone.id}')" style="padding:10px 20px;background:linear-gradient(135deg,#7a8a5a,#229954);border:1px solid #c0a062;border-radius:6px;color:white;cursor:pointer;font-weight:bold;position:relative;">Collect Tribute<span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:2px solid #14120a;"></span></button>`;
         } else {
           const minsLeft = Math.ceil(60 - turfHoursSince * 60);
-          return `<button style="padding:10px 20px;background:linear-gradient(135deg,#555,#444);border:1px solid #c0a062;border-radius:8px;color:#999;cursor:default;font-weight:bold;" disabled>Tribute (${minsLeft}m)</button>`;
+          return `<button style="padding:10px 20px;background:linear-gradient(135deg,#555,#444);border:1px solid #c0a062;border-radius:6px;color:#999;cursor:default;font-weight:bold;" disabled>Tribute (${minsLeft}m)</button>`;
         }
       })()}
     </div>
     <div style="text-align:center;">
-      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
   document.getElementById('turf-control-content').innerHTML = html;
@@ -7415,7 +7415,7 @@ function showFamilyChoice() {
           <div style="font-size:0.85em; color:#8a7a5a;">Capos: ${fam.capos.length}</div>
         </div>
         <button onclick="pledgeToFamily('${famId}')"
-          style="width:100%;padding:12px;background:linear-gradient(135deg,${fam.color},${fam.color}cc);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;font-size:1.05em;">
+          style="width:100%;padding:12px;background:linear-gradient(135deg,${fam.color},${fam.color}cc);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;font-size:1.05em;">
           Pledge to the ${fam.name}
         </button>
       </div>`;
@@ -7423,7 +7423,7 @@ function showFamilyChoice() {
 
   html += `</div>
     <div style="text-align:center; margin-top:25px;">
-      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:10px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
+      <button onclick="showTurfControl();" style="padding:12px 30px;background:linear-gradient(135deg,#8a7a5a,#6a5a3a);border:1px solid #c0a062;border-radius:8px;color:white;font-weight:bold;cursor:pointer;"><- Back to Turf</button>
     </div>`;
 
   document.getElementById('turf-control-content').innerHTML = html;
@@ -7508,17 +7508,17 @@ function showProtectionRackets() {
           </div>
           <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
             <button onclick="collectProtection('${racket.id}')"
-                style="padding: 5px 10px; background: #7a8a5a; border:1px solid #c0a062; border-radius: 5px;
+                style="padding: 5px 10px; background: #7a8a5a; border:1px solid #c0a062; border-radius: 6px;
                     color: white; cursor: pointer; font-size: 0.8em;">
               Collect
             </button>
             <button onclick="pressureBusiness('${racket.id}')"
-                style="padding: 5px 10px; background: #e67e22; border:1px solid #c0a062; border-radius: 5px;
+                style="padding: 5px 10px; background: #e67e22; border:1px solid #c0a062; border-radius: 6px;
                     color: white; cursor: pointer; font-size: 0.8em;">
               Pressure
             </button>
             <button onclick="dropProtection('${racket.id}')"
-                style="padding: 5px 10px; background: #8b3a3a; border:1px solid #c0a062; border-radius: 5px;
+                style="padding: 5px 10px; background: #8b3a3a; border:1px solid #c0a062; border-radius: 6px;
                     color: white; cursor: pointer; font-size: 0.8em;">
               Drop
             </button>
@@ -8552,7 +8552,7 @@ function showAdminPanel() {
       </div>
       <div style="margin-top:12px; display:flex; gap:8px;">
         <button onclick="adminApplyStats()" style="border-color:#8b3a3a; color:#8b3a3a; flex:1;">Apply All Changes</button>
-        <button onclick="adminResetStats()" style="border-color:#ff6b6b; color:#ff6b6b;">Reset to Defaults</button>
+        <button onclick="adminResetStats()" style="border-color:#8b3a3a; color:#ff6b6b;">Reset to Defaults</button>
       </div>
     </div>
 
@@ -14156,7 +14156,7 @@ function showJailScreen() {
         <span style="color:#f5e6c8;">Available crew: ${availableMembers.length}</span> |
         <span style="color:${rescueChance >= 60 ? '#8a9a6a' : '#c0a062'};">Success chance: ${rescueChance}%</span>
       </div>
-      <button onclick="attemptGangRescue()" style="background:linear-gradient(135deg,#c0a062,#8b6d2a);color:#000;border:1px solid #c0a062;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:bold;margin-top:6px;">
+      <button onclick="attemptGangRescue()" style="background:linear-gradient(135deg,#c0a062,#8b6d2a);color:#000;border:1px solid #c0a062;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;margin-top:6px;">
         Call in the Crew
       </button>
     </div>`;
@@ -14257,7 +14257,7 @@ function updatePrisonerList() {
           <strong style="color: #f5e6c8;">${member.name}</strong> (Lv. ${expLevel})
           <br><small style="color: #8b3a3a;">Time Left: ${timeLeft}</small>
           ${player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="breakoutGangMember(${realIndex})" style="margin-top: 8px; background: #8b3a3a; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`}
+            `<br><button onclick="breakoutGangMember(${realIndex})" style="margin-top: 8px; background: #8b3a3a; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 6px; cursor: pointer;">Break Out</button>`}
         </div>
       `;
     });
@@ -14278,7 +14278,7 @@ function updatePrisonerList() {
           <br><small style="color: #8b3a3a;">Online Player * Level ${p.level || 1}</small>
           ${isMe ? '<br><span style="color: #8a7a5a; font-style: italic;">That\'s you!</span>' :
             (player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" style="margin-top: 8px; background: #c0a040; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out</button>`)}
+            `<br><button onclick="attemptPlayerJailbreak('${p.playerId}', '${p.name}')" style="margin-top: 8px; background: #c0a040; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 6px; cursor: pointer;">Break Out</button>`)}
         </div>
       `;
     });
@@ -14302,7 +14302,7 @@ function updatePrisonerList() {
           <strong style="color: #f5e6c8;">${bot.name}</strong> - Sentence: ${bot.sentence}s
           <br><small style="color: ${difficultyColor};">Difficulty: ${difficultyText}</small>
           ${player.inJail ? '<br><span style="color: #8a7a5a; font-size: 0.85em;">Cannot help others while imprisoned yourself</span>' :
-            `<br><button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="margin-top: 8px; background: #c0a062; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Break Out (${bot.breakoutSuccess}%)</button>`}
+            `<br><button onclick="attemptBotJailbreak('${bot.botId}', '${bot.name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="margin-top: 8px; background: #c0a062; color: white; border:1px solid #c0a062; padding: 6px 14px; border-radius: 6px; cursor: pointer;">Break Out (${bot.breakoutSuccess}%)</button>`}
         </div>
       `;
     });
@@ -18743,7 +18743,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.43.2';
+const CURRENT_VERSION = '1.43.3';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -20389,12 +20389,12 @@ function buildStashHTML() {
         </div>
         <div style="display:flex;gap:8px;">
           ${isEquippable && !equipped ?
-            `<button onclick="equipItem(${globalIdx})" style="background:#c0a062;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Equip</button>` : ''}
+            `<button onclick="equipItem(${globalIdx})" style="background:#c0a062;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;">Equip</button>` : ''}
           ${equipped ?
-            `<button onclick="unequipItem(${globalIdx})" style="background:#e67e22;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Unequip</button>` : ''}
+            `<button onclick="unequipItem(${globalIdx})" style="background:#e67e22;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;">Unequip</button>` : ''}
           ${(item.type === 'weapon' || item.type === 'armor') && hasDurability && item.durability < item.maxDurability ?
             `<span style="color:#8b3a3a;font-size:0.8em;padding:6px 8px;">Damaged -- cannot sell</span>` :
-            `<button onclick="sellItem(${globalIdx})" style="background:#8b3a3a;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>`}
+            `<button onclick="sellItem(${globalIdx})" style="background:#8b3a3a;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>`}
         </div>
       </div>`;
     });
@@ -20419,8 +20419,8 @@ function buildStashHTML() {
           <small style="color:#d4c4a0;">Value: $${car.baseValue.toLocaleString()} | ${car.damagePercentage}% damaged</small>
         </div>
         <div style="display:flex;gap:8px;">
-          ${!selected ? `<button onclick="selectCar(${idx})" style="background:#c0a062;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Select</button>` : ''}
-          <button onclick="scrapStolenCar(${idx})" style="background:#e67e22;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:5px;cursor:pointer;">Scrap</button>
+          ${!selected ? `<button onclick="selectCar(${idx})" style="background:#c0a062;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;">Select</button>` : ''}
+          <button onclick="scrapStolenCar(${idx})" style="background:#e67e22;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;">Scrap</button>
         </div>
       </div>`;
     });

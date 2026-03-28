@@ -310,13 +310,13 @@ function showActiveHeists() {
                             <div style="color: #ff8800; font-size: 0.8em; text-align: center;">Need ${h.minCrew || 1}+ crew</div>`}
                         ` : alreadyJoined ? `
                             <div style="color: #8a9a6a; padding: 10px; text-align: center; font-weight: bold;">Joined</div>
-                            <button onclick="leaveHeist('${h.id}')" style="background: #333; color: #ff4444; padding: 8px 15px; border: 1px solid #ff4444; border-radius: 6px; cursor: pointer; font-size: 0.85em;">
+                            <button onclick="leaveHeist('${h.id}')" style="background: #333; color: #ff4444; padding: 8px 15px; border: 1px solid #8b3a3a; border-radius: 6px; cursor: pointer; font-size: 0.85em;">
                                 Leave
                             </button>
                         ` : isFull ? `
                             <div style="color: #888; padding: 10px; text-align: center;">Crew Full</div>
                         ` : `
-                            <button onclick="showJoinHeistRolePicker('${h.id}')" style="background: linear-gradient(180deg, #8b0000, #3a0000); color: #ff4444; padding: 10px 18px; border: 1px solid #ff0000; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
+                            <button onclick="showJoinHeistRolePicker('${h.id}')" style="background: linear-gradient(180deg, #8b0000, #3a0000); color: #ff4444; padding: 10px 18px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                                 Join Crew
                             </button>
                         `}
@@ -390,7 +390,7 @@ function showCreateHeist() {
                 <div>
                     ${locked 
                         ? `<div style="color: #666; font-size: 0.85em;">${t.minReputation} Respect</div>`
-                        : `<button onclick="createHeist('${t.id}')" style="background: linear-gradient(180deg, #8b0000, #3a0000); color: #ff4444; padding: 10px 20px; border: 1px solid #ff0000; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
+                        : `<button onclick="createHeist('${t.id}')" style="background: linear-gradient(180deg, #8b0000, #3a0000); color: #ff4444; padding: 10px 20px; border: 1px solid #c0a062; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif; font-weight: bold;">
                             Plan This
                         </button>`
                     }
@@ -503,7 +503,7 @@ function showHeistSetup(target) {
             </div>
 
             <div style="display:flex;justify-content:center;gap:12px;">
-                <button onclick="confirmCreateHeist('${target.id}')" style="background:linear-gradient(180deg,#8b0000,#3a0000);color:#ff4444;padding:14px 30px;border:1px solid #ff0000;border-radius:8px;cursor:pointer;font-family:'Georgia',serif;font-weight:bold;font-size:1.05em;">Create Heist</button>
+                <button onclick="confirmCreateHeist('${target.id}')" style="background:linear-gradient(180deg,#8b0000,#3a0000);color:#ff4444;padding:14px 30px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-family:'Georgia',serif;font-weight:bold;font-size:1.05em;">Create Heist</button>
                 <button onclick="showCreateHeist()" style="background:#333;color:#c0a062;padding:14px 25px;border:1px solid #c0a062;border-radius:8px;cursor:pointer;font-family:'Georgia',serif;">Back</button>
             </div>
         </div>
@@ -599,7 +599,7 @@ function manageHeist(heistId) {
                     </div>
                     <div style="display:flex;gap:6px;">
                         ${isMe ? `<button onclick="showChangeRolePopup('${heistId}')" style="background:#222;color:${roleColor};padding:5px 10px;border:1px solid ${roleColor};border-radius:4px;cursor:pointer;font-size:0.8em;">Change Role</button>` : ''}
-                        ${!isOrganizer && isMe ? `<button onclick="leaveHeist('${heistId}')" style="background:#333;color:#ff4444;padding:5px 12px;border:1px solid #ff4444;border-radius:4px;cursor:pointer;font-size:0.85em;">Leave</button>` : ''}
+                        ${!isOrganizer && isMe ? `<button onclick="leaveHeist('${heistId}')" style="background:#333;color:#ff4444;padding:5px 12px;border:1px solid #8b3a3a;border-radius:4px;cursor:pointer;font-size:0.85em;">Leave</button>` : ''}
                     </div>
                 </div>
                 ${eqHTML}
@@ -651,11 +651,11 @@ function manageHeist(heistId) {
                     ` : `
                         <div style="color: #ff8800; padding: 14px; text-align: center;">Need at least ${minCrew} crew member${minCrew > 1 ? 's' : ''} to launch</div>
                     `}
-                    <button onclick="cancelHeist('${heistId}')" style="background: #333; color: #ff4444; padding: 14px 20px; border: 1px solid #ff4444; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
+                    <button onclick="cancelHeist('${heistId}')" style="background: #333; color: #ff4444; padding: 14px 20px; border: 1px solid #8b3a3a; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif;">
                         ? Cancel Heist
                     </button>
                 ` : `
-                    <button onclick="leaveHeist('${heistId}')" style="background: #333; color: #ff4444; padding: 14px 20px; border: 1px solid #ff4444; border-radius: 8px; cursor: pointer; font-family: 'Georgia', serif;">
+                    <button onclick="leaveHeist('${heistId}')" style="background: #333; color: #ff4444; padding: 14px 20px; border: 1px solid #8b3a3a; border-radius: 6px; cursor: pointer; font-family: 'Georgia', serif;">
                         Leave Crew
                     </button>
                 `}
@@ -1053,8 +1053,8 @@ function viewTerritoryDetails(district) {
                 <p style="color: #ccc;">Defense Power: <span style="color: #8b3a3a;">${info.power || 0}</span></p>
             </div>
             <div style="text-align: center; margin-top: 15px;">
-                <button onclick="challengeForTerritory('${escapeHTML(district)}')" style="background: #8b0000; color: #fff; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; margin: 5px;">Attack</button>
-                <button onclick="showOnlineWorld()" style="background: #333; color: #c0a062; padding: 10px 20px; border: 1px solid #c0a062; border-radius: 5px; cursor: pointer; margin: 5px;">Back</button>
+                <button onclick="challengeForTerritory('${escapeHTML(district)}')" style="background: #8b0000; color: #fff; padding: 10px 20px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; margin: 5px;">Attack</button>
+                <button onclick="showOnlineWorld()" style="background: #333; color: #c0a062; padding: 10px 20px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; margin: 5px;">Back</button>
             </div>
         </div>
     `;
@@ -3107,12 +3107,12 @@ function showGlobalChat() {
                 <div style="margin-top: 15px;">
                     <h4 style="color: #c0a062; margin-bottom: 10px; font-family: 'Georgia', serif;"> Quick Words</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
-                        <button onclick="sendQuickChat('Respect.')" style="padding: 8px; background: #7a8a5a; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Respect.</button>
-                        <button onclick="sendQuickChat('Looking for work.')" style="padding: 8px; background: linear-gradient(45deg, #333, #000); color: #c0a062; border: 1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px; font-family: 'Georgia', serif;"> Looking for work</button>
-                        <button onclick="sendQuickChat('Watch your back.')" style="padding: 8px; background: #8b0000; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Watch your back</button>
-                        <button onclick="sendQuickChat('Good business.')" style="padding: 8px; background: #c0a040; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Good business</button>
-                        <button onclick="sendQuickChat('Anyone need a lawyer?')" style="padding: 8px; background: #8b6a4a; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Need a lawyer?</button>
-                        <button onclick="sendQuickChat('My regards to the Don.')" style="padding: 8px; background: #1abc9c; color: white; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; font-size: 12px;"> Regards to the Don</button>
+                        <button onclick="sendQuickChat('Respect.')" style="padding: 8px; background: #7a8a5a; color: white; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-size: 12px;"> Respect.</button>
+                        <button onclick="sendQuickChat('Looking for work.')" style="padding: 8px; background: linear-gradient(45deg, #333, #000); color: #c0a062; border: 1px solid #c0a062; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: 'Georgia', serif;"> Looking for work</button>
+                        <button onclick="sendQuickChat('Watch your back.')" style="padding: 8px; background: #8b0000; color: white; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-size: 12px;"> Watch your back</button>
+                        <button onclick="sendQuickChat('Good business.')" style="padding: 8px; background: #c0a040; color: white; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-size: 12px;"> Good business</button>
+                        <button onclick="sendQuickChat('Anyone need a lawyer?')" style="padding: 8px; background: #8b6a4a; color: white; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-size: 12px;"> Need a lawyer?</button>
+                        <button onclick="sendQuickChat('My regards to the Don.')" style="padding: 8px; background: #1abc9c; color: white; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; font-size: 12px;"> Regards to the Don</button>
                     </div>
                 </div>
             </div>
@@ -3132,7 +3132,7 @@ function showGlobalChat() {
                 </div>
             </div>
             
-            <button onclick="goBackToMainMenu()" style="background: linear-gradient(180deg, #333 0%, #000 100%); color: #c0a062; padding: 15px 30px; border: 1px solid #c0a062; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; font-family: 'Georgia', serif; text-transform: uppercase;">
+            <button onclick="goBackToMainMenu()" style="background: linear-gradient(180deg, #333 0%, #000 100%); color: #c0a062; padding: 15px 30px; border: 1px solid #c0a062; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; font-family: 'Georgia', serif; text-transform: uppercase;">
                  Back to Safehouse
             </button>
         </div>
@@ -3432,7 +3432,7 @@ function renderChatChannelContent(channel) {
                 <input type="text" id="channel-chat-input" placeholder="Speak to the family..." maxlength="200"
                        style="flex:1;padding:10px;border-radius:5px;border:1px solid #c0a062;background:#222;color:#c0a062;font-size:1em;"
                        onkeypress="if(event.key==='Enter') sendChannelMessage('world')">
-                <button onclick="sendChannelMessage('world')" style="background:#c0a062;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
+                <button onclick="sendChannelMessage('world')" style="background:#c0a062;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">Send</button>
             </div>`;
     }
 
@@ -3447,7 +3447,7 @@ function renderChatChannelContent(channel) {
                 <input type="text" id="channel-chat-input" placeholder="Message your crew..." maxlength="200"
                        style="flex:1;padding:10px;border-radius:5px;border:1px solid #3498db;background:#222;color:#3498db;font-size:1em;"
                        onkeypress="if(event.key==='Enter') sendChannelMessage('crew')">
-                <button onclick="sendChannelMessage('crew')" style="background:#3498db;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
+                <button onclick="sendChannelMessage('crew')" style="background:#3498db;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">Send</button>
             </div>`;
     }
 
@@ -3462,7 +3462,7 @@ function renderChatChannelContent(channel) {
                 <input type="text" id="channel-chat-input" placeholder="Message your alliance..." maxlength="200"
                        style="flex:1;padding:10px;border-radius:5px;border:1px solid #9b59b6;background:#222;color:#9b59b6;font-size:1em;"
                        onkeypress="if(event.key==='Enter') sendChannelMessage('alliance')">
-                <button onclick="sendChannelMessage('alliance')" style="background:#9b59b6;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
+                <button onclick="sendChannelMessage('alliance')" style="background:#9b59b6;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">Send</button>
             </div>`;
     }
 
@@ -3506,7 +3506,7 @@ function renderPrivateChatUI() {
             <input type="text" id="channel-chat-input" placeholder="Message ${escapeHTML(target)}..." maxlength="200"
                    style="flex:1;padding:10px;border-radius:5px;border:1px solid #e67e22;background:#222;color:#e67e22;font-size:1em;"
                    onkeypress="if(event.key==='Enter') sendChannelMessage('private')">
-            <button onclick="sendChannelMessage('private')" style="background:#e67e22;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:5px;cursor:pointer;font-weight:bold;">Send</button>
+            <button onclick="sendChannelMessage('private')" style="background:#e67e22;color:#000;padding:10px 18px;border:1px solid #c0a062;border-radius:6px;cursor:pointer;font-weight:bold;">Send</button>
         </div>`;
     } else {
         html += '<p style="color:#8a7a5a;text-align:center;font-size:0.9em;">Select a player above to send a message.</p>';

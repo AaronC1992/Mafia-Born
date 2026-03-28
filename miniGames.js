@@ -422,7 +422,7 @@ export function startNumberGuessing() {
         <input type="number" id="guess-input" min="1" max="100" placeholder="Enter your guess..."
             style="padding: 10px; font-size: 16px; border-radius: 5px; border: 2px solid #8a9a6a; width: 150px; text-align: center;"
             onkeypress="if(event.key==='Enter') makeGuess()">
-        <button onclick="makeGuess()" style="background: #8a9a6a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+        <button onclick="makeGuess()" style="background: #8a9a6a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer; margin-left: 10px;">
           Guess!
         </button>
       </div>
@@ -519,13 +519,13 @@ export function updateRPSDisplay() {
       </div>
       ${rpsPlayerScore < 3 && rpsAIScore < 3 ? `
         <div style="display: flex; justify-content: center; gap: 20px; margin: 30px 0;">
-          <button onclick="playRPS('rock')" style="background: #8a7a5a; color: white; padding: 20px; border:1px solid #c0a062; border-radius: 10px; cursor: pointer; font-size: 24px;">
+          <button onclick="playRPS('rock')" style="background: #8a7a5a; color: white; padding: 20px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-size: 24px;">
             Rock
           </button>
-          <button onclick="playRPS('paper')" style="background: #c0a062; color: white; padding: 20px; border:1px solid #c0a062; border-radius: 10px; cursor: pointer; font-size: 24px;">
+          <button onclick="playRPS('paper')" style="background: #c0a062; color: white; padding: 20px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-size: 24px;">
             Paper
           </button>
-          <button onclick="playRPS('scissors')" style="background: #8b3a3a; color: white; padding: 20px; border:1px solid #c0a062; border-radius: 10px; cursor: pointer; font-size: 24px;">
+          <button onclick="playRPS('scissors')" style="background: #8b3a3a; color: white; padding: 20px; border:1px solid #c0a062; border-radius: 8px; cursor: pointer; font-size: 24px;">
             Scissors
           </button>
         </div>
@@ -743,7 +743,7 @@ export function startSnakeGame() {
         <strong>Controls:</strong> Use WASD keys or move your mouse in the canvas to start and guide the snake<br>
         <small>W = Up, A = Left, S = Down, D = Right | Game starts when you give input</small>
       </p>
-      <button onclick="restartSnake()" style="background: #8b6a4a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 5px; cursor: pointer;">
+      <button onclick="restartSnake()" style="background: #8b6a4a; color: white; padding: 10px 20px; border:1px solid #c0a062; border-radius: 6px; cursor: pointer;">
         Restart Game
       </button>
     </div>

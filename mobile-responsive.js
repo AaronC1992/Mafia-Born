@@ -248,7 +248,7 @@ export const MobileSystem = {
                 
                 <div style="position: absolute; top: 20px; right: 20px;">
                     <button onclick="MobileSystem.closeActionPanel();" 
-                            style="background: rgba(139, 0, 0, 0.8); border: 1px solid #ff0000; border-radius: 50%; 
+                            style="background: rgba(139, 0, 0, 0.8); border: 1px solid #8b3a3a; border-radius: 50%; 
                                    width: 30px; height: 30px; color: white; font-size: 16px; cursor: pointer;">
                         ×
                     </button>
@@ -412,7 +412,7 @@ export const MobileSystem = {
                 
                 <button onclick="goBackToMainMenu(); MobileSystem.toggleMobileMenu();" 
                         style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(45deg, #8b0000, #5a0000); 
-                               color: white; border: 1px solid #ff0000; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
+                               color: white; border: 1px solid #8b3a3a; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Georgia', serif;">
                     Safehouse
                 </button>
                 

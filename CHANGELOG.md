@@ -4,6 +4,20 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.43.3] - 2025-07-17
+### Fixed
+- Base button border-radius updated from 2px to 6px for a more polished look across all screens
+- Button double-border inset frame (::after) now inherits parent border-radius instead of hardcoded 1px
+- Standardized inline button border-radius across game.js, casino.js, multiplayer.js, miniGames.js (small=4px, standard=6px, nav/primary=8px)
+- Fixed non-theme red border colors (#ff0000, #ff4444, #ff2222, #ff6b6b) replaced with theme red (#8b3a3a) or theme gold (#c0a062) as appropriate
+- Nav-back buttons updated from 2px to 6px border-radius
+- Quick-btn sidebar border changed from grey (#444) to theme gold-dim for consistency
+- Hospital cancel and bounty attempt button border-radius normalized to 6px
+- Horse racing +/- bet buttons now use consistent gold borders instead of red/green
+- Mobile menu Safehouse button and close button border colors fixed to theme red
+- Fixed multiplayer heist Join/Create buttons using aggressive red borders instead of theme gold
+- Auth delete account button border color fixed to theme red
+
 ## [1.42.3] - 2025-07-14
 ### Changed
 - Vehicles now use a direct damage percentage (0-100%) instead of the durability/maxDurability system used by weapons and armor
