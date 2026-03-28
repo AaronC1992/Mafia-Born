@@ -4,6 +4,12 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.43.4] - 2025-07-17
+### Added
+- Font style customization in Settings with four options: Classic (Libre Baskerville), Typewriter (Special Elite), Elegant (Lora), and Clean (Inter)
+- Font size selector in Settings with four options: Small, Medium, Large, and X-Large
+- Font preferences persist via localStorage and apply instantly across the entire game
+
 ## [1.43.3] - 2025-07-17
 ### Fixed
 - Base button border-radius updated from 2px to 6px for a more polished look across all screens

@@ -144,6 +144,91 @@ window.buildThemePicker = buildThemePicker;
   }
 })();
 
+// ==================== FONT CUSTOMIZATION SYSTEM ====================
+const FONT_OPTIONS = [
+  { id: 'classic',    name: 'Classic',    sample: 'Libre Baskerville' },
+  { id: 'typewriter', name: 'Typewriter', sample: 'Special Elite' },
+  { id: 'elegant',    name: 'Elegant',    sample: 'Lora' },
+  { id: 'clean',      name: 'Clean',      sample: 'Inter' },
+];
+
+const FONT_SIZES = [
+  { id: 'small',  name: 'Small' },
+  { id: 'medium', name: 'Medium' },
+  { id: 'large',  name: 'Large' },
+  { id: 'xlarge', name: 'X-Large' },
+];
+
+function applyFont(fontId) {
+  if (fontId === 'classic') {
+    document.documentElement.removeAttribute('data-font');
+  } else {
+    document.documentElement.setAttribute('data-font', fontId);
+  }
+  localStorage.setItem('mafiaFont', fontId);
+  // Highlight active swatch
+  document.querySelectorAll('.font-swatch').forEach(el => {
+    el.classList.toggle('active', el.dataset.font === fontId);
+  });
+}
+window.applyFont = applyFont;
+
+function applyFontSize(sizeId) {
+  if (sizeId === 'medium') {
+    document.documentElement.removeAttribute('data-fontsize');
+  } else {
+    document.documentElement.setAttribute('data-fontsize', sizeId);
+  }
+  localStorage.setItem('mafiaFontSize', sizeId);
+  // Highlight active
+  document.querySelectorAll('.fontsize-swatch').forEach(el => {
+    el.classList.toggle('active', el.dataset.size === sizeId);
+  });
+}
+window.applyFontSize = applyFontSize;
+
+function buildFontPicker() {
+  const currentFont = localStorage.getItem('mafiaFont') || 'classic';
+  const currentSize = localStorage.getItem('mafiaFontSize') || 'medium';
+  return `
+    <div style="margin-bottom:14px;">
+      <p style="color:#8a7a5a; font-size:0.8em; margin:0 0 6px 0; text-transform:uppercase; letter-spacing:1px;">Font Style</p>
+      <div class="font-grid">
+        ${FONT_OPTIONS.map(f => `
+          <div class="font-swatch ${currentFont === f.id ? 'active' : ''}"
+               data-font="${f.id}" onclick="applyFont('${f.id}')">
+            <span class="font-swatch-preview" style="font-family:'${f.sample}',serif;">${f.name}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div>
+      <p style="color:#8a7a5a; font-size:0.8em; margin:0 0 6px 0; text-transform:uppercase; letter-spacing:1px;">Font Size</p>
+      <div class="font-grid">
+        ${FONT_SIZES.map(s => `
+          <div class="fontsize-swatch ${currentSize === s.id ? 'active' : ''}"
+               data-size="${s.id}" onclick="applyFontSize('${s.id}')">
+            <span class="fontsize-swatch-label">${s.name}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+window.buildFontPicker = buildFontPicker;
+
+// Apply saved font on load
+(function initFont() {
+  const savedFont = localStorage.getItem('mafiaFont');
+  if (savedFont && savedFont !== 'classic') {
+    document.documentElement.setAttribute('data-font', savedFont);
+  }
+  const savedSize = localStorage.getItem('mafiaFontSize');
+  if (savedSize && savedSize !== 'medium') {
+    document.documentElement.setAttribute('data-fontsize', savedSize);
+  }
+})();
+
 // ==================== CRIME COOLDOWN SYSTEM ====================
 // Each job has a cooldown based on its risk level. Planning skill & Quick Hands perk reduce cooldowns.
 const RISK_COOLDOWNS = {
@@ -18743,7 +18828,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.43.3';
+const CURRENT_VERSION = '1.43.4';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -22614,6 +22699,10 @@ function showOptions() {
   // Render theme picker
   const themePicker = document.getElementById('theme-picker-container');
   if (themePicker) themePicker.innerHTML = buildThemePicker();
+
+  // Render font picker
+  const fontPicker = document.getElementById('font-picker-container');
+  if (fontPicker) fontPicker.innerHTML = buildFontPicker();
 }
 
 // Function to save the game (server-only)

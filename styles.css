@@ -24,6 +24,29 @@
     --font-display: 'Playfair Display', 'Georgia', serif;
 }
 
+/* ===== Font Style Overrides ===== */
+html[data-font="typewriter"] {
+    --font-body: 'Special Elite', 'Courier New', monospace;
+    --font-heading: 'Special Elite', 'Courier New', monospace;
+    --font-display: 'Special Elite', 'Courier New', monospace;
+}
+html[data-font="elegant"] {
+    --font-body: 'Lora', 'Georgia', serif;
+    --font-heading: 'Playfair Display SC', 'Georgia', serif;
+    --font-display: 'Playfair Display', 'Georgia', serif;
+}
+html[data-font="clean"] {
+    --font-body: 'Inter', 'Segoe UI', sans-serif;
+    --font-heading: 'Inter', 'Segoe UI', sans-serif;
+    --font-display: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ===== Font Size Overrides ===== */
+html[data-fontsize="small"]  { font-size: 14px; }
+html[data-fontsize="medium"] { font-size: 16px; }
+html[data-fontsize="large"]  { font-size: 18px; }
+html[data-fontsize="xlarge"] { font-size: 20px; }
+
 body {
     font-family: var(--font-body);
     background: var(--color-bg);
@@ -6593,6 +6616,54 @@ p, ul {
     letter-spacing: 1px;
     font-family: var(--font-heading);
     text-align: center;
+}
+
+/* ===== Font Picker Swatches ===== */
+.font-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.font-swatch,
+.fontsize-swatch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    border: 2px solid var(--color-panel-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background: var(--color-panel-bg);
+    min-height: 42px;
+}
+
+.font-swatch:hover,
+.fontsize-swatch:hover {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+}
+
+.font-swatch.active,
+.fontsize-swatch.active {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.08);
+}
+
+.font-swatch-preview {
+    font-size: 1em;
+    color: var(--color-cream);
+    letter-spacing: 1px;
+}
+
+.fontsize-swatch-label {
+    font-size: 0.8em;
+    color: var(--color-cream);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: var(--font-heading);
 }
 
 .story-family-card:hover {
