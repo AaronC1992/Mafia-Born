@@ -4,6 +4,21 @@ All notable changes to From Dusk To Don (Mafia Born) will be documented in this 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.43.5] - 2025-07-17
+### Fixed
+- Fixed corrupted Unicode character in territory display element (index.html)
+- Added password hash format validation in verifyPassword() to prevent crashes on corrupted database entries (userDB.js)
+- Wrapped authenticateUser() password verification in try/catch for graceful error handling (userDB.js)
+- Fixed potential null dereference in session duplicate-check when orphaned player entries exist (server.js)
+- Added null checks on all DOM element lookups in miniGames.js (tttStart, tttUpdateDisplay, tttReset, backToMiniGamesList)
+- Removed unused variable vehicleDestroyed in job equipment durability logic (game.js)
+- Removed unused heat variable in manageTurfDetails (game.js)
+- Removed unused getNextTier import from player.js (game.js)
+- Removed dead legacy function chargeBookieFeeHourly (game.js)
+- Removed unused saveWorldState import from worldPersistence (server.js)
+- Fixed string quote style inconsistency in inventory display (game.js)
+- Prefixed unused catch parameter with underscore for lint compliance (game.js)
+
 ## [1.43.4] - 2025-07-17
 ### Added
 - Font style customization in Settings with four options: Classic (Libre Baskerville), Typewriter (Special Elite), Elegant (Lora), and Clean (Inter)

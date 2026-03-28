@@ -4,7 +4,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 // JSON file persistence utilities
-const { loadWorldState, saveWorldState, saveWorldStateImmediate, flushWorldState } = require('./worldPersistence');
+const { loadWorldState, saveWorldStateImmediate, flushWorldState } = require('./worldPersistence');
 // MongoDB connection
 const mongodb = require('./db');
 // User accounts & authentication
@@ -1370,9 +1370,11 @@ function handlePlayerConnect(clientId, message, ws) {
         // Check if this authenticated user already has an active connection
         for (const [existingId, existingPlayer] of gameState.players.entries()) {
             if (existingId === clientId) continue;
-            const existingSess = sessions.get(clients.get(existingId));
+            const existingWs = clients.get(existingId);
+            if (!existingWs) continue;
+            const existingSess = sessions.get(existingWs);
             if (existingSess && existingSess.authenticatedUser === authenticatedUser) {
-                const oldWs = clients.get(existingId);
+                const oldWs = existingWs;
                 const oldAlive = oldWs && oldWs.readyState === 1; // WebSocket.OPEN
                 if (oldAlive) {
                     // Old connection is still live — block this new one

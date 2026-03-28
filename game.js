@@ -1,6 +1,6 @@
 import { applyDailyPassives, getDrugIncomeMultiplier, getViolenceHeatMultiplier, getWeaponPriceMultiplier } from './passiveManager.js';
 import { showEmpireOverview } from './empireOverview.js';
-import { player, gainExperience, getReputationTier, getNextTier, SKILL_TREE_DEFS, getTreePointsSpent, canUnlockNode, achievements, CHARACTER_BACKGROUNDS, CHARACTER_PERKS } from './player.js';
+import { player, gainExperience, getReputationTier, SKILL_TREE_DEFS, getTreePointsSpent, canUnlockNode, achievements, CHARACTER_BACKGROUNDS, CHARACTER_PERKS } from './player.js';
 import { jobs, stolenCarTypes } from './jobs.js';
 import { crimeFamilies, factionEffects } from './factions.js';
 import { familyStories, missionProgress, factionMissions } from './missions.js';
@@ -375,7 +375,6 @@ function degradeEquipment(_context) {
     }
   }
   // Vehicle: add 1% damage per use (Wheelman skill reduces chance)
-  let vehicleDestroyed = false;
   if (player.equippedVehicle && typeof player.equippedVehicle === 'object') {
     const wheelmanLevel = player.skillTree?.stealth?.wheelman || 0;
     if (wheelmanLevel <= 0 || Math.random() * 100 >= wheelmanLevel * 3) {
@@ -392,7 +391,6 @@ function degradeEquipment(_context) {
       showBriefNotification(`Your ${player.equippedVehicle.name} is looking rough... (${vDmgPct}% damaged)`, 'warning');
     }
     if (player.equippedVehicle.vehicleDamage >= 100) {
-      vehicleDestroyed = true;
       const vName = player.equippedVehicle.name;
       const idx = player.inventory.findIndex(i => i === player.equippedVehicle);
       if (idx !== -1) player.inventory.splice(idx, 1);
@@ -7304,7 +7302,6 @@ function manageTurfDetails(zoneId) {
   const zone = (player.turf._zones || []).find(z => z.id === zoneId);
   if (!zone) return;
   const income = calculateTurfZoneIncome(zone);
-  const heat = player.heat || 0;
   const fort = (player.turf.fortifications || {})[zone.id] || 0;
 
   // Calculate defense breakdown
@@ -8497,7 +8494,6 @@ function updateUI() {
   }
   const reputationDisplay = document.getElementById('reputation-display');
   if (reputationDisplay) {
-    const next = getNextTier(player.reputation);
     reputationDisplay.innerText = `Respect: ${Math.floor(player.reputation)}`;
   }
   const jailStatusDisplay = document.getElementById('jail-status-display');
@@ -18828,7 +18824,7 @@ function startGameAfterIntro() {
 
 // ==================== VERSION UPDATE SYSTEM ====================
 
-const CURRENT_VERSION = '1.43.4';
+const CURRENT_VERSION = '1.43.5';
 
 // Compare two semver strings. Returns true if `server` is strictly newer than `local`.
 function isNewerVersion(server, local) {
@@ -20478,7 +20474,7 @@ function buildStashHTML() {
           ${equipped ?
             `<button onclick="unequipItem(${globalIdx})" style="background:#e67e22;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;">Unequip</button>` : ''}
           ${(item.type === 'weapon' || item.type === 'armor') && hasDurability && item.durability < item.maxDurability ?
-            `<span style="color:#8b3a3a;font-size:0.8em;padding:6px 8px;">Damaged -- cannot sell</span>` :
+            '<span style="color:#8b3a3a;font-size:0.8em;padding:6px 8px;">Damaged -- cannot sell</span>' :
             `<button onclick="sellItem(${globalIdx})" style="background:#8b3a3a;color:white;border:1px solid #c0a062;padding:6px 12px;border-radius:4px;cursor:pointer;">Sell $${sellPrice.toLocaleString()}</button>`}
         </div>
       </div>`;
@@ -22572,11 +22568,6 @@ function autoCollectBusinessesAndTribute() {
       showBriefNotification(`Bookie collected $${collected.toLocaleString()} (kept $${bookieCut.toLocaleString()}, you get $${playerNet.toLocaleString()})`, 'success');
     }
   }
-}
-
-// Bookie fee is now percentage-based (30% cut taken in autoCollectBusinessesAndTribute)
-function chargeBookieFeeHourly() {
-  // Legacy function kept for compatibility -- fee is now taken as 30% of collections
 }
 
 // Function to periodically check for random events
@@ -25691,7 +25682,7 @@ function startLoadingSequence() {
         window._offlineMode = false;
         if (stepsComplete) finishLoading();
       })
-      .catch(err => {
+      .catch(_err => {
         if (loadingFinished || connectionTimedOut || pingAttempts >= MAX_PING_ATTEMPTS) {
           return;
         }

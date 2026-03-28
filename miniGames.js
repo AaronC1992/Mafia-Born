@@ -108,8 +108,10 @@ function tttStart(ctx) {
   ctx.board = ['', '', '', '', '', '', '', '', ''];
   ctx.currentPlayer = 'X';
   ctx.active = true;
-  document.getElementById(ctx.startId).style.display = 'none';
-  document.getElementById(ctx.gameId).style.display = 'block';
+  const startEl = document.getElementById(ctx.startId);
+  if (startEl) startEl.style.display = 'none';
+  const gameEl = document.getElementById(ctx.gameId);
+  if (gameEl) gameEl.style.display = 'block';
   tttUpdateDisplay(ctx);
   const cells = document.querySelectorAll(ctx.cellSelector);
   cells.forEach(cell => {
@@ -198,6 +200,7 @@ function tttEnd(ctx, result) {
 function tttUpdateDisplay(ctx) {
   const label = document.getElementById(ctx.playerLabelId);
   const status = document.getElementById(ctx.statusId);
+  if (!label || !status) return;
   if (ctx.currentPlayer === 'X') {
     label.textContent = 'Your turn (X)';
     label.style.color = '#8a9a6a';
@@ -218,8 +221,10 @@ function tttReset(ctx) {
   ctx.active = false;
   ctx.board = ['', '', '', '', '', '', '', '', ''];
   ctx.currentPlayer = 'X';
-  document.getElementById(ctx.startId).style.display = 'block';
-  document.getElementById(ctx.gameId).style.display = 'none';
+  const startEl = document.getElementById(ctx.startId);
+  if (startEl) startEl.style.display = 'block';
+  const gameEl = document.getElementById(ctx.gameId);
+  if (gameEl) gameEl.style.display = 'none';
   const cells = document.querySelectorAll(ctx.cellSelector);
   cells.forEach(cell => {
     cell.textContent = '';
@@ -336,8 +341,10 @@ export function backToMiniGamesList() {
     resetCurrentMiniGame();
   }
 
-  document.getElementById('minigame-tiktaktoe').style.display = 'none';
-  document.getElementById('other-minigames').style.display = 'none';
+  const tttEl = document.getElementById('minigame-tiktaktoe');
+  if (tttEl) tttEl.style.display = 'none';
+  const otherEl = document.getElementById('other-minigames');
+  if (otherEl) otherEl.style.display = 'none';
 
   setTimeout(() => {
     const target = document.getElementById('panel-minigames') || document.getElementById('casino-screen');

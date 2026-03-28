@@ -14,7 +14,9 @@ function hashPassword(password) {
 }
 
 function verifyPassword(password, stored) {
+    if (!stored || !stored.includes(':')) return false;
     const [salt, hash] = stored.split(':');
+    if (!salt || !hash) return false;
     const check = crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
     // Constant-time comparison to prevent timing attacks
     const checkBuf = Buffer.from(check, 'hex');
@@ -132,7 +134,11 @@ async function authenticateUser(username, password) {
     const key = username.toLowerCase();
     const user = await users().findOne({ username: key });
     if (!user) return { ok: false, error: 'Invalid username or password' };
-    if (!verifyPassword(password, user.passwordHash)) return { ok: false, error: 'Invalid username or password' };
+    try {
+        if (!verifyPassword(password, user.passwordHash)) return { ok: false, error: 'Invalid username or password' };
+    } catch (_e) {
+        return { ok: false, error: 'Invalid username or password' };
+    }
 
     await users().updateOne({ username: key }, { $set: { lastLogin: new Date().toISOString() } });
     return { ok: true, username: user.displayName };
